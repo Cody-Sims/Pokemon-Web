@@ -1,4 +1,30 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Editor
 *.local
+*.swp
+*.swo
+*~
+
+# Vite
+*.cache
+
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.*
+
