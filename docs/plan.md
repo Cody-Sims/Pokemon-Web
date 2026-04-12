@@ -6,434 +6,65 @@ A browser-based Pokémon-style RPG built with **Phaser 3 + TypeScript + Vite**. 
 
 ---
 
-## Phase 1: Environment & Tooling Setup
-
-**Goal:** A running dev server with Phaser rendering a blank scene.
-
-### 1.1 — Initialize the Project
-- Scaffold using the official Phaser Vite TypeScript template:
-  ```bash
-  git clone https://github.com/phaserjs/template-vite-ts.git pokemon-web
-  cd pokemon-web && npm install
-  ```
-- Alternatively: `npm create vite@latest pokemon-web -- --template vanilla-ts` then `npm install phaser`.
-- Verify `npm run dev` opens `localhost:8080` with the Phaser splash.
-
-### 1.2 — Configure the Project
-- Set up `tsconfig.json` with `strict: true` and path aliases (`@scenes/*`, `@entities/*`, `@data/*`, etc.).
-- Configure `vite.config.ts` to resolve those aliases.
-- Add ESLint + Prettier for consistent code style.
-- Create the folder structure defined in [architecture.md](architecture.md).
-
-### 1.3 — Install External Tooling
-- **Tiled Map Editor** — download from [mapeditor.org](https://www.mapeditor.org/). Used offline to paint maps, exported as JSON.
-- **TexturePacker or free alternative (e.g., Leshy SpriteSheet Tool)** — pack spritesheets into texture atlases with JSON metadata.
-- **Aseprite or Piskel** — pixel art editor for custom sprites (optional; can use open-source tilesets to start).
-
-### 1.4 — Source Art Assets
-
-#### Battle Sprites & Icons — PokéAPI
-- PokéAPI (`https://pokeapi.co/api/v2/pokemon/{name}`) returns a `sprites` object with direct URLs to **front sprites**, **back sprites**, **shiny variants**, and **menu icons** for every generation.
-- These URLs point to the open-source [PokeAPI/sprites](https://github.com/PokeAPI/sprites) GitHub repository.
-- Sprites can be loaded directly from those URLs in Phaser's `preload()`, so the game downloads them on the fly — no need to bundle battle sprites locally.
-- Alternatively, download the sprites from the repo and place them in `public/assets/sprites/pokemon/` for offline/faster loading.
-
-#### Walking Sprites (Spritesheets) — The Spriters Resource & Community Collections
-- Overworld walking sprites require **spritesheets** — a single image containing a grid of frames (facing 4 directions, stepping animation per direction).
-- **The Spriters Resource** (`spriters-resource.com`) is the primary source: search for Pokémon FireRed/LeafGreen, HeartGold/SoulSilver, or other titles to find ripped player, NPC, and Pokémon-follower spritesheets.
-- **r/PokemonRMXP** community on Reddit maintains "Ultimate Sprite Collections" — pre-formatted spritesheets for hundreds of Pokémon ready for RPG Maker or Phaser use.
-- Download spritesheets and place them in `public/assets/sprites/player/`, `public/assets/sprites/npcs/`, etc.
-- Load in Phaser with `this.load.spritesheet(key, path, { frameWidth: 32, frameHeight: 32 })`.
-
-#### Tilesets
-- Use open-source tilesets to bootstrap (e.g., [Tuxemon](https://github.com/Tuxemon/Tuxemon) CC-BY-SA tiles, or community-made Gen-style tilesets from The Spriters Resource).
-- Choose a consistent art style / generation (e.g., GBA Gen 3 or NDS Gen 4) and source all spritesheets and tilesets from the same generation for visual coherence.
-
-#### Organization
-- Organize all assets into `public/assets/` per the architecture spec.
-- Create placeholder spritesheets (solid-color rectangles) for anything not yet sourced.
-
-### Deliverable
-A `npm run dev` command that opens a browser with a Phaser canvas displaying "Hello World" text. Folder structure matches the architecture document. Git repo initialized with `.gitignore` for `node_modules/` and `dist/`.
+## Phase 1: Environment & Tooling Setup — ✅ COMPLETE
+> See [CHANGELOG.md](CHANGELOG.md) for details. Dev server running, folder structure set up, assets sourced.
 
 ---
 
-## Phase 2: Core Scenes Skeleton
-
-**Goal:** Every scene exists as a stub class. You can flow through Boot → Preload → Title → Overworld with placeholder visuals.
-
-### 2.1 — BootScene
-- Loads a single loading-bar sprite and bitmap font.
-- Immediately starts `PreloadScene`.
-
-### 2.2 — PreloadScene
-- Iterates over all asset manifests (images, spritesheets, tilemaps, audio).
-- Draws a progress bar using `this.load.on('progress', ...)`.
-- On complete → starts `TitleScene`.
-
-### 2.3 — TitleScene
-- Background image or animated logo.
-- Cursor-selectable menu: **New Game**, **Continue**, **Options**.
-- "New Game" → starts `OverworldScene` (no intro cutscene yet).
-- "Continue" → loads save data via `SaveManager`, then starts `OverworldScene`.
-
-### 2.4 — OverworldScene (Stub)
-- Loads a placeholder tilemap (even a colored rectangle).
-- Spawns a placeholder player sprite.
-- Camera follows the player.
-
-### 2.5 — BattleScene + BattleUIScene (Stubs)
-- `BattleScene`: black background, two placeholder Pokémon sprites (front/back).
-- `BattleUIScene`: empty overlay launched in parallel.
-- Triggered manually (e.g., press B to test battle entry).
-
-### 2.6 — TransitionScene
-- Implements fade-to-black and fade-from-black using Phaser camera effects.
-- Used between scene switches for polish.
-
-### Deliverable
-You can press Start on TitleScene, see a placeholder overworld, press a key to enter a stub battle screen, and return to the overworld. All transitions have a fade effect.
+## Phase 2: Core Scenes Skeleton — ✅ COMPLETE
+> See [CHANGELOG.md](CHANGELOG.md) for details. All 12 scenes created with full Boot→Preload→Title→Overworld→Battle flow.
 
 ---
 
-## Phase 3: The Data Layer
-
-**Goal:** All Pokémon, moves, items, and type interactions are defined as typed data objects. No game logic here — just pure data that other systems consume.
-
-### 3.1 — TypeScript Interfaces
-
-```typescript
-// Core interfaces (src/data/ or src/utils/type-helpers.ts)
-
-interface PokemonData {
-  id: number;
-  name: string;
-  types: [PokemonType] | [PokemonType, PokemonType];
-  baseStats: Stats;
-  learnset: { level: number; moveId: string }[];
-  evolutionChain: EvolutionNode[];
-  catchRate: number;
-  expYield: number;
-  spriteKeys: { front: string; back: string; icon: string };
-}
-
-interface Stats {
-  hp: number;
-  attack: number;
-  defense: number;
-  spAttack: number;
-  spDefense: number;
-  speed: number;
-}
-
-interface MoveData {
-  id: string;
-  name: string;
-  type: PokemonType;
-  category: 'physical' | 'special' | 'status';
-  power: number | null;        // null for status moves
-  accuracy: number;            // 0–100
-  pp: number;
-  effect?: MoveEffect;
-  priority?: number;           // default 0
-}
-
-interface PokemonInstance {
-  dataId: number;              // Reference to PokemonData.id
-  nickname?: string;
-  level: number;
-  currentHp: number;
-  stats: Stats;                // Calculated from base + IVs + EVs + nature
-  ivs: Stats;
-  evs: Stats;
-  nature: Nature;
-  moves: MoveInstance[];       // Max 4
-  status: StatusCondition | null;
-  exp: number;
-  friendship: number;
-}
-
-interface MoveInstance {
-  moveId: string;
-  currentPp: number;
-}
-
-interface ItemData {
-  id: string;
-  name: string;
-  category: 'pokeball' | 'medicine' | 'battle' | 'key' | 'tm';
-  description: string;
-  effect: ItemEffect;
-}
-
-interface TrainerData {
-  id: string;
-  name: string;
-  spriteKey: string;
-  party: { pokemonId: number; level: number; moves?: string[] }[];
-  dialogue: { before: string[]; after: string[] };
-  rewardMoney: number;
-}
-
-interface EncounterEntry {
-  pokemonId: number;
-  levelRange: [number, number];
-  weight: number;              // Relative probability
-}
-```
-
-### 3.2 — Type Effectiveness Chart
-- 18×18 matrix mapping `AttackingType → DefendingType → multiplier` (0, 0.5, 1, 2).
-- Stored as a `Record<PokemonType, Record<PokemonType, number>>`.
-
-### 3.3 — Starter Pokédex (Initial Scope)
-- Define **~30 Pokémon** for the initial build (3 starters + their evolutions, route Pokémon, gym leader teams).
-- Define **~40 moves** covering all 18 types + key status moves (Tackle, Ember, Water Gun, Thunder Shock, Growl, Leer, etc.).
-- Define **~15 items** (Potion, Super Potion, Poké Ball, Great Ball, Antidote, Paralyze Heal, Repel, Key Items).
-
-### 3.4 — Encounter Tables
-- Per-route tables: e.g., Route 1 → Pidgey (40%), Rattata (40%), Pikachu (20%), levels 2–5.
-- Structured so adding new routes is just adding a new object.
-
-### Deliverable
-Running `tsc --noEmit` compiles cleanly. All data files export typed constants. A test script (or console log in BootScene) can print "Bulbasaur has 45 base HP and learns Tackle at level 1."
+## Phase 3: The Data Layer — ✅ COMPLETE
+> See [CHANGELOG.md](CHANGELOG.md) for details. ~30 Pokémon, ~50 moves, ~15 items, 7 trainers, type chart, encounter tables, evolution data.
 
 ---
 
-## Phase 4: Overworld Systems
+## Phase 4: Overworld Systems — 🔶 PARTIAL
 
 **Goal:** The player walks around a Tiled map with grid-based movement, collides with walls, talks to NPCs, and triggers encounters in tall grass.
 
+**✅ Done:** Grid-based player movement with tweens, Player/NPC/Trainer entities, EncounterSystem, InputManager, AnimationHelper, camera follow, player walk-cycle spritesheet.
+
+**⬜ Remaining:**
+
 ### 4.1 — Tiled Map Creation
-- Create the first map in Tiled: **Pallet Town** (small, 30×30 tiles).
-  - Layers: `Ground`, `World` (collidable), `Above Player`, `Encounters` (object layer), `Spawns` (object layer), `Warps`.
-  - Mark collidable tiles using a custom `collides: true` property in the Tileset Editor.
+- Create maps in Tiled: **Pallet Town** (30×30), **Route 1** (20×60), etc.
+  - Layers: `Ground`, `World` (collidable), `Above Player`, `Encounters`, `Spawns`, `Warps`.
+  - Mark collidable tiles with `collides: true` property.
   - Export as JSON into `public/assets/maps/`.
 
 ### 4.2 — Tilemap Loading in OverworldScene
-```typescript
-// OverworldScene.ts — create()
-const map = this.make.tilemap({ key: 'pallet-town' });
-const tileset = map.addTilesetImage('overworld', 'overworld-tiles');
-const ground = map.createLayer('Ground', tileset);
-const world = map.createLayer('World', tileset);
-const above = map.createLayer('Above Player', tileset);
-world.setCollisionByProperty({ collides: true });
-above.setDepth(10); // Rendered above player
-```
+- Parse Tiled JSON, create tilemap layers, set collision by property.
+- Spawn NPCs/Trainers from Tiled object layers.
 
-### 4.3 — Grid-Based Player Movement
-- `Player` extends `Phaser.GameObjects.Sprite` (not physics sprite — movement is tween-based).
-- `GridMovement` system:
-  1. Listen for directional input via `InputManager`.
-  2. Face the direction immediately (update sprite frame).
-  3. Check if the target tile is walkable (no collision, in-bounds).
-  4. If walkable → start a `Phaser.Tweens.Tween` moving the sprite `TILE_SIZE` pixels over ~180ms.
-  5. Block new movement input until tween completes.
-  6. On tween complete → check for encounter zone / warp / event trigger.
-
-### 4.4 — Camera
-- `this.cameras.main.startFollow(player, true)` for smooth camera tracking.
-- Set camera bounds to the map dimensions so it doesn't scroll past edges.
-- Optional: slight camera deadzone for a more natural feel.
-
-### 4.5 — NPC System
-- NPCs are spawned from Tiled object layer (`Spawns` layer, type = "npc").
-- Each NPC has custom properties in Tiled: `npcId`, `direction`, `dialogue`.
-- On player interaction (press Confirm while facing NPC):
-  - Launch `DialogueScene` as an overlay with the NPC's dialogue text.
-  - NPC turns to face the player during conversation.
-- **Trainer NPCs** have a `lineOfSight` range. If the player walks into their LOS → exclamation mark animation → forced walk → battle.
-
-### 4.6 — Dialogue System
-- `DialogueManager` holds a queue of text strings.
-- `DialogueScene` displays a text box at the bottom of the screen.
-- Text appears with a typewriter effect (~30 chars/sec).
-- Press Confirm to advance to the next line or dismiss.
+### 4.5 — NPC Interaction Wiring
+- Spawn NPCs from Tiled `Spawns` layer. On player interact (press Confirm while facing NPC):
+  - Launch `DialogueScene` with NPC's dialogue text.
+  - NPC turns to face the player.
+- **Trainer NPCs** with `lineOfSight` trigger exclamation mark → forced walk → battle.
 
 ### 4.7 — Map Transitions (Warps)
-- Warp objects in Tiled have properties: `targetMap`, `targetSpawnId`.
-- When the player steps on a warp tile:
-  1. `TransitionScene` plays fade-to-black.
-  2. `OverworldScene` restarts with the new map key.
-  3. Player placed at the target spawn position.
-  4. Fade-from-black.
-- Works for both outdoor-to-outdoor (Route 1 → Viridian City) and outdoor-to-indoor (enter a building).
+- Warp objects in Tiled with `targetMap`, `targetSpawnId` properties.
+- On step: fade-to-black → restart OverworldScene with new map → fade-from-black.
 
-### 4.8 — Encounter System
-- `EncounterSystem` increments a hidden step counter when the player moves into a tile tagged as an encounter zone.
-- After each step in grass, roll a random check (e.g., ~10% per step, scaling with Repel usage).
-- On trigger:
-  1. Flash the screen (battle transition animation).
-  2. Pick a Pokémon from the route's encounter table (weighted random).
-  3. Launch `BattleScene` with the wild Pokémon data.
+### 4.8 — Wild Encounter Trigger
+- Wire EncounterSystem to grass tiles in the overworld.
+- On trigger: flash screen → pick Pokémon from route table → launch BattleScene.
 
 ### Deliverable
-The player can walk around Pallet Town, collide with walls/trees, talk to an NPC (Professor Oak placeholder), walk to Route 1 (map transition), encounter wild Pokémon in tall grass (BattleScene stub launches), and walk to Viridian City.
+Walk around Pallet Town, collide with walls, talk to NPCs, transition to Route 1, encounter wild Pokémon in grass.
 
 ---
 
-## Phase 5: Battle System
-
-**Goal:** A fully functional turn-based battle system for wild encounters and trainer battles.
-
-### 5.1 — Battle State Machine
-
-```
-┌────────────────────────────────────────────────────────────────┐
-│                                                                │
-│  INTRO ──▶ PLAYER_TURN ──▶ EXECUTE_MOVES ──▶ CHECK_FAINT     │
-│              │                                    │            │
-│              │ (Run / Bag /                  ┌────┴────┐       │
-│              │  Switch)                      │ Nobody  │       │
-│              │                               │ fainted │       │
-│              ▼                               └────┬────┘       │
-│         SPECIAL_ACTION                            │            │
-│         (item use, switch,                        ▼            │
-│          run attempt)                     NEXT_TURN (loop)     │
-│                                                                │
-│  CHECK_FAINT branches:                                         │
-│    • Enemy fainted → EXP_GAIN → VICTORY (or next Pokémon)     │
-│    • Player fainted → switch or DEFEAT                         │
-│    • Both fainted → resolve simultaneously                     │
-└────────────────────────────────────────────────────────────────┘
-```
-
-### 5.2 — Battle Flow Detail
-
-#### INTRO State
-1. Screen transition from overworld.
-2. Slide in the enemy Pokémon sprite (front) from the right.
-3. Display "A wild [Pokémon] appeared!" or "Trainer [Name] wants to battle!"
-4. Slide in the player Pokémon sprite (back) from the left.
-5. HP bars animate filling up.
-6. → `PLAYER_TURN`.
-
-#### PLAYER_TURN State
-Player chooses from four options:
-- **Fight** → show 4 moves with PP / type info → select a move.
-- **Bag** → open inventory overlay (Poké Balls, Potions, etc.).
-- **Pokémon** → open party overlay to switch active Pokémon.
-- **Run** → attempt to flee (formula based on Speed stats; always succeeds vs. wild at higher speed; cannot run from trainer battles).
-
-#### EXECUTE_MOVES State
-1. Determine turn order: compare Speed stats (+ move priority).
-2. First attacker's move resolves:
-   - Play move animation.
-   - `DamageCalculator` computes damage (see §5.3).
-   - HP bar animates down.
-   - Display effectiveness text ("It's super effective!", "It's not very effective...").
-3. Check if defender fainted. If yes → skip their turn.
-4. Second attacker's move resolves (same sub-steps).
-5. → `CHECK_FAINT`.
-
-#### CHECK_FAINT State
-- If enemy fainted:
-  - Wild: award EXP, prompt catch? (already fainted = no), → `VICTORY`.
-  - Trainer: if trainer has more Pokémon → they send out next; otherwise → `VICTORY`.
-- If player's Pokémon fainted:
-  - If player has more conscious Pokémon → force switch.
-  - If none left → `DEFEAT` (white out, lose money, warp to Pokémon Center).
-- If nobody fainted → `PLAYER_TURN` (next turn loop).
-
-### 5.3 — Damage Formula
-
-Following the standard Pokémon damage formula:
-
-$$
-\text{Damage} = \left(\frac{(2 \times \text{Level} / 5 + 2) \times \text{Power} \times A / D}{50} + 2\right) \times \text{Modifier}
-$$
-
-Where:
-- $A$ = attacker's Attack (physical) or Sp. Attack (special)
-- $D$ = defender's Defense (physical) or Sp. Defense (special)
-- **Modifier** = STAB × TypeEffectiveness × Critical × Random(0.85–1.0)
-  - **STAB** (Same Type Attack Bonus) = 1.5 if the move type matches the attacker's type.
-  - **Type Effectiveness** = looked up from `type-chart.ts` (0×, 0.25×, 0.5×, 1×, 2×, 4× for dual types).
-  - **Critical** = 1.5 on a critical hit (~6.25% base chance).
-  - **Random** = uniform random between 0.85 and 1.00.
-
-### 5.4 — Status Conditions
-| Status | Effect |
-|--------|--------|
-| Burn | Halves physical Attack; deals 1/16 max HP per turn |
-| Paralysis | Halves Speed; 25% chance to miss turn |
-| Poison | Deals 1/8 max HP per turn |
-| Bad Poison | Damage increases each turn (1/16, 2/16, 3/16…) |
-| Sleep | Cannot act for 1–3 turns |
-| Freeze | Cannot act; 20% chance to thaw each turn |
-| Confusion | 33% chance to hurt self each turn |
-| Flinch | Skips turn (only applies same turn from certain moves) |
-
-### 5.5 — EXP and Leveling
-
-$$
-\text{EXP Gained} = \frac{b \times L}{7}
-$$
-
-Where $b$ = base EXP yield of defeated Pokémon, $L$ = defeated Pokémon's level. Trainer battles give 1.5× EXP.
-
-On level up:
-1. Recalculate stats from base stats + IVs + EVs + nature.
-2. Check learnset: if a new move is available at this level → prompt to learn it (replace one of 4 moves or skip).
-3. Check evolution conditions.
-
-### 5.6 — Catching Pokémon
-
-$$
-\text{CatchRate} = \frac{(3 \times \text{MaxHP} - 2 \times \text{CurrentHP}) \times \text{CatchRate} \times \text{BallBonus}}{3 \times \text{MaxHP}}
-$$
-
-- If CatchRate ≥ 255 → guaranteed catch.
-- Otherwise perform up to 3 shake checks with the standard probability formula.
-- Status bonuses: Sleep/Freeze ×2, Paralysis/Burn/Poison ×1.5.
-- Display the ball rocking animation (0–3 rocks, then capture or escape).
-
-### 5.7 — AI Controller (Enemy Moves)
-- **Wild Pokémon:** random move selection (weighted slightly toward super-effective moves at higher difficulty).
-- **Trainer Pokémon:** simple heuristic AI:
-  1. If a super-effective move is available, prefer it.
-  2. If HP < 25% and a healing item is scripted, use it.
-  3. Otherwise, pick the highest-power available move.
-  4. Future enhancement: difficulty tiers with smarter switching and prediction.
-
-### Deliverable
-A complete wild battle: encounter a Pidgey, select Fight, choose Tackle, see damage calculated, enemy attacks back, KO the Pidgey, gain EXP, level up, return to overworld. Catching with a Poké Ball works. Trainer battles with multi-Pokémon teams work end-to-end.
+## Phase 5: Battle System — ✅ COMPLETE
+> See [CHANGELOG.md](CHANGELOG.md) for details. Full turn-based battle with damage formula, type effectiveness, STAB, crits, status effects, EXP/level-up, nature modifiers, catch mechanics, AI controller.
 
 ---
 
-## Phase 6: UI & Menus
-
-**Goal:** All in-game menus are functional and navigable entirely with keyboard/gamepad.
-
-### 6.1 — Pause Menu (MenuScene)
-Opened by pressing Escape / Start. Options:
-- **Pokémon** — view party, reorder, check summary, use field moves.
-- **Bag** — categorized item list (Medicine, Poké Balls, Key Items, TMs). Use items on Pokémon.
-- **[Trainer Card]** — name, badges, playtime (placeholder).
-- **Save** — serialize full game state to `localStorage`.
-- **Options** — text speed, battle animation toggle, audio volume.
-- **Exit** — close the menu, resume overworld.
-
-### 6.2 — Party Screen (PartyScene)
-- Shows 1–6 Pokémon with icons, names, levels, HP bars.
-- Select a Pokémon to see options: Summary, Switch position, Use item on, Cancel.
-
-### 6.3 — Summary Screen (SummaryScene)
-- Multi-tab view: Info (type, OT, ID), Stats (hex chart or numerical), Moves (with PP & type).
-
-### 6.4 — Inventory Screen (InventoryScene)
-- Tab-based categories.
-- Select an item → Use (on which Pokémon?), Toss, Cancel.
-
-### 6.5 — Reusable UI Components
-- **MenuList**: Vertical selectable list with a cursor sprite. Takes an array of labels, emits `onSelect(index)`.
-- **HealthBar**: Animated bar that tweens width; changes color (green → yellow → red).
-- **TextBox**: Nine-patch background with typewriter text and blinking advance indicator.
-- **ConfirmBox**: "Yes / No" prompt with cursor.
-
-### Deliverable
-All menus are navigable with arrow keys + Enter/Escape. Items can be used on Pokémon. The game can be saved and loaded from the title screen.
+## Phase 6: UI & Menus — ✅ COMPLETE
+> See [CHANGELOG.md](CHANGELOG.md) for details. All menus (Menu, Party, Summary, Inventory, Battle UI) navigable with keyboard + mouse. Shared theme system. 3-tab Summary with INFO/STATS/MOVES.
 
 ---
 
@@ -470,43 +101,8 @@ Music plays and crossfades correctly when moving between areas and entering batt
 
 ---
 
-## Phase 8: Save / Load System
-
-**Goal:** The player can save their progress and resume later.
-
-### 8.1 — SaveManager
-- `save()`: serializes a `SaveData` object to `localStorage` as JSON.
-- `load()`: deserializes and returns `SaveData`, or `null` if none exists.
-- `hasSave()`: checks for existing save data (used by TitleScene to enable "Continue").
-- `deleteSave()`: clears save data (used by a "New Game" confirmation in future).
-
-### 8.2 — SaveData Interface
-
-```typescript
-interface SaveData {
-  version: number;               // For future migration
-  timestamp: number;
-  player: {
-    name: string;
-    position: { mapKey: string; x: number; y: number; direction: string };
-    party: PokemonInstance[];
-    bag: { itemId: string; quantity: number }[];
-    money: number;
-    badges: string[];
-    pokedex: { seen: number[]; caught: number[] };
-    playtime: number;            // Seconds
-  };
-  flags: Record<string, boolean>;  // Story progress flags (e.g., 'receivedStarter', 'defeatedBrock')
-  trainersDefeated: string[];      // Prevents trainer re-battles
-}
-```
-
-### 8.3 — Auto-Save (Optional Enhancement)
-- Save automatically on map transitions or after battles.
-- Keep a single auto-save slot separate from the manual save.
-
-### Deliverable
-Save from the pause menu, refresh the browser, click "Continue" on the title screen, and resume exactly where you left off with the same party, items, and position.
+## Phase 8: Save / Load System — ✅ COMPLETE
+> See [CHANGELOG.md](CHANGELOG.md) for details. SaveManager with localStorage, SaveData interface, serialize/deserialize, Continue from title screen.
 
 ---
 
@@ -710,6 +306,12 @@ Each phase has a concrete deliverable. Test that deliverable manually before mov
 - [x] Implement EXP gain and level-up
 - [x] Build pause menu with party/bag/save options
 - [x] Implement save/load to localStorage
+- [x] Build Pokemon Summary screen (INFO / STATS / MOVES tabs)
+- [x] Implement nature stat modifiers (+10%/-10%)
+- [x] Add shared UI theme system (colors, fonts, spacing)
+- [x] Download and integrate PokéAPI sprites (front/back/icon)
+- [x] Add player walk-cycle spritesheet and animations
+- [x] Load and display actual Pokemon sprites in battles and summary
 - [ ] Add background music and sound effects
 - [ ] Build maps for Route 1, Viridian City, Viridian Forest, Pewter City
 - [ ] Implement first gym battle (Brock)

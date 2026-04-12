@@ -4,9 +4,9 @@
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
-| Language | TypeScript 5.x | Type safety, interfaces for game data, IDE autocomplete |
-| Game Engine | Phaser 3.90+ | 2D rendering (WebGL/Canvas), physics, input, audio, scene management |
-| Bundler | Vite 6.x | HMR dev server, tree-shaking, static asset copying, fast builds |
+| Language | TypeScript 6.x | Type safety, interfaces for game data, IDE autocomplete |
+| Game Engine | Phaser 3.x | 2D rendering (WebGL/Canvas), physics, input, audio, scene management |
+| Bundler | Vite 8.x | HMR dev server, tree-shaking, static asset copying, fast builds |
 | Map Editor | Tiled (external) | Visual tilemap creation, exported as JSON for Phaser to consume |
 | Art Format | 16×16 or 32×32 pixel-art tilesets & spritesheets | Classic Pokémon aesthetic |
 | Sprite Source (Battle) | PokéAPI sprites | Front/back/shiny/icon sprites via API URLs or downloaded |
@@ -19,138 +19,117 @@
 
 ```
 pokemon-web/
-├── index.html                          # Minimal HTML shell, mounts the Phaser canvas
 ├── package.json
-├── tsconfig.json
-├── vite.config.ts                      # Vite config (aliases, build options)
+├── .gitignore
 │
-├── public/                             # Static assets copied verbatim to dist/
-│   ├── assets/
-│   │   ├── tilesets/                   # Tileset PNGs used by Tiled maps
-│   │   │   ├── overworld.png
-│   │   │   ├── interiors.png
-│   │   │   └── battle-backgrounds.png
-│   │   ├── maps/                       # Tiled JSON exports
-│   │   │   ├── pallet-town.json
-│   │   │   ├── route-1.json
-│   │   │   ├── viridian-city.json
-│   │   │   └── oak-lab.json
-│   │   ├── sprites/
-│   │   │   ├── player/                 # Player walk-cycle spritesheets (4-dir)
-│   │   │   │   ├── player-walk.png     # From The Spriters Resource
-│   │   │   │   └── player-walk.json    # Texture atlas metadata
-│   │   │   ├── npcs/                   # NPC spritesheets (from Spriters Resource)
-│   │   │   │   ├── oak.png
-│   │   │   │   ├── rival.png
-│   │   │   │   └── generic-trainer.png
-│   │   │   └── pokemon/               # Battle sprites — can be loaded from PokéAPI URLs
-│   │   │       ├── README.md           # Documents PokéAPI sprite URL format
-│   │   │       ├── bulbasaur-front.png # Optional local copies for offline/speed
-│   │   │       ├── bulbasaur-back.png
-│   │   │       └── ...
-│   │   ├── ui/                         # UI elements (health bars, menus, text boxes)
-│   │   │   ├── battle-hud.png
-│   │   │   ├── dialogue-box.png
-│   │   │   ├── menu-frame.png
-│   │   │   └── type-icons.png
-│   │   ├── audio/
-│   │   │   ├── bgm/                    # Background music (ogg/mp3)
-│   │   │   │   ├── title-theme.ogg
-│   │   │   │   ├── pallet-town.ogg
-│   │   │   │   ├── battle-wild.ogg
-│   │   │   │   ├── battle-trainer.ogg
-│   │   │   │   └── victory.ogg
-│   │   │   └── sfx/                    # Sound effects
-│   │   │       ├── menu-select.ogg
-│   │   │       ├── hit-normal.ogg
-│   │   │       ├── hit-super-effective.ogg
-│   │   │       ├── level-up.ogg
-│   │   │       └── ...
-│   │   └── fonts/                      # Bitmap fonts for retro text
-│   │       └── pokemon-font.png
-│   └── favicon.ico
+├── docs/                               # Documentation (canonical location)
+│   ├── architecture.md                 # This file
+│   ├── plan.md                         # Development plan & phases
+│   └── CHANGELOG.md                    # Completed work log
 │
-├── src/
-│   ├── main.ts                         # Entry point: creates Phaser.Game instance
+├── frontend/                           # All client-side code lives here
+│   ├── index.html                      # Minimal HTML shell, mounts the Phaser canvas
+│   ├── tsconfig.json
+│   ├── vite.config.ts                  # Vite config (aliases, build options)
 │   │
-│   ├── config/
-│   │   └── game-config.ts              # Phaser.Types.Core.GameConfig object
+│   ├── public/                         # Static assets copied verbatim to dist/
+│   │   └── assets/
+│   │       ├── tilesets/               # Tileset PNGs used by Tiled maps
+│   │       │   └── overworld.png
+│   │       ├── maps/                   # Tiled JSON exports
+│   │       ├── sprites/
+│   │       │   ├── player/             # Player walk-cycle spritesheet + atlas JSON
+│   │       │   │   ├── player-walk.png
+│   │       │   │   └── player-walk.json
+│   │       │   ├── npcs/              # NPC spritesheets
+│   │       │   └── pokemon/           # Front/back/icon sprites (from PokéAPI)
+│   │       │       ├── bulbasaur-front.png
+│   │       │       ├── bulbasaur-back.png
+│   │       │       ├── bulbasaur-icon.png
+│   │       │       └── ... (all 151)
+│   │       ├── ui/                     # UI element images
+│   │       ├── audio/
+│   │       │   ├── bgm/               # Background music (ogg/mp3)
+│   │       │   └── sfx/               # Sound effects
+│   │       └── fonts/                  # Bitmap fonts
 │   │
-│   ├── scenes/                         # One file per Phaser Scene
-│   │   ├── BootScene.ts                # Loads minimal assets for the loading bar
-│   │   ├── PreloadScene.ts             # Loads all heavy assets; shows progress bar
-│   │   ├── TitleScene.ts               # Main menu (New Game / Continue / Options)
-│   │   ├── OverworldScene.ts           # Top-down world exploration & NPC interaction
-│   │   ├── BattleScene.ts             # Turn-based battle (wild & trainer)
-│   │   ├── BattleUIScene.ts           # Overlayed UI for battle (HP bars, move menu)
-│   │   ├── DialogueScene.ts           # Overlayed scene for NPC dialogue boxes
-│   │   ├── MenuScene.ts              # Pause menu (Pokémon, Bag, Save, etc.)
-│   │   ├── InventoryScene.ts         # Bag / item management UI
-│   │   ├── PartyScene.ts             # Pokémon party view & management
-│   │   ├── SummaryScene.ts           # Individual Pokémon summary / stats
-│   │   └── TransitionScene.ts        # Screen-wipe transitions between areas
-│   │
-│   ├── entities/                       # Game object classes
-│   │   ├── Player.ts                   # Grid-locked player sprite + movement logic
-│   │   ├── NPC.ts                      # Base NPC with dialogue & line-of-sight
-│   │   ├── Trainer.ts                  # NPC subclass that triggers battle on sight
-│   │   ├── WildEncounterZone.ts        # Invisible zone triggering random encounters
-│   │   └── InteractableObject.ts       # Signs, PCs, item balls, doors
-│   │
-│   ├── battle/                         # Battle subsystem (isolated from scenes)
-│   │   ├── BattleManager.ts            # Orchestrates turn order, win/loss conditions
-│   │   ├── BattleStateMachine.ts       # FSM: INTRO → PLAYER_TURN → ENEMY_TURN → …
-│   │   ├── DamageCalculator.ts         # Pokémon damage formula (type chart, STAB, crit)
-│   │   ├── MoveExecutor.ts            # Applies move effects (damage, status, stat changes)
-│   │   ├── AIController.ts            # Enemy move selection logic
-│   │   ├── ExperienceCalculator.ts    # EXP yield, level-up, evolution checks
-│   │   └── CatchCalculator.ts         # Poké Ball catch-rate formula
-│   │
-│   ├── data/                           # Pure data (no game logic)
-│   │   ├── pokemon-data.ts             # Pokédex: base stats, types, learnsets, evolution chains
-│   │   ├── move-data.ts                # Move definitions: power, accuracy, type, effect
-│   │   ├── type-chart.ts              # 18×18 type effectiveness matrix
-│   │   ├── item-data.ts               # Item definitions (potions, balls, key items)
-│   │   ├── trainer-data.ts            # Trainer rosters, dialogue, reward money
-│   │   ├── encounter-tables.ts        # Per-route wild Pokémon + level ranges
-│   │   └── evolution-data.ts          # Evolution conditions (level, item, trade)
-│   │
-│   ├── managers/                       # Singleton service classes
-│   │   ├── GameManager.ts              # Central state: party, badges, playtime, flags
-│   │   ├── AudioManager.ts            # BGM crossfade, SFX playback
-│   │   ├── SaveManager.ts             # Serialize/deserialize to localStorage
-│   │   ├── EventManager.ts            # Custom event bus for cross-scene communication
-│   │   ├── DialogueManager.ts         # Queued dialogue display, typewriter effect
-│   │   └── TransitionManager.ts       # Screen wipe/fade helpers
-│   │
-│   ├── systems/                        # Reusable gameplay systems
-│   │   ├── GridMovement.ts             # Grid-locked tween movement engine
-│   │   ├── EncounterSystem.ts          # Step counter → random encounter trigger
-│   │   ├── InputManager.ts            # Unified WASD/Arrow + gamepad + touch → direction
-│   │   └── AnimationHelper.ts         # Registers shared sprite animations
-│   │
-│   ├── ui/                             # Reusable UI components (non-scene)
-│   │   ├── HealthBar.ts               # Animated HP bar widget
-│   │   ├── TextBox.ts                 # Typewriter text display
-│   │   ├── MenuList.ts               # Selectable vertical menu (cursor-driven)
-│   │   ├── ConfirmBox.ts             # Yes/No prompt
-│   │   └── BattleHUD.ts              # Composite widget: name, level, HP, EXP bar
-│   │
-│   └── utils/                          # Pure utility functions
-│       ├── math-helpers.ts             # Clamp, lerp, random-in-range
-│       ├── type-helpers.ts             # TypeScript utility types
-│       └── constants.ts                # TILE_SIZE, WALK_SPEED, MAX_PARTY_SIZE, etc.
+│   └── src/
+│       ├── main.ts                     # Entry point: creates Phaser.Game instance
+│       │
+│       ├── config/
+│       │   └── game-config.ts          # Phaser.Types.Core.GameConfig object
+│       │
+│       ├── scenes/                     # One file per Phaser Scene
+│       │   ├── BootScene.ts            # Loads minimal assets for loading bar
+│       │   ├── PreloadScene.ts         # Loads all assets; shows progress bar
+│       │   ├── TitleScene.ts           # Main menu (New Game / Continue / Options)
+│       │   ├── OverworldScene.ts       # Top-down exploration, player movement
+│       │   ├── BattleScene.ts          # Turn-based battle — sprites, HP/EXP bars
+│       │   ├── BattleUIScene.ts        # Battle overlay — action menu, move menu, messages
+│       │   ├── DialogueScene.ts        # Typewriter text overlay for NPC dialogue
+│       │   ├── MenuScene.ts            # Pause menu (Pokémon, Bag, Save, etc.)
+│       │   ├── InventoryScene.ts       # Bag / item management
+│       │   ├── PartyScene.ts           # Party view — HP, types, status per slot
+│       │   ├── SummaryScene.ts         # 3-tab Pokémon detail (INFO/STATS/MOVES)
+│       │   └── TransitionScene.ts      # Fade transitions between scenes
+│       │
+│       ├── entities/                   # Game object classes
+│       │   ├── Player.ts              # Grid-locked sprite + GridMovement
+│       │   ├── NPC.ts                 # Base NPC with dialogue
+│       │   ├── Trainer.ts            # NPC subclass with line-of-sight battle trigger
+│       │   ├── WildEncounterZone.ts  # Invisible encounter zone
+│       │   └── InteractableObject.ts # Signs, PCs, item balls, doors
+│       │
+│       ├── battle/                     # Battle subsystem
+│       │   ├── BattleManager.ts       # Orchestrates turns, win/loss, party
+│       │   ├── BattleStateMachine.ts  # FSM: INTRO → PLAYER_TURN → CHECK_FAINT → …
+│       │   ├── DamageCalculator.ts    # Pokémon damage formula (STAB, type, crit)
+│       │   ├── MoveExecutor.ts        # Applies move effects (damage, status, PP)
+│       │   ├── StatusEffectHandler.ts # Burn/paralysis/poison/sleep/freeze logic
+│       │   ├── AIController.ts        # Enemy move selection heuristics
+│       │   ├── ExperienceCalculator.ts # EXP yield, level-up, stat recalc, natures
+│       │   └── CatchCalculator.ts     # Poké Ball catch-rate formula
+│       │
+│       ├── data/                       # Pure data (no game logic)
+│       │   ├── interfaces.ts          # All TypeScript interfaces
+│       │   ├── pokemon-data.ts        # ~30 Pokémon: base stats, learnsets, sprites
+│       │   ├── move-data.ts           # ~50 moves: power, accuracy, effects
+│       │   ├── type-chart.ts          # 18×18 type effectiveness matrix
+│       │   ├── item-data.ts           # ~15 items (potions, balls, key items)
+│       │   ├── trainer-data.ts        # Trainer rosters, dialogue, rewards
+│       │   ├── encounter-tables.ts    # Per-route wild Pokémon + level ranges
+│       │   └── evolution-data.ts      # Evolution conditions (level, item, trade)
+│       │
+│       ├── managers/                   # Singleton service classes
+│       │   ├── GameManager.ts         # Central state: party, bag, badges, flags
+│       │   ├── AudioManager.ts        # BGM crossfade, SFX playback
+│       │   ├── SaveManager.ts         # Serialize/deserialize to localStorage
+│       │   ├── EventManager.ts        # Custom event bus for cross-scene comms
+│       │   ├── DialogueManager.ts     # Dialogue queue management
+│       │   └── TransitionManager.ts   # Screen fade helpers
+│       │
+│       ├── systems/                    # Reusable gameplay systems
+│       │   ├── GridMovement.ts        # Grid-locked tween movement engine
+│       │   ├── EncounterSystem.ts     # Step counter → random encounter trigger
+│       │   ├── InputManager.ts        # Unified WASD/Arrow/gamepad → direction
+│       │   └── AnimationHelper.ts     # Registers shared sprite animations
+│       │
+│       ├── ui/                         # Reusable UI components
+│       │   ├── theme.ts               # Shared colors, fonts, spacing, helpers
+│       │   ├── HealthBar.ts           # Animated HP bar widget
+│       │   ├── TextBox.ts            # Typewriter text display
+│       │   ├── MenuList.ts           # Selectable vertical menu
+│       │   ├── ConfirmBox.ts         # Yes/No prompt
+│       │   └── BattleHUD.ts          # Composite: name + level + HP + EXP
+│       │
+│       └── utils/                      # Pure utility functions
+│           ├── constants.ts           # TILE_SIZE, WALK_SPEED, MAX_PARTY_SIZE…
+│           ├── type-helpers.ts        # TypeScript types (PokemonType, Nature…)
+│           └── math-helpers.ts        # clamp, lerp, randomInt, weightedRandom
 │
-├── tiled/                              # Tiled source project files (NOT shipped)
-│   ├── overworld.tsx                   # Tileset XML files
-│   ├── interiors.tsx
-│   ├── pallet-town.tmx                # Tiled map source files
-│   ├── route-1.tmx
-│   └── ...
+├── tiled/                              # Tiled source files (NOT shipped)
 │
-└── docs/
-    ├── architecture.md                 # (this file)
-    └── plan.md                         # Development plan & phases
+└── docs/                               # Documentation
 ```
 
 ---
