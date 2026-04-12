@@ -68,36 +68,8 @@ Walk around Pallet Town, collide with walls, talk to NPCs, transition to Route 1
 
 ---
 
-## Phase 7: Audio
-
-**Goal:** Background music and sound effects bring the game to life.
-
-### 7.1 — AudioManager
-- Singleton that wraps Phaser's `SoundManager`.
-- `playBGM(key)` — crossfades from current track to new one (~500ms fade).
-- `playSFX(key)` — fires and forgets a one-shot sound.
-- `setVolume(bgm, sfx)` — user-configurable from Options menu.
-- Respects browser autoplay policies (music starts muted until first user interaction, then fades in).
-
-### 7.2 — Music Assignments
-| Context | Track |
-|---------|-------|
-| Title Screen | `title-theme` |
-| Pallet Town | `pallet-town` |
-| Route 1 | `route-1` (or reuse a generic route theme) |
-| Wild Battle | `battle-wild` |
-| Trainer Battle | `battle-trainer` |
-| Gym Leader Battle | `battle-gym` |
-| Victory | `victory-fanfare` |
-| Pokémon Center | `pokemon-center` |
-
-### 7.3 — SFX List
-- Menu: cursor move, confirm, cancel, error buzz.
-- Battle: hit (normal / super-effective / not very effective), critical hit, faint cry, ball throw, ball shake, catch success, EXP bar fill, level up.
-- Overworld: door open, ledge jump, bump into wall.
-
-### Deliverable
-Music plays and crossfades correctly when moving between areas and entering battles. SFX trigger on all appropriate actions.
+## Phase 7: Audio — ✅ COMPLETE
+> See [CHANGELOG.md](CHANGELOG.md) for details. AudioManager with crossfade, autoplay policy, safe playback. 8 BGM tracks + 16 SFX (synthesized placeholders). BGM wired into Title/Overworld/Battle scenes. SFX wired into menus and battle actions.
 
 ---
 

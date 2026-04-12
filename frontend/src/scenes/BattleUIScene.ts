@@ -7,6 +7,8 @@ import { ExperienceCalculator } from '@battle/ExperienceCalculator';
 import { StatusEffectHandler } from '@battle/StatusEffectHandler';
 import type { BattleScene } from './BattleScene';
 import type { PokemonInstance } from '@data/interfaces';
+import { AudioManager } from '@managers/AudioManager';
+import { SFX, BGM } from '@utils/audio-keys';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message';
 
@@ -28,11 +30,8 @@ export class BattleUIScene extends Phaser.Scene {
   create(): void {
     this.state = 'actions';
 
-    // Initialize status effect handler for this battle
-    this.statusHandler = new StatusEffectHandler();
-    const b = this.battle();
-    this.statusHandler.initPokemon(b.playerPokemon);
-    this.statusHandler.initPokemon(b.enemyPokemon);
+    // Use the StatusEffectHandler from BattleManager (single source of truth)
+    this.statusHandler = this.battle().battleManager.getStatusHandler();
 
     // Message bar
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 120, GAME_WIDTH - 20, 30, 0x111111, 0.9);
@@ -72,6 +71,7 @@ export class BattleUIScene extends Phaser.Scene {
   // ─── Input routing ───
   private nav(dir: string): void {
     if (this.state === 'animating' || this.state === 'message') return;
+    AudioManager.getInstance().playSFX(SFX.CURSOR);
     const cur = this.state === 'moves' ? 'moveCursor' : 'cursor';
     const len = this.state === 'moves' ? this.battle().playerPokemon.moves.length : 4;
     if (dir === 'left'  && this[cur] % 2 === 1) this[cur]--;
@@ -83,6 +83,7 @@ export class BattleUIScene extends Phaser.Scene {
 
   private confirm(): void {
     if (this.state === 'animating') return;
+    AudioManager.getInstance().playSFX(SFX.CONFIRM);
     if (this.state === 'message') { this.state = 'actions'; this.showActions(); this.msg('What will you do?'); return; }
     if (this.state === 'actions') this.selectAction();
     else if (this.state === 'moves') this.selectMove();
@@ -90,6 +91,7 @@ export class BattleUIScene extends Phaser.Scene {
 
   private cancel(): void {
     if (this.state === 'animating') return;
+    AudioManager.getInstance().playSFX(SFX.CANCEL);
     if (this.state === 'moves') this.closeMoveMenu();
     else if (this.state === 'actions') this.endBattle();
   }
@@ -264,6 +266,12 @@ export class BattleUIScene extends Phaser.Scene {
 
       if (result.moveHit && result.damage.damage > 0) {
         b.flashSprite(isPlayer ? b.enemySprite : b.playerSprite);
+        // Play appropriate hit SFX
+        const audio = AudioManager.getInstance();
+        if (result.damage.isCritical) audio.playSFX(SFX.HIT_CRIT);
+        else if (result.damage.effectiveness > 1) audio.playSFX(SFX.HIT_SUPER);
+        else if (result.damage.effectiveness < 1 && result.damage.effectiveness > 0) audio.playSFX(SFX.HIT_WEAK);
+        else audio.playSFX(SFX.HIT_NORMAL);
         let extra = '';
         if (result.damage.effectiveness > 1) extra = " It's super effective!";
         else if (result.damage.effectiveness < 1 && result.damage.effectiveness > 0) extra = " Not very effective...";
@@ -303,6 +311,7 @@ export class BattleUIScene extends Phaser.Scene {
           if (defender.currentHp <= 0) {
             const defName = pokemonData[defender.dataId]?.name ?? '???';
             this.time.delayedCall(800, () => {
+              AudioManager.getInstance().playSFX(SFX.FAINT);
               b.faintSprite(isPlayer ? b.enemySprite : b.playerSprite);
               this.msg(`${defName} fainted!`);
               this.time.delayedCall(1500, () => {
@@ -322,6 +331,7 @@ export class BattleUIScene extends Phaser.Scene {
           if (attacker.currentHp <= 0) {
             const atkName = pokemonData[attacker.dataId]?.name ?? '???';
             this.time.delayedCall(800, () => {
+              AudioManager.getInstance().playSFX(SFX.FAINT);
               b.faintSprite(isPlayer ? b.playerSprite : b.enemySprite);
               this.msg(`${atkName} fainted!`);
               this.time.delayedCall(1500, () => {
@@ -344,22 +354,22 @@ export class BattleUIScene extends Phaser.Scene {
     });
   }
 
-  /** Run end-of-turn residual damage (burn, poison) for both Pokemon. */
+  /** Run end-of-turn residual damage (burn, poison, leech seed, trapping) for both Pokemon. */
   private runEndOfTurn(order: { attacker: PokemonInstance; defender: PokemonInstance; moveId: string; isPlayer: boolean }[]): void {
     const b = this.battle();
     const player = b.playerPokemon;
     const enemy = b.enemyPokemon;
 
-    // Collect end-of-turn effects for both sides
-    const pokemonToCheck: { pokemon: PokemonInstance; isPlayer: boolean }[] = [];
-    if (player.currentHp > 0) pokemonToCheck.push({ pokemon: player, isPlayer: true });
-    if (enemy.currentHp > 0) pokemonToCheck.push({ pokemon: enemy, isPlayer: false });
+    // Collect end-of-turn effects for both sides, with opponent reference for leech seed
+    const pokemonToCheck: { pokemon: PokemonInstance; opponent: PokemonInstance; isPlayer: boolean }[] = [];
+    if (player.currentHp > 0) pokemonToCheck.push({ pokemon: player, opponent: enemy, isPlayer: true });
+    if (enemy.currentHp > 0) pokemonToCheck.push({ pokemon: enemy, opponent: player, isPlayer: false });
 
     this.runEndOfTurnStep(pokemonToCheck, 0);
   }
 
   private runEndOfTurnStep(
-    pokemonToCheck: { pokemon: PokemonInstance; isPlayer: boolean }[],
+    pokemonToCheck: { pokemon: PokemonInstance; opponent: PokemonInstance; isPlayer: boolean }[],
     idx: number,
   ): void {
     const b = this.battle();
@@ -390,8 +400,8 @@ export class BattleUIScene extends Phaser.Scene {
       return;
     }
 
-    const { pokemon, isPlayer } = pokemonToCheck[idx];
-    const eotResult = this.statusHandler.applyEndOfTurn(pokemon);
+    const { pokemon, opponent, isPlayer } = pokemonToCheck[idx];
+    const eotResult = this.statusHandler.applyEndOfTurn(pokemon, opponent);
     if (eotResult.messages.length > 0) {
       b.updateHpBars();
       this.showMessageQueue(eotResult.messages, 0, () => {
@@ -433,6 +443,9 @@ export class BattleUIScene extends Phaser.Scene {
     const expGained = ExperienceCalculator.calculateExp(b.enemyPokemon, false);
     const name = pokemonData[player.dataId]?.name ?? '???';
 
+    // Switch to victory BGM
+    AudioManager.getInstance().playBGM(BGM.VICTORY);
+
     this.msg(`${name} gained ${expGained} EXP. Points!`);
     this.state = 'animating';
 
@@ -440,17 +453,13 @@ export class BattleUIScene extends Phaser.Scene {
     const prevLevel = player.level;
     const result = ExperienceCalculator.awardExp(player, expGained);
 
-    // Animate EXP bar
     this.time.delayedCall(800, () => {
       if (result.levelsGained > 0) {
-        // First animate EXP bar to full (for level completing), then show level-up
-        b.animateExpBar(1, 400);
+        AudioManager.getInstance().playSFX(SFX.LEVEL_UP);
         this.time.delayedCall(600, () => {
           this.runLevelUpSequence(name, prevLevel, result.newLevel, result.newMoves, 0);
         });
       } else {
-        // Just animate EXP bar to new position
-        b.animateExpBar(b.getExpPercent(), 600);
         this.time.delayedCall(1200, () => {
           this.state = 'message';
           this.msg('Press Enter to continue...');
@@ -470,12 +479,6 @@ export class BattleUIScene extends Phaser.Scene {
     this.msg(`${name} grew to Lv.${toLevel}!`);
     b.updateLevelDisplay();
     b.updateHpBars();
-
-    // Reset EXP bar for new level
-    this.time.delayedCall(200, () => {
-      b.expBar.displayWidth = 0;
-      b.animateExpBar(b.getExpPercent(), 400);
-    });
 
     // Show stat changes
     this.time.delayedCall(1500, () => {
@@ -609,9 +612,12 @@ export class BattleUIScene extends Phaser.Scene {
   }
 
   private endBattle(): void {
-    this.statusHandler.cleanup();
+    this.battle().battleManager.cleanup();
+    const b = this.battle();
+    const returnScene = b.returnScene;
+    const returnData = b.returnData;
     this.scene.stop();
     this.scene.stop('BattleScene');
-    this.scene.start('OverworldScene');
+    this.scene.start(returnScene, returnData);
   }
 }

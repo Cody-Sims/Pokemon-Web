@@ -4,6 +4,42 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-12]
+### Added
+- **Status Effect System — Full Wiring**
+  - Type-based status immunities: Fire immune to burn, Electric to paralysis, Poison/Steel to poison, Ice to freeze, Grass to Leech Seed
+  - Fire-type move thawing: fire moves now thaw frozen targets before dealing damage
+  - Leech Seed effect: drains 1/8 max HP per turn and heals the opponent, with Grass-type immunity
+  - Trapping move effects for Wrap, Bind, Fire Spin, and Clamp: deal 1/8 HP per turn for 4–5 turns
+  - Status condition indicators (BRN, PAR, PSN, SLP, FRZ) displayed on battle HUD with color coding
+  - `StatusEffectHandler` integrated into `BattleManager` as single source of truth
+  - `BattleManager.selectMove()` now uses StatusEffectHandler for stat stages, priority, status turn-start checks, flinch, and end-of-turn effects
+  - `BattleManager.switchPokemon()` now clears volatile statuses on switch-out and initializes new active
+  - `BattleManager.cleanup()` method for proper teardown
+  - `BattleManager.getStatusHandler()` exposes the handler for UI integration
+  - `MoveExecutor` now passes thaw messages through all return paths (OHKO, fixed-damage, level-damage, multi-hit, standard)
+
+### Changed
+  - `BattleUIScene` now uses `BattleManager.getStatusHandler()` instead of creating its own StatusEffectHandler
+  - `StatusEffectHandler.applyEndOfTurn()` accepts optional opponent parameter for Leech Seed healing
+  - `VolatileStatus` type expanded with `'leech-seed' | 'trapped'`
+  - `MoveEffect.type` union expanded with `'leech-seed' | 'trap'`
+  - `BattlePokemonState` tracks `trapTurns` for trapping move duration
+  - Updated end-of-turn flow in `BattleUIScene` to pass opponent reference for Leech Seed
+
+- **Phase 7: Audio System — COMPLETE**
+  - Enhanced `AudioManager` singleton with browser autoplay policy handling (queues BGM until user interaction unlocks audio), safe playback (missing audio keys don't crash), current BGM tracking (avoids replaying same track), fade-out method, mute toggle, volume clamping
+  - Created `utils/audio-keys.ts` with typed BGM/SFX key constants and map→BGM mapping table
+  - Generated 8 placeholder BGM WAV files (title, pallet-town, route, battle-wild, battle-trainer, battle-gym, victory, pokemon-center) using synthesized square-wave melodies
+  - Generated 16 placeholder SFX WAV files (cursor, confirm, cancel, error, hit-normal, hit-super, hit-weak, hit-crit, faint, ball-throw, ball-shake, catch-success, exp-fill, level-up, door-open, ledge-jump, bump, encounter)
+  - Audio preloading in `PreloadScene` for all BGM and SFX keys
+  - BGM wired into `TitleScene` (title theme), `OverworldScene` (per-map BGM with crossfade on map transition), `BattleScene` (wild/trainer battle themes)
+  - Victory BGM plays on battle win in `BattleUIScene`
+  - SFX wired into `TitleScene` (cursor/confirm), `MenuScene` (cursor/confirm/cancel), `BattleUIScene` (cursor/confirm/cancel, hit variants based on type effectiveness and crits, faint, level-up), `OverworldScene` (encounter sting)
+
+### Fixed
+- Battle→Overworld return flow now properly passes `returnScene`/`returnData` through `BattleScene` so the player returns to the correct map and position after battle (previously defaulted to GameManager state which worked by coincidence)
+
 ## [Unreleased]
 
 ### Phase 1: Environment & Tooling Setup — COMPLETE

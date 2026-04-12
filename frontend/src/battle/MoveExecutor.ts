@@ -49,6 +49,13 @@ export class MoveExecutor {
       moveInstance.currentPp--;
     }
 
+    // ── Fire-type thawing: fire moves thaw frozen targets ──
+    const thawMessages: string[] = [];
+    if (statusHandler) {
+      const thawMsg = statusHandler.checkThaw(defender, move);
+      if (thawMsg) thawMessages.push(thawMsg);
+    }
+
     // ── Special damage types ──
 
     // OHKO moves
@@ -61,7 +68,7 @@ export class MoveExecutor {
         moveName: move.name,
         attackerName,
         defenderName,
-        effectMessages: ['It\'s a one-hit KO!'],
+        effectMessages: [...thawMessages, 'It\'s a one-hit KO!'],
       };
     }
 
@@ -75,7 +82,7 @@ export class MoveExecutor {
         moveName: move.name,
         attackerName,
         defenderName,
-        effectMessages: [],
+        effectMessages: [...thawMessages],
       };
     }
 
@@ -89,7 +96,7 @@ export class MoveExecutor {
         moveName: move.name,
         attackerName,
         defenderName,
-        effectMessages: [],
+        effectMessages: [...thawMessages],
       };
     }
 
@@ -103,7 +110,7 @@ export class MoveExecutor {
         moveName: move.name,
         attackerName,
         defenderName,
-        effectMessages: [],
+        effectMessages: [...thawMessages],
       };
     }
 
@@ -127,7 +134,7 @@ export class MoveExecutor {
         moveName: move.name,
         attackerName,
         defenderName,
-        effectMessages: [`Hit ${hits} time(s)!`],
+        effectMessages: [...thawMessages, `Hit ${hits} time(s)!`],
         totalHits: hits,
       };
     }
@@ -154,7 +161,7 @@ export class MoveExecutor {
       moveName: move.name,
       attackerName,
       defenderName,
-      effectMessages: effectResult.messages,
+      effectMessages: [...thawMessages, ...effectResult.messages],
       healedHp: effectResult.healedHp,
       recoilDamage: effectResult.recoilDamage,
       selfDestruct: effectResult.selfDestruct,

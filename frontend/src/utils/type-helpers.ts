@@ -9,7 +9,7 @@ export type Direction = 'up' | 'down' | 'left' | 'right';
 
 // Status conditions
 export type StatusCondition = 'burn' | 'paralysis' | 'poison' | 'bad-poison' | 'sleep' | 'freeze';
-export type VolatileStatus = 'confusion' | 'flinch';
+export type VolatileStatus = 'confusion' | 'flinch' | 'leech-seed' | 'trapped';
 
 // Nature affects stats
 export type Nature =
@@ -34,7 +34,7 @@ export interface StatStages {
 // Move effect types
 export interface MoveEffect {
   type: 'stat-change' | 'status' | 'heal' | 'recoil' | 'drain' | 'multi-hit' | 'flinch'
-    | 'ohko' | 'fixed-damage' | 'level-damage' | 'self-destruct';
+    | 'ohko' | 'fixed-damage' | 'level-damage' | 'self-destruct' | 'leech-seed' | 'trap';
   target: 'self' | 'enemy';
   stat?: keyof Stats;
   stages?: number;

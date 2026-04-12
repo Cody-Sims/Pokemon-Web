@@ -125,6 +125,7 @@ pokemon-web/
 │       └── utils/                      # Pure utility functions
 │           ├── constants.ts           # TILE_SIZE, WALK_SPEED, MAX_PARTY_SIZE…
 │           ├── type-helpers.ts        # TypeScript types (PokemonType, Nature…)
+│           ├── audio-keys.ts          # BGM/SFX key constants, map→BGM mapping
 │           └── math-helpers.ts        # clamp, lerp, randomInt, weightedRandom
 │
 ├── tiled/                              # Tiled source files (NOT shipped)
@@ -244,6 +245,15 @@ EventManager.on('BATTLE_END', (result) => { /* resume overworld */ });
 
 ### Data-Driven Design
 Pokémon stats, moves, items, encounter tables, and trainer rosters are defined as static TypeScript objects in `src/data/`. No game logic lives in data files. This makes balancing easy and lets Copilot autocomplete data entries.
+
+### Audio System
+`AudioManager` wraps Phaser's `SoundManager` with convenience features:
+- **BGM crossfade**: `playBGM(key)` fades out the current track and fades in the new one (~500ms). If the requested key matches the current track, it's a no-op.
+- **Safe playback**: Missing audio keys silently no-op instead of crashing.
+- **Autoplay policy**: If the browser blocks audio, the manager queues the BGM and starts it after the first user interaction.
+- **Per-map BGM**: `MAP_BGM` in `audio-keys.ts` maps each map key to a BGM track. `OverworldScene` reads this on create to play the correct music, and crossfades automatically on map transitions.
+- **Battle BGM**: `BattleScene` plays `BATTLE_WILD` or `BATTLE_TRAINER`, and `BattleUIScene` switches to `VICTORY` on win.
+- **SFX**: One-shot sounds triggered throughout menus (cursor, confirm, cancel) and battle (hit variants, faint, level-up, encounter sting).
 
 ---
 

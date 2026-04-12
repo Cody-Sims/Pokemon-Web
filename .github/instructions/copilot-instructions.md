@@ -5,6 +5,8 @@ applyTo: '**'
 
 # Pokemon Web — Project Instructions
 
+## Work in Parallel to the best of your ability
+
 ## Project Overview
 A browser-based Pokémon-style RPG built with **Phaser 3 + TypeScript + Vite**. The entire game runs client-side as a static web app. See [docs/plan.md](../../docs/plan.md) for the development plan and [docs/architecture.md](../../docs/architecture.md) for the full architecture.
 

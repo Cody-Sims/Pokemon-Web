@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { COLORS, FONTS, drawPanel } from '@ui/theme';
+import { AudioManager } from '@managers/AudioManager';
+import { SFX } from '@utils/audio-keys';
 
 export class MenuScene extends Phaser.Scene {
   private cursor = 0;
@@ -41,10 +43,12 @@ export class MenuScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-UP', () => {
       this.cursor = (this.cursor - 1 + this.menuItems.length) % this.menuItems.length;
       this.updateCursor();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
     this.input.keyboard!.on('keydown-DOWN', () => {
       this.cursor = (this.cursor + 1) % this.menuItems.length;
       this.updateCursor();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
     this.input.keyboard!.on('keydown-ENTER', () => this.selectOption());
     this.input.keyboard!.on('keydown-ESC', () => this.closeMenu());
@@ -59,6 +63,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private selectOption(): void {
+    AudioManager.getInstance().playSFX(SFX.CONFIRM);
     switch (this.menuLabels[this.cursor]) {
       case 'POKEMON':
         this.scene.launch('PartyScene');
@@ -79,6 +84,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private closeMenu(): void {
+    AudioManager.getInstance().playSFX(SFX.CANCEL);
     this.scene.stop();
     this.scene.resume('OverworldScene');
   }

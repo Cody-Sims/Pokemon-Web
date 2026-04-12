@@ -1,7 +1,8 @@
 import { PokemonInstance, MoveData } from '@data/interfaces';
 import { moveData } from '@data/move-data';
+import { pokemonData } from '@data/pokemon-data';
 import { clamp, randomInt } from '@utils/math-helpers';
-import { StatStages, StatusCondition, VolatileStatus, MoveEffect } from '@utils/type-helpers';
+import { StatStages, StatusCondition, VolatileStatus, MoveEffect, PokemonType } from '@utils/type-helpers';
 
 // ── Result types ────────────────────────────────────────────────
 
@@ -29,6 +30,7 @@ interface BattlePokemonState {
   statStages: StatStages;
   volatileStatuses: Set<VolatileStatus>;
   confusionTurns: number;
+  trapTurns: number;
 }
 
 // ── Stage multipliers ──────────────────────────────────────────
@@ -65,6 +67,7 @@ export class StatusEffectHandler {
       statStages: { attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
       volatileStatuses: new Set(),
       confusionTurns: 0,
+      trapTurns: 0,
     });
   }
 
@@ -190,6 +193,35 @@ export class StatusEffectHandler {
     return null;
   }
 
+  // ── Fire-type thawing ───────────────────────────────────────
+
+  /** Check if a fire-type move thaws a frozen defender. Call before damage. */
+  checkThaw(defender: PokemonInstance, move: MoveData): string | null {
+    if (move.type === 'fire' && defender.status === 'freeze') {
+      defender.status = null;
+      return `${pokeName(defender)} was thawed out by the attack!`;
+    }
+    return null;
+  }
+
+  // ── Type-based status immunity check ────────────────────────
+
+  /** Returns true if the target is immune to the given status based on its type. */
+  private isImmuneToStatus(target: PokemonInstance, status: string): boolean {
+    const data = pokemonData[target.dataId];
+    if (!data) return false;
+    const types = data.types as PokemonType[];
+
+    switch (status) {
+      case 'burn':        return types.includes('fire');
+      case 'paralysis':   return types.includes('electric');
+      case 'poison':
+      case 'bad-poison':  return types.includes('poison') || types.includes('steel');
+      case 'freeze':      return types.includes('ice');
+      default:            return false;
+    }
+  }
+
   // ── Apply a move's secondary effect ─────────────────────────
 
   applyMoveEffect(
@@ -227,6 +259,12 @@ export class StatusEffectHandler {
             state.confusionTurns = randomInt(2, 5);
             messages.push(`${targetName} became confused!`);
           }
+          break;
+        }
+
+        // Type-based immunities
+        if (this.isImmuneToStatus(target, status)) {
+          messages.push(`It doesn't affect ${targetName}...`);
           break;
         }
 
@@ -338,6 +376,35 @@ export class StatusEffectHandler {
       case 'level-damage':
       case 'ohko':
         break;
+
+      // ── Leech Seed ──
+      case 'leech-seed': {
+        // Grass types are immune
+        const defData = pokemonData[defender.dataId];
+        if (defData && (defData.types as PokemonType[]).includes('grass')) {
+          messages.push(`It doesn't affect ${pokeName(defender)}...`);
+          break;
+        }
+        const defState = this.getState(defender);
+        if (!defState.volatileStatuses.has('leech-seed')) {
+          defState.volatileStatuses.add('leech-seed');
+          messages.push(`${pokeName(defender)} was seeded!`);
+        } else {
+          messages.push(`${pokeName(defender)} is already seeded!`);
+        }
+        break;
+      }
+
+      // ── Trapping moves (Wrap, Bind, Fire Spin, Clamp) ──
+      case 'trap': {
+        const defState = this.getState(defender);
+        if (!defState.volatileStatuses.has('trapped')) {
+          defState.volatileStatuses.add('trapped');
+          defState.trapTurns = randomInt(4, 5);
+          messages.push(`${pokeName(defender)} was trapped!`);
+        }
+        break;
+      }
     }
 
     return { messages, healedHp, recoilDamage, selfDestruct };
@@ -345,7 +412,7 @@ export class StatusEffectHandler {
 
   // ── End-of-turn residual damage ─────────────────────────────
 
-  applyEndOfTurn(pokemon: PokemonInstance): EndOfTurnResult {
+  applyEndOfTurn(pokemon: PokemonInstance, opponent?: PokemonInstance): EndOfTurnResult {
     const name = pokeName(pokemon);
     const messages: string[] = [];
     let totalDamage = 0;
@@ -376,6 +443,36 @@ export class StatusEffectHandler {
       totalDamage += dmg;
       pokemon.statusTurns = counter + 1;
       messages.push(`${name} is hurt by poison! ${dmg} dmg.`);
+    }
+
+    // ── Leech Seed: drain 1/8 max HP, heal opponent ──
+    const state = this.getState(pokemon);
+    if (state.volatileStatuses.has('leech-seed') && pokemon.currentHp > 0) {
+      const dmg = Math.max(1, Math.floor(pokemon.stats.hp / 8));
+      pokemon.currentHp = Math.max(0, pokemon.currentHp - dmg);
+      totalDamage += dmg;
+      messages.push(`${name}'s health is sapped by Leech Seed! ${dmg} dmg.`);
+      if (opponent && opponent.currentHp > 0) {
+        const healed = Math.min(dmg, opponent.stats.hp - opponent.currentHp);
+        opponent.currentHp = Math.min(opponent.stats.hp, opponent.currentHp + dmg);
+        if (healed > 0) {
+          messages.push(`${pokeName(opponent)} restored ${healed} HP!`);
+        }
+      }
+    }
+
+    // ── Trap damage: 1/8 max HP per turn, expires after N turns ──
+    if (state.volatileStatuses.has('trapped') && pokemon.currentHp > 0) {
+      state.trapTurns--;
+      if (state.trapTurns <= 0) {
+        state.volatileStatuses.delete('trapped');
+        messages.push(`${name} was freed from the trap!`);
+      } else {
+        const dmg = Math.max(1, Math.floor(pokemon.stats.hp / 8));
+        pokemon.currentHp = Math.max(0, pokemon.currentHp - dmg);
+        totalDamage += dmg;
+        messages.push(`${name} is hurt by the trap! ${dmg} dmg.`);
+      }
     }
 
     return { damage: totalDamage, messages, fainted: pokemon.currentHp <= 0 };

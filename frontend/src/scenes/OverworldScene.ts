@@ -1,219 +1,402 @@
 import Phaser from 'phaser';
 import { TILE_SIZE } from '@utils/constants';
 import { Player } from '@entities/Player';
+import { NPC } from '@entities/NPC';
+import { Trainer } from '@entities/Trainer';
 import { AnimationHelper } from '@systems/AnimationHelper';
+import { InputManager } from '@systems/InputManager';
 import { Direction } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/EncounterSystem';
-
-// Tile type constants for the procedural map
-const T = {
-  GRASS: 0,
-  PATH: 1,
-  TALL_GRASS: 2,
-  TREE: 3,
-  WATER: 4,
-  HOUSE_WALL: 5,
-  HOUSE_ROOF: 6,
-  HOUSE_DOOR: 7,
-  FENCE: 8,
-  FLOWER: 9,
-} as const;
-
-// Colors for each tile type
-const TILE_COLORS: Record<number, number> = {
-  [T.GRASS]:      0x5a9e3e,
-  [T.PATH]:       0xc4a45a,
-  [T.TALL_GRASS]: 0x3d7a28,
-  [T.TREE]:       0x2d5a1e,
-  [T.WATER]:      0x3a7ecf,
-  [T.HOUSE_WALL]: 0xd4c4a0,
-  [T.HOUSE_ROOF]: 0xb04040,
-  [T.HOUSE_DOOR]: 0x6b4226,
-  [T.FENCE]:      0x8b7355,
-  [T.FLOWER]:     0xe8c040,
-};
-
-// Simple Pallet Town-style map (25 wide × 19 tall = 800×608)
-// prettier-ignore
-const MAP_DATA: number[][] = [
-  [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
-  [3,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,3],
-  [3,0,0,2,2,0,0,6,6,6,0,0,1,0,0,6,6,6,0,0,2,2,0,0,3],
-  [3,0,0,2,2,0,0,5,5,5,0,0,1,0,0,5,5,5,0,0,2,2,0,0,3],
-  [3,0,0,0,0,0,0,5,7,5,0,0,1,0,0,5,7,5,0,0,0,0,0,0,3],
-  [3,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,3],
-  [3,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,3],
-  [3,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,3],
-  [3,0,0,9,0,0,0,0,0,9,0,0,1,0,0,9,0,0,0,0,0,9,0,0,3],
-  [3,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,3],
-  [3,8,8,0,0,0,2,2,2,0,0,0,1,0,0,0,4,4,4,0,0,0,8,8,3],
-  [3,0,0,0,0,0,2,2,2,0,0,0,1,0,0,0,4,4,4,0,0,0,0,0,3],
-  [3,0,0,0,0,0,2,2,2,0,0,0,1,0,0,0,4,4,4,0,0,0,0,0,3],
-  [3,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,3],
-  [3,0,9,0,0,6,6,6,0,0,0,0,1,0,0,0,0,0,6,6,6,0,0,9,3],
-  [3,0,0,0,0,5,5,5,0,0,0,0,1,0,0,0,0,0,5,5,5,0,0,0,3],
-  [3,0,0,0,0,5,7,5,0,0,0,0,1,0,0,0,0,0,5,7,5,0,0,0,3],
-  [3,0,0,0,0,0,1,0,0,0,1,1,1,1,1,0,0,0,0,1,0,0,0,0,3],
-  [3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3],
-];
+import { TransitionManager } from '@managers/TransitionManager';
+import { PokemonInstance } from '@data/interfaces';
+import { trainerData } from '@data/trainer-data';
+import {
+  mapRegistry,
+  MapDefinition,
+  Tile,
+  TILE_COLORS,
+  SOLID_TILES,
+} from '@data/map-data';
+import { AudioManager } from '@managers/AudioManager';
+import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private wasd!: Record<string, Phaser.Input.Keyboard.Key>;
+  private inputManager!: InputManager;
+  private encounterSystem!: EncounterSystem;
+  private npcs: NPC[] = [];
+  private trainers: Trainer[] = [];
+  private mapDef!: MapDefinition;
+  private mapKey = 'pallet-town';
+  private spawnId = 'default';
+  private lastAnimKey = '';
+  private lastFlipX = false;
+  private transitioning = false;
 
   constructor() {
     super({ key: 'OverworldScene' });
   }
 
+  init(data?: { mapKey?: string; spawnId?: string }): void {
+    this.mapKey = data?.mapKey ?? GameManager.getInstance().getCurrentMap();
+    this.spawnId = data?.spawnId ?? 'default';
+    this.transitioning = false;
+    this.npcs = [];
+    this.trainers = [];
+    this.lastAnimKey = '';
+    this.lastFlipX = false;
+  }
+
   create(): void {
-    // Ensure player has a starter Pokemon
     const gm = GameManager.getInstance();
+
+    // Ensure player has a starter Pokemon
     if (gm.getParty().length === 0) {
       const starter = EncounterSystem.createWildPokemon(1, 5);
       starter.nickname = 'Bulbasaur';
       gm.addToParty(starter);
     }
 
-    const { width, height } = this.cameras.main;
-    const mapW = MAP_DATA[0].length;
-    const mapH = MAP_DATA.length;
+    // Load map definition
+    this.mapDef = mapRegistry[this.mapKey];
+    if (!this.mapDef) {
+      console.error(`Map not found: ${this.mapKey}`);
+      return;
+    }
 
-    // Draw the tile map
+    gm.setCurrentMap(this.mapKey);
+
+    const mapW = this.mapDef.width;
+    const mapH = this.mapDef.height;
+
+    // Draw tile map
+    this.drawMap(mapW, mapH);
+
+    // Init encounter system
+    this.encounterSystem = new EncounterSystem();
+
+    // Register player animations and create player
+    AnimationHelper.registerPlayerAnimations(this);
+
+    // Determine spawn position
+    let spawnX: number;
+    let spawnY: number;
+    let spawnDir: string;
+    if (this.spawnId === '__resume') {
+      // Returning from battle — use saved position
+      const pos = gm.getPlayerPosition();
+      spawnX = pos.x;
+      spawnY = pos.y;
+      spawnDir = pos.direction;
+    } else {
+      const spawn = this.mapDef.spawnPoints[this.spawnId] ?? this.mapDef.spawnPoints['default'];
+      spawnX = spawn.x;
+      spawnY = spawn.y;
+      spawnDir = spawn.direction;
+    }
+
+    this.player = new Player(this, spawnX, spawnY);
+    this.player.setScale(2);
+    const animDir = spawnDir === 'right' ? 'left' : spawnDir;
+    this.player.play(`player-idle-${animDir}`);
+    if (spawnDir === 'right') this.player.setFlipX(true);
+
+    gm.setPlayerPosition({ x: spawnX, y: spawnY, direction: spawnDir });
+
+    // Spawn NPCs and Trainers from map data
+    this.spawnNPCs();
+    this.spawnTrainers();
+
+    // Set up collision: solid tiles + NPC positions
+    this.player.gridMovement.setCollisionCheck((tx, ty) => {
+      if (tx < 0 || ty < 0 || ty >= mapH || tx >= mapW) return true;
+      if (SOLID_TILES.has(this.mapDef.ground[ty][tx])) return true;
+      // Block NPC/Trainer tiles
+      for (const npc of this.npcs) {
+        const npcTX = Math.floor(npc.x / TILE_SIZE);
+        const npcTY = Math.floor(npc.y / TILE_SIZE);
+        if (npcTX === tx && npcTY === ty) return true;
+      }
+      return false;
+    });
+
+    // On each step complete: check warps, encounters, trainer LoS
+    this.player.gridMovement.setMoveCompleteCallback(() => this.onPlayerStep());
+
+    // Camera
+    this.cameras.main.startFollow(this.player, true);
+    this.cameras.main.setBounds(0, 0, mapW * TILE_SIZE, mapH * TILE_SIZE);
+
+    // Input
+    this.inputManager = new InputManager(this);
+
+    // ── Audio: play map BGM ──
+    const audio = AudioManager.getInstance();
+    audio.setScene(this);
+    const bgmKey = MAP_BGM[this.mapKey] ?? BGM.PALLET_TOWN;
+    audio.playBGM(bgmKey);
+
+    // HUD label
+    const { width } = this.cameras.main;
+    const mapLabel = this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    this.add.text(width / 2, 20, `${mapLabel}  |  ENTER = Talk  |  ESC = Menu`, {
+      fontSize: '14px',
+      color: '#ffffff',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
+  }
+
+  // ── Map rendering ────────────────────────────────────────
+  private drawMap(mapW: number, mapH: number): void {
     for (let y = 0; y < mapH; y++) {
       for (let x = 0; x < mapW; x++) {
-        const tile = MAP_DATA[y][x];
+        const tile = this.mapDef.ground[y][x];
         const color = TILE_COLORS[tile] ?? 0x5a9e3e;
         const px = x * TILE_SIZE + TILE_SIZE / 2;
         const py = y * TILE_SIZE + TILE_SIZE / 2;
 
         this.add.rectangle(px, py, TILE_SIZE, TILE_SIZE, color);
 
-        // Add subtle detail to some tiles
-        if (tile === T.GRASS && ((x + y) % 5 === 0)) {
-          // Occasional grass detail
+        if (tile === Tile.GRASS && (x + y) % 5 === 0) {
           this.add.rectangle(px - 4, py - 2, 3, 3, 0x6db04e);
         }
-        if (tile === T.TALL_GRASS) {
-          // Grass blade marks
+        if (tile === Tile.TALL_GRASS) {
           this.add.rectangle(px - 4, py - 3, 2, 8, 0x4a8b32);
           this.add.rectangle(px + 4, py - 2, 2, 8, 0x4a8b32);
           this.add.rectangle(px, py - 4, 2, 8, 0x4a8b32);
         }
-        if (tile === T.WATER) {
-          // Wave highlight
+        if (tile === Tile.WATER) {
           this.add.rectangle(px - 3, py - 2, 6, 2, 0x5a9edf).setAlpha(0.5);
         }
-        if (tile === T.FLOWER) {
-          // Flower petals
+        if (tile === Tile.FLOWER) {
           this.add.circle(px, py - 2, 4, 0xf06060);
           this.add.circle(px, py - 2, 2, 0xf0e040);
         }
       }
     }
+  }
 
-    // Register player animations and create player sprite
-    AnimationHelper.registerPlayerAnimations(this);
-    // Start the player on the path near center
-    this.player = new Player(this, 12, 9);
-    this.player.setScale(2);
-    this.player.play('player-idle-down');
+  // ── NPC / Trainer spawning ────────────────────────────────
+  private spawnNPCs(): void {
+    for (const def of this.mapDef.npcs) {
+      const npc = new NPC(
+        this, def.tileX, def.tileY,
+        def.textureKey, def.id, def.dialogue, def.facing,
+      );
+      npc.setScale(2);
+      npc.setDepth(1);
+      this.npcs.push(npc);
+    }
+  }
 
-    // Set up collision: trees, water, houses, fences are solid
-    const solidTiles = new Set<number>([T.TREE, T.WATER, T.HOUSE_WALL, T.HOUSE_ROOF, T.FENCE]);
-    this.player.gridMovement.setCollisionCheck((tx, ty) => {
-      if (tx < 0 || ty < 0 || ty >= mapH || tx >= mapW) return true;
-      return solidTiles.has(MAP_DATA[ty][tx]);
+  private spawnTrainers(): void {
+    const gm = GameManager.getInstance();
+    for (const def of this.mapDef.trainers) {
+      if (gm.isTrainerDefeated(def.trainerId)) continue;
+      const tData = trainerData[def.trainerId];
+      const trainer = new Trainer(
+        this, def.tileX, def.tileY,
+        def.textureKey, def.id, def.trainerId,
+        tData?.dialogue?.before ?? ['...'],
+        def.facing, def.lineOfSight,
+      );
+      trainer.setScale(2);
+      trainer.setDepth(1);
+      this.trainers.push(trainer);
+      this.npcs.push(trainer); // also in NPC list for collision
+    }
+  }
+
+  // ── Per-step hooks ────────────────────────────────────────
+  private onPlayerStep(): void {
+    if (this.transitioning) return;
+
+    const { x: tx, y: ty } = this.player.getTilePosition();
+
+    // Persist position
+    GameManager.getInstance().setPlayerPosition({
+      x: tx, y: ty, direction: this.player.getFacing(),
     });
 
-    // Camera follow
-    this.cameras.main.startFollow(this.player, true);
-    this.cameras.main.setBounds(0, 0, mapW * TILE_SIZE, mapH * TILE_SIZE);
+    // Warps
+    for (const warp of this.mapDef.warps) {
+      if (warp.tileX === tx && warp.tileY === ty) {
+        this.doWarp(warp.targetMap, warp.targetSpawnId);
+        return;
+      }
+    }
 
-    // Setup keyboard input
-    this.cursors = this.input.keyboard!.createCursorKeys();
-    this.wasd = {
-      W: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-      A: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-      S: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-      D: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-    };
+    // Trainer line-of-sight
+    for (const trainer of this.trainers) {
+      if (!trainer.defeated && trainer.isInLineOfSight(tx, ty)) {
+        this.triggerTrainerBattle(trainer);
+        return;
+      }
+    }
 
-    // Instructions
-    this.add.text(width / 2, 20, 'Arrow keys / WASD to move | B = Battle | ESC = Menu', {
-      fontSize: '14px',
-      color: '#ffffff',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
+    // Wild encounters in tall grass
+    if (
+      this.mapDef.encounterTableKey &&
+      this.mapDef.ground[ty]?.[tx] === Tile.TALL_GRASS
+    ) {
+      const wild = this.encounterSystem.checkEncounter(this.mapDef.encounterTableKey);
+      if (wild) {
+        this.triggerWildEncounter(wild);
+      }
+    }
+  }
 
-    // Clickable buttons (fixed to camera)
-    const battleBtn = this.add.text(width / 2 - 80, height - 40, '⚔ Battle', {
-      fontSize: '18px', color: '#ffffff', backgroundColor: '#333333', padding: { x: 10, y: 5 },
-    }).setInteractive({ useHandCursor: true }).setScrollFactor(0);
-    battleBtn.on('pointerover', () => battleBtn.setColor('#ffcc00'));
-    battleBtn.on('pointerout', () => battleBtn.setColor('#ffffff'));
-    battleBtn.on('pointerdown', () => {
-      this.scene.start('TransitionScene', { targetScene: 'BattleScene', returnScene: 'OverworldScene' });
-    });
-
-    const menuBtn = this.add.text(width / 2 + 40, height - 40, '☰ Menu', {
-      fontSize: '18px', color: '#ffffff', backgroundColor: '#333333', padding: { x: 10, y: 5 },
-    }).setInteractive({ useHandCursor: true }).setScrollFactor(0);
-    menuBtn.on('pointerover', () => menuBtn.setColor('#ffcc00'));
-    menuBtn.on('pointerout', () => menuBtn.setColor('#ffffff'));
-    menuBtn.on('pointerdown', () => {
-      this.scene.pause();
-      this.scene.launch('MenuScene');
-    });
-
-    // Keyboard shortcuts
-    this.input.keyboard!.on('keydown-B', () => {
-      this.scene.start('TransitionScene', {
-        targetScene: 'BattleScene',
-        returnScene: 'OverworldScene',
-      });
-    });
-
-    this.input.keyboard!.on('keydown-ESC', () => {
-      this.scene.pause();
-      this.scene.launch('MenuScene');
+  // ── Warp transition ───────────────────────────────────────
+  private doWarp(targetMap: string, targetSpawnId: string): void {
+    this.transitioning = true;
+    TransitionManager.getInstance().fadeTransition(this, () => {
+      this.scene.restart({ mapKey: targetMap, spawnId: targetSpawnId });
     });
   }
 
-  update(): void {
-    if (this.player.isMoving()) return;
+  // ── Wild encounter ────────────────────────────────────────
+  private triggerWildEncounter(pokemon: PokemonInstance): void {
+    this.transitioning = true;
+    AudioManager.getInstance().playSFX(SFX.ENCOUNTER);
+    this.cameras.main.flash(500, 255, 255, 255);
+    this.time.delayedCall(500, () => {
+      this.scene.start('TransitionScene', {
+        targetScene: 'BattleScene',
+        returnScene: 'OverworldScene',
+        targetData: { enemyPokemon: pokemon },
+        returnData: { mapKey: this.mapKey, spawnId: '__resume' },
+      });
+    });
+  }
 
-    let direction: Direction | null = null;
+  // ── Trainer battle ────────────────────────────────────────
+  private triggerTrainerBattle(trainer: Trainer): void {
+    this.transitioning = true;
 
-    if (this.cursors.up.isDown || this.wasd.W.isDown) {
-      direction = 'up';
-    } else if (this.cursors.down.isDown || this.wasd.S.isDown) {
-      direction = 'down';
-    } else if (this.cursors.left.isDown || this.wasd.A.isDown) {
-      direction = 'left';
-    } else if (this.cursors.right.isDown || this.wasd.D.isDown) {
-      direction = 'right';
+    // Trainer faces the player
+    const { x: px, y: py } = this.player.getTilePosition();
+    const trainerTX = Math.floor(trainer.x / TILE_SIZE);
+    const trainerTY = Math.floor(trainer.y / TILE_SIZE);
+
+    let faceDir: Direction = 'down';
+    if (px < trainerTX) faceDir = 'left';
+    else if (px > trainerTX) faceDir = 'right';
+    else if (py < trainerTY) faceDir = 'up';
+
+    trainer.faceDirection(faceDir);
+
+    // Exclamation mark
+    const excl = this.add.text(trainer.x, trainer.y - 30, '!', {
+      fontSize: '24px', color: '#ff0000', fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(10);
+
+    const tData = trainerData[trainer.trainerId];
+
+    this.time.delayedCall(800, () => {
+      excl.destroy();
+      // Show pre-battle dialogue
+      this.scene.pause();
+      this.scene.launch('DialogueScene', {
+        dialogue: tData?.dialogue?.before ?? ['...'],
+      });
+
+      this.scene.get('DialogueScene').events.once('shutdown', () => {
+        this.scene.resume();
+        const enemyParty = tData.party.map(p =>
+          EncounterSystem.createWildPokemon(p.pokemonId, p.level),
+        );
+        this.scene.start('TransitionScene', {
+          targetScene: 'BattleScene',
+          returnScene: 'OverworldScene',
+          targetData: {
+            enemyPokemon: enemyParty[0],
+            isTrainer: true,
+            trainerId: trainer.trainerId,
+          },
+          returnData: { mapKey: this.mapKey, spawnId: '__resume' },
+        });
+      });
+    });
+  }
+
+  // ── NPC interaction ───────────────────────────────────────
+  private tryInteract(): void {
+    const { x: px, y: py } = this.player.getTilePosition();
+    const facing = this.player.getFacing();
+
+    let targetX = px;
+    let targetY = py;
+    switch (facing) {
+      case 'up':    targetY--; break;
+      case 'down':  targetY++; break;
+      case 'left':  targetX--; break;
+      case 'right': targetX++; break;
     }
 
-    if (!direction) {
-      // Idle — show standing frame for current facing direction
-      const facing = this.player.getFacing();
-      const animDir = facing === 'right' ? 'left' : facing;
-      const idleKey = `player-idle-${animDir}`;
-      if (this.player.anims.currentAnim?.key !== idleKey) {
-        this.player.play(idleKey);
+    for (const npc of this.npcs) {
+      const npcTX = Math.floor(npc.x / TILE_SIZE);
+      const npcTY = Math.floor(npc.y / TILE_SIZE);
+      if (npcTX === targetX && npcTY === targetY) {
+        // NPC turns to face the player
+        npc.faceDirection(NPC.getOpposite(facing));
+
+        // Undefeated trainer → trigger battle
+        if (npc instanceof Trainer && !npc.defeated) {
+          this.triggerTrainerBattle(npc);
+          return;
+        }
+
+        // Regular dialogue
+        this.scene.pause();
+        this.scene.launch('DialogueScene', { dialogue: npc.dialogue });
+        return;
       }
-      this.player.setFlipX(facing === 'right');
+    }
+  }
+
+  // ── Animation helper ──────────────────────────────────────
+  private playAnim(key: string, flipX: boolean): void {
+    if (this.lastAnimKey !== key) {
+      this.player.play(key);
+      this.lastAnimKey = key;
+    }
+    if (this.lastFlipX !== flipX) {
+      this.player.setFlipX(flipX);
+      this.lastFlipX = flipX;
+    }
+  }
+
+  // ── Main loop ─────────────────────────────────────────────
+  update(): void {
+    if (this.transitioning) return;
+    if (this.player.isMoving()) return;
+
+    const input = this.inputManager.getState();
+
+    // Menu
+    if (input.menu) {
+      this.scene.pause();
+      this.scene.launch('MenuScene');
       return;
     }
 
-    // Determine the animation direction (right reuses left frames, flipped)
-    const animDir = direction === 'right' ? 'left' : direction;
-    this.player.setFlipX(direction === 'right');
-
-    if (this.player.move(direction)) {
-      // New move started — play walk animation
-      this.player.play(`player-walk-${animDir}`, true);
+    // Interact with NPC
+    if (input.confirm) {
+      this.tryInteract();
+      return;
     }
+
+    if (!input.direction) {
+      const facing = this.player.getFacing();
+      const animDir = facing === 'right' ? 'left' : facing;
+      this.playAnim(`player-idle-${animDir}`, facing === 'right');
+      return;
+    }
+
+    // Walk
+    const animDir = input.direction === 'right' ? 'left' : input.direction;
+    const flipX = input.direction === 'right';
+    this.playAnim(`player-walk-${animDir}`, flipX);
+    this.player.move(input.direction);
   }
 }

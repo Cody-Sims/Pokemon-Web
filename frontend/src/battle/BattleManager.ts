@@ -1,6 +1,8 @@
 import { PokemonInstance } from '@data/interfaces';
+import { moveData } from '@data/move-data';
 import { BattleStateMachine } from './BattleStateMachine';
 import { MoveExecutor } from './MoveExecutor';
+import { StatusEffectHandler } from './StatusEffectHandler';
 
 export type BattleType = 'wild' | 'trainer';
 
@@ -19,12 +21,16 @@ export class BattleManager {
   private enemyActive: PokemonInstance;
   private playerActiveIndex = 0;
   private enemyActiveIndex = 0;
+  private statusHandler: StatusEffectHandler;
 
   constructor(config: BattleConfig) {
     this.config = config;
     this.playerActive = config.playerParty[0];
     this.enemyActive = config.enemyParty[0];
     this.fsm = new BattleStateMachine();
+    this.statusHandler = new StatusEffectHandler();
+    this.statusHandler.initPokemon(this.playerActive);
+    this.statusHandler.initPokemon(this.enemyActive);
     this.setupStates();
   }
 
@@ -84,33 +90,83 @@ export class BattleManager {
   getPlayerActive() { return this.playerActive; }
   getEnemyActive() { return this.enemyActive; }
   getBattleType() { return this.config.type; }
+  getStatusHandler() { return this.statusHandler; }
 
-  /** Player selects a move. */
-  selectMove(moveId: string): { playerResult: ReturnType<typeof MoveExecutor.execute>; enemyResult: ReturnType<typeof MoveExecutor.execute> } {
-    // Determine turn order by speed
-    const playerSpeed = this.playerActive.stats.speed;
-    const enemySpeed = this.enemyActive.stats.speed;
-    const playerFirst = playerSpeed >= enemySpeed;
+  /** Player selects a move. Uses StatusEffectHandler for stat stages, status checks, and effects. */
+  selectMove(moveId: string): {
+    playerResult: ReturnType<typeof MoveExecutor.execute>;
+    enemyResult: ReturnType<typeof MoveExecutor.execute>;
+    turnMessages: string[];
+    endOfTurnMessages: string[];
+  } {
+    const turnMessages: string[] = [];
+
+    // Use effective speed (accounts for stat stages and paralysis)
+    const playerSpeed = this.statusHandler.getEffectiveStat(this.playerActive, 'speed');
+    const enemySpeed = this.statusHandler.getEffectiveStat(this.enemyActive, 'speed');
+
+    // Check move priority
+    const playerMove = moveData[moveId];
+    const enemyMoveId = this.getEnemyMove();
+    const enemyMove = moveData[enemyMoveId];
+    const playerPriority = playerMove?.priority ?? 0;
+    const enemyPriority = enemyMove?.priority ?? 0;
+
+    const playerFirst = playerPriority > enemyPriority
+      || (playerPriority === enemyPriority && playerSpeed >= enemySpeed);
 
     const first = playerFirst ? this.playerActive : this.enemyActive;
     const second = playerFirst ? this.enemyActive : this.playerActive;
-    const firstMove = playerFirst ? moveId : this.getEnemyMove();
-    const secondMove = playerFirst ? this.getEnemyMove() : moveId;
+    const firstMove = playerFirst ? moveId : enemyMoveId;
+    const secondMove = playerFirst ? enemyMoveId : moveId;
 
-    const firstResult = MoveExecutor.execute(first, second, firstMove);
-    let secondResult;
-
-    if (second.currentHp > 0) {
-      secondResult = MoveExecutor.execute(second, first, secondMove);
+    // Turn-start check for first mover
+    const firstFlinch = this.statusHandler.checkFlinch(first);
+    let firstResult: ReturnType<typeof MoveExecutor.execute>;
+    if (firstFlinch) {
+      turnMessages.push(firstFlinch);
+      firstResult = { damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false }, moveHit: false, moveName: '', attackerName: '', defenderName: '', effectMessages: [] };
     } else {
-      secondResult = {
-        damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false },
-        moveHit: false,
-        moveName: '',
-        attackerName: '',
-        defenderName: '',
-        effectMessages: [] as string[],
-      };
+      const firstTurnStart = this.statusHandler.checkTurnStart(first);
+      turnMessages.push(...firstTurnStart.messages);
+      if (firstTurnStart.canAct) {
+        firstResult = MoveExecutor.execute(first, second, firstMove, this.statusHandler);
+        turnMessages.push(...firstResult.effectMessages);
+      } else {
+        firstResult = { damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false }, moveHit: false, moveName: '', attackerName: '', defenderName: '', effectMessages: [] };
+      }
+    }
+
+    // Second mover only acts if alive
+    let secondResult: ReturnType<typeof MoveExecutor.execute>;
+    if (second.currentHp > 0) {
+      const secondFlinch = this.statusHandler.checkFlinch(second);
+      if (secondFlinch) {
+        turnMessages.push(secondFlinch);
+        secondResult = { damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false }, moveHit: false, moveName: '', attackerName: '', defenderName: '', effectMessages: [] };
+      } else {
+        const secondTurnStart = this.statusHandler.checkTurnStart(second);
+        turnMessages.push(...secondTurnStart.messages);
+        if (secondTurnStart.canAct) {
+          secondResult = MoveExecutor.execute(second, first, secondMove, this.statusHandler);
+          turnMessages.push(...secondResult.effectMessages);
+        } else {
+          secondResult = { damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false }, moveHit: false, moveName: '', attackerName: '', defenderName: '', effectMessages: [] };
+        }
+      }
+    } else {
+      secondResult = { damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false }, moveHit: false, moveName: '', attackerName: '', defenderName: '', effectMessages: [] };
+    }
+
+    // End-of-turn effects
+    const endOfTurnMessages: string[] = [];
+    if (this.playerActive.currentHp > 0) {
+      const eot = this.statusHandler.applyEndOfTurn(this.playerActive, this.enemyActive);
+      endOfTurnMessages.push(...eot.messages);
+    }
+    if (this.enemyActive.currentHp > 0) {
+      const eot = this.statusHandler.applyEndOfTurn(this.enemyActive, this.playerActive);
+      endOfTurnMessages.push(...eot.messages);
     }
 
     this.fsm.transition('CHECK_FAINT');
@@ -118,6 +174,8 @@ export class BattleManager {
     return {
       playerResult: playerFirst ? firstResult : secondResult,
       enemyResult: playerFirst ? secondResult : firstResult,
+      turnMessages,
+      endOfTurnMessages,
     };
   }
 
@@ -132,13 +190,20 @@ export class BattleManager {
     return false;
   }
 
-  /** Switch the active player Pokemon. */
+  /** Switch the active player Pokemon. Clears volatile statuses from old, inits new. */
   switchPokemon(index: number): boolean {
     if (index < 0 || index >= this.config.playerParty.length) return false;
     if (this.config.playerParty[index].currentHp <= 0) return false;
+    this.statusHandler.clearPokemon(this.playerActive);
     this.playerActiveIndex = index;
     this.playerActive = this.config.playerParty[index];
+    this.statusHandler.initPokemon(this.playerActive);
     return true;
+  }
+
+  /** Clean up the StatusEffectHandler when the battle ends. */
+  cleanup(): void {
+    this.statusHandler.cleanup();
   }
 
   private getEnemyMove(): string {

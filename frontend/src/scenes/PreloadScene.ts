@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { pokemonData } from '@data/pokemon-data';
+import { BGM, SFX } from '@utils/audio-keys';
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -50,8 +51,15 @@ export class PreloadScene extends Phaser.Scene {
     this.load.atlas('rival', 'assets/sprites/npcs/rival.png', 'assets/sprites/npcs/rival.json');
     this.load.atlas('generic-trainer', 'assets/sprites/npcs/generic-trainer.png', 'assets/sprites/npcs/generic-trainer.json');
 
-    // TODO: Load remaining game assets
-    // this.load.tilemapTiledJSON('pallet-town', 'assets/maps/pallet-town.json');
+    // ── Audio: BGM ──
+    for (const key of Object.values(BGM)) {
+      this.load.audio(key, `assets/audio/bgm/${key}.wav`);
+    }
+
+    // ── Audio: SFX ──
+    for (const key of Object.values(SFX)) {
+      this.load.audio(key, `assets/audio/sfx/${key}.wav`);
+    }
   }
 
   create(): void {

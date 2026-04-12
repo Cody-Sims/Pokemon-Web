@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { SaveManager } from '@managers/SaveManager';
+import { AudioManager } from '@managers/AudioManager';
 import { COLORS, FONTS } from '@ui/theme';
+import { BGM, SFX } from '@utils/audio-keys';
 
 export class TitleScene extends Phaser.Scene {
   private cursor!: number;
@@ -12,6 +14,10 @@ export class TitleScene extends Phaser.Scene {
   }
 
   create(): void {
+    const audio = AudioManager.getInstance();
+    audio.setScene(this);
+    audio.playBGM(BGM.TITLE);
+
     const { width, height } = this.cameras.main;
 
     // Background gradient
@@ -65,11 +71,13 @@ export class TitleScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-UP', () => {
       this.cursor = (this.cursor - 1 + this.menuItems.length) % this.menuItems.length;
       this.updateCursor();
+      audio.playSFX(SFX.CURSOR);
     });
 
     this.input.keyboard!.on('keydown-DOWN', () => {
       this.cursor = (this.cursor + 1) % this.menuItems.length;
       this.updateCursor();
+      audio.playSFX(SFX.CURSOR);
     });
 
     this.input.keyboard!.on('keydown-ENTER', () => {
@@ -90,6 +98,7 @@ export class TitleScene extends Phaser.Scene {
   }
 
   private selectOption(): void {
+    AudioManager.getInstance().playSFX(SFX.CONFIRM);
     const label = this.menuItems[this.cursor].text;
     switch (label) {
       case 'New Game':

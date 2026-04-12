@@ -12,6 +12,7 @@ export class GridMovement {
   private facing: Direction = 'down';
 
   private collisionCallback?: (tileX: number, tileY: number) => boolean;
+  private moveCompleteCallback?: () => void;
 
   constructor(
     scene: Phaser.Scene,
@@ -27,6 +28,10 @@ export class GridMovement {
 
   setCollisionCheck(callback: (tileX: number, tileY: number) => boolean): void {
     this.collisionCallback = callback;
+  }
+
+  setMoveCompleteCallback(callback: () => void): void {
+    this.moveCompleteCallback = callback;
   }
 
   getIsMoving(): boolean { return this.isMoving; }
@@ -66,6 +71,7 @@ export class GridMovement {
       duration: WALK_DURATION,
       onComplete: () => {
         this.isMoving = false;
+        this.moveCompleteCallback?.();
       },
     });
 
