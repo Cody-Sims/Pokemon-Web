@@ -1,0 +1,85 @@
+import Phaser from 'phaser';
+import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { COLORS, FONTS, drawPanel } from '@ui/theme';
+
+export class MenuScene extends Phaser.Scene {
+  private cursor = 0;
+  private menuItems!: Phaser.GameObjects.Text[];
+  private cursorIcon!: Phaser.GameObjects.Text;
+  private menuLabels = ['POKEMON', 'BAG', 'SAVE', 'OPTIONS', 'EXIT'];
+
+  constructor() {
+    super({ key: 'MenuScene' });
+  }
+
+  create(): void {
+    // Dim overlay
+    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgOverlay, 0.45);
+
+    // Menu panel
+    const panelW = 220;
+    const panelH = this.menuLabels.length * 48 + 32;
+    const panelX = GAME_WIDTH - panelW / 2 - 20;
+    const panelY = GAME_HEIGHT / 2;
+    drawPanel(this, panelX, panelY, panelW, panelH);
+
+    const startY = panelY - panelH / 2 + 32;
+    this.menuItems = this.menuLabels.map((label, i) => {
+      const item = this.add.text(panelX + 10, startY + i * 48, label, FONTS.menuItem)
+        .setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+      item.on('pointerover', () => { this.cursor = i; this.updateCursor(); });
+      item.on('pointerdown', () => { this.cursor = i; this.selectOption(); });
+      return item;
+    });
+
+    this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, color: COLORS.textHighlight });
+
+    this.cursor = 0;
+    this.updateCursor();
+
+    this.input.keyboard!.on('keydown-UP', () => {
+      this.cursor = (this.cursor - 1 + this.menuItems.length) % this.menuItems.length;
+      this.updateCursor();
+    });
+    this.input.keyboard!.on('keydown-DOWN', () => {
+      this.cursor = (this.cursor + 1) % this.menuItems.length;
+      this.updateCursor();
+    });
+    this.input.keyboard!.on('keydown-ENTER', () => this.selectOption());
+    this.input.keyboard!.on('keydown-ESC', () => this.closeMenu());
+  }
+
+  private updateCursor(): void {
+    this.menuItems.forEach((item, i) => {
+      item.setColor(i === this.cursor ? COLORS.textHighlight : COLORS.textWhite);
+    });
+    const sel = this.menuItems[this.cursor];
+    this.cursorIcon.setPosition(sel.x - sel.width / 2 - 20, sel.y - 10);
+  }
+
+  private selectOption(): void {
+    switch (this.menuLabels[this.cursor]) {
+      case 'POKEMON':
+        this.scene.launch('PartyScene');
+        break;
+      case 'BAG':
+        this.scene.launch('InventoryScene');
+        break;
+      case 'SAVE':
+        // TODO: Save game
+        break;
+      case 'OPTIONS':
+        // TODO: Options
+        break;
+      case 'EXIT':
+        this.closeMenu();
+        break;
+    }
+  }
+
+  private closeMenu(): void {
+    this.scene.stop();
+    this.scene.resume('OverworldScene');
+  }
+}

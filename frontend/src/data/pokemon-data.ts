@@ -1,0 +1,325 @@
+import { PokemonData } from './interfaces';
+
+/** Initial Pokédex: starters, evolutions, and early-route Pokémon (~30 total). */
+export const pokemonData: Record<number, PokemonData> = {
+  // ─── Starters ───
+  1: {
+    id: 1, name: 'Bulbasaur', types: ['grass', 'poison'],
+    baseStats: { hp: 45, attack: 49, defense: 49, spAttack: 65, spDefense: 65, speed: 45 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 1, moveId: 'growl' },
+      { level: 7, moveId: 'leech-seed' }, { level: 9, moveId: 'vine-whip' },
+      { level: 13, moveId: 'poison-powder' }, { level: 20, moveId: 'razor-leaf' },
+    ],
+    evolutionChain: [{ pokemonId: 2, condition: { type: 'level', level: 16 } }],
+    catchRate: 45, expYield: 64,
+    spriteKeys: { front: 'bulbasaur-front', back: 'bulbasaur-back', icon: 'bulbasaur-icon' },
+  },
+  2: {
+    id: 2, name: 'Ivysaur', types: ['grass', 'poison'],
+    baseStats: { hp: 60, attack: 62, defense: 63, spAttack: 80, spDefense: 80, speed: 60 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 1, moveId: 'growl' },
+      { level: 7, moveId: 'leech-seed' }, { level: 9, moveId: 'vine-whip' },
+      { level: 22, moveId: 'razor-leaf' },
+    ],
+    evolutionChain: [{ pokemonId: 3, condition: { type: 'level', level: 32 } }],
+    catchRate: 45, expYield: 142,
+    spriteKeys: { front: 'ivysaur-front', back: 'ivysaur-back', icon: 'ivysaur-icon' },
+  },
+  3: {
+    id: 3, name: 'Venusaur', types: ['grass', 'poison'],
+    baseStats: { hp: 80, attack: 82, defense: 83, spAttack: 100, spDefense: 100, speed: 80 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 1, moveId: 'growl' },
+      { level: 9, moveId: 'vine-whip' }, { level: 22, moveId: 'razor-leaf' },
+      { level: 32, moveId: 'solar-beam' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 236,
+    spriteKeys: { front: 'venusaur-front', back: 'venusaur-back', icon: 'venusaur-icon' },
+  },
+  4: {
+    id: 4, name: 'Charmander', types: ['fire'],
+    baseStats: { hp: 39, attack: 52, defense: 43, spAttack: 60, spDefense: 50, speed: 65 },
+    learnset: [
+      { level: 1, moveId: 'scratch' }, { level: 1, moveId: 'growl' },
+      { level: 7, moveId: 'ember' }, { level: 13, moveId: 'smokescreen' },
+      { level: 19, moveId: 'fire-fang' }, { level: 25, moveId: 'slash' },
+    ],
+    evolutionChain: [{ pokemonId: 5, condition: { type: 'level', level: 16 } }],
+    catchRate: 45, expYield: 62,
+    spriteKeys: { front: 'charmander-front', back: 'charmander-back', icon: 'charmander-icon' },
+  },
+  5: {
+    id: 5, name: 'Charmeleon', types: ['fire'],
+    baseStats: { hp: 58, attack: 64, defense: 58, spAttack: 80, spDefense: 65, speed: 80 },
+    learnset: [
+      { level: 1, moveId: 'scratch' }, { level: 1, moveId: 'growl' },
+      { level: 7, moveId: 'ember' }, { level: 24, moveId: 'flamethrower' },
+    ],
+    evolutionChain: [{ pokemonId: 6, condition: { type: 'level', level: 36 } }],
+    catchRate: 45, expYield: 142,
+    spriteKeys: { front: 'charmeleon-front', back: 'charmeleon-back', icon: 'charmeleon-icon' },
+  },
+  6: {
+    id: 6, name: 'Charizard', types: ['fire', 'flying'],
+    baseStats: { hp: 78, attack: 84, defense: 78, spAttack: 109, spDefense: 85, speed: 100 },
+    learnset: [
+      { level: 1, moveId: 'scratch' }, { level: 7, moveId: 'ember' },
+      { level: 24, moveId: 'flamethrower' }, { level: 36, moveId: 'fire-blast' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 240,
+    spriteKeys: { front: 'charizard-front', back: 'charizard-back', icon: 'charizard-icon' },
+  },
+  7: {
+    id: 7, name: 'Squirtle', types: ['water'],
+    baseStats: { hp: 44, attack: 48, defense: 65, spAttack: 50, spDefense: 64, speed: 43 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 1, moveId: 'tail-whip' },
+      { level: 7, moveId: 'water-gun' }, { level: 13, moveId: 'withdraw' },
+      { level: 19, moveId: 'bite' }, { level: 25, moveId: 'water-pulse' },
+    ],
+    evolutionChain: [{ pokemonId: 8, condition: { type: 'level', level: 16 } }],
+    catchRate: 45, expYield: 63,
+    spriteKeys: { front: 'squirtle-front', back: 'squirtle-back', icon: 'squirtle-icon' },
+  },
+  8: {
+    id: 8, name: 'Wartortle', types: ['water'],
+    baseStats: { hp: 59, attack: 63, defense: 80, spAttack: 65, spDefense: 80, speed: 58 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 1, moveId: 'tail-whip' },
+      { level: 7, moveId: 'water-gun' }, { level: 25, moveId: 'water-pulse' },
+    ],
+    evolutionChain: [{ pokemonId: 9, condition: { type: 'level', level: 36 } }],
+    catchRate: 45, expYield: 142,
+    spriteKeys: { front: 'wartortle-front', back: 'wartortle-back', icon: 'wartortle-icon' },
+  },
+  9: {
+    id: 9, name: 'Blastoise', types: ['water'],
+    baseStats: { hp: 79, attack: 83, defense: 100, spAttack: 85, spDefense: 105, speed: 78 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 7, moveId: 'water-gun' },
+      { level: 25, moveId: 'water-pulse' }, { level: 36, moveId: 'hydro-pump' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 239,
+    spriteKeys: { front: 'blastoise-front', back: 'blastoise-back', icon: 'blastoise-icon' },
+  },
+
+  // ─── Route Pokémon ───
+  10: {
+    id: 10, name: 'Caterpie', types: ['bug'],
+    baseStats: { hp: 45, attack: 30, defense: 35, spAttack: 20, spDefense: 20, speed: 45 },
+    learnset: [{ level: 1, moveId: 'tackle' }, { level: 1, moveId: 'string-shot' }],
+    evolutionChain: [{ pokemonId: 11, condition: { type: 'level', level: 7 } }],
+    catchRate: 255, expYield: 39,
+    spriteKeys: { front: 'caterpie-front', back: 'caterpie-back', icon: 'caterpie-icon' },
+  },
+  11: {
+    id: 11, name: 'Metapod', types: ['bug'],
+    baseStats: { hp: 50, attack: 20, defense: 55, spAttack: 25, spDefense: 25, speed: 30 },
+    learnset: [{ level: 1, moveId: 'harden' }],
+    evolutionChain: [{ pokemonId: 12, condition: { type: 'level', level: 10 } }],
+    catchRate: 120, expYield: 72,
+    spriteKeys: { front: 'metapod-front', back: 'metapod-back', icon: 'metapod-icon' },
+  },
+  12: {
+    id: 12, name: 'Butterfree', types: ['bug', 'flying'],
+    baseStats: { hp: 60, attack: 45, defense: 50, spAttack: 90, spDefense: 80, speed: 70 },
+    learnset: [
+      { level: 1, moveId: 'confusion' }, { level: 12, moveId: 'sleep-powder' },
+      { level: 13, moveId: 'poison-powder' }, { level: 18, moveId: 'psybeam' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 178,
+    spriteKeys: { front: 'butterfree-front', back: 'butterfree-back', icon: 'butterfree-icon' },
+  },
+  13: {
+    id: 13, name: 'Weedle', types: ['bug', 'poison'],
+    baseStats: { hp: 40, attack: 35, defense: 30, spAttack: 20, spDefense: 20, speed: 50 },
+    learnset: [{ level: 1, moveId: 'poison-sting' }, { level: 1, moveId: 'string-shot' }],
+    evolutionChain: [{ pokemonId: 14, condition: { type: 'level', level: 7 } }],
+    catchRate: 255, expYield: 39,
+    spriteKeys: { front: 'weedle-front', back: 'weedle-back', icon: 'weedle-icon' },
+  },
+  14: {
+    id: 14, name: 'Kakuna', types: ['bug', 'poison'],
+    baseStats: { hp: 45, attack: 25, defense: 50, spAttack: 25, spDefense: 25, speed: 35 },
+    learnset: [{ level: 1, moveId: 'harden' }],
+    evolutionChain: [{ pokemonId: 15, condition: { type: 'level', level: 10 } }],
+    catchRate: 120, expYield: 72,
+    spriteKeys: { front: 'kakuna-front', back: 'kakuna-back', icon: 'kakuna-icon' },
+  },
+  15: {
+    id: 15, name: 'Beedrill', types: ['bug', 'poison'],
+    baseStats: { hp: 65, attack: 90, defense: 40, spAttack: 45, spDefense: 80, speed: 75 },
+    learnset: [
+      { level: 1, moveId: 'fury-attack' }, { level: 15, moveId: 'poison-sting' },
+      { level: 20, moveId: 'pin-missile' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 178,
+    spriteKeys: { front: 'beedrill-front', back: 'beedrill-back', icon: 'beedrill-icon' },
+  },
+  16: {
+    id: 16, name: 'Pidgey', types: ['normal', 'flying'],
+    baseStats: { hp: 40, attack: 45, defense: 40, spAttack: 35, spDefense: 35, speed: 56 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 5, moveId: 'sand-attack' },
+      { level: 9, moveId: 'gust' }, { level: 17, moveId: 'quick-attack' },
+    ],
+    evolutionChain: [{ pokemonId: 17, condition: { type: 'level', level: 18 } }],
+    catchRate: 255, expYield: 50,
+    spriteKeys: { front: 'pidgey-front', back: 'pidgey-back', icon: 'pidgey-icon' },
+  },
+  17: {
+    id: 17, name: 'Pidgeotto', types: ['normal', 'flying'],
+    baseStats: { hp: 63, attack: 60, defense: 55, spAttack: 50, spDefense: 50, speed: 71 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 9, moveId: 'gust' },
+      { level: 17, moveId: 'quick-attack' }, { level: 27, moveId: 'wing-attack' },
+    ],
+    evolutionChain: [{ pokemonId: 18, condition: { type: 'level', level: 36 } }],
+    catchRate: 120, expYield: 122,
+    spriteKeys: { front: 'pidgeotto-front', back: 'pidgeotto-back', icon: 'pidgeotto-icon' },
+  },
+  18: {
+    id: 18, name: 'Pidgeot', types: ['normal', 'flying'],
+    baseStats: { hp: 83, attack: 80, defense: 75, spAttack: 70, spDefense: 70, speed: 101 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 9, moveId: 'gust' },
+      { level: 27, moveId: 'wing-attack' }, { level: 44, moveId: 'hurricane' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 216,
+    spriteKeys: { front: 'pidgeot-front', back: 'pidgeot-back', icon: 'pidgeot-icon' },
+  },
+  19: {
+    id: 19, name: 'Rattata', types: ['normal'],
+    baseStats: { hp: 30, attack: 56, defense: 35, spAttack: 25, spDefense: 35, speed: 72 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 1, moveId: 'tail-whip' },
+      { level: 7, moveId: 'quick-attack' }, { level: 13, moveId: 'bite' },
+      { level: 20, moveId: 'hyper-fang' },
+    ],
+    evolutionChain: [{ pokemonId: 20, condition: { type: 'level', level: 20 } }],
+    catchRate: 255, expYield: 51,
+    spriteKeys: { front: 'rattata-front', back: 'rattata-back', icon: 'rattata-icon' },
+  },
+  20: {
+    id: 20, name: 'Raticate', types: ['normal'],
+    baseStats: { hp: 55, attack: 81, defense: 60, spAttack: 50, spDefense: 70, speed: 97 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 1, moveId: 'quick-attack' },
+      { level: 20, moveId: 'hyper-fang' }, { level: 30, moveId: 'super-fang' },
+    ],
+    evolutionChain: [],
+    catchRate: 127, expYield: 145,
+    spriteKeys: { front: 'raticate-front', back: 'raticate-back', icon: 'raticate-icon' },
+  },
+  25: {
+    id: 25, name: 'Pikachu', types: ['electric'],
+    baseStats: { hp: 35, attack: 55, defense: 40, spAttack: 50, spDefense: 50, speed: 90 },
+    learnset: [
+      { level: 1, moveId: 'thunder-shock' }, { level: 1, moveId: 'growl' },
+      { level: 9, moveId: 'quick-attack' }, { level: 18, moveId: 'thunder-wave' },
+      { level: 26, moveId: 'thunderbolt' },
+    ],
+    evolutionChain: [{ pokemonId: 26, condition: { type: 'item', itemId: 'thunder-stone' } }],
+    catchRate: 190, expYield: 112,
+    spriteKeys: { front: 'pikachu-front', back: 'pikachu-back', icon: 'pikachu-icon' },
+  },
+  26: {
+    id: 26, name: 'Raichu', types: ['electric'],
+    baseStats: { hp: 60, attack: 90, defense: 55, spAttack: 90, spDefense: 80, speed: 110 },
+    learnset: [
+      { level: 1, moveId: 'thunder-shock' }, { level: 1, moveId: 'quick-attack' },
+      { level: 1, moveId: 'thunderbolt' },
+    ],
+    evolutionChain: [],
+    catchRate: 75, expYield: 218,
+    spriteKeys: { front: 'raichu-front', back: 'raichu-back', icon: 'raichu-icon' },
+  },
+  // ─── Gym Pokemon (Brock) ───
+  74: {
+    id: 74, name: 'Geodude', types: ['rock', 'ground'],
+    baseStats: { hp: 40, attack: 80, defense: 100, spAttack: 30, spDefense: 30, speed: 20 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 1, moveId: 'defense-curl' },
+      { level: 11, moveId: 'rock-throw' }, { level: 16, moveId: 'rock-tomb' },
+    ],
+    evolutionChain: [{ pokemonId: 75, condition: { type: 'level', level: 25 } }],
+    catchRate: 255, expYield: 60,
+    spriteKeys: { front: 'geodude-front', back: 'geodude-back', icon: 'geodude-icon' },
+  },
+  75: {
+    id: 75, name: 'Graveler', types: ['rock', 'ground'],
+    baseStats: { hp: 55, attack: 95, defense: 115, spAttack: 45, spDefense: 45, speed: 35 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 11, moveId: 'rock-throw' },
+      { level: 22, moveId: 'rock-slide' },
+    ],
+    evolutionChain: [],
+    catchRate: 120, expYield: 137,
+    spriteKeys: { front: 'graveler-front', back: 'graveler-back', icon: 'graveler-icon' },
+  },
+  95: {
+    id: 95, name: 'Onix', types: ['rock', 'ground'],
+    baseStats: { hp: 35, attack: 45, defense: 160, spAttack: 30, spDefense: 45, speed: 70 },
+    learnset: [
+      { level: 1, moveId: 'tackle' }, { level: 1, moveId: 'harden' },
+      { level: 9, moveId: 'bind' }, { level: 13, moveId: 'rock-throw' },
+      { level: 21, moveId: 'rock-tomb' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 77,
+    spriteKeys: { front: 'onix-front', back: 'onix-back', icon: 'onix-icon' },
+  },
+  // ─── Additional route Pokemon ───
+  21: {
+    id: 21, name: 'Spearow', types: ['normal', 'flying'],
+    baseStats: { hp: 40, attack: 60, defense: 30, spAttack: 31, spDefense: 31, speed: 70 },
+    learnset: [
+      { level: 1, moveId: 'peck' }, { level: 1, moveId: 'growl' },
+      { level: 9, moveId: 'leer' }, { level: 13, moveId: 'fury-attack' },
+    ],
+    evolutionChain: [{ pokemonId: 22, condition: { type: 'level', level: 20 } }],
+    catchRate: 255, expYield: 52,
+    spriteKeys: { front: 'spearow-front', back: 'spearow-back', icon: 'spearow-icon' },
+  },
+  22: {
+    id: 22, name: 'Fearow', types: ['normal', 'flying'],
+    baseStats: { hp: 65, attack: 90, defense: 65, spAttack: 61, spDefense: 61, speed: 100 },
+    learnset: [
+      { level: 1, moveId: 'peck' }, { level: 1, moveId: 'fury-attack' },
+      { level: 23, moveId: 'drill-peck' },
+    ],
+    evolutionChain: [],
+    catchRate: 90, expYield: 155,
+    spriteKeys: { front: 'fearow-front', back: 'fearow-back', icon: 'fearow-icon' },
+  },
+  43: {
+    id: 43, name: 'Oddish', types: ['grass', 'poison'],
+    baseStats: { hp: 45, attack: 50, defense: 55, spAttack: 75, spDefense: 65, speed: 30 },
+    learnset: [
+      { level: 1, moveId: 'absorb' }, { level: 7, moveId: 'poison-powder' },
+      { level: 14, moveId: 'acid' },
+    ],
+    evolutionChain: [{ pokemonId: 44, condition: { type: 'level', level: 21 } }],
+    catchRate: 255, expYield: 64,
+    spriteKeys: { front: 'oddish-front', back: 'oddish-back', icon: 'oddish-icon' },
+  },
+  44: {
+    id: 44, name: 'Gloom', types: ['grass', 'poison'],
+    baseStats: { hp: 60, attack: 65, defense: 70, spAttack: 85, spDefense: 75, speed: 40 },
+    learnset: [
+      { level: 1, moveId: 'absorb' }, { level: 7, moveId: 'poison-powder' },
+      { level: 14, moveId: 'acid' }, { level: 24, moveId: 'mega-drain' },
+    ],
+    evolutionChain: [],
+    catchRate: 120, expYield: 138,
+    spriteKeys: { front: 'gloom-front', back: 'gloom-back', icon: 'gloom-icon' },
+  },
+};

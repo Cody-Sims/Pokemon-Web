@@ -1,0 +1,20 @@
+/** Evolution data — maps pokemonId → evolution conditions. */
+export const evolutionData: Record<number, { evolvesTo: number; condition: { type: 'level' | 'item' | 'trade'; level?: number; itemId?: string } }[]> = {
+  1:  [{ evolvesTo: 2, condition: { type: 'level', level: 16 } }],
+  2:  [{ evolvesTo: 3, condition: { type: 'level', level: 32 } }],
+  4:  [{ evolvesTo: 5, condition: { type: 'level', level: 16 } }],
+  5:  [{ evolvesTo: 6, condition: { type: 'level', level: 36 } }],
+  7:  [{ evolvesTo: 8, condition: { type: 'level', level: 16 } }],
+  8:  [{ evolvesTo: 9, condition: { type: 'level', level: 36 } }],
+  10: [{ evolvesTo: 11, condition: { type: 'level', level: 7 } }],
+  11: [{ evolvesTo: 12, condition: { type: 'level', level: 10 } }],
+  13: [{ evolvesTo: 14, condition: { type: 'level', level: 7 } }],
+  14: [{ evolvesTo: 15, condition: { type: 'level', level: 10 } }],
+  16: [{ evolvesTo: 17, condition: { type: 'level', level: 18 } }],
+  17: [{ evolvesTo: 18, condition: { type: 'level', level: 36 } }],
+  19: [{ evolvesTo: 20, condition: { type: 'level', level: 20 } }],
+  21: [{ evolvesTo: 22, condition: { type: 'level', level: 20 } }],
+  25: [{ evolvesTo: 26, condition: { type: 'item', itemId: 'thunder-stone' } }],
+  43: [{ evolvesTo: 44, condition: { type: 'level', level: 21 } }],
+  74: [{ evolvesTo: 75, condition: { type: 'level', level: 25 } }],
+};

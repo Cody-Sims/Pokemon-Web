@@ -1,0 +1,19 @@
+{
+  "name": "pokemon-web",
+  "version": "1.0.0",
+  "description": "A browser-based Pokemon-style RPG built with Phaser 3 + TypeScript + Vite",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config frontend/vite.config.ts",
+    "build": "tsc --project frontend/tsconfig.json --noEmit && vite build --config frontend/vite.config.ts",
+    "preview": "vite preview --config frontend/vite.config.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "phaser": "^3.90.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8"
+  }
+}

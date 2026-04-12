@@ -1,0 +1,9 @@
+- Overworld Tileset: "200+ Tileset - Legend of Pocket Monsters" by Chad Wolfe (Chloe Wolfe)
+  License: CC-BY 3.0 | https://opengameart.org/content/200-tileset-legend-of-pocket-monsters
+
+- Character Sprites: "Tiny Characters Set" by Fleurman
+  License: CC0 | https://opengameart.org/content/tiny-characters-set
+  Based on: "RPG Character Sprites" by GrafxKid (CC0) | https://opengameart.org/content/rpg-character-sprites
+
+- Pokemon Sprites: PokeAPI Sprites
+  Source: https://github.com/PokeAPI/sprites
