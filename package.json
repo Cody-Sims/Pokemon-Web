@@ -6,14 +6,25 @@
   "scripts": {
     "dev": "vite --config frontend/vite.config.ts",
     "build": "tsc --project frontend/tsconfig.json --noEmit && vite build --config frontend/vite.config.ts",
-    "preview": "vite preview --config frontend/vite.config.ts"
+    "preview": "vite preview --config frontend/vite.config.ts",
+    "test": "vitest run --config tests/vitest.config.ts",
+    "test:watch": "vitest --config tests/vitest.config.ts",
+    "test:unit": "vitest run --config tests/vitest.config.ts --include 'unit/**'",
+    "test:integration": "vitest run --config tests/vitest.config.ts --include 'integration/**'",
+    "test:e2e": "npx playwright test --config tests/e2e/playwright.config.ts",
+    "test:fuzz": "npx playwright test --config tests/e2e/playwright.config.ts tests/fuzz/",
+    "test:coverage": "vitest run --config tests/vitest.config.ts --coverage",
+    "test:all": "npm run test && npm run test:e2e"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@vitest/coverage-v8": "^4.1.4",
     "phaser": "^3.90.0",
     "typescript": "^6.0.2",
-    "vite": "^8.0.8"
+    "vite": "^8.0.8",
+    "vitest": "^4.1.4"
   }
 }

@@ -6,6 +6,18 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Comprehensive Testing System (All 5 Phases)**
+  - **Phase 1 — Unit Tests (Vitest):** DamageCalculator, CatchCalculator, ExperienceCalculator, type-chart, BattleStateMachine, StatusEffectHandler, AIController, math-helpers, and full data integrity tests
+  - **Phase 2 — Integration Tests:** GameManager (party, bag, money, badges, serialize/deserialize), SaveManager round-trip, BattleManager full battle flow, MoveExecutor (all move types), EncounterSystem, EventManager, evolution, inventory
+  - **Phase 3 — E2E Tests (Playwright):** Boot-to-title smoke test, console error check, new game flow, menu navigation
+  - **Phase 4 — Deterministic Replay System:** Seeded PRNG (mulberry32), replay runner, replay types/format, starter battle replay JSON
+  - **Phase 5 — Fuzz/Monkey Testing:** Seeded random input generator, 2000-input crash test with periodic screenshots
+  - Vitest config with path aliases matching the project's Vite config
+  - Phaser mock and localStorage mock utilities for Node-based testing
+  - 255 tests across 18 test files, all passing
+  - `npm run test`, `test:unit`, `test:integration`, `test:watch`, `test:e2e`, `test:fuzz`, `test:coverage`, `test:all` scripts
+  - `frontend/src/utils/seeded-random.ts` — mulberry32 PRNG for deterministic replay
+
 - **Status Effect System — Full Wiring**
   - Type-based status immunities: Fire immune to burn, Electric to paralysis, Poison/Steel to poison, Ice to freeze, Grass to Leech Seed
   - Fire-type move thawing: fire moves now thaw frozen targets before dealing damage

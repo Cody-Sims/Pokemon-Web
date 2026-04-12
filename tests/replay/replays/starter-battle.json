@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "seed": 12345,
+  "frames": [
+    { "frame": 0, "keys": [] },
+    { "frame": 180, "keys": ["Enter"], "action": "confirm" },
+    { "frame": 300, "keys": ["ArrowDown"] },
+    { "frame": 360, "keys": ["Enter"], "action": "confirm" },
+    { "frame": 480, "keys": ["ArrowUp"] },
+    { "frame": 540, "keys": ["ArrowUp"] },
+    { "frame": 600, "keys": ["ArrowUp"] }
+  ],
+  "assertions": [
+    { "atFrame": 600, "type": "no-errors", "expected": true }
+  ]
+}
