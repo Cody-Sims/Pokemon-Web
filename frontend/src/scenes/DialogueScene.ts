@@ -57,6 +57,7 @@ export class DialogueScene extends Phaser.Scene {
     // Advance on input
     this.input.keyboard!.on('keydown-ENTER', () => this.advance());
     this.input.keyboard!.on('keydown-SPACE', () => this.advance());
+    this.input.keyboard!.on('keydown-ESC', () => this.closeDialogue());
   }
 
   private showLine(text: string): void {
@@ -99,9 +100,13 @@ export class DialogueScene extends Phaser.Scene {
     if (this.currentIndex < this.queue.length) {
       this.showLine(this.queue[this.currentIndex]);
     } else {
-      // Close dialogue
-      this.scene.stop();
-      this.scene.resume('OverworldScene');
+      this.closeDialogue();
     }
+  }
+
+  private closeDialogue(): void {
+    if (this.typeTimer) this.typeTimer.destroy();
+    this.scene.stop();
+    this.scene.resume('OverworldScene');
   }
 }

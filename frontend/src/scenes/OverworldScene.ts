@@ -226,6 +226,15 @@ export class OverworldScene extends Phaser.Scene {
     }
   }
 
+  /** Destroy and re-create NPCs so flag-gated spawns update. */
+  private respawnNPCs(): void {
+    for (const npc of this.npcs) npc.destroy();
+    this.npcs = [];
+    this.trainers = [];
+    this.spawnNPCs();
+    this.spawnTrainers();
+  }
+
   private spawnTrainers(): void {
     const gm = GameManager.getInstance();
     for (const def of this.mapDef.trainers) {
@@ -434,7 +443,7 @@ export class OverworldScene extends Phaser.Scene {
           return;
         }
 
-        if (spawnDef?.interactionType === 'starter-select') {
+        if (spawnDef?.interactionType === 'starter-select' && !gm.getFlag('receivedStarter')) {
           this.scene.pause();
           this.scene.launch('DialogueScene', { dialogue });
           this.scene.get('DialogueScene').events.once('shutdown', () => {
@@ -447,6 +456,9 @@ export class OverworldScene extends Phaser.Scene {
         // Regular dialogue
         this.scene.pause();
         this.scene.launch('DialogueScene', { dialogue });
+        this.scene.get('DialogueScene').events.once('shutdown', () => {
+          this.scene.resume();
+        });
         return;
       }
     }
@@ -472,6 +484,10 @@ export class OverworldScene extends Phaser.Scene {
   private launchStarterSelection(): void {
     this.scene.pause();
     this.scene.launch('StarterSelectScene');
+    // After starter selection completes, re-spawn NPCs so flag-gated ones update
+    this.scene.get('StarterSelectScene').events.once('shutdown', () => {
+      this.respawnNPCs();
+    });
   }
 
   // ── Animation helper ──────────────────────────────────────
