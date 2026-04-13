@@ -41,12 +41,14 @@ export class InventoryScene extends Phaser.Scene {
   private targetCursor = 0;
   private targetTexts: Phaser.GameObjects.Text[] = [];
   private targetPanel?: NinePatchPanel;
+  private battleMode = false;
 
   constructor() {
     super({ key: 'InventoryScene' });
   }
 
-  create(): void {
+  create(data?: { battleMode?: boolean }): void {
+    this.battleMode = data?.battleMode ?? false;
     this.detailGroup = this.add.group();
     this.itemListGroup = this.add.group();
 
@@ -307,7 +309,14 @@ export class InventoryScene extends Phaser.Scene {
     if (eff.type === 'heal-hp' || eff.type === 'heal-status') {
       this.openTargetPicker(idx);
     } else if (eff.type === 'capture') {
-      // Pokeballs can only be used in battle
+      if (this.battleMode) {
+        // In battle: consume ball and signal BattleUIScene
+        const gm = GameManager.getInstance();
+        gm.removeItem(entry.item.id, 1);
+        this.events.emit('use-pokeball', entry.item.id);
+        this.scene.stop();
+        return;
+      }
       this.showMessage('Can only be used in battle!');
     } else {
       this.showMessage("Can't use that here.");

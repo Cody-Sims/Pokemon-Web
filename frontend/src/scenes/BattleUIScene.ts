@@ -2,11 +2,13 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
+import { itemData } from '@data/item-data';
 import { MoveExecutor } from '@battle/MoveExecutor';
 import { ExperienceCalculator } from '@battle/ExperienceCalculator';
 import { StatusEffectHandler } from '@battle/StatusEffectHandler';
 import { AbilityHandler } from '@battle/AbilityHandler';
 import { HeldItemHandler } from '@battle/HeldItemHandler';
+import { CatchCalculator } from '@battle/CatchCalculator';
 import type { WeatherManager } from '@battle/WeatherManager';
 import type { BattleScene } from './BattleScene';
 import type { PokemonInstance } from '@data/interfaces';
@@ -124,13 +126,21 @@ export class BattleUIScene extends Phaser.Scene {
   private selectAction(): void {
     switch (this.actionTexts[this.cursor].text) {
       case 'FIGHT': this.openMoveMenu(); break;
-      case 'BAG':
+      case 'BAG': {
         this.scene.sleep();
-        this.scene.launch('InventoryScene');
-        this.scene.get('InventoryScene').events.once('shutdown', () => {
+        this.scene.launch('InventoryScene', { battleMode: true });
+        const invScene = this.scene.get('InventoryScene');
+        // Listen for pokeball use
+        invScene.events.once('use-pokeball', (ballItemId: string) => {
+          this.scene.wake();
+          this.handlePokeBallUse(ballItemId);
+        });
+        invScene.events.once('shutdown', () => {
+          // If shutdown without using a ball, just wake back up
           this.scene.wake();
         });
         break;
+      }
       case 'POKEMON':
         this.scene.sleep();
         this.scene.launch('PartyScene');
@@ -606,6 +616,170 @@ export class BattleUIScene extends Phaser.Scene {
       duration: 900,
       ease: 'Power2',
       onComplete: () => popup.destroy(),
+    });
+  }
+
+  // ─── Poké Ball catch sequence ───
+
+  private handlePokeBallUse(ballItemId: string): void {
+    const b = this.battle();
+
+    // Can't catch trainer-owned Pokémon
+    if (b.isTrainerBattle) {
+      this.msg("You can't catch a trainer's Pokémon!");
+      this.state = 'message';
+      return;
+    }
+
+    this.state = 'animating';
+    this.hideActions();
+
+    const ballData = itemData[ballItemId];
+    const multiplier = ballData?.effect?.catchRateMultiplier ?? 1;
+    const result = CatchCalculator.calculate(b.enemyPokemon, multiplier);
+    const audio = AudioManager.getInstance();
+
+    this.msg(`You threw a ${ballData?.name ?? 'Poké Ball'}!`);
+    audio.playSFX(SFX.BALL_THROW);
+
+    // Ball throw animation: arc from player → enemy
+    const ballGfx = this.add.circle(200, 400, 8, 0xff3333).setDepth(100);
+    this.add.circle(200, 400, 4, 0xffffff).setDepth(101); // highlight
+
+    // Arc tween to enemy position
+    this.tweens.add({
+      targets: ballGfx,
+      x: b.enemySprite.x,
+      y: b.enemySprite.y,
+      duration: 500,
+      ease: 'Sine.easeIn',
+      onComplete: () => {
+        ballGfx.destroy();
+        // Enemy disappears into ball
+        b.enemySprite.setAlpha(0);
+
+        // Shake sequence
+        this.runShakeSequence(result.shakes, result.caught, 0);
+      },
+    });
+  }
+
+  private runShakeSequence(totalShakes: number, caught: boolean, currentShake: number): void {
+    const b = this.battle();
+    const audio = AudioManager.getInstance();
+
+    if (currentShake < totalShakes) {
+      // Draw ball on ground
+      const ballX = b.enemySprite.x;
+      const ballY = b.enemySprite.y + 20;
+      const shakeGfx = this.add.circle(ballX, ballY, 10, 0xff3333).setDepth(100);
+      const shakeHighlight = this.add.circle(ballX - 2, ballY - 2, 4, 0xffffff).setDepth(101);
+
+      this.time.delayedCall(400, () => {
+        audio.playSFX(SFX.BALL_SHAKE);
+        // Wobble animation
+        this.tweens.add({
+          targets: [shakeGfx, shakeHighlight],
+          x: ballX + 8,
+          duration: 100,
+          yoyo: true,
+          repeat: 1,
+          onComplete: () => {
+            shakeGfx.destroy();
+            shakeHighlight.destroy();
+            this.time.delayedCall(300, () => {
+              this.runShakeSequence(totalShakes, caught, currentShake + 1);
+            });
+          },
+        });
+      });
+    } else if (caught) {
+      // Catch success!
+      this.onCatchSuccess();
+    } else {
+      // Broke free
+      this.onCatchFailure();
+    }
+  }
+
+  private onCatchSuccess(): void {
+    const b = this.battle();
+    const audio = AudioManager.getInstance();
+    const gm = GameManager.getInstance();
+    const enemy = b.enemyPokemon;
+    const enemyData = pokemonData[enemy.dataId];
+    const name = enemyData?.name ?? '???';
+
+    audio.playSFX(SFX.CATCH_SUCCESS);
+
+    // Star/sparkle effect
+    const sparkle = this.add.text(b.enemySprite.x, b.enemySprite.y, '✦', {
+      fontSize: '32px', color: '#ffcc00',
+    }).setOrigin(0.5).setDepth(100);
+    this.tweens.add({
+      targets: sparkle,
+      y: sparkle.y - 30,
+      alpha: 0,
+      duration: 800,
+      onComplete: () => sparkle.destroy(),
+    });
+
+    this.msg(`Gotcha! ${name} was caught!`);
+
+    this.time.delayedCall(1800, () => {
+      // Add to party (or auto-deposit if full)
+      const added = gm.addToParty(enemy);
+      gm.markSeen(enemy.dataId);
+      gm.markCaught(enemy.dataId);
+
+      if (added && gm.getParty().length > 6) {
+        this.msg(`${name} was sent to the PC!`);
+      } else if (added) {
+        this.msg(`${name} was added to your party!`);
+      } else {
+        this.msg(`All boxes are full! ${name} could not be stored.`);
+      }
+
+      this.time.delayedCall(1500, () => {
+        // Play victory BGM
+        audio.playBGM(BGM.VICTORY);
+        this.state = 'message';
+        this.msg('Press Enter to continue...');
+        this.waitForConfirmThen(() => this.endBattle());
+      });
+    });
+  }
+
+  private onCatchFailure(): void {
+    const b = this.battle();
+    const enemyData = pokemonData[b.enemyPokemon.dataId];
+    const name = enemyData?.name ?? '???';
+
+    // Enemy reappears
+    b.enemySprite.setAlpha(1);
+
+    const breakMessages = [
+      `Oh no! ${name} broke free!`,
+      `Aww! It appeared to be caught!`,
+      `Aargh! Almost had it!`,
+      `Shoot! It was so close, too!`,
+    ];
+    const msg = breakMessages[Math.floor(Math.random() * breakMessages.length)];
+    this.msg(msg);
+
+    // Enemy gets a free attack turn
+    this.time.delayedCall(1200, () => {
+      const enemyMoveId = this.pickEnemyMove(b.enemyPokemon);
+      const enemyMove = moveData[enemyMoveId];
+      const enemyName = enemyData?.name ?? '???';
+      const moveName = enemyMove?.name ?? enemyMoveId;
+
+      this.executeMove(
+        [{ attacker: b.enemyPokemon, defender: b.playerPokemon, moveId: enemyMoveId, isPlayer: false }],
+        0,
+        enemyName,
+        moveName,
+      );
     });
   }
 
