@@ -79,6 +79,18 @@ export const Tile = {
   CLIFF_FACE:    57,    // cliff/mountain wall (solid)
   CAVE_FLOOR:    58,    // dark cave floor (walkable)
   CAVE_WALL:     59,    // cave wall (solid)
+
+  // Exterior building details
+  HOUSE_WINDOW:  60,    // window on house wall exterior (solid)
+  LAB_WINDOW:    61,    // window on lab wall exterior (solid)
+  CENTER_WINDOW: 62,    // window on PokéCenter wall (solid)
+
+  // Biome tree/grass variants
+  PINE_TREE:     63,    // evergreen/pine tree for forest biomes (solid)
+  AUTUMN_TREE:   64,    // orange/red autumn tree (solid)
+  PALM_TREE:     65,    // tropical palm tree for beach (solid)
+  DARK_GRASS:    66,    // darker forest grass (walkable)
+  LIGHT_GRASS:   67,    // light meadow grass (walkable)
 } as const;
 
 /**
@@ -94,6 +106,12 @@ export const OVERLAY_BASE: Partial<Record<number, number>> = {
   [Tile.FENCE]:         Tile.GRASS,
   [Tile.LEDGE]:         Tile.GRASS,
   [Tile.DENSE_TREE]:    Tile.GRASS,
+  // Doors overlay on their wall type
+  [Tile.HOUSE_DOOR]:    Tile.HOUSE_WALL,
+  [Tile.LAB_DOOR]:      Tile.LAB_WALL,
+  [Tile.CENTER_DOOR]:   Tile.CENTER_WALL,
+  [Tile.MART_DOOR]:     Tile.MART_WALL,
+  [Tile.GYM_DOOR]:      Tile.GYM_WALL,
   // Interior: overlay on floor
   [Tile.TABLE]:         Tile.FLOOR,
   [Tile.CHAIR]:         Tile.FLOOR,
@@ -120,6 +138,14 @@ export const OVERLAY_BASE: Partial<Record<number, number>> = {
   [Tile.ARENA_MARK]:    Tile.ROCK_FLOOR,
   [Tile.ROCK]:          Tile.GRASS,
   [Tile.BUSH]:          Tile.GRASS,
+  // Exterior windows overlay on their wall type
+  [Tile.HOUSE_WINDOW]:  Tile.HOUSE_WALL,
+  [Tile.LAB_WINDOW]:    Tile.LAB_WALL,
+  [Tile.CENTER_WINDOW]: Tile.CENTER_WALL,
+  // Biome trees overlay on grass
+  [Tile.PINE_TREE]:     Tile.GRASS,
+  [Tile.AUTUMN_TREE]:   Tile.GRASS,
+  [Tile.PALM_TREE]:     Tile.SAND,
 };
 
 // Colors for each tile type
@@ -186,6 +212,16 @@ export const TILE_COLORS: Record<number, number> = {
   [Tile.CLIFF_FACE]:    0x706050,
   [Tile.CAVE_FLOOR]:    0x605848,
   [Tile.CAVE_WALL]:     0x484038,
+  // Exterior windows
+  [Tile.HOUSE_WINDOW]:  0x90c8e0,
+  [Tile.LAB_WINDOW]:    0x90c8e0,
+  [Tile.CENTER_WINDOW]: 0x90c8e0,
+  // Biome variants
+  [Tile.PINE_TREE]:     0x1a5020,
+  [Tile.AUTUMN_TREE]:   0xc06820,
+  [Tile.PALM_TREE]:     0x40a040,
+  [Tile.DARK_GRASS]:    0x3a7a28,
+  [Tile.LIGHT_GRASS]:   0x70b848,
 };
 
 // Solid tiles that block movement
@@ -203,6 +239,9 @@ export const SOLID_TILES = new Set<number>([
   Tile.TV, Tile.BED, Tile.STAIRS, Tile.PINK_COUNTER, Tile.MART_SHELF,
   Tile.LAB_MACHINE, Tile.DISPLAY_CASE, Tile.FOSSIL, Tile.BOULDER,
   Tile.ROCK, Tile.BUSH, Tile.CLIFF_FACE, Tile.CAVE_WALL,
+  // Exterior windows + biome trees
+  Tile.HOUSE_WINDOW, Tile.LAB_WINDOW, Tile.CENTER_WINDOW,
+  Tile.PINE_TREE, Tile.AUTUMN_TREE, Tile.PALM_TREE,
 ]);
 
 // ─── Map definition types ───
@@ -327,6 +366,16 @@ const CHAR_TO_TILE: Record<string, number> = {
   '^': Tile.CLIFF_FACE,
   ',': Tile.CAVE_FLOOR,
   ';': Tile.CAVE_WALL,
+  // Exterior windows (use & for house window to avoid W=WATER conflict)
+  '&': Tile.HOUSE_WINDOW,
+  '@': Tile.LAB_WINDOW,
+  '$': Tile.CENTER_WINDOW,
+  // Biome variants
+  '1': Tile.PINE_TREE,
+  '2': Tile.AUTUMN_TREE,
+  '3': Tile.PALM_TREE,
+  '4': Tile.DARK_GRASS,
+  '5': Tile.LIGHT_GRASS,
 };
 
 export function parseMap(rows: string[]): number[][] {

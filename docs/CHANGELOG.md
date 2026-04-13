@@ -6,6 +6,8 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Fixed
+- **House windows displaying as water**: Uppercase 'W' in Pallet Town house walls mapped to WATER tile. Added HOUSE_WINDOW (60), LAB_WINDOW (61), CENTER_WINDOW (62) exterior window tiles. Fixed Pallet Town, Viridian City, Pewter City maps.
+- **Doors, trees, flowers with opaque backgrounds**: Made tree, flower, and all 5 door tiles (house/lab/center/mart/gym) use transparent backgrounds. Added doors to OVERLAY_BASE so their wall type renders underneath. Trees show grass through trunk gaps, flowers sit on grass, doors show wall texture behind them.
 - Move category indicators (P/S/St) and type color dots no longer linger on screen after closing the move menu
 - ESC key no longer exits battle from the action menu; only the RUN action can flee
 

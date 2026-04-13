@@ -5,7 +5,7 @@ const pewterGround = parseMap([
   'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT', // 0
   'T............................T', // 1
   'T..RRRRR.....PP......RRRRR...T', // 2  - houses
-  'T..HHHHH.....PP......HHHHH...T', // 3
+  'T..HH&HH.....PP......HH&HH...T', // 3  - walls with windows
   'T..HHDHH.....PP......HHDHH...T', // 4
   'T....PP......PP........PP....T', // 5
   'T..PPPPPPPPPPPPPPPPPPPPPP....T', // 6  - main east-west road
@@ -28,7 +28,7 @@ const pewterGround = parseMap([
   'T..PP........................T', // 23
   'T..PP........................T', // 24
   'T..PP.....RRRRR..............T', // 25 - museum/house
-  'T..PP.....HHHHH..............T', // 26
+  'T..PP.....HH&HH..............T', // 26 - museum wall with window
   'T..PP.....HHDHH..............T', // 27
   'T..PP........................T', // 28
   'TTTTTTTTTTTTTTPPTTTTTTTTTTTTTT', // 29 - south exit to Route 2 / Forest

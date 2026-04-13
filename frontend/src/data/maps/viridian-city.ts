@@ -5,7 +5,7 @@ const viridianGround = parseMap([
   'TTTTTTTTTTTTTTPPTTTTTTTTTTTTTT', // 0  - north exit to Route 2
   'T..............PP............T', // 1
   'T..RRRRR.......PP.......RRRRRT', // 2  - houses
-  'T..HHHHH.......PP.......HHHHHT', // 3
+  'T..HH&HH.......PP.......HH&HHT', // 3  - walls with windows
   'T..HHDHH.......PP.......HHDHHT', // 4
   'T....PP........PP........PP..T', // 5
   'T..PPPPPPPPPPPPPPPPPPPPPPPP..T', // 6  - main east-west road
