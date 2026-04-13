@@ -27,10 +27,10 @@ const palletGround = parseMap([
   'T.........PPPPP.........T', // 21
   '..........PPPPP..........', // 22 - tree border ends, open south
   'ss.....PPPPPPPPPPPPP..ss3', // 23 - sand, path widens to pier, palm
-  'ss7....PP..8888..PP..7ss.', // 24 - wet sand, path forks around dock
-  's77....PP..8..8..PP..77sW', // 25 - dock extends, water edge E
-  'W7s....PP..8..8..PP..s7WW', // 26 - shore curves, water grows
-  'WW7s...PP..8..8..PP.s7WWW', // 27 - dock over water
+  'ss7....PP.888888.PP..7ss.', // 24 - wet sand, solid dock platform
+  's77....PP.888888.PP.77ssW', // 25 - dock extends south
+  'W7s....PP.888888.PP..s7WW', // 26 - dock over shore
+  'WW7s...PP.888888.PP.s7WWW', // 27 - dock over water
   'WWW7s..PPPP8888PPPP.s7WWW', // 28 - dock end platform
   'WWWWWWWWWWWWWWWWWWWWWWWWW', // 29 - open sea
 ]);
