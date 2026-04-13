@@ -415,6 +415,8 @@ export interface TrainerSpawn {
   textureKey: string;
   facing: Direction;
   lineOfSight: number;
+  /** Game flag that must be set for this trainer to appear. */
+  condition?: string;
 }
 
 export interface WarpDefinition {
