@@ -14,7 +14,8 @@
     "test:e2e": "npx playwright test --config tests/e2e/playwright.config.ts",
     "test:fuzz": "npx playwright test --config tests/e2e/playwright.config.ts tests/fuzz/",
     "test:coverage": "vitest run --config tests/vitest.config.ts --coverage",
-    "test:all": "npm run test && npm run test:e2e"
+    "test:all": "npm run test && npm run test:e2e",
+    "deploy": "npm run build && npx gh-pages -d dist"
   },
   "keywords": [],
   "author": "",

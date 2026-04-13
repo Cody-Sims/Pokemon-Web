@@ -6,6 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Phase 11: Deployment — GitHub Pages — COMPLETE**
+  - Set Vite `base: '/Pokemon-Web/'` for correct asset paths on GitHub Pages
+  - Created `.github/workflows/deploy.yml` — GitHub Actions CI/CD: checkout → Node 20 → npm ci → build → upload artifact → deploy to Pages
+  - Added `npm run deploy` script (manual deploy via gh-pages package)
+  - Production build verified with correct base path in output HTML
+
 - **Phase 10: Polish & Quality of Life — COMPLETE**
   - Battle intro slide-in animation: sprites enter from offscreen (enemy from right, player from left), info boxes slide in from top/bottom with Back.easeOut easing
   - EXP bar in battle HUD: blue progress bar below player HP, animates on EXP gain with SFX

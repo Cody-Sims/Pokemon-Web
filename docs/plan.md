@@ -55,32 +55,8 @@ A browser-based Pokémon-style RPG built with **Phaser 3 + TypeScript + Vite**. 
 
 ---
 
-## Phase 11: Deployment
-
-**Goal:** The game is live on the web for anyone to play.
-
-### 11.1 — Production Build
-```bash
-npm run build    # Outputs to dist/
-```
-- Vite tree-shakes, minifies, and bundles all TypeScript + assets.
-- Verify the `dist/` folder runs locally via `npm run preview`.
-
-### 11.2 — Hosting Options
-
-| Platform | Method | Notes |
-|----------|--------|-------|
-| **GitHub Pages** | `npx gh-pages -d dist` or GitHub Actions | Free, simple, custom domain support |
-| **Netlify** | Drag-and-drop `dist/` or Git integration | Free tier, automatic deploys on push |
-| **Vercel** | Git integration | Free tier, fast CDN |
-| **itch.io** | Upload `dist/` as HTML game | Game-focused community, embed support |
-
-### 11.3 — CI/CD (Optional)
-- GitHub Actions workflow: on push to `main` → `npm ci` → `npm run build` → deploy to GitHub Pages.
-- Run `tsc --noEmit` as a type-check step before building.
-
-### Deliverable
-A public URL where anyone can play the game in their browser.
+## Phase 11: Deployment — ✅ COMPLETE
+> See [CHANGELOG.md](CHANGELOG.md) for details. Vite base path set to `/Pokemon-Web/`. GitHub Actions workflow auto-deploys on push to main. Manual deploy via `npm run deploy`.
 
 ---
 

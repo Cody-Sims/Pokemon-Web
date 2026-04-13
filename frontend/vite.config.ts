@@ -3,6 +3,7 @@ import path from 'path';
 
 export default defineConfig({
   root: path.resolve(__dirname),
+  base: '/Pokemon-Web/',
   resolve: {
     alias: {
       '@scenes': path.resolve(__dirname, 'src/scenes'),
