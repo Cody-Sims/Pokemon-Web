@@ -3,44 +3,44 @@ import { MapDefinition, parseMap } from '../shared';
 const forestGround = parseMap([
   // 0123456789012345678901234
   'XXXXXXXX.PP.XXXXXXXXXXX.X', // 0  - north exit to Pewter side
-  'X.........PP............X', // 1
-  'X..GGG....PP.....GGG....X', // 2
-  'X..GGG....PP.....GGG....X', // 3
-  'X..GGG....PP.....GGG....X', // 4
-  'X.........PP............X', // 5
-  'X....PPPPPPPPPPP........X', // 6
-  'X....PP.................X', // 7
-  'X....PP..GGG...GGG......X', // 8
-  'X....PP..GGG...GGG......X', // 9
-  'X....PP..GGG...GGG......X', // 10
-  'X....PP.................X', // 11
-  'X....PPPPPPPPPPP........X', // 12
-  'X.........PP............X', // 13
-  'X..GGG....PP....GGG.....X', // 14
-  'X..GGG....PP....GGG.....X', // 15
-  'X..GGG....PP....GGG.....X', // 16
-  'X.........PP............X', // 17
-  'X.........PP............X', // 18
-  'X....PPPPPPPPPPP........X', // 19
-  'X....PP.................X', // 20
-  'X....PP.....GGG.........X', // 21
-  'X....PP.....GGG.........X', // 22
-  'X....PP.....GGG.........X', // 23
-  'X....PPPPPPPPPPP........X', // 24
-  'X.........PP............X', // 25
-  'X..GGG....PP.....GGG....X', // 26
-  'X..GGG....PP.....GGG....X', // 27
-  'X..GGG....PP.....GGG....X', // 28
-  'X.........PP............X', // 29
-  'X.........PP............X', // 30
-  'X...GGG...PP...GGG......X', // 31
-  'X...GGG...PP...GGG......X', // 32
-  'X...GGG...PP...GGG......X', // 33
-  'X.........PP............X', // 34
-  'X..f......PP......f.....X', // 35
-  'X.........PP............X', // 36
-  'X.........PP............X', // 37
-  'X.........PP............X', // 38
+  'X..1......PP......1.....X', // 1  pines frame the entrance
+  'X..GGG.%..PP...GGGG.....X', // 2  irregular grass, bush
+  'X.GGG.....PP....GGG...1.X', // 3  shifted patch, pine
+  'X..GG.....PP.....GGG....X', // 4  varied grass shapes
+  'X.........PP..1.........X', // 5  lone pine in clearing
+  'X....PPPPPPPPPPP........X', // 6  ── east-west connector ──
+  'X..1.PP........~.1......X', // 7  rocky clearing: pines & rock
+  'X....PP..GGG..¢GGG......X', // 8  moss boulder among trees
+  'X....PP..GGG...GGG...%..X', // 9  bush at edge
+  'X....PP...GG...GGG......X', // 10 thinning grass
+  'X..%.PP.......~.........X', // 11 bush & rock on forest floor
+  'X....PPPPPPPPPPP........X', // 12 ── east-west connector ──
+  'X..1......PP.....%......X', // 13 pine, undergrowth
+  'X....GG...PP....GGG...1.X', // 14 irregular grass, pine
+  'X...GGG...PP....GGG.....X', // 15 dense grass patch
+  'X....GG...PP....GG......X', // 16 thinning at edges
+  'X.........PP...1........X', // 17 lone pine
+  'X....¢....PP............X', // 18 ancient moss boulder
+  'X....PPPPPPPPPPP........X', // 19 ── east-west connector ──
+  'X.ff.PP..4444...........X', // 20 flowers & deep old forest
+  'X.f..PP.44444.f.........X', // 21 dark canopy floor
+  'X....PP..4444..GGG......X', // 22 dark grass fades to tall
+  'X....PP...44~...........X', // 23 rock in dark grove
+  'X....PPPPPPPPPPP........X', // 24 ── east-west connector ──
+  'X..%......PP.....1......X', // 25 dense undergrowth section
+  'X..GGG.1..PP...GGGG.....X', // 26 pine among grass
+  'X..GGG....PP.....GGG.%..X', // 27 bush at clearing edge
+  'X..GGG....PP.....GG.....X', // 28 uneven grass
+  'X....~....PP......¢.....X', // 29 scattered rock & mossy stone
+  'X.........PP....1.%.....X', // 30 pine & bush
+  'X...GG....PP...GGG......X', // 31 staggered grass
+  'X...GGG.1.PP...GG.......X', // 32 pine breaks up grass
+  'X...GG....PP...GGG......X', // 33 irregular patch
+  'X......1..PP.......%....X', // 34 pine & bush in clearing
+  'X..f..1...PP......f.....X', // 35 wildflowers, pine
+  'X.........PP..%..1......X', // 36 bush & pine near exit
+  'X...1.....PP.........1..X', // 37 pines near south exit
+  'X.........PP............X', // 38 south approach
   'XXXXXXXX.PP.XXXXXXXXXXX.X', // 39 - south exit to Route 2
 ]);
 
