@@ -82,7 +82,7 @@ After making changes:
 - Use `it.each()` for data-driven exhaustive coverage
 
 ## Git Workflow (MANDATORY)
-After completing a task, **stage and commit all changed files** with a short but detailed commit message describing what was done. Use imperative mood (e.g., "Add fire-type moves and update type chart"). If a task spans multiple logical changes, use separate commits for each. Do not amend or force-push without explicit approval.
+After completing a task, **stage only the files you changed** with `git add <file1> <file2> ...` — never use `git add -A` or `git add .` — then commit with a short but detailed commit message describing what was done. Use imperative mood (e.g., "Add fire-type moves and update type chart"). If a task spans multiple logical changes, use separate commits for each. Do not amend or force-push without explicit approval.
 
 ## Key Patterns
 - Scenes communicate via `EventManager` (custom event bus), not direct references.
