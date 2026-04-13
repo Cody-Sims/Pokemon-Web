@@ -71,6 +71,7 @@ export interface PokemonInstance {
   friendship: number;
   ability?: string;
   heldItem?: string | null;
+  isShiny?: boolean;
 }
 
 export interface MoveInstance {

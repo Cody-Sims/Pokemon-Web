@@ -11,7 +11,7 @@ export class MenuScene extends Phaser.Scene {
   private cursor = 0;
   private menuItems!: Phaser.GameObjects.Text[];
   private cursorIcon!: Phaser.GameObjects.Text;
-  private menuLabels = ['POKEMON', 'BAG', 'SAVE', 'OPTIONS', 'EXIT'];
+  private menuLabels = ['POKEDEX', 'POKEMON', 'BAG', 'SAVE', 'OPTIONS', 'EXIT'];
 
   constructor() {
     super({ key: 'MenuScene' });
@@ -78,6 +78,13 @@ export class MenuScene extends Phaser.Scene {
   private selectOption(): void {
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
     switch (this.menuLabels[this.cursor]) {
+      case 'POKEDEX':
+        this.scene.sleep();
+        this.scene.launch('PokedexScene');
+        this.scene.get('PokedexScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
+        break;
       case 'POKEMON':
         this.scene.sleep();
         this.scene.launch('PartyScene');

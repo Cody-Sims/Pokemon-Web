@@ -1,5 +1,5 @@
-import { encounterTables } from '@data/encounter-tables';
-import { BASE_ENCOUNTER_RATE } from '@utils/constants';
+import { encounterTables, fishingTables, RodTier } from '@data/encounter-tables';
+import { BASE_ENCOUNTER_RATE, SHINY_CHANCE, FISHING_ENCOUNTER_RATE } from '@utils/constants';
 import { weightedRandom, randomInt } from '@utils/math-helpers';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
@@ -83,7 +83,24 @@ export class EncounterSystem {
       status: null,
       exp: ExperienceCalculator.expForLevel(level),
       friendship: 70,
+      isShiny: Math.random() < SHINY_CHANCE,
     };
+  }
+
+  /** Attempt a fishing encounter. Returns a wild Pokémon if successful, else null. */
+  static fishEncounter(mapKey: string, rod: RodTier): PokemonInstance | null {
+    if (Math.random() > FISHING_ENCOUNTER_RATE) return null;
+
+    const mapTables = fishingTables[mapKey];
+    if (!mapTables) return null;
+    const table = mapTables[rod];
+    if (!table || table.length === 0) return null;
+
+    const weights = table.map(e => e.weight);
+    const index = weightedRandom(weights);
+    const entry = table[index];
+    const level = randomInt(entry.levelRange[0], entry.levelRange[1]);
+    return EncounterSystem.createWildPokemon(entry.pokemonId, level);
   }
 
   useRepel(steps: number): void {

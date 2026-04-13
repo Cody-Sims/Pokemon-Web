@@ -96,6 +96,21 @@ export const itemData: Record<string, ItemData> = {
     description: 'A high-tech encyclopedia that records Pokémon data.',
     effect: { type: 'key' },
   },
+  'old-rod': {
+    id: 'old-rod', name: 'Old Rod', category: 'key',
+    description: 'A basic fishing rod. Use it by water to catch Pokémon.',
+    effect: { type: 'key' },
+  },
+  'good-rod': {
+    id: 'good-rod', name: 'Good Rod', category: 'key',
+    description: 'A decent fishing rod. Catches a wider variety of Pokémon.',
+    effect: { type: 'key' },
+  },
+  'super-rod': {
+    id: 'super-rod', name: 'Super Rod', category: 'key',
+    description: 'The best fishing rod. Catches rare water Pokémon.',
+    effect: { type: 'key' },
+  },
 
   // ─── Held Items (battle effect handled by HeldItemHandler) ───
   'leftovers': {

@@ -13,6 +13,8 @@ export const RANDOM_MAX = 1.0;
 
 // Encounter
 export const BASE_ENCOUNTER_RATE = 0.1; // 10% per step in grass
+export const SHINY_CHANCE = 1 / 4096;
+export const FISHING_ENCOUNTER_RATE = 0.5; // 50% chance on each cast
 
 // EXP
 export const TRAINER_EXP_MULTIPLIER = 1.5;

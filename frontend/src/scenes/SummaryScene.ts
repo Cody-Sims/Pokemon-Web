@@ -124,7 +124,7 @@ export class SummaryScene extends Phaser.Scene {
     const abilityName = p.ability ?? pData?.abilities?.[0] ?? 'None';
     const heldItemName = p.heldItem ? (itemData[p.heldItem]?.name ?? p.heldItem) : 'None';
     const rows: [string, string][] = [
-      ['Species', pData?.name ?? '???'],
+      ['Species', (pData?.name ?? '???') + (p.isShiny ? ' ★' : '')],
       ['Dex No.', `#${String(p.dataId).padStart(3, '0')}`],
       ['Nature', `${p.nature.charAt(0).toUpperCase() + p.nature.slice(1)} (${getNatureDescription(p.nature)})`],
       ['Ability', abilityName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')],

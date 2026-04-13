@@ -141,6 +141,42 @@ export class BattleScene extends Phaser.Scene {
 
     // Launch battle UI overlay
     this.scene.launch('BattleUIScene');
+
+    // Shiny sparkle effect on intro
+    if (this.enemyPokemon.isShiny) {
+      this.time.delayedCall(introDelay + slideDuration + 200, () => {
+        this.showShinySparkle(this.enemySprite);
+      });
+    }
+    if (this.playerPokemon.isShiny) {
+      this.time.delayedCall(introDelay + slideDuration + 300, () => {
+        this.showShinySparkle(this.playerSprite);
+      });
+    }
+  }
+
+  /** Show shiny sparkle particle effect around a sprite. */
+  private showShinySparkle(sprite: Phaser.GameObjects.Image): void {
+    const sparkles = ['✦', '✧', '★', '✦'];
+    for (let i = 0; i < 6; i++) {
+      const angle = (i / 6) * Math.PI * 2;
+      const dist = 25;
+      const s = this.add.text(
+        sprite.x + Math.cos(angle) * dist,
+        sprite.y + Math.sin(angle) * dist,
+        sparkles[i % sparkles.length],
+        { fontSize: '16px', color: '#ffee44' },
+      ).setOrigin(0.5).setDepth(50);
+      this.tweens.add({
+        targets: s,
+        x: sprite.x + Math.cos(angle) * (dist + 20),
+        y: sprite.y + Math.sin(angle) * (dist + 20),
+        alpha: 0,
+        duration: 600,
+        delay: i * 80,
+        onComplete: () => s.destroy(),
+      });
+    }
   }
 
   /** Update HP bar widths based on current HP values. */

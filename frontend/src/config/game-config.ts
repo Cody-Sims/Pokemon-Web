@@ -15,6 +15,7 @@ import { StarterSelectScene } from '@scenes/StarterSelectScene';
 import { SettingsScene } from '@scenes/SettingsScene';
 import { ShopScene } from '@scenes/ShopScene';
 import { PCScene } from '@scenes/PCScene';
+import { PokedexScene } from '@scenes/PokedexScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -47,5 +48,6 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     SettingsScene,
     ShopScene,
     PCScene,
+    PokedexScene,
   ],
 };

@@ -73,7 +73,8 @@ pokemon-web/
 │       │   ├── SummaryScene.ts         # 3-tab Pokémon detail (INFO/STATS/MOVES)
 │       │   ├── TransitionScene.ts      # Fade transitions between scenes
 │       │   ├── StarterSelectScene.ts   # Starter Pokémon selection overlay
-│       │   └── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
+│       │   ├── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
+│       │   └── PokedexScene.ts         # Pokédex species browser (seen/caught)
 │       │
 │       ├── entities/                   # Game object classes
 │       │   ├── Player.ts              # Grid-locked sprite + GridMovement
@@ -165,8 +166,9 @@ pokemon-web/
 │       │
 │       ├── systems/                    # Reusable gameplay systems
 │       │   ├── GridMovement.ts        # Grid-locked tween movement engine
-│       │   ├── EncounterSystem.ts     # Step counter → random encounter trigger
-│       │   ├── InputManager.ts        # Unified WASD/Arrow/gamepad → direction
+│       │   ├── EncounterSystem.ts     # Step counter → random encounter + fishing
+│       │   ├── GameClock.ts           # Accelerated day/night cycle (10× speed)
+│       │   ├── InputManager.ts        # Unified WASD/Arrow/touch → direction
 │       │   └── AnimationHelper.ts     # Registers shared sprite animations
 │       │
 │       ├── ui/                         # Reusable UI components
