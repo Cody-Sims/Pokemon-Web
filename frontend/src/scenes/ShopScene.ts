@@ -5,7 +5,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { itemData } from '@data/item-data';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { MenuController } from '@ui/MenuController';
-import { COLORS, FONTS, SPACING } from '@ui/theme';
+import { COLORS, FONTS, SPACING, mobileFontSize, isMobile } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { ItemData } from '@data/interfaces';
 
@@ -106,8 +106,16 @@ export class ShopScene extends Phaser.Scene {
     this.scrollUpIndicator = this.add.text(250, 80, '▲', { ...FONTS.body, color: COLORS.textDim }).setOrigin(0.5).setVisible(false);
     this.scrollDownIndicator = this.add.text(250, GAME_HEIGHT - 50, '▼', { ...FONTS.body, color: COLORS.textDim }).setOrigin(0.5).setVisible(false);
 
-    // Close hint
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, 'ESC to leave  |  ◀/▶ or Q/E switch tabs', FONTS.caption).setOrigin(0.5);
+    // Close hint / tappable close button
+    if (isMobile()) {
+      const closeBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, '✕  LEAVE', {
+        ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      closeBtn.setPadding(16, 8, 16, 8);
+      closeBtn.on('pointerdown', () => this.close());
+    } else {
+      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, 'ESC to leave  |  ◀/▶ or Q/E switch tabs', FONTS.caption).setOrigin(0.5);
+    }
 
     // Tab switching keys
     const switchTab = () => {

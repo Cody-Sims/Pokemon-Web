@@ -6,6 +6,22 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Virtual joystick for mobile**: Replace static D-pad with a dynamic virtual joystick that appears at the user's touch location in the overworld. Drag to move in 4 cardinal directions; auto-hides on release.
+- **Mobile-scaled UI**: Added `mobileFontSize()`, `MOBILE_SCALE`, and `isMobile()` helpers in theme.ts. Menus, battle actions, dialogue, and move lists all scale up 1.35× on touch devices for readability.
+- **Tap-to-advance dialogue**: DialogueScene now responds to touch/tap to advance text and make choices.
+- **Tappable close/exit buttons**: InventoryScene, PokedexScene, ShopScene, and PCScene now show prominent tappable close buttons on mobile instead of keyboard-only hints.
+- **Larger A/B action buttons**: Touch control action buttons (confirm/cancel) increased from 52px to 72px with bigger labels for easier tapping.
+- **Multi-touch support**: Enabled 3 active pointers in Phaser config so joystick and action buttons work simultaneously.
+- **VirtualJoystick.ts**: New UI component in `frontend/src/ui/` for the floating joystick with dead zone, angle-based 4-way direction, and mouse fallback for desktop testing.
+
+### Changed
+- **TouchControls.ts**: Rewrote to use VirtualJoystick instead of static D-pad. Joystick is hidden during menus. Action buttons repositioned and enlarged.
+- **BattleUIScene**: Action and move menu items scaled for mobile with padding for touch targets.
+- **TitleScene**: Menu items scaled and padded for mobile touch.
+- **MenuScene**: Panel and menu items scale with MOBILE_SCALE for touch devices.
+
+## [2026-04-12]
+### Added
 - **Rival encounters placed on maps**: Kael rival-1 in Oak's Lab (post-starter trigger), Kael rival-2 on Route 3 (Tide Pool Path), Kael tag-battle NPC in Ironvale City (story-gated), Kael rival-5 on Victory Road entrance, Marina encounter on Route 2
 - **7 missing quest definitions**: Added Captain Stern's Engine, The Chef's Special, Power Restoration, The Restless Spirit, The Dragon's Lament, Volcanic Survey, and The Father's Trail to quest-data.ts (12 total quests now defined)
 - **Dr. Ash NPC**: Placed Volcanologist Dr. Ash in Cinderfall Town as Volcanic Survey quest giver with flag-gated dialogue

@@ -1,0 +1,215 @@
+import Phaser from 'phaser';
+import { Direction } from '@utils/type-helpers';
+
+const JOYSTICK_RADIUS = 60;
+const THUMB_RADIUS = 24;
+const DEAD_ZONE = 15;
+
+/**
+ * Virtual joystick that appears at the user's touch location.
+ * Tap anywhere on the left 60% of the screen to summon the joystick base;
+ * drag to move in one of 4 cardinal directions. Releasing hides the joystick.
+ */
+export class VirtualJoystick {
+  private scene: Phaser.Scene;
+  private base: Phaser.GameObjects.Arc;
+  private thumb: Phaser.GameObjects.Arc;
+  private container: Phaser.GameObjects.Container;
+  private activeDirection: Direction | null = null;
+  private originX = 0;
+  private originY = 0;
+  private activePointerId: number | null = null;
+  private excludeHitTest?: (x: number, y: number) => boolean;
+
+  constructor(scene: Phaser.Scene, excludeHitTest?: (x: number, y: number) => boolean) {
+    this.scene = scene;
+    this.excludeHitTest = excludeHitTest;
+
+    this.container = scene.add.container(0, 0).setDepth(999).setScrollFactor(0).setVisible(false);
+
+    // Outer ring
+    this.base = scene.add.circle(0, 0, JOYSTICK_RADIUS, 0x334466, 0.35);
+    this.base.setStrokeStyle(2, 0x5577aa, 0.5);
+
+    // Inner thumb
+    this.thumb = scene.add.circle(0, 0, THUMB_RADIUS, 0x5599cc, 0.6);
+
+    this.container.add([this.base, this.thumb]);
+
+    this.bindPointerEvents();
+  }
+
+  private bindPointerEvents(): void {
+    const canvas = this.scene.game.canvas;
+
+    const getGameCoords = (clientX: number, clientY: number) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = this.scene.cameras.main.width / rect.width;
+      const scaleY = this.scene.cameras.main.height / rect.height;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY,
+      };
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (this.activePointerId !== null) return; // Already tracking a touch
+      if (!this.container.parentContainer?.visible && !this.scene.scene.isActive()) return;
+
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        const { x, y } = getGameCoords(t.clientX, t.clientY);
+
+        // Skip if touch is in the excluded region (e.g. A/B buttons)
+        if (this.excludeHitTest?.(x, y)) continue;
+
+        this.activePointerId = t.identifier;
+        this.originX = x;
+        this.originY = y;
+        this.container.setPosition(x, y);
+        this.thumb.setPosition(0, 0);
+        this.container.setVisible(true);
+        this.activeDirection = null;
+        break;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (this.activePointerId === null) return;
+
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier !== this.activePointerId) continue;
+
+        const { x, y } = getGameCoords(t.clientX, t.clientY);
+        const dx = x - this.originX;
+        const dy = y - this.originY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        // Clamp thumb inside the base
+        const clampedDist = Math.min(dist, JOYSTICK_RADIUS);
+        const angle = Math.atan2(dy, dx);
+        this.thumb.setPosition(
+          Math.cos(angle) * clampedDist,
+          Math.sin(angle) * clampedDist,
+        );
+
+        // Calculate 4-way direction if past dead zone
+        if (dist < DEAD_ZONE) {
+          this.activeDirection = null;
+        } else {
+          // Convert angle to 4-way direction
+          // angle: -PI to PI, 0 = right
+          const deg = angle * (180 / Math.PI);
+          if (deg > -45 && deg <= 45) {
+            this.activeDirection = 'right';
+          } else if (deg > 45 && deg <= 135) {
+            this.activeDirection = 'down';
+          } else if (deg > -135 && deg <= -45) {
+            this.activeDirection = 'up';
+          } else {
+            this.activeDirection = 'left';
+          }
+        }
+        break;
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (this.activePointerId === null) return;
+
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier !== this.activePointerId) continue;
+
+        this.activePointerId = null;
+        this.activeDirection = null;
+        this.container.setVisible(false);
+        this.thumb.setPosition(0, 0);
+        break;
+      }
+    };
+
+    // Mouse support for desktop testing
+    let mouseDown = false;
+    const handleMouseDown = (e: MouseEvent) => {
+      if (this.activePointerId !== null) return;
+      const { x, y } = getGameCoords(e.clientX, e.clientY);
+      if (this.excludeHitTest?.(x, y)) return;
+
+      mouseDown = true;
+      this.activePointerId = -1; // sentinel for mouse
+      this.originX = x;
+      this.originY = y;
+      this.container.setPosition(x, y);
+      this.thumb.setPosition(0, 0);
+      this.container.setVisible(true);
+      this.activeDirection = null;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!mouseDown || this.activePointerId !== -1) return;
+
+      const { x, y } = getGameCoords(e.clientX, e.clientY);
+      const dx = x - this.originX;
+      const dy = y - this.originY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const clampedDist = Math.min(dist, JOYSTICK_RADIUS);
+      const angle = Math.atan2(dy, dx);
+
+      this.thumb.setPosition(
+        Math.cos(angle) * clampedDist,
+        Math.sin(angle) * clampedDist,
+      );
+
+      if (dist < DEAD_ZONE) {
+        this.activeDirection = null;
+      } else {
+        const deg = angle * (180 / Math.PI);
+        if (deg > -45 && deg <= 45) this.activeDirection = 'right';
+        else if (deg > 45 && deg <= 135) this.activeDirection = 'down';
+        else if (deg > -135 && deg <= -45) this.activeDirection = 'up';
+        else this.activeDirection = 'left';
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (!mouseDown) return;
+      mouseDown = false;
+      this.activePointerId = null;
+      this.activeDirection = null;
+      this.container.setVisible(false);
+      this.thumb.setPosition(0, 0);
+    };
+
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: true });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: true });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: true });
+    canvas.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseup', handleMouseUp);
+  }
+
+  getDirection(): Direction | null {
+    return this.activeDirection;
+  }
+
+  isActive(): boolean {
+    return this.activePointerId !== null;
+  }
+
+  setVisible(visible: boolean): void {
+    if (!visible) {
+      this.container.setVisible(false);
+      this.activeDirection = null;
+      this.activePointerId = null;
+    }
+    // When set to visible=true we don't show immediately — it appears on touch
+  }
+
+  destroy(): void {
+    this.container.destroy(true);
+  }
+}

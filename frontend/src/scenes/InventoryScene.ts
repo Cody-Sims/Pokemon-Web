@@ -6,7 +6,7 @@ import { itemData } from '@data/item-data';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { MenuController } from '@ui/MenuController';
-import { COLORS, FONTS, SPACING } from '@ui/theme';
+import { COLORS, FONTS, SPACING, mobileFontSize, isMobile } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { ItemData } from '@data/interfaces';
 
@@ -88,9 +88,16 @@ export class InventoryScene extends Phaser.Scene {
       ...FONTS.body, color: COLORS.textHighlight,
     });
 
-    // Close hint
-    const closeHint = (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ? 'Tap B to close' : 'ESC to close';
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 22, closeHint, FONTS.caption).setOrigin(0.5);
+    // Close hint / tappable close button
+    if (isMobile()) {
+      const closeBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 22, '✕  CLOSE', {
+        ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      closeBtn.setPadding(16, 8, 16, 8);
+      closeBtn.on('pointerdown', () => this.handleEsc());
+    } else {
+      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 22, 'ESC to close', FONTS.caption).setOrigin(0.5);
+    }
 
     this.switchCategory();
 

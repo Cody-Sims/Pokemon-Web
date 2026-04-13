@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
-import { COLORS, FONTS, drawPanel } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET } from '@ui/theme';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
@@ -23,8 +23,9 @@ export class MenuScene extends Phaser.Scene {
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgOverlay, 0.45);
 
     // Menu panel
-    const panelW = 220;
-    const panelH = this.menuLabels.length * 48 + 32;
+    const rowH = Math.round(48 * MOBILE_SCALE);
+    const panelW = Math.round(220 * MOBILE_SCALE);
+    const panelH = this.menuLabels.length * rowH + 32;
     const panelX = GAME_WIDTH - panelW / 2 - 20;
     const panelY = GAME_HEIGHT / 2;
     new NinePatchPanel(this, panelX, panelY, panelW, panelH, {
@@ -39,17 +40,20 @@ export class MenuScene extends Phaser.Scene {
       ...FONTS.bodySmall, color: COLORS.textHighlight,
     }).setOrigin(0.5);
 
+    const menuFontSize = mobileFontSize(18);
     const startY = panelY - panelH / 2 + 32;
     this.menuItems = this.menuLabels.map((label, i) => {
-      const item = this.add.text(panelX + 10, startY + i * 48, label, FONTS.menuItem)
-        .setOrigin(0.5).setInteractive({ useHandCursor: true });
+      const item = this.add.text(panelX + 10, startY + i * rowH, label, {
+        ...FONTS.menuItem, fontSize: menuFontSize,
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
+      item.setPadding(8, 6, 8, 6);
       item.on('pointerover', () => { this.cursor = i; this.updateCursor(); });
       item.on('pointerdown', () => { this.cursor = i; this.selectOption(); });
       return item;
     });
 
-    this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, color: COLORS.textHighlight });
+    this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, fontSize: menuFontSize, color: COLORS.textHighlight });
 
     this.cursor = 0;
     this.updateCursor();

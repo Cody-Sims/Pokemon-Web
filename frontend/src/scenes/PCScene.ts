@@ -4,7 +4,7 @@ import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
-import { COLORS, FONTS, TYPE_COLORS } from '@ui/theme';
+import { COLORS, FONTS, TYPE_COLORS, mobileFontSize, isMobile } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { PokemonInstance } from '@data/interfaces';
 
@@ -82,8 +82,16 @@ export class PCScene extends Phaser.Scene {
     // Mode indicator
     this.modeText = this.add.text(20, GAME_HEIGHT - 36, '', FONTS.caption);
 
-    // Help text
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 14, 'TAB: switch focus  |  ENTER: pick/place  |  Q/E: switch box  |  ESC: exit', FONTS.caption).setOrigin(0.5);
+    // Help text / tappable exit button
+    if (isMobile()) {
+      const exitBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 14, '✕  EXIT', {
+        ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      exitBtn.setPadding(16, 8, 16, 8);
+      exitBtn.on('pointerdown', () => this.handleCancel());
+    } else {
+      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 14, 'TAB: switch focus  |  ENTER: pick/place  |  Q/E: switch box  |  ESC: exit', FONTS.caption).setOrigin(0.5);
+    }
 
     this.bindKeys();
     this.renderBox();

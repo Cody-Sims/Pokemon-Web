@@ -174,10 +174,11 @@ pokemon-web/
 │       │   └── AnimationHelper.ts     # Registers shared sprite animations
 │       │
 │       ├── ui/                         # Reusable UI components
-│       │   ├── theme.ts               # Shared colors, fonts, spacing, helpers
+│       │   ├── theme.ts               # Shared colors, fonts, spacing, mobile scaling helpers
 │       │   ├── NinePatchPanel.ts      # Nine-patch style panel (rounded, shadowed)
 │       │   ├── MenuController.ts      # Unified menu input (1D/2D grid, kb+mouse)
-│       │   ├── TouchControls.ts       # Virtual D-pad + A/B buttons for mobile
+│       │   ├── TouchControls.ts       # Virtual joystick + A/B buttons for mobile
+│       │   ├── VirtualJoystick.ts     # Floating joystick that appears at touch location
 │       │   ├── HealthBar.ts           # Animated HP bar widget
 │       │   ├── TextBox.ts            # Typewriter text display
 │       │   ├── MenuList.ts           # Selectable vertical menu (legacy)
@@ -308,11 +309,16 @@ EventManager.on('BATTLE_END', (result) => { /* resume overworld */ });
 ### Mobile / Touch Controls
 The game supports mobile devices via a virtual touch overlay managed by three collaborating modules:
 
-- **`TouchControls`** (`src/ui/TouchControls.ts`): Renders a virtual **D-pad** (bottom-left) and **A/B action buttons** (bottom-right) as Phaser `Circle` game objects in a `Container` pinned to the camera (`setScrollFactor(0)`, depth 1000). The D-pad sets `activeDirection` on `pointerdown` and clears it on `pointerup`/`pointerout`. The A button sets a `confirmPressed` flag; B sets `cancelPressed`. Both are consumed via `consumeConfirm()` / `consumeCancel()` (poll-and-clear pattern).
+- **`VirtualJoystick`** (`src/ui/VirtualJoystick.ts`): A floating joystick that appears at the user's touch location. Tracks finger drag to calculate 4-directional movement (up/down/left/right) based on angle from origin, with a 15px dead zone. Supports multi-touch via touch identifier tracking and mouse fallback for desktop testing. The joystick base and thumb are Phaser `Circle` objects in a `Container` at depth 999.
+- **`TouchControls`** (`src/ui/TouchControls.ts`): Manages the `VirtualJoystick` and **A/B action buttons** (bottom-right, 72px radius). The joystick is enabled during overworld gameplay and disabled during menus. Action buttons use a poll-and-clear pattern via `consumeConfirm()` / `consumeCancel()`. The joystick's exclude-hit-test callback prevents it from activating when tapping the A/B buttons.
 - **`InputManager`** (`src/systems/InputManager.ts`): Instantiates `TouchControls` when `navigator.maxTouchPoints > 0`. Its `getState()` method merges keyboard and touch input into a unified `InputState { direction, confirm, cancel, menu }` — keyboard is checked first, touch fills in the gaps.
-- **`MenuController`** (`src/ui/MenuController.ts`): Handles menu navigation via keyboard events. It does **not** currently read touch input directly — menus rely on the A/B buttons being wired through `InputManager` or through Phaser `pointerdown` listeners on individual menu items.
+- **`MenuController`** (`src/ui/MenuController.ts`): Handles menu navigation via keyboard events. Menus rely on Phaser `pointerdown` listeners on individual menu items for touch input.
 
-**Visibility control:** `TouchControls` exposes `setDpadVisible(bool)` and `setVisible(bool)` so scenes can hide the D-pad during menus or hide the entire overlay during battles. The overlay auto re-layouts on `scale.resize`.
+**Mobile UI scaling:** `theme.ts` exports `MOBILE_SCALE` (1.35× on touch devices), `mobileFontSize()`, and `isMobile()`. All key menus (title, pause, battle, dialogue, inventory) apply this scaling to font sizes and touch target padding. Scenes show tappable close/exit buttons on mobile instead of keyboard-only hints.
+
+**Multi-touch:** The Phaser config enables 3 active pointers so the joystick and action buttons can be used simultaneously.
+
+**Visibility control:** `TouchControls` exposes `setDpadVisible(bool)` and `setVisible(bool)` so scenes can hide the joystick during menus or hide the entire overlay during battles. The overlay auto re-layouts on `scale.resize`.
 
 **Detection:** `TouchControls.isTouchDevice()` checks `navigator.maxTouchPoints > 0`. On desktop browsers this returns `false` and no touch UI is created.
 

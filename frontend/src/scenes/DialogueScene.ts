@@ -3,7 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
-import { COLORS, FONTS } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 
 /** Text speed options: delay (ms) per character. 0 = instant. */
@@ -93,7 +93,7 @@ export class DialogueScene extends Phaser.Scene {
     // Text display
     this.dialogueText = this.add.text(30, GAME_HEIGHT - 100, '', {
       ...FONTS.body,
-      fontSize: '17px',
+      fontSize: mobileFontSize(17),
       wordWrap: { width: GAME_WIDTH - 60 },
     });
 
@@ -112,7 +112,7 @@ export class DialogueScene extends Phaser.Scene {
 
     this.showLine(this.queue[this.currentIndex]);
 
-    // Input
+    // Input — keyboard
     this.input.keyboard!.on('keydown-ENTER', () => this.handleInput());
     this.input.keyboard!.on('keydown-SPACE', () => this.handleInput());
     this.input.keyboard!.on('keydown-Z', () => this.handleInput());
@@ -125,6 +125,9 @@ export class DialogueScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-DOWN', () => {
       if (this.inChoiceMode) this.moveChoice(1);
     });
+
+    // Input — tap to advance on touch devices
+    this.input.on('pointerdown', () => this.handleInput());
   }
 
   private handleInput(): void {

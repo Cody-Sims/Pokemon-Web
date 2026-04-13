@@ -104,6 +104,22 @@ export const STATUS_COLORS: Record<string, number> = {
 
 // ─── Helper functions ───
 
+/** Whether the device is a touch/mobile device. */
+export function isMobile(): boolean {
+  return typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
+}
+
+/** Scale factor for mobile-friendly UI elements (fonts, hit targets). */
+export const MOBILE_SCALE = isMobile() ? 1.35 : 1.0;
+
+/** Get a font size string scaled for mobile. Input: base px number. */
+export function mobileFontSize(basePx: number): string {
+  return `${Math.round(basePx * MOBILE_SCALE)}px`;
+}
+
+/** Minimum interactive hit area for touch targets (px). */
+export const MIN_TOUCH_TARGET = isMobile() ? 48 : 0;
+
 /** Get HP bar color based on percentage. */
 export function hpColor(pct: number): number {
   if (pct > 0.5) return COLORS.hpGreen;

@@ -4,7 +4,7 @@ import { GameManager } from '@managers/GameManager';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { MenuController } from '@ui/MenuController';
-import { COLORS, FONTS, TYPE_COLORS, drawTypeBadge } from '@ui/theme';
+import { COLORS, FONTS, TYPE_COLORS, drawTypeBadge, mobileFontSize, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
 
@@ -59,9 +59,16 @@ export class PokedexScene extends Phaser.Scene {
       fillColor: COLORS.bgCard, fillAlpha: 0.7, borderColor: COLORS.border, cornerRadius: 6,
     });
 
-    // Close hint
-    const closeHint = (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ? 'Tap B to close' : 'ESC to close';
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, closeHint, FONTS.caption).setOrigin(0.5);
+    // Close hint / tappable close button
+    if (isMobile()) {
+      const closeBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, '✕  CLOSE', {
+        ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      closeBtn.setPadding(16, 8, 16, 8);
+      closeBtn.on('pointerdown', () => { this.controller?.destroy(); this.scene.stop(); });
+    } else {
+      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, 'ESC to close', FONTS.caption).setOrigin(0.5);
+    }
 
     this.scrollOffset = 0;
     this.cursor = 0;

@@ -17,7 +17,7 @@ import { GameManager } from '@managers/GameManager';
 import { trainerData } from '@data/trainer-data';
 import { SFX, BGM } from '@utils/audio-keys';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
-import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS } from '@ui/theme';
+import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message';
 
@@ -65,13 +65,16 @@ export class BattleUIScene extends Phaser.Scene {
     });
 
     const actions = ['FIGHT', 'BAG', 'POKEMON', 'RUN'];
+    const actionFontSize = mobileFontSize(18);
+    const actionRowH = Math.round(35 * MOBILE_SCALE);
     this.actionTexts = actions.map((action, i) => {
       const col = i % 2;
       const row = Math.floor(i / 2);
       const t = this.add.text(
-        GAME_WIDTH / 2 - 80 + col * 160, GAME_HEIGHT - 85 + row * 35,
-        action, { ...FONTS.menuItem, fontSize: '18px' }
+        GAME_WIDTH / 2 - 80 + col * 160, GAME_HEIGHT - 85 + row * actionRowH,
+        action, { ...FONTS.menuItem, fontSize: actionFontSize }
       ).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      t.setPadding(12, 8, 12, 8);
       t.on('pointerover', () => { if (this.state === 'actions') { this.cursor = i; this.updateCursor(); } });
       t.on('pointerdown', () => { if (this.state === 'actions') { this.cursor = i; this.selectAction(); } });
       return t;
@@ -158,13 +161,15 @@ export class BattleUIScene extends Phaser.Scene {
     this.moveCursor = 0;
     this.hideActions();
     const moves = this.battle().playerPokemon.moves;
+    const moveFontSize = mobileFontSize(15);
+    const moveRowH = Math.round(35 * MOBILE_SCALE);
 
     this.moveMenuBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, 0x1a1a2e, 0.95).setStrokeStyle(2, COLORS.borderLight);
     this.moveTexts = moves.map((m, i) => {
       const md = moveData[m.moveId];
       const col = i % 2; const row = Math.floor(i / 2);
       const x = GAME_WIDTH / 2 - 120 + col * 240;
-      const y = GAME_HEIGHT - 85 + row * 35;
+      const y = GAME_HEIGHT - 85 + row * moveRowH;
 
       // Move type color dot
       if (md) {
@@ -188,8 +193,9 @@ export class BattleUIScene extends Phaser.Scene {
 
       const t = this.add.text(x, y,
         md ? `${md.name}  ${m.currentPp}/${md.pp}` : m.moveId,
-        { ...FONTS.body, fontSize: '15px' }
+        { ...FONTS.body, fontSize: moveFontSize }
       ).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      t.setPadding(10, 6, 10, 6);
 
       // Apply PP color to the PP portion by coloring the whole text based on PP status
       if (ppColor !== COLORS.textWhite) t.setColor(ppColor);
@@ -199,8 +205,9 @@ export class BattleUIScene extends Phaser.Scene {
       return t;
     });
     // Back button
-    const back = this.add.text(GAME_WIDTH - 60, GAME_HEIGHT - 115, '← Back', { ...FONTS.bodySmall, fontSize: '14px' })
+    const back = this.add.text(GAME_WIDTH - 60, GAME_HEIGHT - 115, '← Back', { ...FONTS.bodySmall, fontSize: mobileFontSize(14) })
       .setInteractive({ useHandCursor: true });
+    back.setPadding(8, 6, 8, 6);
     back.on('pointerdown', () => this.closeMoveMenu());
     this.moveTexts.push(back);
     this.updateMoveCursor();

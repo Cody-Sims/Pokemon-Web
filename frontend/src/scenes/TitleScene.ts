@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { SaveManager } from '@managers/SaveManager';
 import { AudioManager } from '@managers/AudioManager';
-import { COLORS, FONTS } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
 import { TouchControls } from '@ui/TouchControls';
 import { BGM, SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/ConfirmBox';
@@ -52,18 +52,22 @@ export class TitleScene extends Phaser.Scene {
 
     this.cursor = 0;
     const menuStartY = height * 0.54;
+    const menuSpacing = Math.round(44 * MOBILE_SCALE);
+    const menuFontSize = mobileFontSize(22);
     this.menuItems = options.map((label, i) => {
-      const item = this.add.text(width / 2 + 16, menuStartY + i * 44, label, {
-        ...FONTS.menuItem, fontSize: '22px',
+      const item = this.add.text(width / 2 + 16, menuStartY + i * menuSpacing, label, {
+        ...FONTS.menuItem, fontSize: menuFontSize,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
+      // Ensure minimum touch target height
+      item.setPadding(8, 6, 8, 6);
       item.on('pointerover', () => { this.cursor = i; this.updateCursor(); });
       item.on('pointerdown', () => { this.cursor = i; this.selectOption(); });
       return item;
     });
 
     // Cursor arrow
-    this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, fontSize: '22px', color: COLORS.textHighlight });
+    this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, fontSize: menuFontSize, color: COLORS.textHighlight });
 
     // Version / hint
     const hintText = TouchControls.isTouchDevice() ? 'Tap to select' : 'Press Enter to select';
