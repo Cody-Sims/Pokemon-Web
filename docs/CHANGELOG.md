@@ -5,6 +5,10 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-13]
+### Fixed
+- **Starter Pokémon missing in battle**: Back sprites for the chosen starter were never loaded because StarterSelectScene only preloaded front sprites, and MapPreloader ran before the party had any Pokémon. Now StarterSelectScene loads both front and back sprites for all starters.
+- **BattleScene sprite safety net**: Added `init()`/`preload()` to BattleScene so it loads any missing player/enemy front+back sprites before rendering, preventing invisible Pokémon in edge cases.
+
 ### Added
 - **Bug Catcher sprite** (`npc-bug-catcher`): New palette-swapped sprite with green/olive nature tones for Bug Catcher trainers.
 - **Ace Trainer sprites** (`npc-ace-trainer`, `npc-ace-trainer-f`): Male and female Ace Trainer sprites with bold red/elite look.

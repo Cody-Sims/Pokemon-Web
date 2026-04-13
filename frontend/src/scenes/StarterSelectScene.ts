@@ -22,7 +22,8 @@ export class StarterSelectScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Ensure starter front sprites are loaded (they're not in encounter tables)
+    // Ensure starter front+back sprites are loaded (they're not in encounter tables
+    // and the player's party was empty when the map preloader ran)
     let needsLoad = false;
     for (const s of this.starters) {
       const data = pokemonData[s.id];
@@ -30,6 +31,10 @@ export class StarterSelectScene extends Phaser.Scene {
       const name = data.name.toLowerCase();
       if (!this.textures.exists(data.spriteKeys.front)) {
         this.load.image(data.spriteKeys.front, `assets/sprites/pokemon/${name}-front.png`);
+        needsLoad = true;
+      }
+      if (!this.textures.exists(data.spriteKeys.back)) {
+        this.load.image(data.spriteKeys.back, `assets/sprites/pokemon/${name}-back.png`);
         needsLoad = true;
       }
     }

@@ -36,11 +36,44 @@ export class BattleScene extends Phaser.Scene {
   public expBarBg!: Phaser.GameObjects.Rectangle;
   public expBarFill!: Phaser.GameObjects.Rectangle;
 
+  private initData?: Record<string, unknown>;
+
   constructor() {
     super({ key: 'BattleScene' });
   }
 
-  create(data?: Record<string, unknown>): void {
+  /** Capture scene data early so preload() can queue missing sprites. */
+  init(data?: Record<string, unknown>): void {
+    this.initData = data;
+  }
+
+  /** Ensure player + enemy front/back sprites are in the texture cache. */
+  preload(): void {
+    const data = this.initData;
+    const gm = GameManager.getInstance();
+
+    const enemy = data?.enemyPokemon as PokemonInstance | undefined;
+    const player = gm.getParty().find(p => p.currentHp > 0) ?? gm.getParty()[0];
+
+    const ids = new Set<number>();
+    if (player) ids.add(player.dataId);
+    if (enemy) ids.add(enemy.dataId);
+
+    for (const id of ids) {
+      const d = pokemonData[id];
+      if (!d) continue;
+      const name = d.name.toLowerCase();
+      if (!this.textures.exists(d.spriteKeys.front)) {
+        this.load.image(d.spriteKeys.front, `assets/sprites/pokemon/${name}-front.png`);
+      }
+      if (!this.textures.exists(d.spriteKeys.back)) {
+        this.load.image(d.spriteKeys.back, `assets/sprites/pokemon/${name}-back.png`);
+      }
+    }
+  }
+
+  create(): void {
+    const data = this.initData;
     const gm = GameManager.getInstance();
 
     // Store return info passed through from TransitionScene
