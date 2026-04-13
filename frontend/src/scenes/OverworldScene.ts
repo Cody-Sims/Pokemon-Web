@@ -533,9 +533,26 @@ export class OverworldScene extends Phaser.Scene {
       }
     }
 
-    // ── Fishing: check if facing a water tile with a rod ──
+    // ── Tile interactions: check the tile the player is facing ──
     if (targetY >= 0 && targetY < this.mapDef.height && targetX >= 0 && targetX < this.mapDef.width) {
       const tile = this.mapDef.ground[targetY][targetX];
+
+      // Starter Poké Ball on table
+      if (tile === Tile.POKEBALL_ITEM) {
+        const gm = GameManager.getInstance();
+        if (!gm.getFlag('receivedStarter')) {
+          if (gm.getFlag('oakOfferedStarter')) {
+            this.launchStarterSelection();
+          } else {
+            this.scene.pause();
+            this.scene.launch('DialogueScene', { dialogue: ['There are three Poké Balls on the table.'] });
+            this.scene.get('DialogueScene').events.once('shutdown', () => this.scene.resume());
+          }
+          return;
+        }
+      }
+
+      // Fishing: check if facing a water tile with a rod
       if (tile === Tile.WATER) {
         this.tryFishing();
         return;
@@ -597,6 +614,7 @@ export class OverworldScene extends Phaser.Scene {
     // After starter selection completes, re-spawn NPCs so flag-gated ones update
     this.scene.get('StarterSelectScene').events.once('shutdown', () => {
       this.respawnNPCs();
+      this.scene.resume();
     });
   }
 

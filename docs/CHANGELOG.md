@@ -5,6 +5,10 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Fixed
+- **Pokéball placement in Oak's Lab**: Moved starter Poké Balls one tile down so they appear ON the table instead of floating above it
+- **Starter selection flow**: Player must now talk to Prof. Oak first (sets `oakOfferedStarter` flag), then walk to the Poké Balls on the table and interact with them to trigger starter selection. Interacting with the balls before talking to Oak shows a hint message.
+
 ### Added
 - **25 new NPC trainers** across all routes and gyms, with story-fitting dialogue:
   - **Route 1**: Added Lass Janice and Youngster Ben (previously defined but unspawned)

@@ -9,10 +9,10 @@ const ground = parseMap([
   '#lt_t_t_t_tl#', // 4  - lab desks
   '#li_i_i_i_il#', // 5  - chairs
   '#lllllllllll#', // 6  - lab floor
-  '#llllooollll#', // 7  - starter Poké Balls
-  '#lllltttllll#', // 8  - table for starters
+  '#lllltttllll#', // 7  - table for starters (back)
+  '#llllooollll#', // 8  - starter Poké Balls (on table)
   '#lllllllllll#', // 9  - lab floor
-  '#ll___x___ll#', // 10 - lab machine
+  '#llx_____xll#', // 10 - lab machines (sides)
   '#_____v_____#', // 11 - exit mat
 ]);
 
@@ -34,9 +34,9 @@ export const palletOakLab: MapDefinition = {
       dialogue: [
         'Prof. Oak: Ah, there you are!',
         'Prof. Oak: The world of Pokémon awaits!',
-        'Prof. Oak: Choose one of these three Pokémon!',
+        'Prof. Oak: Go ahead and choose one of the three Poké Balls on the table!',
       ],
-      interactionType: 'starter-select',
+      setsFlag: 'oakOfferedStarter',
       requireFlag: '!receivedStarter',
     },
     {
@@ -94,7 +94,9 @@ export const palletOakLab: MapDefinition = {
   ],
   trainers: [],
   warps: [
+    { tileX: 5, tileY: 11, targetMap: 'pallet-town', targetSpawnId: 'from-oak-lab' },
     { tileX: 6, tileY: 11, targetMap: 'pallet-town', targetSpawnId: 'from-oak-lab' },
+    { tileX: 7, tileY: 11, targetMap: 'pallet-town', targetSpawnId: 'from-oak-lab' },
   ],
   spawnPoints: {
     'default': { x: 6, y: 10, direction: 'up' },
