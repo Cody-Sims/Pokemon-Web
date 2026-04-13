@@ -20,7 +20,7 @@ export const ironvaleGym: MapDefinition = {
     { id: 'ironvale-gym-worker', trainerId: 'worker-1', tileX: 7, tileY: 7,
       textureKey: 'npc-male-4', facing: 'left', lineOfSight: 3 },
     { id: 'ironvale-gym-leader', trainerId: 'gym-ferris', tileX: 4, tileY: 2,
-      textureKey: 'npc-male-4', facing: 'down', lineOfSight: 6 },
+      textureKey: 'npc-gym-ferris', facing: 'down', lineOfSight: 6 },
   ],
   warps: [
     { tileX: 3, tileY: 13, targetMap: 'ironvale-city', targetSpawnId: 'from-gym' },

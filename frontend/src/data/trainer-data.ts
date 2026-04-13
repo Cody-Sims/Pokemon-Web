@@ -352,7 +352,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Gym 3: Ferris (Steel-type Gym Leader) ───
   'gym-ferris': {
-    id: 'gym-ferris', name: 'Gym Leader Ferris', spriteKey: 'npc-male-4',
+    id: 'gym-ferris', name: 'Gym Leader Ferris', spriteKey: 'npc-gym-ferris',
     party: [
       { pokemonId: 81, level: 24, moves: ['thunder-shock', 'sonic-boom', 'supersonic', 'tackle'] },
       { pokemonId: 82, level: 24, moves: ['thunder-shock', 'sonic-boom', 'tri-attack'] },
@@ -404,7 +404,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Gym 5: Blitz (Electric-type Gym Leader) ───
   'gym-blitz': {
-    id: 'gym-blitz', name: 'Gym Leader Blitz', spriteKey: 'npc-scientist',
+    id: 'gym-blitz', name: 'Gym Leader Blitz', spriteKey: 'npc-gym-blitz',
     party: [
       { pokemonId: 100, level: 32, moves: ['thunderbolt', 'swift', 'self-destruct', 'screech'] },
       { pokemonId: 26, level: 33, moves: ['thunderbolt', 'quick-attack', 'double-team', 'thunder-wave'] },
@@ -431,7 +431,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Dr. Vex Corbin (Admin — Boss encounter 1) ───
   'admin-vex-1': {
-    id: 'admin-vex-1', name: 'Admin Vex', spriteKey: 'npc-scientist',
+    id: 'admin-vex-1', name: 'Admin Vex', spriteKey: 'npc-admin-vex',
     party: [
       { pokemonId: 109, level: 22, moves: ['sludge', 'smokescreen', 'tackle', 'self-destruct'] },
       { pokemonId: 89, level: 23, moves: ['sludge', 'body-slam', 'acid', 'harden'] },
@@ -471,7 +471,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 5 trainers ───
   'bug-catcher-4': {
-    id: 'bug-catcher-4', name: 'Bug Catcher Tommy', spriteKey: 'npc-male-3',
+    id: 'bug-catcher-4', name: 'Bug Catcher Tommy', spriteKey: 'npc-bug-catcher',
     party: [
       { pokemonId: 12, level: 23, moves: ['psybeam', 'sleep-powder', 'gust'] },
       { pokemonId: 15, level: 23, moves: ['twineedle', 'fury-attack', 'focus-energy'] },
@@ -543,7 +543,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Dr. Vex boss battle #2 ───
   'admin-vex-2': {
-    id: 'admin-vex-2', name: 'Admin Vex', spriteKey: 'npc-scientist',
+    id: 'admin-vex-2', name: 'Admin Vex', spriteKey: 'npc-admin-vex',
     party: [
       { pokemonId: 110, level: 36, moves: ['sludge', 'smokescreen', 'self-destruct', 'fire-blast'] },
       { pokemonId: 89, level: 37, moves: ['sludge', 'body-slam', 'acid', 'fire-punch'] },
@@ -558,7 +558,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 6 trainers ───
   'psychic-1': {
-    id: 'psychic-1', name: 'Psychic Elena', spriteKey: 'npc-scientist',
+    id: 'psychic-1', name: 'Psychic Elena', spriteKey: 'npc-female-3',
     party: [
       { pokemonId: 65, level: 32, moves: ['psychic', 'psybeam', 'recover', 'reflect'] },
       { pokemonId: 97, level: 33, moves: ['psychic', 'hypnosis', 'dream-eater', 'confusion'] },
@@ -572,7 +572,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Victory Road Ace Trainers ───
   'ace-trainer-1': {
-    id: 'ace-trainer-1', name: 'Ace Trainer Victor', spriteKey: 'npc-scientist',
+    id: 'ace-trainer-1', name: 'Ace Trainer Victor', spriteKey: 'npc-ace-trainer',
     party: [
       { pokemonId: 68, level: 42, moves: ['karate-chop', 'seismic-toss', 'submission', 'body-slam'] },
       { pokemonId: 76, level: 42, moves: ['earthquake', 'rock-throw', 'body-slam', 'explosion'] },
@@ -585,7 +585,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 2100,
   },
   'ace-trainer-2': {
-    id: 'ace-trainer-2', name: 'Ace Trainer Luna', spriteKey: 'npc-male-5',
+    id: 'ace-trainer-2', name: 'Ace Trainer Luna', spriteKey: 'npc-ace-trainer-f',
     party: [
       { pokemonId: 121, level: 43, moves: ['psychic', 'surf', 'ice-beam', 'recover'] },
       { pokemonId: 103, level: 43, moves: ['psychic', 'solar-beam', 'sleep-powder', 'leech-seed'] },
@@ -598,7 +598,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 2150,
   },
   'ace-trainer-3': {
-    id: 'ace-trainer-3', name: 'Ace Trainer Rex', spriteKey: 'npc-scientist',
+    id: 'ace-trainer-3', name: 'Ace Trainer Rex', spriteKey: 'npc-ace-trainer',
     party: [
       { pokemonId: 130, level: 44, moves: ['hydro-pump', 'bite', 'dragon-rage', 'thrash'] },
       { pokemonId: 65, level: 44, moves: ['psychic', 'recover', 'reflect', 'psybeam'] },
@@ -659,7 +659,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 1 / Viridian Forest: Original trainers ───
   'bug-catcher-1': {
-    id: 'bug-catcher-1', name: 'Bug Catcher Rick', spriteKey: 'npc-male-3',
+    id: 'bug-catcher-1', name: 'Bug Catcher Rick', spriteKey: 'npc-bug-catcher',
     party: [
       { pokemonId: 10, level: 6 },
       { pokemonId: 13, level: 6 },
@@ -671,7 +671,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 60,
   },
   'bug-catcher-2': {
-    id: 'bug-catcher-2', name: 'Bug Catcher Doug', spriteKey: 'npc-male-3',
+    id: 'bug-catcher-2', name: 'Bug Catcher Doug', spriteKey: 'npc-bug-catcher',
     party: [
       { pokemonId: 13, level: 7 },
       { pokemonId: 14, level: 7 },
@@ -684,7 +684,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 70,
   },
   'bug-catcher-3': {
-    id: 'bug-catcher-3', name: 'Bug Catcher Sammy', spriteKey: 'npc-male-3',
+    id: 'bug-catcher-3', name: 'Bug Catcher Sammy', spriteKey: 'npc-bug-catcher',
     party: [
       { pokemonId: 10, level: 9 },
       { pokemonId: 11, level: 9 },
@@ -731,7 +731,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 90,
   },
   'gym-brock': {
-    id: 'gym-brock', name: 'Gym Leader Brock', spriteKey: 'npc-hiker',
+    id: 'gym-brock', name: 'Gym Leader Brock', spriteKey: 'npc-gym-brock',
     party: [
       { pokemonId: 74, level: 12, moves: ['tackle', 'defense-curl'] },
       { pokemonId: 95, level: 14, moves: ['tackle', 'rock-throw', 'bind'] },
@@ -792,7 +792,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Viridian Forest: Additional trainers ───
   'bug-catcher-5': {
-    id: 'bug-catcher-5', name: 'Bug Catcher Leo', spriteKey: 'npc-male-3',
+    id: 'bug-catcher-5', name: 'Bug Catcher Leo', spriteKey: 'npc-bug-catcher',
     party: [
       { pokemonId: 13, level: 8, moves: ['poison-sting', 'string-shot'] },
       { pokemonId: 14, level: 8, moves: ['harden'] },
@@ -1005,7 +1005,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 5: Verdant Path — nature trainers and Synthesis scout ───
   'camper-4': {
-    id: 'camper-4', name: 'Camper Rosa', spriteKey: 'npc-male-1',
+    id: 'camper-4', name: 'Camper Rosa', spriteKey: 'npc-female-4',
     party: [
       { pokemonId: 25, level: 24, moves: ['thunderbolt', 'quick-attack', 'double-team'] },
       { pokemonId: 44, level: 23, moves: ['acid', 'sleep-powder', 'razor-leaf'] },

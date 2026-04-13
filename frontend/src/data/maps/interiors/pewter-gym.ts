@@ -62,7 +62,7 @@ export const pewterGym: MapDefinition = {
       trainerId: 'gym-brock',
       tileX: 7,
       tileY: 2,
-      textureKey: 'npc-hiker',
+      textureKey: 'npc-gym-brock',
       facing: 'down',
       lineOfSight: 4,
     },

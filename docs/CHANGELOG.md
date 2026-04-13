@@ -5,6 +5,30 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-13]
+### Added
+- **Bug Catcher sprite** (`npc-bug-catcher`): New palette-swapped sprite with green shirt, khaki pants, and straw-colored hat for Bug Catcher trainers.
+- **Ace Trainer sprites** (`npc-ace-trainer`, `npc-ace-trainer-f`): Male and female Ace Trainer sprites with navy blue outfit and gold accents.
+- **Unique Gym Leader sprites**: `npc-gym-brock` (dark earthy tones), `npc-gym-blitz` (electric blue/yellow), `npc-gym-ferris` (steel gray/forge orange) — each gym leader now visually distinct from generic NPCs.
+- **Admin Vex sprite** (`npc-admin-vex`): Dark purple outfit with crimson accents, distinct from regular Synthesis Grunts.
+
+### Changed
+- **NPC sprite audit & reassignment**: Reviewed all 67 trainer sprite assignments and fixed mismatches.
+- Bug Catchers (5) now use `npc-bug-catcher` instead of generic `npc-male-3`.
+- Ace Trainer Victor/Rex use `npc-ace-trainer`; Ace Trainer Luna uses `npc-ace-trainer-f`.
+- Gym Leader Brock, Blitz, and Ferris each have unique sprites instead of sharing with generic NPCs.
+- Admin Vex now has a unique villainous sprite instead of matching regular Synthesis Grunts.
+
+### Fixed
+- **Gender mismatch**: Ace Trainer Luna (female) was using male sprite `npc-male-5` → now uses `npc-ace-trainer-f`.
+- **Gender mismatch**: Camper Rosa (female) was using male sprite `npc-male-1` → now uses `npc-female-4`.
+- **Gender mismatch**: Psychic Elena (female) was using male sprite `npc-scientist` → now uses `npc-female-3`.
+- **Sprite overuse**: `npc-scientist` was shared by 13 characters (grunts, gym leader, admin, ace trainers, engineers, psychic). Reduced to 8 by giving key characters unique sprites.
+
+## [2026-04-13]
+### Fixed
+- **Mobile dialogue stuck**: A/B touch buttons now advance dialogue and battle UI on mobile. Added `update()` polling of `TouchControls.consumeConfirm/Cancel` in DialogueScene and BattleUIScene since raw DOM touch events bypass Phaser's scene-scoped pointer system.
+- **Dialogue re-trigger on tap**: Added resume cooldown (2 frames) and touch input drain in OverworldScene so tapping to close dialogue doesn't immediately re-open a new conversation with the same NPC.
+
 ### Changed
 - **Mobile controls: restored A/B buttons** alongside joystick, tap-to-confirm, and menu hamburger button. A (green, confirm) and B (red, cancel) buttons are back in both the in-canvas overlay (bottom-right) and the DOM control bar. Taps on A/B buttons are excluded from tap-to-confirm detection.
 - **Pallet Town**: Expanded map from 25×20 to 25×30 with a southern dock and sea area. Path from Oak's Lab opens south to a wooden pier (DOCK_PLANK tiles) extending into the ocean. Shore has proper sand → wet sand → water transitions with a palm tree. Added Fisherman Wade NPC on the dock (gives Old Rod), and a pier sign.

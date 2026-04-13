@@ -63,6 +63,8 @@ export class PreloadScene extends Phaser.Scene {
       'npc-male-1', 'npc-oldman', 'npc-male-2', 'npc-hiker', 'npc-male-3',
       'npc-professor', 'npc-scientist', 'npc-male-4', 'npc-swimmer', 'npc-male-5',
       'npc-sailor', 'npc-male-6',
+      'npc-bug-catcher', 'npc-ace-trainer', 'npc-ace-trainer-f',
+      'npc-gym-brock', 'npc-gym-blitz', 'npc-gym-ferris', 'npc-admin-vex',
     ];
     for (const key of npcSprites) {
       this.load.atlas(key, `assets/sprites/npcs/${key}.png`, `assets/sprites/npcs/${key}.json`);

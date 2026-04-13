@@ -102,7 +102,7 @@ export const emberMines: MapDefinition = {
       trainerId: 'admin-vex-1',
       tileX: 10,
       tileY: 3,
-      textureKey: 'npc-scientist',
+      textureKey: 'npc-admin-vex',
       facing: 'down',
       lineOfSight: 5,
     },
