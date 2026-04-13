@@ -33,7 +33,7 @@ const floor1Ground = parseMap([
   ';;,,,,,,,,,,,,,,,,;;', // 26
   ';,,,,,,,,,,,,,,,,,,;', // 27
   ';,,,,,,,,,,,,,,,,,,;', // 28
-  ';;;;;;;;,,,,;;;;;;;;', // 29 entrance
+  ';;;;;;,,,,,,,,;;;;;;', // 29 entrance
 ]);
 
 export const crystalCavern: MapDefinition = {
@@ -57,7 +57,7 @@ export const crystalCavern: MapDefinition = {
       id: 'cavern-hiker',
       tileX: 14,
       tileY: 4,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-hiker',
       facing: 'down',
       dialogue: [
         'This cave goes deep... I heard there\'s a rare Pokémon',
@@ -92,7 +92,7 @@ export const crystalCavern: MapDefinition = {
       trainerId: 'hiker-1',
       tileX: 5,
       tileY: 8,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-hiker',
       facing: 'right',
       lineOfSight: 4,
     },
@@ -101,7 +101,7 @@ export const crystalCavern: MapDefinition = {
       trainerId: 'hiker-2',
       tileX: 14,
       tileY: 15,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-hiker',
       facing: 'left',
       lineOfSight: 3,
     },
@@ -110,7 +110,7 @@ export const crystalCavern: MapDefinition = {
       trainerId: 'hiker-3',
       tileX: 8,
       tileY: 22,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-hiker',
       facing: 'up',
       lineOfSight: 4,
     },
@@ -119,7 +119,7 @@ export const crystalCavern: MapDefinition = {
       trainerId: 'hiker-5',
       tileX: 15,
       tileY: 10,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-hiker',
       facing: 'down',
       lineOfSight: 3,
     },
@@ -128,7 +128,7 @@ export const crystalCavern: MapDefinition = {
       trainerId: 'camper-2',
       tileX: 4,
       tileY: 18,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-1',
       facing: 'right',
       lineOfSight: 4,
     },

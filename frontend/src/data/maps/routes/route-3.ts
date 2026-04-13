@@ -4,7 +4,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Coastal route connecting Pewter City (north) to Coral Harbor (south)
 // Features: sand, water, tide pools, palm trees, fishable tiles
 const route3Ground = parseMap([
-  'TTTTTTTTPPTTTTTTTTTT', // 0  north exit from Pewter
+  'TTTTTTT.PP.TTTTTTTTT', // 0  north exit from Pewter
   'T........PP........T', // 1
   'T..GGG...PP...GGG..T', // 2
   'T..GGG...PP...GGG..T', // 3
@@ -43,7 +43,7 @@ const route3Ground = parseMap([
   'T......PP..........T', // 36
   'T......PP..........T', // 37
   'T......PP..........T', // 38
-  'TTTTTTTTPPTTTTTTTTTT', // 39 south exit to Coral Harbor
+  'TTTTTTT.PP.TTTTTTTTT', // 39 south exit to Coral Harbor
 ]);
 
 export const route3: MapDefinition = {
@@ -66,7 +66,7 @@ export const route3: MapDefinition = {
       id: 'route3-fisherman',
       tileX: 3,
       tileY: 14,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-sailor',
       facing: 'right',
       dialogue: [
         'The tide pools here are full of Water Pokémon!',
@@ -77,7 +77,7 @@ export const route3: MapDefinition = {
       id: 'route3-hiker',
       tileX: 15,
       tileY: 20,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-hiker',
       facing: 'left',
       dialogue: [
         'I saw people in white lab coats heading south...',
@@ -101,7 +101,7 @@ export const route3: MapDefinition = {
       trainerId: 'swimmer-1',
       tileX: 10,
       tileY: 10,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-swimmer',
       facing: 'left',
       lineOfSight: 3,
     },
@@ -110,7 +110,7 @@ export const route3: MapDefinition = {
       trainerId: 'lass-2',
       tileX: 6,
       tileY: 30,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-lass',
       facing: 'right',
       lineOfSight: 4,
     },
@@ -119,7 +119,7 @@ export const route3: MapDefinition = {
       trainerId: 'youngster-3',
       tileX: 14,
       tileY: 35,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-2',
       facing: 'left',
       lineOfSight: 3,
     },
@@ -128,7 +128,7 @@ export const route3: MapDefinition = {
       trainerId: 'swimmer-2',
       tileX: 15,
       tileY: 18,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-swimmer',
       facing: 'left',
       lineOfSight: 3,
     },
@@ -137,7 +137,7 @@ export const route3: MapDefinition = {
       trainerId: 'fisherman-1',
       tileX: 4,
       tileY: 22,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-sailor',
       facing: 'right',
       lineOfSight: 3,
     },
@@ -146,7 +146,7 @@ export const route3: MapDefinition = {
       trainerId: 'sailor-1',
       tileX: 10,
       tileY: 25,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-sailor',
       facing: 'down',
       lineOfSight: 4,
     },

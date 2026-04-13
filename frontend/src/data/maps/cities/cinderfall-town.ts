@@ -2,7 +2,7 @@ import { MapDefinition, parseMap } from '../shared';
 
 // Cinderfall Town — Town 9 (25×25). Gym 8 (Fire — Solara)
 const cinderfallGround = parseMap([
-  'TTTTTTTTTTTPPTTTTTTTTTTTT',
+  'TTTTTTTTTT.PP.TTTTTTTTTT',
   'T..........PP..........T',
   'T.CCCCCCC..PP.RRRRRRR..T',
   'T.c$ccccc..PP.HH&HHHH..T',
@@ -26,7 +26,7 @@ const cinderfallGround = parseMap([
   'T..........PP..........T',
   'T..........PP..........T',
   'T..........PP..........T',
-  'TTTTTTTTTTTPPTTTTTTTTTTTT',
+  'TTTTTTTTTT.PP.TTTTTTTTTT',
 ]);
 
 export const cinderfallTown: MapDefinition = {
@@ -35,11 +35,11 @@ export const cinderfallTown: MapDefinition = {
   npcs: [
     { id: 'cinderfall-sign', tileX: 13, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['CINDERFALL TOWN', '"Born From the Embers"'] },
-    { id: 'cinderfall-npc', tileX: 18, tileY: 6, textureKey: 'generic-trainer', facing: 'left',
+    { id: 'cinderfall-npc', tileX: 18, tileY: 6, textureKey: 'npc-female-8', facing: 'left',
       dialogue: ['Solara is our Gym Leader. She was once Aldric\'s student.',
         'Her Fire Pokémon burn with incredible passion!',
         'Water, Ground, and Rock moves are your best bet.'] },
-    { id: 'cinderfall-solara-story', tileX: 12, tileY: 12, textureKey: 'generic-trainer', facing: 'down',
+    { id: 'cinderfall-solara-story', tileX: 12, tileY: 12, textureKey: 'npc-female-9', facing: 'down',
       dialogue: ['Solara: You\'ve come far, challenger.',
         'Solara: I know what awaits you at the League.',
         'Solara: Aldric was my teacher once. The greatest trainer I ever knew.',
@@ -47,12 +47,12 @@ export const cinderfallTown: MapDefinition = {
         'Solara: That man needs to be stopped.',
         'Solara: End this. For his sake as much as ours.'],
       requireFlag: 'rook_identity_revealed', setsFlag: 'solara_confession' },
-    { id: 'cinderfall-hotspring', tileX: 20, tileY: 14, textureKey: 'generic-trainer', facing: 'left',
+    { id: 'cinderfall-hotspring', tileX: 20, tileY: 14, textureKey: 'npc-female-4', facing: 'left',
       dialogue: ['Hot Spring Attendant: Welcome! Our springs heal all ailments.',
         'Your Pokémon feel refreshed and fully healed!'],
       interactionType: 'heal' },
     // Dr. Ash — Volcanic Survey quest giver
-    { id: 'cinderfall-dr-ash', tileX: 18, tileY: 20, textureKey: 'generic-trainer', facing: 'left',
+    { id: 'cinderfall-dr-ash', tileX: 18, tileY: 20, textureKey: 'npc-scientist', facing: 'left',
       dialogue: [
         'Dr. Ash: I\'m studying the volcanic activity around Cinderfall.',
         'Dr. Ash: I need temperature readings from 5 vents, but the wild Pokémon are too aggressive.',

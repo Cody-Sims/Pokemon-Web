@@ -29,7 +29,7 @@ export const palletOakLab: MapDefinition = {
       id: 'lab-oak',
       tileX: 6,
       tileY: 3,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-professor',
       facing: 'down',
       dialogue: [
         'Prof. Oak: Ah, there you are!',
@@ -43,7 +43,7 @@ export const palletOakLab: MapDefinition = {
       id: 'lab-oak-after',
       tileX: 6,
       tileY: 3,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-professor',
       facing: 'down',
       dialogue: [
         'Prof. Oak: Your Pokémon is looking great!',
@@ -73,7 +73,7 @@ export const palletOakLab: MapDefinition = {
       id: 'lab-aide-1',
       tileX: 2,
       tileY: 5,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'down',
       dialogue: [
         "I'm one of Prof. Oak's aides.",
@@ -84,7 +84,7 @@ export const palletOakLab: MapDefinition = {
       id: 'lab-aide-2',
       tileX: 10,
       tileY: 5,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'down',
       dialogue: [
         "Prof. Oak is the authority on Pokémon!",

@@ -5,7 +5,7 @@ import { MapDefinition, parseMap } from '../shared';
 const W = 25;
 const pad = (s: string) => s.length < W ? s.slice(0, -1) + '.'.repeat(W - s.length) + s.slice(-1) : s.slice(0, W);
 const coralGround = parseMap([
-  'TTTTTTTTTTTPPTTTTTTTTTTTTTT', // 0
+  'TTTTTTTTTT.PP.TTTTTTTTTTTTTT', // 0
   'T..........PP............T', // 1
   'T.CCCCCCC..PP..RRRRRRR..T', // 2
   'T.c$ccccc..PP..HH&HHHH..T', // 3
@@ -34,7 +34,7 @@ const coralGround = parseMap([
   'T....PP...............sT', // 26
   'T....PP...............sT', // 27
   'T....PP...............sT', // 28
-  'TTTTTTTTTTTPPTTTTTTTTTTTTTT', // 29
+  'TTTTTTTTTT.PP.TTTTTTTTTTTTTT', // 29
 ].map(r => pad(r)));
 
 export const coralHarbor: MapDefinition = {
@@ -58,7 +58,7 @@ export const coralHarbor: MapDefinition = {
       id: 'coral-npc-1',
       tileX: 22,
       tileY: 6,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-5',
       facing: 'left',
       dialogue: [
         'Coral is the Gym Leader here!',
@@ -71,7 +71,7 @@ export const coralHarbor: MapDefinition = {
       id: 'coral-stern',
       tileX: 22,
       tileY: 12,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-sailor',
       facing: 'down',
       dialogue: [
         'Captain Stern: Ahoy! I\'m Captain Stern.',
@@ -102,7 +102,7 @@ export const coralHarbor: MapDefinition = {
       id: 'coral-lena',
       tileX: 26,
       tileY: 15,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-swimmer',
       facing: 'left',
       dialogue: [
         'Diver Lena: Hey there, landlubber!',
@@ -117,7 +117,7 @@ export const coralHarbor: MapDefinition = {
       id: 'coral-marco',
       tileX: 8,
       tileY: 17,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-6',
       facing: 'right',
       dialogue: [
         'Chef Marco: Welcome to my seaside kitchen!',
@@ -148,7 +148,7 @@ export const coralHarbor: MapDefinition = {
       id: 'coral-zara-disguise',
       tileX: 10,
       tileY: 5,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-female-6',
       facing: 'down',
       dialogue: [
         'Philanthropist: Oh, hello! I\'m just a traveling philanthropist.',

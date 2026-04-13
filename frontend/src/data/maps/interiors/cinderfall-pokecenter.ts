@@ -3,7 +3,7 @@ const g = parseMap(['#########','#w#OOO#w#','#OOOKOO#O','#OOOOOOO#','#OOOOOOO#',
 export const cinderfallPokecenter: MapDefinition = {
   key: 'cinderfall-pokecenter', width: 9, height: 8, ground: g,
   encounterTableKey: '', isInterior: true, displayName: 'Cinderfall Pokémon Center',
-  npcs: [{ id: 'cinderfall-nurse', tileX: 4, tileY: 2, textureKey: 'generic-trainer',
+  npcs: [{ id: 'cinderfall-nurse', tileX: 4, tileY: 2, textureKey: 'npc-nurse',
     facing: 'down', dialogue: ['Welcome! We\'ll heal your Pokémon!'], interactionType: 'heal' }],
   trainers: [],
   warps: [

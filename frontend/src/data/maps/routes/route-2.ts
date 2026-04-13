@@ -2,7 +2,7 @@ import { MapDefinition, parseMap } from '../shared';
 
 const route2Ground = parseMap([
   // 01234567890123456789
-  'TTTTTTTTPPTTTTTTTTTT', // 0  - north exit to Viridian Forest
+  'TTTTTTT.PP.TTTTTTTTT', // 0  - north exit to Viridian Forest
   'T........PP........T', // 1
   'T..GGG...PP...GGG..T', // 2
   'T..GGG...PP...GGG..T', // 3
@@ -31,7 +31,7 @@ const route2Ground = parseMap([
   'T........PP........T', // 26
   'T........PP........T', // 27
   'T........PP........T', // 28
-  'TTTTTTTTPPTTTTTTTTTT', // 29 - south exit to Viridian City
+  'TTTTTTT.PP.TTTTTTTTT', // 29 - south exit to Viridian City
 ]);
 
 export const route2: MapDefinition = {
@@ -53,7 +53,7 @@ export const route2: MapDefinition = {
       id: 'route2-npc-1',
       tileX: 14,
       tileY: 15,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-2',
       facing: 'left',
       dialogue: [
         'Viridian Forest is just ahead!',
@@ -84,7 +84,7 @@ export const route2: MapDefinition = {
       trainerId: 'youngster-4',
       tileX: 14,
       tileY: 10,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-2',
       facing: 'left',
       lineOfSight: 4,
     },
@@ -93,7 +93,7 @@ export const route2: MapDefinition = {
       trainerId: 'lass-4',
       tileX: 5,
       tileY: 18,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-lass',
       facing: 'right',
       lineOfSight: 3,
     },
@@ -102,7 +102,7 @@ export const route2: MapDefinition = {
       trainerId: 'camper-1',
       tileX: 10,
       tileY: 24,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-1',
       facing: 'up',
       lineOfSight: 4,
     },

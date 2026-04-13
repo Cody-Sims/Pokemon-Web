@@ -28,7 +28,7 @@ const mineGround = parseMap([
   ';,,,q,,,,,,,,,q,,,,;', // 21
   ';,,,,,,,,,,,,,,,,,,;', // 22
   ';,,,,,,,,,,,,,,,,,,;', // 23
-  ';;;;;;;;,,,,;;;;;;;;', // 24 entrance
+  ';;;;;;,,,,,,,,;;;;;;', // 24 entrance
 ]);
 
 export const emberMines: MapDefinition = {
@@ -83,7 +83,7 @@ export const emberMines: MapDefinition = {
       trainerId: 'synthesis-grunt-2',
       tileX: 5,
       tileY: 8,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'right',
       lineOfSight: 4,
     },
@@ -92,7 +92,7 @@ export const emberMines: MapDefinition = {
       trainerId: 'synthesis-grunt-3',
       tileX: 14,
       tileY: 15,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'left',
       lineOfSight: 3,
     },
@@ -102,7 +102,7 @@ export const emberMines: MapDefinition = {
       trainerId: 'admin-vex-1',
       tileX: 10,
       tileY: 3,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'down',
       lineOfSight: 5,
     },
@@ -111,7 +111,7 @@ export const emberMines: MapDefinition = {
       trainerId: 'synthesis-grunt-5',
       tileX: 8,
       tileY: 12,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'up',
       lineOfSight: 4,
     },

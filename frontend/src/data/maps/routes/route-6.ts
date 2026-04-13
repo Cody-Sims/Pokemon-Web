@@ -2,7 +2,7 @@ import { MapDefinition, parseMap } from '../shared';
 
 // Route 6 — connecting Voltara City to Wraithmoor Town
 const route6Ground = parseMap([
-  'TTTTTTTTPPTTTTTTTTTT',
+  'TTTTTTT.PP.TTTTTTTTT',
   'T........PP........T',
   'T..GGG...PP...GGG..T',
   'T..GGG...PP...GGG..T',
@@ -31,7 +31,7 @@ const route6Ground = parseMap([
   'T..GG....PP....GG..T',
   'T........PP........T',
   'T........PP........T',
-  'TTTTTTTTPPTTTTTTTTTT',
+  'TTTTTTT.PP.TTTTTTTTT',
 ]);
 
 export const route6: MapDefinition = {
@@ -40,8 +40,8 @@ export const route6: MapDefinition = {
   npcs: [{ id: 'route6-sign', tileX: 11, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
     dialogue: ['ROUTE 6', 'Wraithmoor Town ↓  Voltara City ↑'] }],
   trainers: [
-    { id: 'route6-psychic-1', trainerId: 'psychic-1', tileX: 6, tileY: 12, textureKey: 'generic-trainer', facing: 'right', lineOfSight: 4 },
-    { id: 'route6-grunt-5', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 18, textureKey: 'generic-trainer', facing: 'left', lineOfSight: 3 },
+    { id: 'route6-psychic-1', trainerId: 'psychic-1', tileX: 6, tileY: 12, textureKey: 'npc-scientist', facing: 'right', lineOfSight: 4 },
+    { id: 'route6-grunt-5', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 18, textureKey: 'npc-scientist', facing: 'left', lineOfSight: 3 },
   ],
   warps: [
     { tileX: 8, tileY: 0, targetMap: 'voltara-city', targetSpawnId: 'from-route-6' },

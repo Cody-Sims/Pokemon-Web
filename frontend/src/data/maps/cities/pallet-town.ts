@@ -3,7 +3,7 @@ import { MapDefinition, parseMap } from '../shared';
 const palletGround = parseMap([
   // col: 0         1         2  4
   //      0123456789012345678901234
-  'TTTTTTTTTTTPPPTTTTTTTTTTT', // 0  - north exit
+  'TTTTTTTTTT.PPP.TTTTTTTTTT', // 0  - north exit
   'T..........PPP..........T', // 1
   'T.RRRRRRR..PPP..RRRRRRR.T', // 2  - roofs (7 wide)
   'T.HHH&HHH..PPP..HH&HHHH.T', // 3  - walls with windows
@@ -36,7 +36,7 @@ export const palletTown: MapDefinition = {
       id: 'pallet-npc-1',
       tileX: 7,
       tileY: 7,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-1',
       facing: 'down',
       dialogue: [
         'Welcome to Pallet Town!',
@@ -47,7 +47,7 @@ export const palletTown: MapDefinition = {
       id: 'pallet-npc-2',
       tileX: 18,
       tileY: 9,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-female-1',
       facing: 'left',
       dialogue: [
         'Prof. Oak\'s Lab is that big building in the south.',
@@ -67,7 +67,7 @@ export const palletTown: MapDefinition = {
       id: 'pallet-pip',
       tileX: 3,
       tileY: 14,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-lass',
       facing: 'right',
       dialogue: [
         'Pip: Oh! You\'re a trainer? Perfect!',

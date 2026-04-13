@@ -3,7 +3,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Verdantia Village — Town 5 (25 wide × 25 tall)
 // Peaceful herbalist village. Gym 4 (Grass — Ivy)
 const verdantiaGround = parseMap([
-  'XXXXXXXXXPPXXXXXXXXXXXXX', // 0  north exit to Route 5
+  'XXXXXXXX.PP.XXXXXXXXXXXX', // 0  north exit to Route 5
   'X........PP............X', // 1
   'X.CCCCCCCPP..RRRRRRR..X', // 2  center + house
   'X.c$cccccPP..HH&HHHH..X', // 3
@@ -27,7 +27,7 @@ const verdantiaGround = parseMap([
   'X..f......PP......f...X', // 21
   'X.........PP..........X', // 22
   'X.........PP..........X', // 23
-  'XXXXXXXXXPPXXXXXXXXXXXXX', // 24  south border
+  'XXXXXXXX.PP.XXXXXXXXXXXX', // 24  south border
 ]);
 
 export const verdantiaVillage: MapDefinition = {
@@ -51,7 +51,7 @@ export const verdantiaVillage: MapDefinition = {
       id: 'verdantia-npc-1',
       tileX: 18,
       tileY: 6,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-female-2',
       facing: 'left',
       dialogue: [
         'Ivy is our Gym Leader. She runs the sanctuary.',
@@ -64,7 +64,7 @@ export const verdantiaVillage: MapDefinition = {
       id: 'verdantia-moss',
       tileX: 14,
       tileY: 12,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-oldman',
       facing: 'down',
       dialogue: [
         'Elder Moss: Ah, young trainer...',
@@ -82,7 +82,7 @@ export const verdantiaVillage: MapDefinition = {
       id: 'verdantia-hana',
       tileX: 20,
       tileY: 11,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-female-5',
       facing: 'left',
       dialogue: [
         'Hana: Welcome to my berry garden!',

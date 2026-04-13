@@ -2,7 +2,7 @@ import { MapDefinition, parseMap } from '../shared';
 
 const forestGround = parseMap([
   // 0123456789012345678901234
-  'XXXXXXXXXPPXXXXXXXXXXXX.X', // 0  - north exit to Pewter side
+  'XXXXXXXX.PP.XXXXXXXXXXX.X', // 0  - north exit to Pewter side
   'X.........PP............X', // 1
   'X..GGG....PP.....GGG....X', // 2
   'X..GGG....PP.....GGG....X', // 3
@@ -41,7 +41,7 @@ const forestGround = parseMap([
   'X.........PP............X', // 36
   'X.........PP............X', // 37
   'X.........PP............X', // 38
-  'XXXXXXXXXPPXXXXXXXXXXXX.X', // 39 - south exit to Route 2
+  'XXXXXXXX.PP.XXXXXXXXXXX.X', // 39 - south exit to Route 2
 ]);
 
 export const viridianForest: MapDefinition = {
@@ -116,7 +116,7 @@ export const viridianForest: MapDefinition = {
       trainerId: 'bug-catcher-1',
       tileX: 7,
       tileY: 8,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-3',
       facing: 'right',
       lineOfSight: 3,
     },
@@ -125,7 +125,7 @@ export const viridianForest: MapDefinition = {
       trainerId: 'bug-catcher-2',
       tileX: 16,
       tileY: 15,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-3',
       facing: 'left',
       lineOfSight: 4,
     },
@@ -134,7 +134,7 @@ export const viridianForest: MapDefinition = {
       trainerId: 'bug-catcher-3',
       tileX: 7,
       tileY: 27,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-3',
       facing: 'right',
       lineOfSight: 3,
     },
@@ -143,7 +143,7 @@ export const viridianForest: MapDefinition = {
       trainerId: 'bug-catcher-5',
       tileX: 18,
       tileY: 22,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-3',
       facing: 'left',
       lineOfSight: 3,
     },
@@ -152,7 +152,7 @@ export const viridianForest: MapDefinition = {
       trainerId: 'lass-5',
       tileX: 12,
       tileY: 34,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-lass',
       facing: 'up',
       lineOfSight: 4,
     },

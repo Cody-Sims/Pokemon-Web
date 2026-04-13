@@ -4,7 +4,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Dense forest route connecting Ironvale to Verdantia Village
 // Features: dark grass, dense trees, vines (story: Synthesis traps)
 const route5Ground = parseMap([
-  'XXXXXXXXXXPPXXXXXXXXXX', // 0  north exit
+  'XXXXXXXXX.PP.XXXXXXXXX', // 0  north exit
   'X..........PP........X', // 1
   'X..4444....PP...444..X', // 2  dark grass
   'X..4444....PP...444..X', // 3
@@ -33,7 +33,7 @@ const route5Ground = parseMap([
   'X..f.......PP.....f..X', // 26
   'X..........PP........X', // 27
   'X..........PP........X', // 28
-  'XXXXXXXXXXPPXXXXXXXXXX', // 29 south exit
+  'XXXXXXXXX.PP.XXXXXXXXX', // 29 south exit
 ]);
 
 export const route5: MapDefinition = {
@@ -89,7 +89,7 @@ export const route5: MapDefinition = {
       trainerId: 'bug-catcher-4',
       tileX: 7,
       tileY: 7,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-3',
       facing: 'right',
       lineOfSight: 3,
     },
@@ -98,7 +98,7 @@ export const route5: MapDefinition = {
       trainerId: 'lass-3',
       tileX: 15,
       tileY: 20,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-lass',
       facing: 'left',
       lineOfSight: 4,
     },
@@ -107,7 +107,7 @@ export const route5: MapDefinition = {
       trainerId: 'synthesis-grunt-3',
       tileX: 10,
       tileY: 12,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'down',
       lineOfSight: 3,
     },
@@ -116,7 +116,7 @@ export const route5: MapDefinition = {
       trainerId: 'camper-4',
       tileX: 4,
       tileY: 16,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-1',
       facing: 'right',
       lineOfSight: 4,
     },
@@ -125,7 +125,7 @@ export const route5: MapDefinition = {
       trainerId: 'youngster-6',
       tileX: 17,
       tileY: 24,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-2',
       facing: 'left',
       lineOfSight: 3,
     },
@@ -134,7 +134,7 @@ export const route5: MapDefinition = {
       trainerId: 'synthesis-grunt-6',
       tileX: 12,
       tileY: 8,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'down',
       lineOfSight: 4,
     },

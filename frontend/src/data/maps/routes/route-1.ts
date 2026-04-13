@@ -2,7 +2,7 @@ import { MapDefinition, parseMap } from '../shared';
 
 const route1Ground = parseMap([
   // 01234567890123456789
-  'TTTTTTTTPPTTTTTTTTTT', // 0  - north exit to Viridian
+  'TTTTTTT.PP.TTTTTTTTT', // 0  - north exit to Viridian
   'T........PP........T', // 1
   'T..GGG...PP...GGG..T', // 2
   'T..GGG...PP...GGG..T', // 3
@@ -41,7 +41,7 @@ const route1Ground = parseMap([
   'T..GG....PP....GG..T', // 36
   'T..GG....PP....GG..T', // 37
   'T........PP........T', // 38
-  'TTTTTTTTPPTTTTTTTTTT', // 39 - south exit to Pallet
+  'TTTTTTT.PP.TTTTTTTTT', // 39 - south exit to Pallet
 ]);
 
 export const route1: MapDefinition = {
@@ -74,7 +74,7 @@ export const route1: MapDefinition = {
       id: 'route1-npc-2',
       tileX: 4,
       tileY: 24,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-female-3',
       facing: 'right',
       dialogue: [
         'I\'ve heard Pikachu live on this route...',
@@ -88,7 +88,7 @@ export const route1: MapDefinition = {
       trainerId: 'youngster-1',
       tileX: 14,
       tileY: 18,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-2',
       facing: 'left',
       lineOfSight: 4,
     },
@@ -97,7 +97,7 @@ export const route1: MapDefinition = {
       trainerId: 'lass-1',
       tileX: 5,
       tileY: 12,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-lass',
       facing: 'right',
       lineOfSight: 4,
     },
@@ -106,7 +106,7 @@ export const route1: MapDefinition = {
       trainerId: 'youngster-2',
       tileX: 10,
       tileY: 28,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-2',
       facing: 'left',
       lineOfSight: 3,
     },

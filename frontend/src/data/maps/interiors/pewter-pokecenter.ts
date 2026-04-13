@@ -25,7 +25,7 @@ export const pewterPokecenter: MapDefinition = {
       id: 'pewter-nurse-inside',
       tileX: 5,
       tileY: 1,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-nurse',
       facing: 'down',
       dialogue: [
         'Welcome to the Pokémon Center!',

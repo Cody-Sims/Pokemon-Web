@@ -6,7 +6,7 @@ import { MapDefinition, parseMap } from '../shared';
 const W = 20;
 const pad = (s: string) => s.length < W ? s.slice(0, -1) + '.'.repeat(W - s.length) + s.slice(-1) : s.slice(0, W);
 const route4Ground = parseMap([
-  'TTTTTTTTPPTTTTTTTTTT', // 0  north exit
+  'TTTTTTT.PP.TTTTTTTTT', // 0  north exit
   'T........PP........T', // 1
   'T..GGG...PP...GGG..T', // 2
   'T..GGG...PP...GGG..T', // 3
@@ -35,7 +35,7 @@ const route4Ground = parseMap([
   'T..GGG...PP...GGG..T', // 26
   'T........PP........T', // 27
   'T........PP........T', // 28
-  'TTTTTTTTPPTTTTTTTTTT', // 29 south exit
+  'TTTTTTT.PP.TTTTTTTTT', // 29 south exit
 ]);
 
 export const route4: MapDefinition = {
@@ -59,7 +59,7 @@ export const route4: MapDefinition = {
       id: 'route4-rook',
       tileX: 12,
       tileY: 12,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-6',
       facing: 'left',
       dialogue: [
         '???: ...That creature was no ordinary Pokémon.',
@@ -78,7 +78,7 @@ export const route4: MapDefinition = {
       trainerId: 'hiker-4',
       tileX: 6,
       tileY: 15,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-hiker',
       facing: 'right',
       lineOfSight: 3,
     },
@@ -87,7 +87,7 @@ export const route4: MapDefinition = {
       trainerId: 'synthesis-grunt-1',
       tileX: 14,
       tileY: 10,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'left',
       lineOfSight: 4,
     },
@@ -96,7 +96,7 @@ export const route4: MapDefinition = {
       trainerId: 'hiker-6',
       tileX: 10,
       tileY: 22,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-hiker',
       facing: 'up',
       lineOfSight: 3,
     },
@@ -105,7 +105,7 @@ export const route4: MapDefinition = {
       trainerId: 'youngster-5',
       tileX: 5,
       tileY: 8,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-2',
       facing: 'right',
       lineOfSight: 4,
     },
@@ -114,7 +114,7 @@ export const route4: MapDefinition = {
       trainerId: 'synthesis-grunt-4',
       tileX: 12,
       tileY: 18,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'down',
       lineOfSight: 4,
     },

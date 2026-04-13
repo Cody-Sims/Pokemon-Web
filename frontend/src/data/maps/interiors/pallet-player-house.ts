@@ -25,7 +25,7 @@ export const palletPlayerHouse: MapDefinition = {
       id: 'house-mom',
       tileX: 2,
       tileY: 4,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-mom',
       facing: 'down',
       dialogue: [
         'Mom: Good morning, sweetie!',

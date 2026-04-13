@@ -55,6 +55,19 @@ export class PreloadScene extends Phaser.Scene {
     this.load.atlas('rival', 'assets/sprites/npcs/rival.png', 'assets/sprites/npcs/rival.json');
     this.load.atlas('generic-trainer', 'assets/sprites/npcs/generic-trainer.png', 'assets/sprites/npcs/generic-trainer.json');
 
+    // Distinct NPC character sprites
+    const npcSprites = [
+      'npc-mom', 'npc-nurse', 'npc-female-1', 'npc-female-2', 'npc-female-3',
+      'npc-female-4', 'npc-lass', 'npc-female-5', 'npc-female-6', 'npc-female-7',
+      'npc-female-8', 'npc-female-9',
+      'npc-male-1', 'npc-oldman', 'npc-male-2', 'npc-hiker', 'npc-male-3',
+      'npc-professor', 'npc-scientist', 'npc-male-4', 'npc-swimmer', 'npc-male-5',
+      'npc-sailor', 'npc-male-6',
+    ];
+    for (const key of npcSprites) {
+      this.load.atlas(key, `assets/sprites/npcs/${key}.png`, `assets/sprites/npcs/${key}.json`);
+    }
+
     // ── Audio: BGM ──
     for (const key of Object.values(BGM)) {
       this.load.audio(key, `assets/audio/bgm/${key}.wav`);

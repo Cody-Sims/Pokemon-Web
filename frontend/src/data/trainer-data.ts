@@ -147,7 +147,7 @@ export const trainerData: Record<string, TrainerData> = {
   // ─── Secondary Rival: Marina Oleander ───
   // Encounter 1: Route 2 — friendly challenge
   'marina-1': {
-    id: 'marina-1', name: 'Marina', spriteKey: 'generic-trainer',
+    id: 'marina-1', name: 'Marina', spriteKey: 'npc-lass',
     party: [
       { pokemonId: 7, level: 12, moves: ['tackle', 'tail-whip', 'water-gun', 'withdraw'] },
       { pokemonId: 43, level: 10, moves: ['absorb', 'growth', 'poison-powder'] },
@@ -169,7 +169,7 @@ export const trainerData: Record<string, TrainerData> = {
   },
   // Encounter 4: Post-game Crystal Cavern — optional research battle
   'marina-4': {
-    id: 'marina-4', name: 'Marina', spriteKey: 'generic-trainer',
+    id: 'marina-4', name: 'Marina', spriteKey: 'npc-lass',
     party: [
       { pokemonId: 9, level: 58, moves: ['hydro-pump', 'ice-beam', 'skull-bash', 'rain-dance'] },
       { pokemonId: 45, level: 55, moves: ['solar-beam', 'sludge', 'sleep-powder', 'petal-dance'] },
@@ -196,7 +196,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Synthesis Collective: Grunts ───
   'synthesis-grunt-1': {
-    id: 'synthesis-grunt-1', name: 'Synthesis Grunt', spriteKey: 'generic-trainer',
+    id: 'synthesis-grunt-1', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 41, level: 13, moves: ['leech-life', 'supersonic'] },
       { pokemonId: 109, level: 14, moves: ['tackle', 'smog', 'poison-gas'] },
@@ -213,7 +213,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 280,
   },
   'synthesis-grunt-2': {
-    id: 'synthesis-grunt-2', name: 'Synthesis Grunt', spriteKey: 'generic-trainer',
+    id: 'synthesis-grunt-2', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 88, level: 14, moves: ['pound', 'poison-gas', 'harden'] },
       { pokemonId: 23, level: 14, moves: ['wrap', 'leer', 'poison-sting'] },
@@ -229,7 +229,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 280,
   },
   'synthesis-grunt-3': {
-    id: 'synthesis-grunt-3', name: 'Synthesis Grunt', spriteKey: 'generic-trainer',
+    id: 'synthesis-grunt-3', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 109, level: 22, moves: ['sludge', 'smokescreen', 'self-destruct'] },
       { pokemonId: 42, level: 22, moves: ['wing-attack', 'bite', 'confuse-ray'] },
@@ -249,7 +249,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Crystal Cavern: Hikers ───
   'hiker-1': {
-    id: 'hiker-1', name: 'Hiker Marcus', spriteKey: 'generic-trainer',
+    id: 'hiker-1', name: 'Hiker Marcus', spriteKey: 'npc-hiker',
     party: [
       { pokemonId: 74, level: 10, moves: ['tackle', 'defense-curl', 'rock-throw'] },
       { pokemonId: 74, level: 10, moves: ['tackle', 'defense-curl'] },
@@ -261,7 +261,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 200,
   },
   'hiker-2': {
-    id: 'hiker-2', name: 'Hiker Bruno', spriteKey: 'generic-trainer',
+    id: 'hiker-2', name: 'Hiker Bruno', spriteKey: 'npc-hiker',
     party: [
       { pokemonId: 95, level: 11, moves: ['tackle', 'rock-throw', 'bind'] },
     ],
@@ -272,7 +272,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 220,
   },
   'hiker-3': {
-    id: 'hiker-3', name: 'Hiker Cliff', spriteKey: 'generic-trainer',
+    id: 'hiker-3', name: 'Hiker Cliff', spriteKey: 'npc-hiker',
     party: [
       { pokemonId: 74, level: 11, moves: ['tackle', 'rock-throw', 'dig'] },
       { pokemonId: 50, level: 12, moves: ['dig', 'scratch', 'sand-attack'] },
@@ -287,7 +287,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 3: Tide Pool Path trainers ───
   'swimmer-1': {
-    id: 'swimmer-1', name: 'Swimmer Derek', spriteKey: 'generic-trainer',
+    id: 'swimmer-1', name: 'Swimmer Derek', spriteKey: 'npc-swimmer',
     party: [
       { pokemonId: 120, level: 13, moves: ['tackle', 'water-gun', 'harden'] },
       { pokemonId: 72, level: 13, moves: ['poison-sting', 'supersonic', 'wrap'] },
@@ -299,7 +299,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 260,
   },
   'lass-2': {
-    id: 'lass-2', name: 'Lass Cynthia', spriteKey: 'generic-trainer',
+    id: 'lass-2', name: 'Lass Cynthia', spriteKey: 'npc-lass',
     party: [
       { pokemonId: 29, level: 12, moves: ['scratch', 'poison-sting', 'tail-whip'] },
       { pokemonId: 35, level: 13, moves: ['pound', 'growl', 'sing'] },
@@ -311,7 +311,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 260,
   },
   'youngster-3': {
-    id: 'youngster-3', name: 'Youngster Kevin', spriteKey: 'generic-trainer',
+    id: 'youngster-3', name: 'Youngster Kevin', spriteKey: 'npc-male-2',
     party: [
       { pokemonId: 27, level: 13, moves: ['scratch', 'sand-attack', 'slash'] },
       { pokemonId: 21, level: 12, moves: ['peck', 'leer', 'fury-attack'] },
@@ -326,7 +326,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Gym 2: Coral (Water-type Gym Leader) ───
   'gym-coral': {
-    id: 'gym-coral', name: 'Gym Leader Coral', spriteKey: 'generic-trainer',
+    id: 'gym-coral', name: 'Gym Leader Coral', spriteKey: 'npc-swimmer',
     party: [
       { pokemonId: 120, level: 18, moves: ['water-gun', 'tackle', 'harden', 'swift'] },
       { pokemonId: 90, level: 18, moves: ['tackle', 'withdraw', 'ice-beam', 'clamp'] },
@@ -352,7 +352,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Gym 3: Ferris (Steel-type Gym Leader) ───
   'gym-ferris': {
-    id: 'gym-ferris', name: 'Gym Leader Ferris', spriteKey: 'generic-trainer',
+    id: 'gym-ferris', name: 'Gym Leader Ferris', spriteKey: 'npc-male-4',
     party: [
       { pokemonId: 81, level: 24, moves: ['thunder-shock', 'sonic-boom', 'supersonic', 'tackle'] },
       { pokemonId: 82, level: 24, moves: ['thunder-shock', 'sonic-boom', 'tri-attack'] },
@@ -378,7 +378,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Gym 4: Ivy (Grass-type Gym Leader) ───
   'gym-ivy': {
-    id: 'gym-ivy', name: 'Gym Leader Ivy', spriteKey: 'generic-trainer',
+    id: 'gym-ivy', name: 'Gym Leader Ivy', spriteKey: 'npc-female-5',
     party: [
       { pokemonId: 70, level: 28, moves: ['razor-leaf', 'sleep-powder', 'vine-whip', 'wrap'] },
       { pokemonId: 47, level: 28, moves: ['spore', 'mega-drain', 'slash', 'growth'] },
@@ -404,7 +404,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Gym 5: Blitz (Electric-type Gym Leader) ───
   'gym-blitz': {
-    id: 'gym-blitz', name: 'Gym Leader Blitz', spriteKey: 'generic-trainer',
+    id: 'gym-blitz', name: 'Gym Leader Blitz', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 100, level: 32, moves: ['thunderbolt', 'swift', 'self-destruct', 'screech'] },
       { pokemonId: 26, level: 33, moves: ['thunderbolt', 'quick-attack', 'double-team', 'thunder-wave'] },
@@ -431,7 +431,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Dr. Vex Corbin (Admin — Boss encounter 1) ───
   'admin-vex-1': {
-    id: 'admin-vex-1', name: 'Admin Vex', spriteKey: 'generic-trainer',
+    id: 'admin-vex-1', name: 'Admin Vex', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 109, level: 22, moves: ['sludge', 'smokescreen', 'tackle', 'self-destruct'] },
       { pokemonId: 89, level: 23, moves: ['sludge', 'body-slam', 'acid', 'harden'] },
@@ -457,7 +457,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 4 trainers ───
   'hiker-4': {
-    id: 'hiker-4', name: 'Hiker Raymond', spriteKey: 'generic-trainer',
+    id: 'hiker-4', name: 'Hiker Raymond', spriteKey: 'npc-hiker',
     party: [
       { pokemonId: 74, level: 16, moves: ['rock-throw', 'tackle', 'defense-curl'] },
       { pokemonId: 75, level: 17, moves: ['rock-throw', 'tackle', 'defense-curl'] },
@@ -471,7 +471,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 5 trainers ───
   'bug-catcher-4': {
-    id: 'bug-catcher-4', name: 'Bug Catcher Tommy', spriteKey: 'generic-trainer',
+    id: 'bug-catcher-4', name: 'Bug Catcher Tommy', spriteKey: 'npc-male-3',
     party: [
       { pokemonId: 12, level: 23, moves: ['psybeam', 'sleep-powder', 'gust'] },
       { pokemonId: 15, level: 23, moves: ['twineedle', 'fury-attack', 'focus-energy'] },
@@ -483,7 +483,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 460,
   },
   'lass-3': {
-    id: 'lass-3', name: 'Lass Fiona', spriteKey: 'generic-trainer',
+    id: 'lass-3', name: 'Lass Fiona', spriteKey: 'npc-lass',
     party: [
       { pokemonId: 44, level: 24, moves: ['acid', 'sleep-powder', 'razor-leaf'] },
       { pokemonId: 36, level: 24, moves: ['sing', 'body-slam', 'double-slap'] },
@@ -497,7 +497,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Gym 6: Morwen (Ghost-type Gym Leader) ───
   'gym-morwen': {
-    id: 'gym-morwen', name: 'Gym Leader Morwen', spriteKey: 'generic-trainer',
+    id: 'gym-morwen', name: 'Gym Leader Morwen', spriteKey: 'npc-female-6',
     party: [
       { pokemonId: 93, level: 38, moves: ['lick', 'hypnosis', 'dream-eater', 'confuse-ray'] },
       { pokemonId: 94, level: 40, moves: ['lick', 'hypnosis', 'dream-eater', 'night-shade'] },
@@ -512,7 +512,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Gym 7: Drake (Dragon-type Gym Leader) ───
   'gym-drake': {
-    id: 'gym-drake', name: 'Gym Leader Drake', spriteKey: 'generic-trainer',
+    id: 'gym-drake', name: 'Gym Leader Drake', spriteKey: 'npc-male-5',
     party: [
       { pokemonId: 148, level: 42, moves: ['dragon-rage', 'slam', 'thunder-wave', 'agility'] },
       { pokemonId: 130, level: 42, moves: ['hydro-pump', 'bite', 'dragon-rage', 'thrash'] },
@@ -527,7 +527,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Gym 8: Solara (Fire-type Gym Leader) ───
   'gym-solara': {
-    id: 'gym-solara', name: 'Gym Leader Solara', spriteKey: 'generic-trainer',
+    id: 'gym-solara', name: 'Gym Leader Solara', spriteKey: 'npc-female-9',
     party: [
       { pokemonId: 78, level: 44, moves: ['fire-spin', 'stomp', 'agility', 'fire-blast'] },
       { pokemonId: 59, level: 44, moves: ['flamethrower', 'bite', 'take-down', 'agility'] },
@@ -543,7 +543,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Dr. Vex boss battle #2 ───
   'admin-vex-2': {
-    id: 'admin-vex-2', name: 'Admin Vex', spriteKey: 'generic-trainer',
+    id: 'admin-vex-2', name: 'Admin Vex', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 110, level: 36, moves: ['sludge', 'smokescreen', 'self-destruct', 'fire-blast'] },
       { pokemonId: 89, level: 37, moves: ['sludge', 'body-slam', 'acid', 'fire-punch'] },
@@ -558,7 +558,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 6 trainers ───
   'psychic-1': {
-    id: 'psychic-1', name: 'Psychic Elena', spriteKey: 'generic-trainer',
+    id: 'psychic-1', name: 'Psychic Elena', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 65, level: 32, moves: ['psychic', 'psybeam', 'recover', 'reflect'] },
       { pokemonId: 97, level: 33, moves: ['psychic', 'hypnosis', 'dream-eater', 'confusion'] },
@@ -572,7 +572,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Victory Road Ace Trainers ───
   'ace-trainer-1': {
-    id: 'ace-trainer-1', name: 'Ace Trainer Victor', spriteKey: 'generic-trainer',
+    id: 'ace-trainer-1', name: 'Ace Trainer Victor', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 68, level: 42, moves: ['karate-chop', 'seismic-toss', 'submission', 'body-slam'] },
       { pokemonId: 76, level: 42, moves: ['earthquake', 'rock-throw', 'body-slam', 'explosion'] },
@@ -585,7 +585,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 2100,
   },
   'ace-trainer-2': {
-    id: 'ace-trainer-2', name: 'Ace Trainer Luna', spriteKey: 'generic-trainer',
+    id: 'ace-trainer-2', name: 'Ace Trainer Luna', spriteKey: 'npc-male-5',
     party: [
       { pokemonId: 121, level: 43, moves: ['psychic', 'surf', 'ice-beam', 'recover'] },
       { pokemonId: 103, level: 43, moves: ['psychic', 'solar-beam', 'sleep-powder', 'leech-seed'] },
@@ -598,7 +598,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 2150,
   },
   'ace-trainer-3': {
-    id: 'ace-trainer-3', name: 'Ace Trainer Rex', spriteKey: 'generic-trainer',
+    id: 'ace-trainer-3', name: 'Ace Trainer Rex', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 130, level: 44, moves: ['hydro-pump', 'bite', 'dragon-rage', 'thrash'] },
       { pokemonId: 65, level: 44, moves: ['psychic', 'recover', 'reflect', 'psybeam'] },
@@ -613,7 +613,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Elite Four ───
   'elite-nerida': {
-    id: 'elite-nerida', name: 'Elite Four Nerida', spriteKey: 'generic-trainer',
+    id: 'elite-nerida', name: 'Elite Four Nerida', spriteKey: 'npc-female-7',
     party: [
       { pokemonId: 87, level: 50, moves: ['ice-beam', 'surf', 'body-slam', 'rest'] },
       { pokemonId: 91, level: 50, moves: ['ice-beam', 'clamp', 'supersonic', 'aurora-beam'] },
@@ -630,7 +630,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Champion Aldric Maren ───
   'champion-aldric': {
-    id: 'champion-aldric', name: 'Champion Aldric', spriteKey: 'generic-trainer',
+    id: 'champion-aldric', name: 'Champion Aldric', spriteKey: 'npc-male-6',
     party: [
       { pokemonId: 94, level: 52, moves: ['lick', 'dream-eater', 'hypnosis', 'night-shade'] },
       { pokemonId: 65, level: 52, moves: ['psychic', 'recover', 'reflect', 'psybeam'] },
@@ -659,7 +659,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 1 / Viridian Forest: Original trainers ───
   'bug-catcher-1': {
-    id: 'bug-catcher-1', name: 'Bug Catcher Rick', spriteKey: 'generic-trainer',
+    id: 'bug-catcher-1', name: 'Bug Catcher Rick', spriteKey: 'npc-male-3',
     party: [
       { pokemonId: 10, level: 6 },
       { pokemonId: 13, level: 6 },
@@ -671,7 +671,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 60,
   },
   'bug-catcher-2': {
-    id: 'bug-catcher-2', name: 'Bug Catcher Doug', spriteKey: 'generic-trainer',
+    id: 'bug-catcher-2', name: 'Bug Catcher Doug', spriteKey: 'npc-male-3',
     party: [
       { pokemonId: 13, level: 7 },
       { pokemonId: 14, level: 7 },
@@ -684,7 +684,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 70,
   },
   'bug-catcher-3': {
-    id: 'bug-catcher-3', name: 'Bug Catcher Sammy', spriteKey: 'generic-trainer',
+    id: 'bug-catcher-3', name: 'Bug Catcher Sammy', spriteKey: 'npc-male-3',
     party: [
       { pokemonId: 10, level: 9 },
       { pokemonId: 11, level: 9 },
@@ -696,7 +696,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 90,
   },
   'youngster-1': {
-    id: 'youngster-1', name: 'Youngster Joey', spriteKey: 'generic-trainer',
+    id: 'youngster-1', name: 'Youngster Joey', spriteKey: 'npc-male-2',
     party: [
       { pokemonId: 19, level: 6 },
     ],
@@ -707,7 +707,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 60,
   },
   'lass-1': {
-    id: 'lass-1', name: 'Lass Janice', spriteKey: 'generic-trainer',
+    id: 'lass-1', name: 'Lass Janice', spriteKey: 'npc-lass',
     party: [
       { pokemonId: 16, level: 7 },
       { pokemonId: 43, level: 7 },
@@ -719,7 +719,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 70,
   },
   'youngster-2': {
-    id: 'youngster-2', name: 'Youngster Ben', spriteKey: 'generic-trainer',
+    id: 'youngster-2', name: 'Youngster Ben', spriteKey: 'npc-male-2',
     party: [
       { pokemonId: 19, level: 9 },
       { pokemonId: 16, level: 9 },
@@ -731,7 +731,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 90,
   },
   'gym-brock': {
-    id: 'gym-brock', name: 'Gym Leader Brock', spriteKey: 'generic-trainer',
+    id: 'gym-brock', name: 'Gym Leader Brock', spriteKey: 'npc-hiker',
     party: [
       { pokemonId: 74, level: 12, moves: ['tackle', 'defense-curl'] },
       { pokemonId: 95, level: 14, moves: ['tackle', 'rock-throw', 'bind'] },
@@ -753,7 +753,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 2: Trainers near Crystal Cavern entrance ───
   'youngster-4': {
-    id: 'youngster-4', name: 'Youngster Tim', spriteKey: 'generic-trainer',
+    id: 'youngster-4', name: 'Youngster Tim', spriteKey: 'npc-male-2',
     party: [
       { pokemonId: 32, level: 9, moves: ['leer', 'tackle', 'poison-sting'] },
       { pokemonId: 27, level: 9, moves: ['scratch', 'sand-attack'] },
@@ -765,7 +765,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 90,
   },
   'lass-4': {
-    id: 'lass-4', name: 'Lass Mira', spriteKey: 'generic-trainer',
+    id: 'lass-4', name: 'Lass Mira', spriteKey: 'npc-lass',
     party: [
       { pokemonId: 29, level: 10, moves: ['scratch', 'growl', 'poison-sting'] },
       { pokemonId: 39, level: 10, moves: ['sing', 'pound', 'defense-curl'] },
@@ -777,7 +777,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 100,
   },
   'camper-1': {
-    id: 'camper-1', name: 'Camper Ethan', spriteKey: 'generic-trainer',
+    id: 'camper-1', name: 'Camper Ethan', spriteKey: 'npc-male-1',
     party: [
       { pokemonId: 21, level: 9, moves: ['peck', 'leer', 'fury-attack'] },
       { pokemonId: 19, level: 10, moves: ['tackle', 'quick-attack', 'tail-whip'] },
@@ -792,7 +792,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Viridian Forest: Additional trainers ───
   'bug-catcher-5': {
-    id: 'bug-catcher-5', name: 'Bug Catcher Leo', spriteKey: 'generic-trainer',
+    id: 'bug-catcher-5', name: 'Bug Catcher Leo', spriteKey: 'npc-male-3',
     party: [
       { pokemonId: 13, level: 8, moves: ['poison-sting', 'string-shot'] },
       { pokemonId: 14, level: 8, moves: ['harden'] },
@@ -805,7 +805,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 80,
   },
   'lass-5': {
-    id: 'lass-5', name: 'Lass Violet', spriteKey: 'generic-trainer',
+    id: 'lass-5', name: 'Lass Violet', spriteKey: 'npc-lass',
     party: [
       { pokemonId: 25, level: 9, moves: ['thunder-shock', 'growl', 'quick-attack'] },
       { pokemonId: 43, level: 8, moves: ['absorb', 'growth'] },
@@ -819,7 +819,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Crystal Cavern: Additional trainers ───
   'hiker-5': {
-    id: 'hiker-5', name: 'Hiker Garrett', spriteKey: 'generic-trainer',
+    id: 'hiker-5', name: 'Hiker Garrett', spriteKey: 'npc-hiker',
     party: [
       { pokemonId: 66, level: 11, moves: ['karate-chop', 'leer', 'low-kick'] },
       { pokemonId: 74, level: 12, moves: ['tackle', 'rock-throw', 'defense-curl'] },
@@ -831,7 +831,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 240,
   },
   'camper-2': {
-    id: 'camper-2', name: 'Camper Felix', spriteKey: 'generic-trainer',
+    id: 'camper-2', name: 'Camper Felix', spriteKey: 'npc-male-1',
     party: [
       { pokemonId: 27, level: 11, moves: ['scratch', 'sand-attack'] },
       { pokemonId: 41, level: 12, moves: ['leech-life', 'supersonic', 'bite'] },
@@ -846,7 +846,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Pewter Gym: Junior trainer ───
   'camper-3': {
-    id: 'camper-3', name: 'Camper Liam', spriteKey: 'generic-trainer',
+    id: 'camper-3', name: 'Camper Liam', spriteKey: 'npc-male-1',
     party: [
       { pokemonId: 74, level: 10, moves: ['tackle', 'defense-curl'] },
       { pokemonId: 27, level: 11, moves: ['scratch', 'sand-attack'] },
@@ -860,7 +860,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 3: Tide Pool Path — additional coastal trainers ───
   'swimmer-2': {
-    id: 'swimmer-2', name: 'Swimmer Lydia', spriteKey: 'generic-trainer',
+    id: 'swimmer-2', name: 'Swimmer Lydia', spriteKey: 'npc-swimmer',
     party: [
       { pokemonId: 72, level: 14, moves: ['poison-sting', 'supersonic', 'wrap'] },
       { pokemonId: 116, level: 14, moves: ['water-gun', 'smokescreen', 'bubble'] },
@@ -872,7 +872,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 280,
   },
   'fisherman-1': {
-    id: 'fisherman-1', name: 'Fisherman Barney', spriteKey: 'generic-trainer',
+    id: 'fisherman-1', name: 'Fisherman Barney', spriteKey: 'npc-sailor',
     party: [
       { pokemonId: 129, level: 12 },
       { pokemonId: 129, level: 13 },
@@ -885,7 +885,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 240,
   },
   'sailor-1': {
-    id: 'sailor-1', name: 'Sailor Craig', spriteKey: 'generic-trainer',
+    id: 'sailor-1', name: 'Sailor Craig', spriteKey: 'npc-sailor',
     party: [
       { pokemonId: 66, level: 14, moves: ['karate-chop', 'leer', 'low-kick'] },
       { pokemonId: 72, level: 14, moves: ['poison-sting', 'supersonic', 'acid'] },
@@ -899,7 +899,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Coral Gym: Additional swimmer trainer ───
   'swimmer-3': {
-    id: 'swimmer-3', name: 'Swimmer Nami', spriteKey: 'generic-trainer',
+    id: 'swimmer-3', name: 'Swimmer Nami', spriteKey: 'npc-swimmer',
     party: [
       { pokemonId: 90, level: 17, moves: ['tackle', 'withdraw', 'clamp'] },
       { pokemonId: 118, level: 17, moves: ['peck', 'water-gun', 'horn-attack'] },
@@ -914,7 +914,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 4: Basalt Ridge — hikers and Synthesis presence ───
   'hiker-6': {
-    id: 'hiker-6', name: 'Hiker Mason', spriteKey: 'generic-trainer',
+    id: 'hiker-6', name: 'Hiker Mason', spriteKey: 'npc-hiker',
     party: [
       { pokemonId: 66, level: 17, moves: ['karate-chop', 'low-kick', 'leer'] },
       { pokemonId: 75, level: 18, moves: ['rock-throw', 'tackle', 'defense-curl', 'self-destruct'] },
@@ -926,7 +926,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 360,
   },
   'youngster-5': {
-    id: 'youngster-5', name: 'Youngster Drake', spriteKey: 'generic-trainer',
+    id: 'youngster-5', name: 'Youngster Drake', spriteKey: 'npc-male-2',
     party: [
       { pokemonId: 28, level: 16, moves: ['slash', 'sand-attack', 'poison-sting'] },
       { pokemonId: 22, level: 17, moves: ['peck', 'fury-attack', 'leer', 'mirror-move'] },
@@ -938,7 +938,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 340,
   },
   'synthesis-grunt-4': {
-    id: 'synthesis-grunt-4', name: 'Synthesis Grunt', spriteKey: 'generic-trainer',
+    id: 'synthesis-grunt-4', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 88, level: 17, moves: ['pound', 'poison-gas', 'sludge'] },
       { pokemonId: 41, level: 17, moves: ['leech-life', 'supersonic', 'bite'] },
@@ -960,7 +960,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Ember Mines: Additional grunt ───
   'synthesis-grunt-5': {
-    id: 'synthesis-grunt-5', name: 'Synthesis Grunt', spriteKey: 'generic-trainer',
+    id: 'synthesis-grunt-5', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 42, level: 21, moves: ['wing-attack', 'bite', 'confuse-ray', 'supersonic'] },
       { pokemonId: 89, level: 22, moves: ['sludge', 'body-slam', 'harden', 'pound'] },
@@ -979,7 +979,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Ironvale Gym: Steel-themed trainers ───
   'blackbelt-1': {
-    id: 'blackbelt-1', name: 'Black Belt Koji', spriteKey: 'generic-trainer',
+    id: 'blackbelt-1', name: 'Black Belt Koji', spriteKey: 'npc-male-4',
     party: [
       { pokemonId: 67, level: 23, moves: ['karate-chop', 'seismic-toss', 'low-kick', 'leer'] },
       { pokemonId: 75, level: 24, moves: ['rock-throw', 'self-destruct', 'defense-curl', 'dig'] },
@@ -991,7 +991,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 480,
   },
   'worker-1': {
-    id: 'worker-1', name: 'Foundry Worker Gil', spriteKey: 'generic-trainer',
+    id: 'worker-1', name: 'Foundry Worker Gil', spriteKey: 'npc-male-4',
     party: [
       { pokemonId: 81, level: 22, moves: ['thunder-shock', 'sonic-boom', 'tackle'] },
       { pokemonId: 82, level: 23, moves: ['thunder-shock', 'sonic-boom', 'supersonic'] },
@@ -1005,7 +1005,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 5: Verdant Path — nature trainers and Synthesis scout ───
   'camper-4': {
-    id: 'camper-4', name: 'Camper Rosa', spriteKey: 'generic-trainer',
+    id: 'camper-4', name: 'Camper Rosa', spriteKey: 'npc-male-1',
     party: [
       { pokemonId: 25, level: 24, moves: ['thunderbolt', 'quick-attack', 'double-team'] },
       { pokemonId: 44, level: 23, moves: ['acid', 'sleep-powder', 'razor-leaf'] },
@@ -1018,7 +1018,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 480,
   },
   'youngster-6': {
-    id: 'youngster-6', name: 'Youngster Miles', spriteKey: 'generic-trainer',
+    id: 'youngster-6', name: 'Youngster Miles', spriteKey: 'npc-male-2',
     party: [
       { pokemonId: 20, level: 23, moves: ['hyper-fang', 'quick-attack', 'bite'] },
       { pokemonId: 22, level: 24, moves: ['fury-attack', 'peck', 'mirror-move', 'leer'] },
@@ -1030,7 +1030,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 480,
   },
   'synthesis-grunt-6': {
-    id: 'synthesis-grunt-6', name: 'Synthesis Grunt', spriteKey: 'generic-trainer',
+    id: 'synthesis-grunt-6', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 24, level: 24, moves: ['poison-sting', 'bite', 'glare', 'acid'] },
       { pokemonId: 110, level: 24, moves: ['sludge', 'smokescreen', 'tackle', 'self-destruct'] },
@@ -1052,7 +1052,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Verdantia Gym: Nature-themed trainers ───
   'beauty-1': {
-    id: 'beauty-1', name: 'Beauty Lily', spriteKey: 'generic-trainer',
+    id: 'beauty-1', name: 'Beauty Lily', spriteKey: 'npc-female-3',
     party: [
       { pokemonId: 45, level: 27, moves: ['petal-dance', 'sleep-powder', 'acid', 'mega-drain'] },
       { pokemonId: 47, level: 27, moves: ['spore', 'slash', 'mega-drain', 'growth'] },
@@ -1064,7 +1064,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 540,
   },
   'picnicker-1': {
-    id: 'picnicker-1', name: 'Picnicker Daisy', spriteKey: 'generic-trainer',
+    id: 'picnicker-1', name: 'Picnicker Daisy', spriteKey: 'npc-female-4',
     party: [
       { pokemonId: 114, level: 28, moves: ['vine-whip', 'bind', 'sleep-powder', 'growth'] },
       { pokemonId: 2, level: 27, moves: ['razor-leaf', 'vine-whip', 'sleep-powder', 'growth'] },
@@ -1078,7 +1078,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Voltara Gym: Electric-themed trainers ───
   'engineer-1': {
-    id: 'engineer-1', name: 'Engineer Watts', spriteKey: 'generic-trainer',
+    id: 'engineer-1', name: 'Engineer Watts', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 100, level: 31, moves: ['thunderbolt', 'swift', 'screech', 'self-destruct'] },
       { pokemonId: 82, level: 32, moves: ['thunderbolt', 'sonic-boom', 'supersonic', 'tri-attack'] },
@@ -1090,7 +1090,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 640,
   },
   'engineer-2': {
-    id: 'engineer-2', name: 'Engineer Tesla', spriteKey: 'generic-trainer',
+    id: 'engineer-2', name: 'Engineer Tesla', spriteKey: 'npc-scientist',
     party: [
       { pokemonId: 101, level: 32, moves: ['thunderbolt', 'swift', 'explosion', 'screech'] },
       { pokemonId: 26, level: 31, moves: ['thunderbolt', 'quick-attack', 'double-team', 'thunder-wave'] },

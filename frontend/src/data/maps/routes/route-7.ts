@@ -2,7 +2,7 @@ import { MapDefinition, parseMap } from '../shared';
 
 // Route 7 — Dr. Vex blockade, connects Wraithmoor to Scalecrest
 const route7Ground = parseMap([
-  'TTTTTTTTPPTTTTTTTTTT',
+  'TTTTTTT.PP.TTTTTTTTT',
   'T........PP........T',
   'T..GGG...PP...GGG..T',
   'T..GGG...PP...GGG..T',
@@ -31,7 +31,7 @@ const route7Ground = parseMap([
   'T..GGG...PP...GGG..T',
   'T........PP........T',
   'T........PP........T',
-  'TTTTTTTTPPTTTTTTTTTT',
+  'TTTTTTT.PP.TTTTTTTTT',
 ]);
 
 export const route7: MapDefinition = {
@@ -40,7 +40,7 @@ export const route7: MapDefinition = {
   npcs: [
     { id: 'route7-sign', tileX: 11, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['ROUTE 7', 'Scalecrest Citadel ↓  Wraithmoor Town ↑'] },
-    { id: 'route7-rook-reveal', tileX: 8, tileY: 15, textureKey: 'generic-trainer', facing: 'down',
+    { id: 'route7-rook-reveal', tileX: 8, tileY: 15, textureKey: 'npc-male-6', facing: 'down',
       dialogue: [
         'Rook: ...It\'s time I told you the truth.',
         'Rook: My name is Rook. I was a Synthesis Collective scientist.',
@@ -53,10 +53,10 @@ export const route7: MapDefinition = {
       requireFlag: 'saw_aldric_hologram', setsFlag: 'rook_identity_revealed' },
   ],
   trainers: [
-    { id: 'route7-grunt-6', trainerId: 'synthesis-grunt-3', tileX: 6, tileY: 7, textureKey: 'generic-trainer', facing: 'right', lineOfSight: 4 },
-    { id: 'route7-grunt-7', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 13, textureKey: 'generic-trainer', facing: 'left', lineOfSight: 3 },
-    { id: 'route7-grunt-8', trainerId: 'synthesis-grunt-3', tileX: 6, tileY: 19, textureKey: 'generic-trainer', facing: 'right', lineOfSight: 4 },
-    { id: 'route7-vex-2', trainerId: 'admin-vex-2', tileX: 10, tileY: 10, textureKey: 'generic-trainer', facing: 'down', lineOfSight: 5 },
+    { id: 'route7-grunt-6', trainerId: 'synthesis-grunt-3', tileX: 6, tileY: 7, textureKey: 'npc-scientist', facing: 'right', lineOfSight: 4 },
+    { id: 'route7-grunt-7', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 13, textureKey: 'npc-scientist', facing: 'left', lineOfSight: 3 },
+    { id: 'route7-grunt-8', trainerId: 'synthesis-grunt-3', tileX: 6, tileY: 19, textureKey: 'npc-scientist', facing: 'right', lineOfSight: 4 },
+    { id: 'route7-vex-2', trainerId: 'admin-vex-2', tileX: 10, tileY: 10, textureKey: 'npc-scientist', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
     { tileX: 8, tileY: 0, targetMap: 'wraithmoor-town', targetSpawnId: 'from-route-7' },

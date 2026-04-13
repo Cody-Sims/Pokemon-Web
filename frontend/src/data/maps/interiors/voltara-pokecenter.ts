@@ -9,7 +9,7 @@ export const voltaraPokecenter: MapDefinition = {
   key: 'voltara-pokecenter', width: 9, height: 8, ground: g,
   encounterTableKey: '', isInterior: true, displayName: 'Voltara Pokémon Center',
   npcs: [{
-    id: 'voltara-nurse', tileX: 4, tileY: 2, textureKey: 'generic-trainer',
+    id: 'voltara-nurse', tileX: 4, tileY: 2, textureKey: 'npc-nurse',
     facing: 'down', dialogue: ['Welcome! We\'ll heal your Pokémon!'], interactionType: 'heal',
   }],
   trainers: [],

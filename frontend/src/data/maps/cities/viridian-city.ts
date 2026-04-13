@@ -2,7 +2,7 @@ import { MapDefinition, parseMap } from '../shared';
 
 const viridianGround = parseMap([
   // 012345678901234567890123456789
-  'TTTTTTTTTTTTTTPPTTTTTTTTTTTTTT', // 0  - north exit to Route 2
+  'TTTTTTTTTTTTT.PP.TTTTTTTTTTTTT', // 0  - north exit to Route 2
   'T..............PP............T', // 1
   'T..RRRRR.......PP.......RRRRRT', // 2  - houses
   'T..HH&HH.......PP.......HH&HHT', // 3  - walls with windows
@@ -16,22 +16,22 @@ const viridianGround = parseMap([
   'T..PP......PP........PP......T', // 11
   'T..PP......PP........PP......T', // 12
   'T..PPPPPPPPPPPPPPPPPPPPPPPP..T', // 13 - another east-west road
-  'T..PP........................T', // 14
-  'T..PP....AAAAAA..............T', // 15 - Gym roof
-  'T..PP....gggggg..............T', // 16 - Gym wall
-  'T..PP....ggaggg..............T', // 17 - Gym door
-  'T..PP......PP................T', // 18
-  'T..PP......PP.....f....f.....T', // 19
-  'T..PPPPPPPPPP................T', // 20
-  'T..PP........................T', // 21
-  'T..PP.....f........f.........T', // 22
-  'T..PP........................T', // 23
-  'T..PP.........WWWWW..........T', // 24 - pond
-  'T..PP.........WWWWW..........T', // 25
-  'T..PP.........WWWWW..........T', // 26
-  'T..PP........................T', // 27
-  'T..PP........................T', // 28
-  'TTTTTTTTTTTTTTPPTTTTTTTTTTTTTT', // 29 - south exit to Route 1
+  'T..PP.........PP............T', // 14
+  'T..PP....AAAAAAPP............T', // 15 - Gym roof
+  'T..PP....ggggggPP............T', // 16 - Gym wall
+  'T..PP....ggagggPP............T', // 17 - Gym door
+  'T..PP......PP..PP............T', // 18
+  'T..PP......PP..PP..f....f...T', // 19
+  'T..PPPPPPPPPPPPPP............T', // 20
+  'T..PP.........PP.............T', // 21
+  'T..PP.....f...PP...f.........T', // 22
+  'T..PP.........PP.............T', // 23
+  'T..PP.........PPWWWW.........T', // 24 - pond
+  'T..PP.........PPWWWW.........T', // 25
+  'T..PP.........PPWWWW.........T', // 26
+  'T..PP.........PP.............T', // 27
+  'T..PP.........PP.............T', // 28
+  'TTTTTTTTTTTTT.PP.TTTTTTTTTTTTT', // 29 - south exit to Route 1
 ]);
 
 export const viridianCity: MapDefinition = {
@@ -53,7 +53,7 @@ export const viridianCity: MapDefinition = {
       id: 'viridian-npc-1',
       tileX: 20,
       tileY: 5,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-2',
       facing: 'left',
       dialogue: [
         'The Gym has been closed for a while.',
@@ -72,7 +72,7 @@ export const viridianCity: MapDefinition = {
       id: 'viridian-route2-guide',
       tileX: 6,
       tileY: 1,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-oldman',
       facing: 'down',
       dialogue: ['Route 2 is just north of here.', 'Viridian Forest is beyond that!'],
     },
@@ -81,7 +81,7 @@ export const viridianCity: MapDefinition = {
       id: 'viridian-magnus',
       tileX: 24,
       tileY: 15,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-4',
       facing: 'left',
       dialogue: [
         'Magnus: I\'m a Pokémon Collector! I travel the world to see rare species.',
@@ -115,7 +115,7 @@ export const viridianCity: MapDefinition = {
       id: 'viridian-delivery-npc',
       tileX: 22,
       tileY: 20,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-female-2',
       facing: 'down',
       dialogue: ['Just a regular citizen here...'],
       flagDialogue: [

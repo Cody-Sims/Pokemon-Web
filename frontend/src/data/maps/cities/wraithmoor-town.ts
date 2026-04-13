@@ -2,7 +2,7 @@ import { MapDefinition, parseMap } from '../shared';
 
 // Wraithmoor Town — Town 7 (25×25). Gym 6 (Ghost — Morwen)
 const wraithmoorGround = parseMap([
-  'TTTTTTTTTTTPPTTTTTTTTTTTT',
+  'TTTTTTTTTT.PP.TTTTTTTTTT',
   'T..........PP..........T',
   'T.CCCCCCC..PP.RRRRRRR..T',
   'T.c$ccccc..PP.HH&HHHH..T',
@@ -26,7 +26,7 @@ const wraithmoorGround = parseMap([
   'T.f........PP......f...T',
   'T..........PP..........T',
   'T..........PP..........T',
-  'TTTTTTTTTTTPPTTTTTTTTTTTT',
+  'TTTTTTTTTT.PP.TTTTTTTTTT',
 ]);
 
 export const wraithmoorTown: MapDefinition = {
@@ -35,12 +35,12 @@ export const wraithmoorTown: MapDefinition = {
   npcs: [
     { id: 'wraithmoor-sign', tileX: 13, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['WRAITHMOOR TOWN', '"Where Spirits Linger"'] },
-    { id: 'wraithmoor-npc', tileX: 18, tileY: 6, textureKey: 'generic-trainer', facing: 'left',
+    { id: 'wraithmoor-npc', tileX: 18, tileY: 6, textureKey: 'npc-male-3', facing: 'left',
       dialogue: ['Morwen is our Gym Leader. She communes with spirits.', 'Her Ghost Pokémon are terrifying...', 'Normal and Fighting moves won\'t work!'] },
-    { id: 'wraithmoor-ghost-girl', tileX: 8, tileY: 14, textureKey: 'generic-trainer', facing: 'down',
+    { id: 'wraithmoor-ghost-girl', tileX: 8, tileY: 14, textureKey: 'npc-female-6', facing: 'down',
       dialogue: ['...Do you see them too?', 'The memories of those who came before...', 'Find the three fragments. They hold the truth.'],
       setsFlag: 'quest_restlessSpirit_started' },
-    { id: 'wraithmoor-edith', tileX: 18, tileY: 14, textureKey: 'generic-trainer', facing: 'left',
+    { id: 'wraithmoor-edith', tileX: 18, tileY: 14, textureKey: 'npc-female-7', facing: 'left',
       dialogue: ['Historian Edith: The ancient civilization built temples over the ley lines.',
         'Edith: They sealed guardians within to protect the Aether flow.',
         'Edith: But if someone were to break those seals...',

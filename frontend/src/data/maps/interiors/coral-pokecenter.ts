@@ -24,7 +24,7 @@ export const coralPokecenter: MapDefinition = {
       id: 'coral-center-nurse',
       tileX: 4,
       tileY: 2,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-nurse',
       facing: 'down',
       dialogue: ['Welcome to the Pokémon Center!', 'We\'ll restore your Pokémon to full health!'],
       interactionType: 'heal',

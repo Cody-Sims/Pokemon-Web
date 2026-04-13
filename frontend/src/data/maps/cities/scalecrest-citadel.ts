@@ -2,7 +2,7 @@ import { MapDefinition, parseMap } from '../shared';
 
 // Scalecrest Citadel — Town 8 (25×25). Gym 7 (Dragon — Drake)
 const scalecrestGround = parseMap([
-  'TTTTTTTTTTTPPTTTTTTTTTTTT',
+  'TTTTTTTTTT.PP.TTTTTTTTTT',
   'T..........PP..........T',
   'T.CCCCCCC..PP.RRRRRRR..T',
   'T.c$ccccc..PP.HH&HHHH..T',
@@ -26,7 +26,7 @@ const scalecrestGround = parseMap([
   'T..........PP..........T',
   'T..........PP..........T',
   'T..........PP..........T',
-  'TTTTTTTTTTTPPTTTTTTTTTTTT',
+  'TTTTTTTTTT.PP.TTTTTTTTTT',
 ]);
 
 export const scalecrestCitadel: MapDefinition = {
@@ -35,9 +35,9 @@ export const scalecrestCitadel: MapDefinition = {
   npcs: [
     { id: 'scalecrest-sign', tileX: 13, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['SCALECREST CITADEL', '"Ancestral Fortress of the Dragon Keepers"'] },
-    { id: 'scalecrest-npc', tileX: 18, tileY: 6, textureKey: 'generic-trainer', facing: 'left',
+    { id: 'scalecrest-npc', tileX: 18, tileY: 6, textureKey: 'npc-male-5', facing: 'left',
       dialogue: ['Drake is our Gym Leader. His dragons descend from ancient guardians.', 'Only the worthy may pass!'] },
-    { id: 'scalecrest-wren', tileX: 18, tileY: 14, textureKey: 'generic-trainer', facing: 'left',
+    { id: 'scalecrest-wren', tileX: 18, tileY: 14, textureKey: 'npc-male-2', facing: 'left',
       dialogue: ['Dragon Keeper Wren: A Dragonair in the caves is in pain...',
         'Wren: The Aether disturbance is affecting it terribly.',
         'Wren: If you could find an Aether Salve, it might help.',

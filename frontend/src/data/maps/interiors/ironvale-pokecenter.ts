@@ -9,7 +9,7 @@ export const ironvalePokecenter: MapDefinition = {
   key: 'ironvale-pokecenter', width: 9, height: 8, ground: g,
   encounterTableKey: '', isInterior: true, displayName: 'Ironvale Pokémon Center',
   npcs: [{
-    id: 'ironvale-nurse', tileX: 4, tileY: 2, textureKey: 'generic-trainer',
+    id: 'ironvale-nurse', tileX: 4, tileY: 2, textureKey: 'npc-nurse',
     facing: 'down', dialogue: ['Welcome! We\'ll heal your Pokémon!'], interactionType: 'heal',
   }],
   trainers: [],

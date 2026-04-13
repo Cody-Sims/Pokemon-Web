@@ -3,7 +3,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Voltara City — Town 6 (25 wide × 30 tall)
 // Industrial/tech city. Gym 5 (Electric — Blitz), Power Plant
 const voltaraGround = parseMap([
-  'TTTTTTTTTTTPPTTTTTTTTTTTT', // 0  south exit
+  'TTTTTTTTTT.PP.TTTTTTTTTT', // 0  south exit
   'T..........PP..........T', // 1
   'T.CCCCCCC..PP.RRRRRRR..T', // 2  center + house
   'T.c$ccccc..PP.HH&HHHH..T', // 3
@@ -26,13 +26,13 @@ const voltaraGround = parseMap([
   'T.gggaggg..PP..........T', // 20
   'T..........PP..........T', // 21
   'T....PPPPPPPP..........T', // 22
-  'T....PP................T', // 23
-  'T.f..PP........f.......T', // 24
-  'T....PP................T', // 25
-  'T....PP................T', // 26
-  'T....PP................T', // 27
-  'T....PP................T', // 28
-  'TTTTTTTTTTTPPTTTTTTTTTTTT', // 29 north border
+  'T....PP....PP..........T', // 23
+  'T.f..PP....PP..f.......T', // 24
+  'T....PP....PP..........T', // 25
+  'T....PP....PP..........T', // 26
+  'T....PP....PP..........T', // 27
+  'T....PP....PP..........T', // 28
+  'TTTTTTTTTT.PP.TTTTTTTTTT', // 29 north border
 ]);
 
 export const voltaraCity: MapDefinition = {
@@ -56,7 +56,7 @@ export const voltaraCity: MapDefinition = {
       id: 'voltara-npc-1',
       tileX: 18,
       tileY: 6,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-2',
       facing: 'left',
       dialogue: [
         'Blitz is our Gym Leader — he\'s a genius inventor!',
@@ -69,7 +69,7 @@ export const voltaraCity: MapDefinition = {
       id: 'voltara-sparks',
       tileX: 18,
       tileY: 14,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'left',
       dialogue: [
         'Sparks: The city\'s Aether conduits are failing!',
@@ -102,7 +102,7 @@ export const voltaraCity: MapDefinition = {
       id: 'voltara-bolt',
       tileX: 8,
       tileY: 17,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-4',
       facing: 'right',
       dialogue: [
         'Bolt: I\'m a Move Tutor. I can teach powerful moves!',
@@ -115,7 +115,7 @@ export const voltaraCity: MapDefinition = {
       id: 'voltara-blitz-story',
       tileX: 12,
       tileY: 12,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-scientist',
       facing: 'down',
       dialogue: [
         'Blitz: I\'ve been running diagnostics all night!',
@@ -132,7 +132,7 @@ export const voltaraCity: MapDefinition = {
       id: 'voltara-willow-kidnap',
       tileX: 10,
       tileY: 6,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-professor',
       facing: 'down',
       dialogue: [
         'A scientist runs up to you, panicked!',

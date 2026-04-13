@@ -19,19 +19,19 @@ const pewterGround = parseMap([
   'T..PP......AAAAAAAA..........T', // 14 - Gym roof
   'T..PP......gggggggg..........T', // 15 - Gym wall
   'T..PP......ggggaggg..........T', // 16 - Gym door
-  'T..PP........PP..............T', // 17
-  'T..PP........PP.............PP', // 18 east exit to Route 3
-  'T..PPPPPPPPPPPP.............PP', // 19
-  'T..PP........................T', // 20
-  'T..PP.....f........f.........T', // 21
-  'T..PP........................T', // 22
-  'T..PP........................T', // 23
-  'T..PP........................T', // 24
-  'T..PP.....RRRRR..............T', // 25 - museum/house
-  'T..PP.....HH&HH..............T', // 26 - museum wall with window
-  'T..PP.....HHDHH..............T', // 27
-  'T..PP........................T', // 28
-  'TTTTTTTTTTTTTTPPTTTTTTTTTTTTTT', // 29 - south exit to Route 2 / Forest
+  'T..PP........PP..PP..........T', // 17
+  'T..PP........PP..PP.........PP', // 18 east exit to Route 3
+  'T..PPPPPPPPPPPPPPPP..........PP', // 19
+  'T..PP.........PP.............T', // 20
+  'T..PP.....f...PP...f.........T', // 21
+  'T..PP.........PP.............T', // 22
+  'T..PP.........PP.............T', // 23
+  'T..PP.........PP.............T', // 24
+  'T..PP.....RRRRPP.............T', // 25 - museum/house
+  'T..PP.....HH&HPP.............T', // 26 - museum wall with window
+  'T..PP.....HHDHPP.............T', // 27
+  'T..PP.........PP.............T', // 28
+  'TTTTTTTTTTTTT.PP.TTTTTTTTTTTTT', // 29 - south exit to Route 2 / Forest
 ]);
 
 export const pewterCity: MapDefinition = {
@@ -53,7 +53,7 @@ export const pewterCity: MapDefinition = {
       id: 'pewter-npc-1',
       tileX: 20,
       tileY: 6,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-1',
       facing: 'left',
       dialogue: [
         'Brock is the Gym Leader here.',
@@ -65,7 +65,7 @@ export const pewterCity: MapDefinition = {
       id: 'pewter-museum-npc',
       tileX: 10,
       tileY: 25,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-3',
       facing: 'right',
       dialogue: [
         'The Pewter Museum of Science is famous!',
@@ -77,7 +77,7 @@ export const pewterCity: MapDefinition = {
       id: 'pewter-jerome',
       tileX: 18,
       tileY: 14,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-hiker',
       facing: 'down',
       dialogue: [
         'Jerome: Oh no, oh no... my Geodude!',
@@ -110,7 +110,7 @@ export const pewterCity: MapDefinition = {
       id: 'pewter-delivery-npc',
       tileX: 8,
       tileY: 20,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-female-3',
       facing: 'right',
       dialogue: ['I work at the museum. Fascinating place!'],
       flagDialogue: [

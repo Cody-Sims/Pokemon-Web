@@ -5,7 +5,7 @@ export const wraithmoorGym: MapDefinition = {
   encounterTableKey: '', isInterior: true, displayName: 'Wraithmoor Gym', battleBg: 'bg-gym-ghost',
   npcs: [],
   trainers: [
-    { id: 'wraithmoor-gym-leader', trainerId: 'gym-morwen', tileX: 4, tileY: 2, textureKey: 'generic-trainer', facing: 'down', lineOfSight: 6 },
+    { id: 'wraithmoor-gym-leader', trainerId: 'gym-morwen', tileX: 4, tileY: 2, textureKey: 'npc-female-6', facing: 'down', lineOfSight: 6 },
   ],
   warps: [
     { tileX: 3, tileY: 13, targetMap: 'wraithmoor-town', targetSpawnId: 'from-gym' },

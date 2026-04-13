@@ -5,7 +5,7 @@ export const cinderfallGym: MapDefinition = {
   encounterTableKey: '', isInterior: true, displayName: 'Cinderfall Gym', battleBg: 'bg-gym-fire',
   npcs: [],
   trainers: [
-    { id: 'cinderfall-gym-leader', trainerId: 'gym-solara', tileX: 4, tileY: 2, textureKey: 'generic-trainer', facing: 'down', lineOfSight: 6 },
+    { id: 'cinderfall-gym-leader', trainerId: 'gym-solara', tileX: 4, tileY: 2, textureKey: 'npc-female-9', facing: 'down', lineOfSight: 6 },
   ],
   warps: [
     { tileX: 3, tileY: 13, targetMap: 'cinderfall-town', targetSpawnId: 'from-gym' },

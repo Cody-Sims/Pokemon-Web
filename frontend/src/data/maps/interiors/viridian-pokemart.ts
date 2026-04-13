@@ -48,7 +48,7 @@ export const viridianPokemart: MapDefinition = {
       id: 'viridian-mart-shopper',
       tileX: 3,
       tileY: 5,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-female-1',
       facing: 'right',
       dialogue: [
         "I always stock up on Potions before heading out.",

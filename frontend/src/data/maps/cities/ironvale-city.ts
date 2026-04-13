@@ -3,7 +3,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Ironvale City — Town 4 (25 wide × 30 tall)
 // Industrial steel town. Gym 3 (Steel — Ferris), forge, mine entrance
 const ironvaleGround = parseMap([
-  'TTTTTTTTTTTPPTTTTTTTTTTTT', // 0  south exit to Route 4
+  'TTTTTTTTTT.PP.TTTTTTTTTT', // 0  south exit to Route 4
   'T..........PP..........T', // 1
   'T.CCCCCCC..PP.RRRRRRR..T', // 2  center roof + house roof
   'T.c$ccccc..PP.HH&HHHH..T', // 3
@@ -26,13 +26,13 @@ const ironvaleGround = parseMap([
   'T.gggaggg..PP..........T', // 20 gym door
   'T..........PP..........T', // 21
   'T....PPPPPPPP..........T', // 22
-  'T....PP................T', // 23
-  'T.f..PP........f.......T', // 24
-  'T....PP................T', // 25
-  'T....PP................T', // 26
-  'T....PP................T', // 27
-  'T....PP................T', // 28
-  'TTTTTTTTTTTPPTTTTTTTTTTTT', // 29 north exit to Route 5
+  'T....PP....PP..........T', // 23
+  'T.f..PP....PP..f.......T', // 24
+  'T....PP....PP..........T', // 25
+  'T....PP....PP..........T', // 26
+  'T....PP....PP..........T', // 27
+  'T....PP....PP..........T', // 28
+  'TTTTTTTTTT.PP.TTTTTTTTTT', // 29 north exit to Route 5
 ]);
 
 export const ironvaleCity: MapDefinition = {
@@ -56,7 +56,7 @@ export const ironvaleCity: MapDefinition = {
       id: 'ironvale-npc-1',
       tileX: 18,
       tileY: 6,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-1',
       facing: 'left',
       dialogue: [
         'Ferris is our Gym Leader. He\'s a blacksmith!',
@@ -69,7 +69,7 @@ export const ironvaleCity: MapDefinition = {
       id: 'ironvale-gil',
       tileX: 18,
       tileY: 15,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-hiker',
       facing: 'left',
       dialogue: [
         'Gil: The old mine shaft has been overrun!',

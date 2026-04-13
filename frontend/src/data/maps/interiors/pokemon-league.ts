@@ -19,7 +19,7 @@ export const pokemonLeague: MapDefinition = {
   encounterTableKey: '', isInterior: true, battleBg: 'bg-league',
   displayName: 'Pokémon League',
   npcs: [
-    { id: 'league-guide', tileX: 5, tileY: 8, textureKey: 'generic-trainer', facing: 'up',
+    { id: 'league-guide', tileX: 5, tileY: 8, textureKey: 'npc-male-4', facing: 'up',
       dialogue: ['Welcome to the Pokémon League!',
         'Beyond this hall lie the Elite Four and the Champion.',
         'Are you prepared?'] },
@@ -27,7 +27,7 @@ export const pokemonLeague: MapDefinition = {
   trainers: [
     // Elite Four Nerida (Water/Ice)
     { id: 'elite-nerida', trainerId: 'elite-nerida', tileX: 4, tileY: 2,
-      textureKey: 'generic-trainer', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-female-7', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
     { tileX: 3, tileY: 9, targetMap: 'victory-road', targetSpawnId: 'from-league' },

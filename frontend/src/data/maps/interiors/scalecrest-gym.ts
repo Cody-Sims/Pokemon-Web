@@ -5,7 +5,7 @@ export const scalecrestGym: MapDefinition = {
   encounterTableKey: '', isInterior: true, displayName: 'Scalecrest Gym', battleBg: 'bg-gym-dragon',
   npcs: [],
   trainers: [
-    { id: 'scalecrest-gym-leader', trainerId: 'gym-drake', tileX: 4, tileY: 2, textureKey: 'generic-trainer', facing: 'down', lineOfSight: 6 },
+    { id: 'scalecrest-gym-leader', trainerId: 'gym-drake', tileX: 4, tileY: 2, textureKey: 'npc-male-5', facing: 'down', lineOfSight: 6 },
   ],
   warps: [
     { tileX: 3, tileY: 13, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-gym' },
