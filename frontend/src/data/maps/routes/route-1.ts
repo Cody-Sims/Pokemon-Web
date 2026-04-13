@@ -3,44 +3,44 @@ import { MapDefinition, parseMap } from '../shared';
 const route1Ground = parseMap([
   // 01234567890123456789
   'TTTTTTT.PP.TTTTTTTTT', // 0  - north exit to Viridian
-  'T........PP........T', // 1
-  'T..GGG...PP...GGG..T', // 2
-  'T..GGG...PP...GGG..T', // 3
-  'T..GGG...PP...GGG..T', // 4
-  'T........PP........T', // 5
-  'T........PP........T', // 6
-  'T.....PPPPPPPP.....T', // 7  - bend in path
-  'T.....PP...........T', // 8
-  'T.....PP...........T', // 9
-  'T..GGGPP....GGG....T', // 10
-  'T..GGGPP....GGG....T', // 11
-  'T..GGGPP....GGG....T', // 12
-  'T.....PP...........T', // 13
-  'T.....PP...........T', // 14
-  'T.....PPPPPPPP.....T', // 15 - bend back
-  'T........PP........T', // 16
-  'T........PP........T', // 17
-  'T...GGG..PP..GGG...T', // 18
-  'T...GGG..PP..GGG...T', // 19
-  'T...GGG..PP..GGG...T', // 20
-  'T...GGG..PP..GGG...T', // 21
-  'T........PP........T', // 22
-  'T........PP........T', // 23
-  'T..f.....PP.....f..T', // 24
-  'T........PP........T', // 25
-  'T....PPPPPPPPPP....T', // 26 - another bend
-  'T....PP............T', // 27
-  'T....PP............T', // 28
-  'T..GGPP.....GGG....T', // 29
-  'T..GGPP.....GGG....T', // 30
-  'T..GGPP.....GGG....T', // 31
-  'T....PP............T', // 32
-  'T....PPPPPPPPPP....T', // 33 - bend back
-  'T........PP........T', // 34
-  'T........PP........T', // 35
-  'T..GG....PP....GG..T', // 36
-  'T..GG....PP....GG..T', // 37
-  'T........PP........T', // 38
+  'TFFFF...PP...FFFFF.T', // 1  - fence: Viridian City boundary
+  'T.......PP.........T', // 2
+  'T..GG...PP..GGG..%.T', // 3  - asymmetric grass, bush
+  'T.GGGG.~PP.....GG..T', // 4  - rock off-path
+  'T..GGG..PP.........T', // 5
+  'T.......PP.....%...T', // 6
+  'T....PPPPP.........T', // 7  - path bends west
+  'T....PP....GG......T', // 8
+  'T....PP....JJJJJJ..T', // 9  - ledge shortcut #1
+  'T.GG.PP........GGG.T', // 10
+  'T.GGGPP.........GG.T', // 11
+  'T....PP..~...GGG...T', // 12 - rock near trainer
+  'T....PP....GG......T', // 13
+  'T..%.PP.........%..T', // 14 - bushes flanking route
+  'T....PPPPP.........T', // 15 - path bends east
+  'T.......PP.........T', // 16
+  'T.......PP.........T', // 17
+  'T..ff...PP.........T', // 18 - flower garden begins
+  'T.ffff..PP..ff.....T', // 19 - flowers both sides
+  'T..fff..PP.fff.%...T', // 20 - flower garden + bush
+  'T...ff..PP..ff.....T', // 21 - flowers taper off
+  'T.......PP.......~.T', // 22 - rock
+  'T.GGGG..PP.....GG..T', // 23
+  'T....GG.PP..GG.....T', // 24
+  'T.......PPJJJJJJ...T', // 25 - ledge shortcut #2
+  'T...PPPPPP.........T', // 26 - path bends west
+  'T...PP.......GGG.%.T', // 27 - bush
+  'T...PP....GGG......T', // 28
+  'T.G.PP..~....GG....T', // 29 - grass + rock
+  'TGGGPP.........GG..T', // 30 - dense grass edge
+  'T.GGPP.....GGGG....T', // 31
+  'T...PP.........GG..T', // 32
+  'T...PPPPPP.........T', // 33 - path bends east
+  'T.......PP.........T', // 34
+  'T.......PP......%..T', // 35 - bush near Pallet
+  'T..GG...PP...GG....T', // 36
+  'T...GG..PP.........T', // 37
+  'T.......PP.........T', // 38
   'TTTTTTT.PP.TTTTTTTTT', // 39 - south exit to Pallet
 ]);
 
@@ -81,12 +81,38 @@ export const route1: MapDefinition = {
         'But they\'re really rare!',
       ],
     },
+    // ─── Story NPC: Rook's first appearance ───
+    {
+      id: 'route1-rook',
+      tileX: 12,
+      tileY: 20,
+      textureKey: 'npc-male-6',
+      facing: 'left',
+      dialogue: [
+        '???: ...',
+        '???: You look like you just started out.',
+        '???: Here — let me heal your Pokémon.',
+        '???: The road ahead isn\'t as safe as it looks.',
+        '???: ...Trust me on that.',
+      ],
+      requireFlag: 'receivedStarter',
+      setsFlag: 'met_rook_route1',
+      flagDialogue: [
+        {
+          flag: 'met_rook_route1',
+          dialogue: [
+            '???: You\'re still here? Keep moving.',
+            '???: Something is stirring in these parts...',
+          ],
+        },
+      ],
+    },
   ],
   trainers: [
     {
       id: 'route1-youngster',
       trainerId: 'youngster-1',
-      tileX: 14,
+      tileX: 13,
       tileY: 18,
       textureKey: 'npc-male-2',
       facing: 'left',
@@ -95,7 +121,7 @@ export const route1: MapDefinition = {
     {
       id: 'route1-lass',
       trainerId: 'lass-1',
-      tileX: 5,
+      tileX: 3,
       tileY: 12,
       textureKey: 'npc-lass',
       facing: 'right',
@@ -104,7 +130,7 @@ export const route1: MapDefinition = {
     {
       id: 'route1-youngster-2',
       trainerId: 'youngster-2',
-      tileX: 10,
+      tileX: 8,
       tileY: 28,
       textureKey: 'npc-male-2',
       facing: 'left',

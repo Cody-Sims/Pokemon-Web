@@ -2,47 +2,47 @@ import { MapDefinition, parseMap } from '../shared';
 
 // Route 3 — Tide Pool Path
 // Coastal route connecting Pewter City (north) to Coral Harbor (south)
-// Features: sand, water, tide pools, palm trees, fishable tiles
+// Coast is on the WEST side: water → tide pool → wet sand → sand → path → inland
 const route3Ground = parseMap([
   'TTTTTTT.PP.TTTTTTTTT', // 0  north exit from Pewter
   'T........PP........T', // 1
-  'T..GGG...PP...GGG..T', // 2
+  'T..GGG...PP...GGG..T', // 2  grass near Pewter
   'T..GGG...PP...GGG..T', // 3
   'T........PP........T', // 4
-  'T....PPPPPPPPPP....T', // 5
-  'T....PP........3...T', // 6  palm tree
-  'T....PP....ss......T', // 7  sand starts
-  'T....PP...ssss.....T', // 8
-  'T....PP..sssss.....T', // 9
-  'T....PPPPssssss....T', // 10
-  'T........sssssss3..T', // 11 palm
-  'WWWW..ss7sss6ssss..T', // 12 water, wet sand, tide pool
-  'WWWWW.ss77ss66sss..T', // 13
-  'WWWWW.sss7ss6ssss..T', // 14
-  'WWWW..ssssssssss3..T', // 15 palm
-  'T.....ssssssssss...T', // 16
-  'T..GG.ssssPPsssss..T', // 17 path through sand
-  'T..GG..ssPP.sss....T', // 18
-  'T......ssPP........T', // 19
-  'T......ssPP........T', // 20
-  'T....PPPPPPPPPP....T', // 21
-  'T....PP........ss..T', // 22
-  'T....PP.......sss..T', // 23
-  'T....PP......ssss3.T', // 24 palm
-  'WWWW.PP.....sssss..T', // 25
-  'WWWWWPP..ss7sss6s..T', // 26 more coast
-  'WWWWWPP.sss77s66s..T', // 27
-  'WWWW.PP.ssssssss...T', // 28
-  'T....PP............T', // 29
-  'T..f.PP......f.....T', // 30
-  'T....PP............T', // 31
-  'T..GGG.PP...GGG....T', // 32
-  'T..GGG.PP...GGG....T', // 33
-  'T......PP..........T', // 34
-  'T......PP..........T', // 35
-  'T......PP..........T', // 36
-  'T......PP..........T', // 37
-  'T......PP..........T', // 38
+  'T.....PPPPP........T', // 5  path bends west toward coast
+  'T.....PP...........T', // 6
+  'T.ss..PP...........T', // 7  sand appears near path
+  'W67sssPP.....GGG...T', // 8  coast: water→tide→wetsand→sand
+  'WW67ssPP.....GGG...T', // 9  deeper coast
+  'WW667sPP...........T', // 10 tide pool cluster at shore
+  'WW67ssPP.......~...T', // 11 rock inland
+  'W67sssPP...3.......T', // 12 palm on sand
+  'T.ss..PP...........T', // 13 sand tapers off
+  'T.....PP...........T', // 14
+  'T.....PPPPPPPPP....T', // 15 path bends east  (inland meadow)
+  'T...........PP.....T', // 16
+  'T..GGG..f...PP..%..T', // 17 grass, flowers, bush
+  'T..GGG......PP.....T', // 18
+  'T...........PP..~..T', // 19 rock
+  'T.....PPPPPPPPP....T', // 20 path bends back west
+  'T.....PP...........T', // 21
+  'T.3s..PP...........T', // 22 second beach: palm + sand
+  'W67sssPP...........T', // 23 coastline resumes
+  'WW67ssPP.....GGG...T', // 24
+  'WW667sPP.....GGG...T', // 25 tide pools at shore
+  'WW67ssPP...........T', // 26
+  'W67sssPP...3.......T', // 27 palm
+  'T.ss..PP...........T', // 28 sand ends
+  'T.....PP...........T', // 29
+  'T.....PPPPP........T', // 30 path jogs back to center
+  'T........PP........T', // 31
+  'T..f.....PP....f...T', // 32 flowers near Coral Harbor
+  'T..GGG...PP..GGG...T', // 33
+  'T..GGG...PP..GGG...T', // 34
+  'T........PP........T', // 35
+  'T........PP........T', // 36
+  'T........PP........T', // 37
+  'T........PP........T', // 38
   'TTTTTTT.PP.TTTTTTTTT', // 39 south exit to Coral Harbor
 ]);
 
@@ -64,10 +64,10 @@ export const route3: MapDefinition = {
     },
     {
       id: 'route3-fisherman',
-      tileX: 3,
-      tileY: 14,
+      tileX: 4,
+      tileY: 9,
       textureKey: 'npc-sailor',
-      facing: 'right',
+      facing: 'left',
       dialogue: [
         'The tide pools here are full of Water Pokémon!',
         'Try fishing near the shore if you have a rod.',
@@ -76,7 +76,7 @@ export const route3: MapDefinition = {
     {
       id: 'route3-hiker',
       tileX: 15,
-      tileY: 20,
+      tileY: 17,
       textureKey: 'npc-hiker',
       facing: 'left',
       dialogue: [
@@ -99,17 +99,17 @@ export const route3: MapDefinition = {
     {
       id: 'route3-swimmer-1',
       trainerId: 'swimmer-1',
-      tileX: 10,
-      tileY: 10,
+      tileX: 4,
+      tileY: 11,
       textureKey: 'npc-swimmer',
-      facing: 'left',
+      facing: 'right',
       lineOfSight: 3,
     },
     {
       id: 'route3-lass-2',
       trainerId: 'lass-2',
-      tileX: 6,
-      tileY: 30,
+      tileX: 9,
+      tileY: 31,
       textureKey: 'npc-lass',
       facing: 'right',
       lineOfSight: 4,
@@ -126,17 +126,17 @@ export const route3: MapDefinition = {
     {
       id: 'route3-swimmer-2',
       trainerId: 'swimmer-2',
-      tileX: 15,
-      tileY: 18,
+      tileX: 4,
+      tileY: 25,
       textureKey: 'npc-swimmer',
-      facing: 'left',
+      facing: 'right',
       lineOfSight: 3,
     },
     {
       id: 'route3-fisherman-1',
       trainerId: 'fisherman-1',
-      tileX: 4,
-      tileY: 22,
+      tileX: 3,
+      tileY: 23,
       textureKey: 'npc-sailor',
       facing: 'right',
       lineOfSight: 3,
@@ -145,7 +145,7 @@ export const route3: MapDefinition = {
       id: 'route3-sailor-1',
       trainerId: 'sailor-1',
       tileX: 10,
-      tileY: 25,
+      tileY: 27,
       textureKey: 'npc-sailor',
       facing: 'down',
       lineOfSight: 4,

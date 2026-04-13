@@ -10,9 +10,9 @@ const pewterGround = parseMap([
   'T....PP......PP........PP....T', // 5
   'T..PPPPPPPPPPPPPPPPPPPPPP....T', // 6  - main east-west road
   'T..PP........................T', // 7
-  'T..PP....CCCCCC..............T', // 8  - PokéCenter roof
-  'T..PP....cccccc..............T', // 9  - PokéCenter wall
-  'T..PP....cceccc..............T', // 10 - PokéCenter door
+  'T..PP....CCCCCC...MMMMMM.....T', // 8  PokéCenter + PokéMart
+  'T..PP....cccccc...mmmmmm.....T', // 9  walls
+  'T..PP....cceccc...mmnmmm.....T', // 10 doors
   'T..PP......PP................T', // 11
   'T..PPPPPPPPPPPPPPPPPPPPPP....T', // 12 - mid road
   'T..PP........................T', // 13
@@ -20,8 +20,8 @@ const pewterGround = parseMap([
   'T..PP......gggggggg..........T', // 15 - Gym wall
   'T..PP......ggggaggg..........T', // 16 - Gym door
   'T..PP........PP..PP..........T', // 17
-  'T..PP........PP..PP.........PP', // 18 east exit to Route 3
-  'T..PPPPPPPPPPPPPPPP..........PP', // 19
+  'T..PP........PP.PPPPPPPPPPPPPP', // 18 east exit to Route 3
+  'T..PPPPPPPPPPPPPP...........PP', // 19
   'T..PP.........PP.............T', // 20
   'T..PP.....f...PP...f.........T', // 21
   'T..PP.........PP.............T', // 22
@@ -138,6 +138,7 @@ export const pewterCity: MapDefinition = {
     { tileX: 15, tileY: 29, targetMap: 'viridian-forest', targetSpawnId: 'from-pewter' },
     // Building doors
     { tileX: 11, tileY: 10, targetMap: 'pewter-pokecenter', targetSpawnId: 'default' },
+    { tileX: 21, tileY: 10, targetMap: 'pewter-pokemart', targetSpawnId: 'default' },
     { tileX: 15, tileY: 16, targetMap: 'pewter-gym', targetSpawnId: 'default' },
     { tileX: 12, tileY: 27, targetMap: 'pewter-museum', targetSpawnId: 'default' },
     // East exit → Route 3
@@ -148,6 +149,7 @@ export const pewterCity: MapDefinition = {
     'default':         { x: 14, y: 12, direction: 'up' },
     'from-forest':     { x: 14, y: 28, direction: 'up' },
     'from-pokecenter': { x: 11, y: 11, direction: 'down' },
+    'from-pokemart':   { x: 21, y: 11, direction: 'down' },
     'from-gym':        { x: 15, y: 17, direction: 'down' },
     'from-museum':     { x: 12, y: 28, direction: 'down' },
     'from-route-3':    { x: 28, y: 18, direction: 'left' },

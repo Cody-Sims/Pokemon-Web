@@ -16,12 +16,12 @@ const viridianGround = parseMap([
   'T..PP......PP........PP......T', // 11
   'T..PP......PP........PP......T', // 12
   'T..PPPPPPPPPPPPPPPPPPPPPPPP..T', // 13 - another east-west road
-  'T..PP.........PP............T', // 14
+  'T..PP.........PP.............T', // 14
   'T..PP....AAAAAAPP............T', // 15 - Gym roof
   'T..PP....ggggggPP............T', // 16 - Gym wall
   'T..PP....ggagggPP............T', // 17 - Gym door
   'T..PP......PP..PP............T', // 18
-  'T..PP......PP..PP..f....f...T', // 19
+  'T..PP......PP..PP..f....f....T', // 19
   'T..PPPPPPPPPPPPPP............T', // 20
   'T..PP.........PP.............T', // 21
   'T..PP.....f...PP...f.........T', // 22

@@ -45,6 +45,7 @@ import { palletOakLab } from './interiors/pallet-oak-lab';
 import { viridianPokecenter } from './interiors/viridian-pokecenter';
 import { viridianPokemart } from './interiors/viridian-pokemart';
 import { pewterPokecenter } from './interiors/pewter-pokecenter';
+import { pewterPokemart } from './interiors/pewter-pokemart';
 import { pewterGym } from './interiors/pewter-gym';
 import { pewterMuseum } from './interiors/pewter-museum';
 import { coralPokecenter } from './interiors/coral-pokecenter';
@@ -90,6 +91,7 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'viridian-pokecenter': viridianPokecenter,
   'viridian-pokemart': viridianPokemart,
   'pewter-pokecenter': pewterPokecenter,
+  'pewter-pokemart': pewterPokemart,
   'pewter-gym': pewterGym,
   'pewter-museum': pewterMuseum,
   // Dungeons
