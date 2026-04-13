@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { pokemonData } from '@data/pokemon-data';
+import { pokemonData } from '@data/pokemon';
 import { BGM, SFX } from '@utils/audio-keys';
 
 export class PreloadScene extends Phaser.Scene {

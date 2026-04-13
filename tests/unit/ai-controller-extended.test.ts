@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AIController } from '../../frontend/src/battle/AIController';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
-import { pokemonData } from '../../frontend/src/data/pokemon-data';
+import { pokemonData } from '../../frontend/src/data/pokemon';
 import { moveData } from '../../frontend/src/data/moves';
 
 beforeEach(() => { vi.spyOn(Math, 'random').mockReturnValue(0.5); });

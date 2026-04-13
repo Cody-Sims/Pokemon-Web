@@ -121,7 +121,23 @@ pokemon-web/
 │       │   │   ├── ghost.ts           # Ghost-type moves
 │       │   │   ├── dragon.ts          # Dragon-type moves
 │       │   │   └── dark.ts            # Dark-type moves
-│       │   ├── pokemon-data.ts        # ~44 Pokémon: base stats, learnsets, sprites
+│       │   ├── pokemon/               # Per-type Pokemon definitions (all 151)
+│       │   │   ├── index.ts           # Re-exports combined pokemonData record
+│       │   │   ├── normal.ts          # Normal-type Pokemon (22)
+│       │   │   ├── fire.ts            # Fire-type Pokemon (12)
+│       │   │   ├── water.ts           # Water-type Pokemon (28)
+│       │   │   ├── electric.ts        # Electric-type Pokemon (9)
+│       │   │   ├── grass.ts           # Grass-type Pokemon (12)
+│       │   │   ├── ice.ts             # Ice-type Pokemon (2)
+│       │   │   ├── fighting.ts        # Fighting-type Pokemon (7)
+│       │   │   ├── poison.ts          # Poison-type Pokemon (14)
+│       │   │   ├── ground.ts          # Ground-type Pokemon (8)
+│       │   │   ├── psychic.ts         # Psychic-type Pokemon (8)
+│       │   │   ├── bug.ts             # Bug-type Pokemon (12)
+│       │   │   ├── rock.ts            # Rock-type Pokemon (9)
+│       │   │   ├── ghost.ts           # Ghost-type Pokemon (3)
+│       │   │   ├── dragon.ts          # Dragon-type Pokemon (3)
+│       │   │   └── fairy.ts           # Fairy-type Pokemon (2)
 │       │   ├── type-chart.ts          # 18×18 type effectiveness matrix
 │       │   ├── item-data.ts           # ~20 items (potions, balls, key items)
 │       │   ├── trainer-data.ts        # Trainer rosters, dialogue, rewards

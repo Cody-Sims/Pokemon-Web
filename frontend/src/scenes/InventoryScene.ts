@@ -3,7 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { itemData } from '@data/item-data';
-import { pokemonData } from '@data/pokemon-data';
+import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { MenuController } from '@ui/MenuController';
 import { COLORS, FONTS, SPACING } from '@ui/theme';

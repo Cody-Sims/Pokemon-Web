@@ -1,0 +1,112 @@
+import { PokemonData } from '../interfaces';
+
+/** Ground-type Pokemon (Gen 1) */
+export const groundPokemon: Record<number, PokemonData> = {
+  27: {
+    id: 27, name: 'Sandshrew', types: ['ground'],
+    baseStats: { hp: 50, attack: 75, defense: 85, spAttack: 20, spDefense: 30, speed: 40 },
+    abilities: ['sand-veil'],
+    learnset: [
+      { level: 1, moveId: 'scratch' }, { level: 6, moveId: 'defense-curl' },
+      { level: 11, moveId: 'sand-attack' }, { level: 17, moveId: 'slash' },
+      { level: 23, moveId: 'poison-sting' }, { level: 30, moveId: 'dig' },
+    ],
+    evolutionChain: [{ pokemonId: 28, condition: { type: 'level', level: 22 } }],
+    catchRate: 255, expYield: 60,
+    spriteKeys: { front: 'sandshrew-front', back: 'sandshrew-back', icon: 'sandshrew-icon' },
+  },
+  28: {
+    id: 28, name: 'Sandslash', types: ['ground'],
+    baseStats: { hp: 75, attack: 100, defense: 110, spAttack: 45, spDefense: 55, speed: 65 },
+    abilities: ['sand-veil'],
+    learnset: [
+      { level: 1, moveId: 'scratch' }, { level: 1, moveId: 'defense-curl' },
+      { level: 1, moveId: 'sand-attack' }, { level: 22, moveId: 'slash' },
+      { level: 30, moveId: 'dig' }, { level: 40, moveId: 'earthquake' },
+    ],
+    evolutionChain: [],
+    catchRate: 90, expYield: 158,
+    spriteKeys: { front: 'sandslash-front', back: 'sandslash-back', icon: 'sandslash-icon' },
+  },
+  50: {
+    id: 50, name: 'Diglett', types: ['ground'],
+    baseStats: { hp: 10, attack: 55, defense: 25, spAttack: 35, spDefense: 45, speed: 95 },
+    abilities: ['sand-veil'],
+    learnset: [
+      { level: 1, moveId: 'scratch' }, { level: 1, moveId: 'sand-attack' },
+      { level: 15, moveId: 'growl' }, { level: 19, moveId: 'dig' },
+      { level: 24, moveId: 'slash' }, { level: 31, moveId: 'earthquake' },
+    ],
+    evolutionChain: [{ pokemonId: 51, condition: { type: 'level', level: 26 } }],
+    catchRate: 255, expYield: 53,
+    spriteKeys: { front: 'diglett-front', back: 'diglett-back', icon: 'diglett-icon' },
+  },
+  51: {
+    id: 51, name: 'Dugtrio', types: ['ground'],
+    baseStats: { hp: 35, attack: 100, defense: 50, spAttack: 50, spDefense: 70, speed: 120 },
+    abilities: ['sand-veil'],
+    learnset: [
+      { level: 1, moveId: 'scratch' }, { level: 1, moveId: 'sand-attack' },
+      { level: 1, moveId: 'growl' }, { level: 26, moveId: 'dig' },
+      { level: 35, moveId: 'slash' }, { level: 47, moveId: 'earthquake' },
+    ],
+    evolutionChain: [],
+    catchRate: 50, expYield: 149,
+    spriteKeys: { front: 'dugtrio-front', back: 'dugtrio-back', icon: 'dugtrio-icon' },
+  },
+  104: {
+    id: 104, name: 'Cubone', types: ['ground'],
+    baseStats: { hp: 50, attack: 50, defense: 95, spAttack: 40, spDefense: 50, speed: 35 },
+    abilities: ['rock-head'],
+    learnset: [
+      { level: 1, moveId: 'growl' }, { level: 1, moveId: 'bone-club' },
+      { level: 13, moveId: 'leer' }, { level: 18, moveId: 'focus-energy' },
+      { level: 25, moveId: 'bonemerang' }, { level: 31, moveId: 'thrash' },
+    ],
+    evolutionChain: [{ pokemonId: 105, condition: { type: 'level', level: 28 } }],
+    catchRate: 190, expYield: 64,
+    spriteKeys: { front: 'cubone-front', back: 'cubone-back', icon: 'cubone-icon' },
+  },
+  105: {
+    id: 105, name: 'Marowak', types: ['ground'],
+    baseStats: { hp: 60, attack: 80, defense: 110, spAttack: 50, spDefense: 80, speed: 45 },
+    abilities: ['rock-head'],
+    learnset: [
+      { level: 1, moveId: 'growl' }, { level: 1, moveId: 'bone-club' },
+      { level: 1, moveId: 'leer' }, { level: 1, moveId: 'focus-energy' },
+      { level: 32, moveId: 'bonemerang' }, { level: 43, moveId: 'thrash' },
+      { level: 48, moveId: 'earthquake' },
+    ],
+    evolutionChain: [],
+    catchRate: 75, expYield: 149,
+    spriteKeys: { front: 'marowak-front', back: 'marowak-back', icon: 'marowak-icon' },
+  },
+  111: {
+    id: 111, name: 'Rhyhorn', types: ['ground', 'rock'],
+    baseStats: { hp: 80, attack: 85, defense: 95, spAttack: 30, spDefense: 30, speed: 25 },
+    abilities: ['lightning-rod'],
+    learnset: [
+      { level: 1, moveId: 'horn-attack' }, { level: 1, moveId: 'tail-whip' },
+      { level: 13, moveId: 'stomp' }, { level: 19, moveId: 'fury-attack' },
+      { level: 30, moveId: 'rock-throw' }, { level: 40, moveId: 'take-down' },
+      { level: 45, moveId: 'earthquake' },
+    ],
+    evolutionChain: [{ pokemonId: 112, condition: { type: 'level', level: 42 } }],
+    catchRate: 120, expYield: 69,
+    spriteKeys: { front: 'rhyhorn-front', back: 'rhyhorn-back', icon: 'rhyhorn-icon' },
+  },
+  112: {
+    id: 112, name: 'Rhydon', types: ['ground', 'rock'],
+    baseStats: { hp: 105, attack: 130, defense: 120, spAttack: 45, spDefense: 45, speed: 40 },
+    abilities: ['lightning-rod'],
+    learnset: [
+      { level: 1, moveId: 'horn-attack' }, { level: 1, moveId: 'tail-whip' },
+      { level: 1, moveId: 'stomp' }, { level: 1, moveId: 'fury-attack' },
+      { level: 42, moveId: 'rock-slide' }, { level: 48, moveId: 'earthquake' },
+      { level: 55, moveId: 'hyper-beam' },
+    ],
+    evolutionChain: [],
+    catchRate: 60, expYield: 170,
+    spriteKeys: { front: 'rhydon-front', back: 'rhydon-back', icon: 'rhydon-icon' },
+  },
+};

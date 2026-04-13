@@ -3,7 +3,7 @@ import { ExperienceCalculator } from '../../frontend/src/battle/ExperienceCalcul
 import { EncounterSystem } from '../../frontend/src/systems/EncounterSystem';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
 import { evolutionData } from '../../frontend/src/data/evolution-data';
-import { pokemonData } from '../../frontend/src/data/pokemon-data';
+import { pokemonData } from '../../frontend/src/data/pokemon';
 
 beforeEach(() => {
   vi.spyOn(Math, 'random').mockReturnValue(0.5);

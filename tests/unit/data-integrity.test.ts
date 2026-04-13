@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { pokemonData } from '../../frontend/src/data/pokemon-data';
+import { pokemonData } from '../../frontend/src/data/pokemon';
 import { moveData } from '../../frontend/src/data/moves';
 import { itemData } from '../../frontend/src/data/item-data';
 import { trainerData } from '../../frontend/src/data/trainer-data';

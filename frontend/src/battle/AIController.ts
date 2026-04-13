@@ -1,6 +1,6 @@
 import { PokemonInstance } from '@data/interfaces';
 import { moveData } from '@data/moves';
-import { pokemonData } from '@data/pokemon-data';
+import { pokemonData } from '@data/pokemon';
 import { getCombinedEffectiveness } from '@data/type-chart';
 import { PokemonType } from '@utils/type-helpers';
 

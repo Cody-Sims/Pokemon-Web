@@ -1,5 +1,5 @@
 import { PokemonInstance } from '@data/interfaces';
-import { pokemonData } from '@data/pokemon-data';
+import { pokemonData } from '@data/pokemon';
 
 export interface CatchResult {
   caught: boolean;

@@ -1,5 +1,5 @@
 import { PokemonInstance } from '@data/interfaces';
-import { pokemonData } from '@data/pokemon-data';
+import { pokemonData } from '@data/pokemon';
 import { TRAINER_EXP_MULTIPLIER } from '@utils/constants';
 
 /** Nature stat modifiers: [increased stat, decreased stat]. Neutral natures omitted. */

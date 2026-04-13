@@ -3,7 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { COLORS, FONTS } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/EncounterSystem';
-import { pokemonData } from '@data/pokemon-data';
+import { pokemonData } from '@data/pokemon';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
 

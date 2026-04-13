@@ -1,0 +1,100 @@
+import { PokemonData } from '../interfaces';
+
+/** Fighting-type Pokemon (Gen 1) */
+export const fightingPokemon: Record<number, PokemonData> = {
+  56: {
+    id: 56, name: 'Mankey', types: ['fighting'],
+    baseStats: { hp: 40, attack: 80, defense: 35, spAttack: 35, spDefense: 45, speed: 70 },
+    abilities: ['vital-spirit'],
+    learnset: [
+      { level: 1, moveId: 'scratch' }, { level: 1, moveId: 'leer' },
+      { level: 9, moveId: 'low-kick' }, { level: 15, moveId: 'karate-chop' },
+      { level: 21, moveId: 'fury-swipes' }, { level: 27, moveId: 'focus-energy' },
+      { level: 33, moveId: 'seismic-toss' }, { level: 39, moveId: 'thrash' },
+    ],
+    evolutionChain: [{ pokemonId: 57, condition: { type: 'level', level: 28 } }],
+    catchRate: 190, expYield: 61,
+    spriteKeys: { front: 'mankey-front', back: 'mankey-back', icon: 'mankey-icon' },
+  },
+  57: {
+    id: 57, name: 'Primeape', types: ['fighting'],
+    baseStats: { hp: 65, attack: 105, defense: 60, spAttack: 60, spDefense: 70, speed: 95 },
+    abilities: ['vital-spirit'],
+    learnset: [
+      { level: 1, moveId: 'scratch' }, { level: 1, moveId: 'leer' },
+      { level: 1, moveId: 'low-kick' }, { level: 1, moveId: 'karate-chop' },
+      { level: 28, moveId: 'fury-swipes' }, { level: 37, moveId: 'seismic-toss' },
+      { level: 46, moveId: 'thrash' },
+    ],
+    evolutionChain: [],
+    catchRate: 75, expYield: 159,
+    spriteKeys: { front: 'primeape-front', back: 'primeape-back', icon: 'primeape-icon' },
+  },
+  66: {
+    id: 66, name: 'Machop', types: ['fighting'],
+    baseStats: { hp: 70, attack: 80, defense: 50, spAttack: 35, spDefense: 35, speed: 35 },
+    abilities: ['guts'],
+    learnset: [
+      { level: 1, moveId: 'low-kick' }, { level: 1, moveId: 'leer' },
+      { level: 10, moveId: 'focus-energy' }, { level: 15, moveId: 'karate-chop' },
+      { level: 22, moveId: 'seismic-toss' }, { level: 29, moveId: 'submission' },
+    ],
+    evolutionChain: [{ pokemonId: 67, condition: { type: 'level', level: 28 } }],
+    catchRate: 180, expYield: 61,
+    spriteKeys: { front: 'machop-front', back: 'machop-back', icon: 'machop-icon' },
+  },
+  67: {
+    id: 67, name: 'Machoke', types: ['fighting'],
+    baseStats: { hp: 80, attack: 100, defense: 70, spAttack: 50, spDefense: 60, speed: 45 },
+    abilities: ['guts'],
+    learnset: [
+      { level: 1, moveId: 'low-kick' }, { level: 1, moveId: 'leer' },
+      { level: 1, moveId: 'focus-energy' }, { level: 1, moveId: 'karate-chop' },
+      { level: 36, moveId: 'seismic-toss' }, { level: 44, moveId: 'submission' },
+    ],
+    evolutionChain: [{ pokemonId: 68, condition: { type: 'trade' } }],
+    catchRate: 90, expYield: 142,
+    spriteKeys: { front: 'machoke-front', back: 'machoke-back', icon: 'machoke-icon' },
+  },
+  68: {
+    id: 68, name: 'Machamp', types: ['fighting'],
+    baseStats: { hp: 90, attack: 130, defense: 80, spAttack: 65, spDefense: 85, speed: 55 },
+    abilities: ['guts'],
+    learnset: [
+      { level: 1, moveId: 'low-kick' }, { level: 1, moveId: 'leer' },
+      { level: 1, moveId: 'focus-energy' }, { level: 1, moveId: 'karate-chop' },
+      { level: 36, moveId: 'seismic-toss' }, { level: 44, moveId: 'submission' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 227,
+    spriteKeys: { front: 'machamp-front', back: 'machamp-back', icon: 'machamp-icon' },
+  },
+  106: {
+    id: 106, name: 'Hitmonlee', types: ['fighting'],
+    baseStats: { hp: 50, attack: 120, defense: 53, spAttack: 35, spDefense: 110, speed: 87 },
+    abilities: ['limber'],
+    learnset: [
+      { level: 1, moveId: 'double-kick' }, { level: 6, moveId: 'meditate' },
+      { level: 11, moveId: 'rolling-kick' }, { level: 21, moveId: 'jump-kick' },
+      { level: 31, moveId: 'focus-energy' }, { level: 41, moveId: 'high-jump-kick' },
+      { level: 51, moveId: 'mega-kick' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 159,
+    spriteKeys: { front: 'hitmonlee-front', back: 'hitmonlee-back', icon: 'hitmonlee-icon' },
+  },
+  107: {
+    id: 107, name: 'Hitmonchan', types: ['fighting'],
+    baseStats: { hp: 50, attack: 105, defense: 79, spAttack: 35, spDefense: 110, speed: 76 },
+    abilities: ['keen-eye'],
+    learnset: [
+      { level: 1, moveId: 'comet-punch' }, { level: 7, moveId: 'agility' },
+      { level: 13, moveId: 'fire-punch' }, { level: 19, moveId: 'ice-punch' },
+      { level: 25, moveId: 'thunder-punch' }, { level: 33, moveId: 'mega-punch' },
+      { level: 41, moveId: 'counter' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 159,
+    spriteKeys: { front: 'hitmonchan-front', back: 'hitmonchan-back', icon: 'hitmonchan-icon' },
+  },
+};

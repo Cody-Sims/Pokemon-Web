@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { PokemonInstance } from '@data/interfaces';
-import { pokemonData } from '@data/pokemon-data';
+import { pokemonData } from '@data/pokemon';
 import { BattleManager, BattleConfig } from '@battle/BattleManager';
 import { EncounterSystem } from '@systems/EncounterSystem';
 import { GameManager } from '@managers/GameManager';

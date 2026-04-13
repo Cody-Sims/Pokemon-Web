@@ -2,7 +2,7 @@ import { encounterTables } from '@data/encounter-tables';
 import { BASE_ENCOUNTER_RATE } from '@utils/constants';
 import { weightedRandom, randomInt } from '@utils/math-helpers';
 import { PokemonInstance } from '@data/interfaces';
-import { pokemonData } from '@data/pokemon-data';
+import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
 import { ExperienceCalculator } from '@battle/ExperienceCalculator';
 
