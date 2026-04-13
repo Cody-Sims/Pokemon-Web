@@ -166,9 +166,9 @@ The world feels alive with optional exploration, time-based changes, collectible
 
 ---
 
-## Phase 4: PokéMart, Economy & PC Storage
+## Phase 4: PokéMart, Economy & PC Storage — COMPLETE
 
-**Goal:** Complete the core infrastructure loop — shop, money, and Pokémon storage.
+> **Completed 2026-04-12.** ShopScene with Buy/Sell tabs, per-town inventory (`shop-data.ts`), quantity selector, money validation. PCScene with 12×30 box grid, party↔box transfers, pick/place mechanic, party protection (can't remove last member). GameManager: money system (earn/spend), bag management, 12 PC boxes with auto-deposit when party full. Items have `buyPrice`, sell at 50%. Trainer battles award `rewardMoney`. Money shown on pause menu. SaveManager persists boxes. Overworld NPC interaction types (`shop`, `pc`, `heal`) trigger respective scenes. See CHANGELOG.md for details.
 
 ### 4.1 — PokéMart / Shop System
 - New `ShopScene` launched from interacting with mart NPCs.

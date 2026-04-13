@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Phase 4: PokéMart, Economy & PC Storage — COMPLETE** (verified existing implementation)
+  - ShopScene: Buy/Sell tabs, per-town inventory via `shop-data.ts`, quantity selector, money validation, detail panel
+  - PCScene: 12×30 box grid, party↔box transfers, pick/place mechanic, box naming, party protection
+  - GameManager: money (earn/spend), bag CRUD, 12 PC boxes, auto-deposit on catch with full party
+  - Items have `buyPrice`, sell at 50%. Trainer battles award `rewardMoney`. Money shown on pause menu
+  - SaveManager persists boxes. Overworld NPC interaction types (`shop`, `pc`, `heal`) wire to scenes
+
 - **Map UI Overhaul — Enhanced Tile Rendering + Building Interiors**
   - **Enhanced procedural tile rendering**: Replaced flat-color rectangles with multi-layered detail for all 25 overworld tile types. Trees now have trunk + canopy circles + shadow. Paths have pebble texture and edge darkening. Buildings have shingle lines on roofs, brick patterns on walls, door frames with doorknobs and steps. Water has wave highlights and sparkles. Tall grass has 5 blade layers with flower accents. Flowers have stems and colored petals. Signs have post + board detail. Fences have posts + rails. Dense trees have overlapping dark canopy circles.
   - **14 new interior tile types** in `shared.ts`: FLOOR (wood planks), INDOOR_WALL (with baseboard), COUNTER, TABLE, BOOKSHELF (with colored books), RUG (patterned), MAT (exit warp), PC_TILE (monitor + keyboard), HEAL_MACHINE, WINDOW (cross-pane glass), CHAIR, POKEBALL_ITEM, GYM_FLOOR (rocky texture), GYM_STATUE (pedestal + statue)
