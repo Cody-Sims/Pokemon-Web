@@ -5,6 +5,15 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Changed
+- **Trainer LoS battle trigger**: Trainers now walk toward the player (step-by-step tween) after the `!` exclamation mark, stopping 1 tile away before initiating dialogue — matching classic Pokémon behavior.
+- **Wall-blocked line of sight**: Trainer `isInLineOfSight()` now checks for solid tiles between the trainer and player. A wall, tree, or boulder blocks vision so trainers can't see through obstacles.
+
+### Fixed
+- **Oak's Lab exit blocked**: Moved lab machines from center (tile 6,10) to sides (tiles 3,10 and 9,10) so the player can walk straight down to the exit mat.
+- **Oak's Lab pokeball collision**: Removed standalone POKEBALL_ITEM tiles on row 7 that sat above the starter table; the row is now walkable lab floor.
+- **Oak's Lab exit warp width**: Widened exit warp from 1 tile to 3 tiles (positions 5–7 on row 11) for easier navigation.
+
 ### Added
 - **Phase 5 — Route 4 (Basalt Ridge)**: 20×30 volcanic route with cliffs, cave floor, Rook story NPC, Synthesis grunt encounter. Encounter table (Sandshrew, Geodude, Machop, Growlithe, Ponyta, Onix).
 - **Phase 5 — Ember Mines**: 20×25 dungeon with mine tracks, boulders. 2 Synthesis grunts + Dr. Vex boss battle #1. Story NPCs: data terminal, caged Pokémon. Encounter table (Zubat, Geodude, Graveler, Koffing, Grimer, Magmar).

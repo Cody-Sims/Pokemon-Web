@@ -272,6 +272,7 @@ export class OverworldScene extends Phaser.Scene {
       );
       trainer.setScale(2);
       trainer.setDepth(1);
+      trainer.mapGround = this.mapDef.ground; // enable wall-blocked LoS
       this.trainers.push(trainer);
       this.npcs.push(trainer); // also in NPC list for collision
     }
@@ -369,49 +370,53 @@ export class OverworldScene extends Phaser.Scene {
   private triggerTrainerBattle(trainer: Trainer): void {
     this.transitioning = true;
 
-    // Trainer faces the player
     const { x: px, y: py } = this.player.getTilePosition();
-    const trainerTX = Math.floor(trainer.x / TILE_SIZE);
-    const trainerTY = Math.floor(trainer.y / TILE_SIZE);
 
-    let faceDir: Direction = 'down';
-    if (px < trainerTX) faceDir = 'left';
-    else if (px > trainerTX) faceDir = 'right';
-    else if (py < trainerTY) faceDir = 'up';
-
-    trainer.faceDirection(faceDir);
-
-    // Exclamation mark
+    // Exclamation mark above trainer
     const excl = this.add.text(trainer.x, trainer.y - 30, '!', {
       fontSize: '24px', color: '#ff0000', fontStyle: 'bold',
     }).setOrigin(0.5).setDepth(10);
 
-    const tData = trainerData[trainer.trainerId];
-
-    this.time.delayedCall(800, () => {
+    // After a brief pause, trainer walks toward the player
+    this.time.delayedCall(600, () => {
       excl.destroy();
-      // Show pre-battle dialogue
-      this.scene.pause();
-      this.scene.launch('DialogueScene', {
-        dialogue: tData?.dialogue?.before ?? ['...'],
-      });
 
-      this.scene.get('DialogueScene').events.once('shutdown', () => {
-        this.scene.resume();
-        const enemyParty = tData.party.map(p =>
-          EncounterSystem.createWildPokemon(p.pokemonId, p.level),
-        );
-        this.scene.start('TransitionScene', {
-          targetScene: 'BattleScene',
-          returnScene: 'OverworldScene',
-          targetData: {
-            enemyPokemon: enemyParty[0],
-            isTrainer: true,
-            trainerId: trainer.trainerId,
-            battleBg: this.mapDef.battleBg,
-          },
-          returnData: { mapKey: this.mapKey, spawnId: '__resume' },
-          style: 'stripes',
+      // Trainer walks toward the player (stops 1 tile away)
+      trainer.walkToward(px, py).then(() => {
+        // Trainer faces the player after walking
+        const trainerTX = Math.floor(trainer.x / TILE_SIZE);
+        const trainerTY = Math.floor(trainer.y / TILE_SIZE);
+        let faceDir: Direction = 'down';
+        if (px < trainerTX) faceDir = 'left';
+        else if (px > trainerTX) faceDir = 'right';
+        else if (py < trainerTY) faceDir = 'up';
+        trainer.faceDirection(faceDir);
+
+        const tData = trainerData[trainer.trainerId];
+
+        // Show pre-battle dialogue
+        this.scene.pause();
+        this.scene.launch('DialogueScene', {
+          dialogue: tData?.dialogue?.before ?? ['...'],
+        });
+
+        this.scene.get('DialogueScene').events.once('shutdown', () => {
+          this.scene.resume();
+          const enemyParty = tData.party.map(p =>
+            EncounterSystem.createWildPokemon(p.pokemonId, p.level),
+          );
+          this.scene.start('TransitionScene', {
+            targetScene: 'BattleScene',
+            returnScene: 'OverworldScene',
+            targetData: {
+              enemyPokemon: enemyParty[0],
+              isTrainer: true,
+              trainerId: trainer.trainerId,
+              battleBg: this.mapDef.battleBg,
+            },
+            returnData: { mapKey: this.mapKey, spawnId: '__resume' },
+            style: 'stripes',
+          });
         });
       });
     });
