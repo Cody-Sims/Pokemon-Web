@@ -5,46 +5,55 @@ export const itemData: Record<string, ItemData> = {
   'potion': {
     id: 'potion', name: 'Potion', category: 'medicine',
     description: 'Restores 20 HP to a single Pokémon.',
+    buyPrice: 300,
     effect: { type: 'heal-hp', amount: 20 },
   },
   'super-potion': {
     id: 'super-potion', name: 'Super Potion', category: 'medicine',
     description: 'Restores 50 HP to a single Pokémon.',
+    buyPrice: 700,
     effect: { type: 'heal-hp', amount: 50 },
   },
   'antidote': {
     id: 'antidote', name: 'Antidote', category: 'medicine',
     description: 'Cures a poisoned Pokémon.',
+    buyPrice: 100,
     effect: { type: 'heal-status', status: 'poison' },
   },
   'paralyze-heal': {
     id: 'paralyze-heal', name: 'Paralyze Heal', category: 'medicine',
     description: 'Cures a paralyzed Pokémon.',
+    buyPrice: 200,
     effect: { type: 'heal-status', status: 'paralysis' },
   },
   'burn-heal': {
     id: 'burn-heal', name: 'Burn Heal', category: 'medicine',
     description: 'Cures a burned Pokémon.',
+    buyPrice: 250,
     effect: { type: 'heal-status', status: 'burn' },
   },
   'ice-heal': {
     id: 'ice-heal', name: 'Ice Heal', category: 'medicine',
     description: 'Cures a frozen Pokémon.',
+    buyPrice: 250,
     effect: { type: 'heal-status', status: 'freeze' },
   },
   'awakening': {
     id: 'awakening', name: 'Awakening', category: 'medicine',
     description: 'Wakes up a sleeping Pokémon.',
+    buyPrice: 250,
     effect: { type: 'heal-status', status: 'sleep' },
   },
   'full-heal': {
     id: 'full-heal', name: 'Full Heal', category: 'medicine',
     description: 'Cures all status conditions.',
+    buyPrice: 600,
     effect: { type: 'heal-status', status: 'all' },
   },
   'revive': {
     id: 'revive', name: 'Revive', category: 'medicine',
     description: 'Revives a fainted Pokémon to half HP.',
+    buyPrice: 1500,
     effect: { type: 'heal-hp', amount: -1 }, // -1 = half max HP
   },
 
@@ -52,16 +61,19 @@ export const itemData: Record<string, ItemData> = {
   'poke-ball': {
     id: 'poke-ball', name: 'Poké Ball', category: 'pokeball',
     description: 'A device for catching wild Pokémon.',
+    buyPrice: 200,
     effect: { type: 'capture', catchRateMultiplier: 1 },
   },
   'great-ball': {
     id: 'great-ball', name: 'Great Ball', category: 'pokeball',
     description: 'A good, high-performance Poké Ball.',
+    buyPrice: 600,
     effect: { type: 'capture', catchRateMultiplier: 1.5 },
   },
   'ultra-ball': {
     id: 'ultra-ball', name: 'Ultra Ball', category: 'pokeball',
     description: 'An ultra-performance Poké Ball.',
+    buyPrice: 1200,
     effect: { type: 'capture', catchRateMultiplier: 2 },
   },
 
@@ -69,6 +81,7 @@ export const itemData: Record<string, ItemData> = {
   'repel': {
     id: 'repel', name: 'Repel', category: 'battle',
     description: 'Prevents weak wild Pokémon from appearing for 100 steps.',
+    buyPrice: 350,
     effect: { type: 'key' },
   },
 

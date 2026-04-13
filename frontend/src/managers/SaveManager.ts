@@ -37,6 +37,7 @@ export class SaveManager {
       },
       flags: gm.getFlags(),
       trainersDefeated: gm.getTrainersDefeated(),
+      boxes: gm.getBoxes(),
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
   }

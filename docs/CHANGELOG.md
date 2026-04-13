@@ -6,12 +6,25 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
-- **Phase 4: PokéMart, Economy & PC Storage — COMPLETE** (verified existing implementation)
-  - ShopScene: Buy/Sell tabs, per-town inventory via `shop-data.ts`, quantity selector, money validation, detail panel
-  - PCScene: 12×30 box grid, party↔box transfers, pick/place mechanic, box naming, party protection
-  - GameManager: money (earn/spend), bag CRUD, 12 PC boxes, auto-deposit on catch with full party
-  - Items have `buyPrice`, sell at 50%. Trainer battles award `rewardMoney`. Money shown on pause menu
-  - SaveManager persists boxes. Overworld NPC interaction types (`shop`, `pc`, `heal`) wire to scenes
+- **Phase 4: PokéMart, Economy & PC Storage**
+  - **ShopScene** (`frontend/src/scenes/ShopScene.ts`): Full shop UI with BUY/SELL tabs, per-town mart inventory, quantity selector (LEFT/RIGHT ±1, UP/DOWN ±10), total price display, money deduction on purchase, sell at half buy price, key items protected from sale, Q/E tab switching, ESC to close
+  - **PCScene** (`frontend/src/scenes/PCScene.ts`): PC Storage System with 12 boxes × 30 slots, 6×5 grid layout with Pokémon name/level/type display, party panel on right side, pick-up/place mechanic for moving Pokémon between boxes and party, TAB to switch box/party focus, Q/E to navigate boxes, ESC to exit (puts held Pokémon back), party must always have ≥1 member
+  - **Shop data** (`frontend/src/data/shop-data.ts`): Per-town mart inventories — Viridian (basic: Poké Balls, Potions, Antidote) and Pewter (expanded: Great Balls, Super Potions, Full Heal, Revive)
+  - **buyPrice** field on `ItemData`: Potion ₽300, Super Potion ₽700, Poké Ball ₽200, Great Ball ₽600, Ultra Ball ₽1200, Revive ₽1500, status heals ₽100–₽600, Repel ₽350
+  - **PC box storage** in `GameManager`: 12 boxes with deposit/withdraw/autoDeposit/removeFromParty, editable box names, persisted in save data
+  - **Auto-deposit**: Catching with full party (6) auto-deposits to first PC box with space
+  - **Money display** in pause menu (above menu panel)
+  - **Shop/PC interaction types** in OverworldScene: 'shop' opens dialogue then ShopScene, 'pc' opens dialogue then PCScene
+  - **Viridian PokéMart clerk** now opens shop after Oak's Parcel is delivered
+  - **PC NPCs** added to Viridian and Pewter PokéCenters at PC tile position
+  - 29 new tests in `tests/integration/pc-shop-economy.test.ts` — test suite at 1389 tests across 40 files
+
+### Changed
+- `SaveData`: added optional `boxes` field for PC storage
+- `GameManager.addToParty()`: auto-deposits to PC when party full
+- `GameManager.serialize()/deserialize()/loadFromSave()`: includes boxes/boxNames
+- `NpcSpawn.interactionType`: added `'pc'` alongside `'heal'`, `'shop'`, `'starter-select'`
+- Registered `ShopScene` and `PCScene` in `game-config.ts`
 
 - **Map UI Overhaul — Enhanced Tile Rendering + Building Interiors**
   - **Enhanced procedural tile rendering**: Replaced flat-color rectangles with multi-layered detail for all 25 overworld tile types. Trees now have trunk + canopy circles + shadow. Paths have pebble texture and edge darkening. Buildings have shingle lines on roofs, brick patterns on walls, door frames with doorknobs and steps. Water has wave highlights and sparkles. Tall grass has 5 blade layers with flower accents. Flowers have stems and colored petals. Signs have post + board detail. Fences have posts + rails. Dense trees have overlapping dark canopy circles.

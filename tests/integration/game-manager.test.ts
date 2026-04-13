@@ -44,12 +44,15 @@ describe('GameManager', () => {
       expect(gm.getParty()).toHaveLength(1);
     });
 
-    it('should not exceed max party size of 6', () => {
+    it('should auto-deposit to PC box when party is full', () => {
       for (let i = 0; i < 6; i++) {
         gm.addToParty(makePokemon({ dataId: i + 1 }));
       }
-      expect(gm.addToParty(makePokemon())).toBe(false);
+      const overflow = makePokemon({ dataId: 99 });
+      expect(gm.addToParty(overflow)).toBe(true);
       expect(gm.getParty()).toHaveLength(6);
+      expect(gm.getBox(0)).toHaveLength(1);
+      expect(gm.getBox(0)[0].dataId).toBe(99);
     });
 
     it('should set party directly', () => {

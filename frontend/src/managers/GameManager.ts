@@ -15,6 +15,8 @@ export class GameManager {
   private playtime = 0;
   private currentMap = 'pallet-town';
   private playerPosition = { x: 7, y: 10, direction: 'down' as string };
+  private boxes: PokemonInstance[][] = Array.from({ length: 12 }, () => []);
+  private boxNames: string[] = Array.from({ length: 12 }, (_, i) => `Box ${i + 1}`);
   private settings: Record<string, string | number | boolean> = {
     textSpeed: 'medium',
     musicVolume: 0.5,
@@ -46,7 +48,10 @@ export class GameManager {
   getParty(): PokemonInstance[] { return this.party; }
   setParty(party: PokemonInstance[]): void { this.party = party; }
   addToParty(pokemon: PokemonInstance): boolean {
-    if (this.party.length >= 6) return false;
+    if (this.party.length >= 6) {
+      // Party full — auto-deposit to first available PC box
+      return this.autoDeposit(pokemon);
+    }
     this.party.push(pokemon);
     return true;
   }
@@ -115,6 +120,44 @@ export class GameManager {
   getPlaytime(): number { return this.playtime; }
   addPlaytime(seconds: number): void { this.playtime += seconds; }
 
+  // PC Boxes
+  getBoxes(): PokemonInstance[][] { return this.boxes; }
+  getBox(index: number): PokemonInstance[] { return this.boxes[index] ?? []; }
+  getBoxNames(): string[] { return this.boxNames; }
+  setBoxName(index: number, name: string): void { if (index >= 0 && index < 12) this.boxNames[index] = name; }
+
+  /** Deposit a Pokémon into a specific box slot. Returns true on success. */
+  depositPokemon(boxIndex: number, pokemon: PokemonInstance): boolean {
+    const box = this.boxes[boxIndex];
+    if (!box || box.length >= 30) return false;
+    box.push(pokemon);
+    return true;
+  }
+
+  /** Withdraw a Pokémon from a box. Returns the Pokémon or null. */
+  withdrawPokemon(boxIndex: number, slotIndex: number): PokemonInstance | null {
+    const box = this.boxes[boxIndex];
+    if (!box || slotIndex < 0 || slotIndex >= box.length) return null;
+    return box.splice(slotIndex, 1)[0];
+  }
+
+  /** Auto-deposit: find first box with space and deposit. Returns true on success. */
+  autoDeposit(pokemon: PokemonInstance): boolean {
+    for (let i = 0; i < this.boxes.length; i++) {
+      if (this.boxes[i].length < 30) {
+        this.boxes[i].push(pokemon);
+        return true;
+      }
+    }
+    return false; // all boxes full
+  }
+
+  /** Remove a Pokémon from the party by index (PC withdraw/deposit). */
+  removeFromParty(index: number): PokemonInstance | null {
+    if (index < 0 || index >= this.party.length || this.party.length <= 1) return null;
+    return this.party.splice(index, 1)[0];
+  }
+
   // Settings
   getSettings(): Record<string, string | number | boolean> { return this.settings; }
   getSetting(key: string): string | number | boolean | undefined { return this.settings[key]; }
@@ -134,6 +177,8 @@ export class GameManager {
       playtime: this.playtime,
       currentMap: this.currentMap,
       playerPosition: this.playerPosition,
+      boxes: this.boxes,
+      boxNames: this.boxNames,
       settings: this.settings,
     };
   }
@@ -152,6 +197,8 @@ export class GameManager {
     this.playtime = data.playtime;
     this.currentMap = data.currentMap;
     this.playerPosition = data.playerPosition;
+    if (data.boxes) this.boxes = data.boxes;
+    if (data.boxNames) this.boxNames = data.boxNames;
     if (data.settings) this.settings = { ...this.settings, ...data.settings };
   }
 
@@ -169,6 +216,7 @@ export class GameManager {
     };
     flags: Record<string, boolean>;
     trainersDefeated: string[];
+    boxes?: PokemonInstance[][];
   }): void {
     this.party = save.player.party;
     this.bag = save.player.bag;
@@ -186,5 +234,6 @@ export class GameManager {
       y: save.player.position.y,
       direction: save.player.position.direction,
     };
+    if (save.boxes) this.boxes = save.boxes;
   }
 }

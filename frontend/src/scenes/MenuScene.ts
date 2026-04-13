@@ -32,6 +32,12 @@ export class MenuScene extends Phaser.Scene {
       cornerRadius: 8,
     });
 
+    // Money display above menu panel
+    const gm = GameManager.getInstance();
+    this.add.text(panelX, panelY - panelH / 2 - 16, `₽ ${gm.getMoney()}`, {
+      ...FONTS.bodySmall, color: COLORS.textHighlight,
+    }).setOrigin(0.5);
+
     const startY = panelY - panelH / 2 + 32;
     this.menuItems = this.menuLabels.map((label, i) => {
       const item = this.add.text(panelX + 10, startY + i * 48, label, FONTS.menuItem)

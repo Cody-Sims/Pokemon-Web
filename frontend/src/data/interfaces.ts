@@ -5,6 +5,7 @@ export interface PokemonData {
   name: string;
   types: [PokemonType] | [PokemonType, PokemonType];
   baseStats: Stats;
+  abilities: string[];
   learnset: { level: number; moveId: string }[];
   evolutionChain: { pokemonId: number; condition: { type: 'level' | 'item' | 'trade'; level?: number; itemId?: string } }[];
   catchRate: number;
@@ -29,6 +30,7 @@ export interface ItemData {
   name: string;
   category: 'pokeball' | 'medicine' | 'battle' | 'key' | 'tm';
   description: string;
+  buyPrice?: number;
   effect: {
     type: 'heal-hp' | 'heal-status' | 'capture' | 'boost-stat' | 'key' | 'teach-move';
     amount?: number;
@@ -67,6 +69,8 @@ export interface PokemonInstance {
   statusTurns?: number;  // Remaining turns for sleep; toxic counter for bad-poison
   exp: number;
   friendship: number;
+  ability?: string;
+  heldItem?: string | null;
 }
 
 export interface MoveInstance {
@@ -89,4 +93,5 @@ export interface SaveData {
   };
   flags: Record<string, boolean>;
   trainersDefeated: string[];
+  boxes?: PokemonInstance[][];
 }
