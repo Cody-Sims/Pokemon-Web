@@ -29,6 +29,7 @@ export class SettingsScene extends Phaser.Scene {
   private controller?: MenuController;
   private settingTexts: { label: Phaser.GameObjects.Text; value: Phaser.GameObjects.Text }[] = [];
   private returnScene = 'TitleScene';
+  private isFullscreen = false;
 
   constructor() {
     super({ key: 'SettingsScene' });
