@@ -26,6 +26,9 @@ export class TouchControls {
   private joystick: VirtualJoystick;
   private joystickEnabled = true;
   private confirmPressed = false;
+  private cancelPressed = false;
+  private menuBtn!: Phaser.GameObjects.Container;
+  private readonly menuBtnSize = 36;
 
   // Tap tracking
   private trackedTouches = new Map<number, TrackedTouch>();
@@ -45,11 +48,16 @@ export class TouchControls {
     // Create joystick (activates on left 60% of screen)
     this.joystick = new VirtualJoystick(scene);
 
+    // Small menu button (top-right)
+    this.createMenuButton();
+    this.layoutMenuButton();
+
     // Bind tap detection on canvas for confirm
     this.bindTapDetection();
 
     // Re-layout on resize
     scene.scale.on('resize', () => {
+      this.layoutMenuButton();
       this.updateDOMLayout();
     });
 
@@ -81,6 +89,9 @@ export class TouchControls {
 
         // Don't count as tap if joystick was tracking this touch
         if (this.joystick.isTrackingPointer(t.identifier)) continue;
+
+        // Don't count as tap if it hit the menu button
+        if (this.isMenuButtonHit(tracked.startX, tracked.startY)) continue;
 
         const elapsed = performance.now() - tracked.startTime;
         const dx = t.clientX - tracked.startX;
@@ -136,8 +147,12 @@ export class TouchControls {
     return false;
   }
 
-  /** Poll and consume cancel press (no longer provided via touch). */
+  /** Poll and consume cancel/menu press. */
   consumeCancel(): boolean {
+    if (this.cancelPressed) {
+      this.cancelPressed = false;
+      return true;
+    }
     return false;
   }
 
@@ -282,6 +297,54 @@ export class TouchControls {
 
     zone.addEventListener('touchend', endHandler, { passive: true });
     zone.addEventListener('touchcancel', endHandler, { passive: true });
+  }
+
+  /** Check if a client-coordinate point hits the menu button area. */
+  private isMenuButtonHit(clientX: number, clientY: number): boolean {
+    const canvas = this.scene.game.canvas;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = this.scene.cameras.main.width / rect.width;
+    const scaleY = this.scene.cameras.main.height / rect.height;
+    const gx = (clientX - rect.left) * scaleX;
+    const gy = (clientY - rect.top) * scaleY;
+    const dx = gx - this.menuBtn.x;
+    const dy = gy - this.menuBtn.y;
+    const r = this.menuBtnSize / 2 + 10; // generous hit margin
+    return dx * dx + dy * dy <= r * r;
+  }
+
+  private createMenuButton(): void {
+    const r = this.menuBtnSize / 2;
+    const bg = this.scene.add.circle(0, 0, r, 0x334466, 0.55);
+    bg.setStrokeStyle(1.5, 0x5577aa, 0.6);
+
+    // Draw three horizontal bars (hamburger icon)
+    const barW = r * 0.9;
+    const barH = 2;
+    const gap = 5;
+    const bars = this.scene.add.graphics();
+    bars.fillStyle(0xffffff, 0.9);
+    for (let i = -1; i <= 1; i++) {
+      bars.fillRect(-barW, i * gap - barH / 2, barW * 2, barH);
+    }
+
+    this.menuBtn = this.scene.add.container(0, 0, [bg, bars])
+      .setSize(this.menuBtnSize, this.menuBtnSize);
+    this.container.add(this.menuBtn);
+
+    // Make interactive
+    bg.setInteractive({ useHandCursor: true });
+    bg.on('pointerdown', () => {
+      this.cancelPressed = true;
+      bg.fillAlpha = 0.85;
+    });
+    bg.on('pointerup', () => { bg.fillAlpha = 0.55; });
+    bg.on('pointerout', () => { bg.fillAlpha = 0.55; });
+  }
+
+  private layoutMenuButton(): void {
+    const { width } = this.scene.cameras.main;
+    this.menuBtn.setPosition(width - this.menuBtnSize / 2 - 12, this.menuBtnSize / 2 + 12);
   }
 
   destroy(): void {

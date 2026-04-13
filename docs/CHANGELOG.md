@@ -9,6 +9,7 @@ All notable changes to the Pokemon Web project.
 - **Mobile controls: replaced A/B buttons with joystick + tap-to-confirm**. Removed the A and B action buttons from both the in-canvas overlay and the DOM control bar. Tapping anywhere on screen now acts as spacebar/confirm for dialog advancement and world interactions. The virtual joystick remains for movement (activates on left 60% of screen). Added SPACE as a confirm key in InputManager alongside ENTER. Updated overworld HUD hints for mobile.
 
 ### Added
+- **Small menu button for mobile**: Added a hamburger-icon button (top-right corner) on touch devices that triggers cancel/menu, restoring the ability to open the menu on mobile.
 - **Extended tileset**: Expanded tileset.png from 70 to 110 frames, providing textured tiles for all Phase 4.5 biome types (Coastal, Volcanic, Mine, Industrial, Forest, Electric, Ghost/Ruin, Dragon, Synthesis HQ, League)
 - **24 distinct NPC sprite atlases**: Generated individual character sprite atlases from M_01-M_12 and F_01-F_12 source sheets: npc-mom, npc-nurse, npc-professor, npc-scientist, npc-hiker, npc-swimmer, npc-sailor, npc-oldman, npc-lass, npc-male-1 through npc-male-6, npc-female-1 through npc-female-9
 - **NPC sprite diversity**: Updated 175+ NPC and trainer textureKey/spriteKey assignments across all maps and trainer-data.ts (nurses, professors, gym leaders, quest givers, route trainers, dungeon NPCs all now have visually distinct sprites)
