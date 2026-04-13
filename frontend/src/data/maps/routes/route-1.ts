@@ -2,8 +2,8 @@ import { MapDefinition, parseMap } from '../shared';
 
 const route1Ground = parseMap([
   // 01234567890123456789
-  'TTTTTTT.PP.TTTTTTTTT', // 0  north exit to Viridian
-  'TFFFF...PP...FFFFF.T', // 1  fence: Viridian boundary
+  'FFFFFFFF.PP.FFFFFFFF', // 0  fence border to Viridian
+  'F........PP........F', // 1  open entry from Viridian
   'T.......PP.........T', // 2
   // ═══ NORTH ZONE: dense meadows flanking path ═══
   'T.GGGGG.PP..GGGGGG.T', // 3  thick grass both sides
