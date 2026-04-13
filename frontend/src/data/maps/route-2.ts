@@ -8,12 +8,12 @@ const route2Ground = parseMap([
   'T..GGG...PP...GGG..T', // 3
   'T..GGG...PP...GGG..T', // 4
   'T........PP........T', // 5
-  'T....PPPPPPPPPP.....T', // 6
+  'T....PPPPPPPPPP....T', // 6
   'T....PP............T', // 7
   'T....PP....GGG.....T', // 8
   'T....PP....GGG.....T', // 9
   'T....PP............T', // 10
-  'T....PPPPPPPPPP.....T', // 11
+  'T....PPPPPPPPPP....T', // 11
   'T........PP........T', // 12
   'T..GG....PP....GG..T', // 13
   'T..GG....PP....GG..T', // 14

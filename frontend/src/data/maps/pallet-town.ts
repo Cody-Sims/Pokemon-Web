@@ -1,27 +1,27 @@
 import { MapDefinition, parseMap } from './shared';
 
 const palletGround = parseMap([
-  // 0         1         2
-  // 0123456789012345678901234
-  'TTTTTTTTTTTTTPTTTTTTTTTTTT', // 0  - top border, north exit
-  'T...........PP...........T', // 1
-  'T..RRRRR....PP....RRRRR..T', // 2  - roofs
-  'T..HHHHH....PP....HHHHH..T', // 3  - walls
-  'T..HHDHH....PP....HHDHH..T', // 4  - doors
-  'T...PP......PP......PP...T', // 5  - paths to doors
-  'T...PP..PPPPPPPPPPP.PP...T', // 6  - main horizontal path
-  'T...........PP...........T', // 7
-  'T..f........PP........f..T', // 8
-  'T...........PP...........T', // 9
-  'T.....BBBBBBBBBBBBB.....T', // 10 - Oak's Lab roof
-  'T.....LLLLLLLLLLLLL.....T', // 11 - Lab walls
-  'T.....LLLLLELLLLLL......T', // 12 - Lab door
-  'T.........PPPP...........T', // 13
-  'T.........PPPP...........T', // 14
-  'T..GG.....PPPP.....GG...T', // 15
+  //                   1111111111222222
+  // col: 0123456789...0123456789012345
+  'TTTTTTTTTTTTPPTTTTTTTTTTT', // 0  - top border, north exit (PP at 12-13)
+  'T...........PP..........T', // 1
+  'T..RRRRR....PP....RRRRR.T', // 2  - roofs (3-7 and 18-22)
+  'T..HHHHH....PP....HHHHH.T', // 3  - walls
+  'T..HHDHH....PP....HHDHH.T', // 4  - doors (D at 5 and 20)
+  'T....P......PP......P...T', // 5  - paths from doors
+  'T....PPPPPPPPPPPPPPPP...T', // 6  - horizontal connecting path (5-20)
+  'T...........PP..........T', // 7
+  'T..f........PP........f.T', // 8  - flowers
+  'T...........PP..........T', // 9
+  'T.....BBBBBBBBBBBBB.....T', // 10 - Lab roof (6-18)
+  'T.....LLLLLLLLLLLLL.....T', // 11 - Lab walls (6-18)
+  'T.....LLLLLELLLLLLL.....T', // 12 - Lab door (E at 11, walls 6-18)
+  'T.........PPPP..........T', // 13 - path from lab (10-13)
+  'T.........PPPP..........T', // 14
+  'T..GG.....PPPP.....GG...T', // 15 - grass patches
   'T..GG.....PPPP.....GG...T', // 16
-  'T..GG..f..PPPP..f..GG...T', // 17
-  'T.........PPPP...........T', // 18
+  'T..GG..f..PPPP.f...GG...T', // 17 - grass + flowers
+  'T.........PPPP..........T', // 18
   'TTTTTTTTTTTTTTTTTTTTTTTTT', // 19 - bottom border
 ]);
 

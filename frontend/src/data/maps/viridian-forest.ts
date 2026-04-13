@@ -2,46 +2,46 @@ import { MapDefinition, parseMap } from './shared';
 
 const forestGround = parseMap([
   // 0123456789012345678901234
-  'XXXXXXXXXPPXXXXXXXXXXXXX', // 0  - north exit to Pewter side
-  'X.........PP...........X', // 1
-  'X..GGG....PP.....GGG..X', // 2
-  'X..GGG....PP.....GGG..X', // 3
-  'X..GGG....PP.....GGG..X', // 4
-  'X.........PP...........X', // 5
-  'X....PPPPPPPPPPP.......X', // 6
-  'X....PP................X', // 7
-  'X....PP..GGG...GGG....X', // 8
-  'X....PP..GGG...GGG....X', // 9
-  'X....PP..GGG...GGG....X', // 10
-  'X....PP................X', // 11
-  'X....PPPPPPPPPPP.......X', // 12
-  'X.........PP...........X', // 13
-  'X..GGG....PP....GGG...X', // 14
-  'X..GGG....PP....GGG...X', // 15
-  'X..GGG....PP....GGG...X', // 16
-  'X.........PP...........X', // 17
-  'X.........PP...........X', // 18
-  'X....PPPPPPPPPPP.......X', // 19
-  'X....PP................X', // 20
-  'X....PP.....GGG........X', // 21
-  'X....PP.....GGG........X', // 22
-  'X....PP.....GGG........X', // 23
-  'X....PPPPPPPPPPP.......X', // 24
-  'X.........PP...........X', // 25
-  'X..GGG....PP.....GGG..X', // 26
-  'X..GGG....PP.....GGG..X', // 27
-  'X..GGG....PP.....GGG..X', // 28
-  'X.........PP...........X', // 29
-  'X.........PP...........X', // 30
-  'X...GGG...PP...GGG....X', // 31
-  'X...GGG...PP...GGG....X', // 32
-  'X...GGG...PP...GGG....X', // 33
-  'X.........PP...........X', // 34
-  'X..f......PP......f...X', // 35
-  'X.........PP...........X', // 36
-  'X.........PP...........X', // 37
-  'X.........PP...........X', // 38
-  'XXXXXXXXXPPXXXXXXXXXXXXX', // 39 - south exit to Route 2
+  'XXXXXXXXXPPXXXXXXXXXXXX.X', // 0  - north exit to Pewter side
+  'X.........PP............X', // 1
+  'X..GGG....PP.....GGG....X', // 2
+  'X..GGG....PP.....GGG....X', // 3
+  'X..GGG....PP.....GGG....X', // 4
+  'X.........PP............X', // 5
+  'X....PPPPPPPPPPP........X', // 6
+  'X....PP.................X', // 7
+  'X....PP..GGG...GGG......X', // 8
+  'X....PP..GGG...GGG......X', // 9
+  'X....PP..GGG...GGG......X', // 10
+  'X....PP.................X', // 11
+  'X....PPPPPPPPPPP........X', // 12
+  'X.........PP............X', // 13
+  'X..GGG....PP....GGG.....X', // 14
+  'X..GGG....PP....GGG.....X', // 15
+  'X..GGG....PP....GGG.....X', // 16
+  'X.........PP............X', // 17
+  'X.........PP............X', // 18
+  'X....PPPPPPPPPPP........X', // 19
+  'X....PP.................X', // 20
+  'X....PP.....GGG.........X', // 21
+  'X....PP.....GGG.........X', // 22
+  'X....PP.....GGG.........X', // 23
+  'X....PPPPPPPPPPP........X', // 24
+  'X.........PP............X', // 25
+  'X..GGG....PP.....GGG....X', // 26
+  'X..GGG....PP.....GGG....X', // 27
+  'X..GGG....PP.....GGG....X', // 28
+  'X.........PP............X', // 29
+  'X.........PP............X', // 30
+  'X...GGG...PP...GGG......X', // 31
+  'X...GGG...PP...GGG......X', // 32
+  'X...GGG...PP...GGG......X', // 33
+  'X.........PP............X', // 34
+  'X..f......PP......f.....X', // 35
+  'X.........PP............X', // 36
+  'X.........PP............X', // 37
+  'X.........PP............X', // 38
+  'XXXXXXXXXPPXXXXXXXXXXXX.X', // 39 - south exit to Route 2
 ]);
 
 export const viridianForest: MapDefinition = {

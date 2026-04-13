@@ -2,36 +2,36 @@ import { MapDefinition, parseMap } from './shared';
 
 const viridianGround = parseMap([
   // 012345678901234567890123456789
-  'TTTTTTTTTTTTTTPPTTTTTTTTTTTTTTTT', // 0  - north exit to Route 2
-  'T..............PP..............T', // 1
-  'T..RRRRR.......PP.......RRRRR.T', // 2  - houses
-  'T..HHHHH.......PP.......HHHHH.T', // 3
-  'T..HHDHH.......PP.......HHDHH.T', // 4
-  'T....PP........PP........PP...T', // 5
-  'T..PPPPPPPPPPPPPPPPPPPPPPPP...T', // 6  - main east-west road
-  'T..PP..........................T', // 7
-  'T..PP....CCCCCC....MMMMMM.....T', // 8  - PokéCenter roof / Mart roof
-  'T..PP....cccccc....mmmmmm.....T', // 9  - PokéCenter wall / Mart wall
-  'T..PP....cceccc....mmnmmm.....T', // 10 - PokéCenter door / Mart door
-  'T..PP......PP........PP.......T', // 11
-  'T..PP......PP........PP.......T', // 12
-  'T..PPPPPPPPPPPPPPPPPPPPPPPP...T', // 13 - another east-west road
-  'T..PP..........................T', // 14
+  'TTTTTTTTTTTTTTPPTTTTTTTTTTTTTT', // 0  - north exit to Route 2
+  'T..............PP............T', // 1
+  'T..RRRRR.......PP.......RRRRRT', // 2  - houses
+  'T..HHHHH.......PP.......HHHHHT', // 3
+  'T..HHDHH.......PP.......HHDHHT', // 4
+  'T....PP........PP........PP..T', // 5
+  'T..PPPPPPPPPPPPPPPPPPPPPPPP..T', // 6  - main east-west road
+  'T..PP........................T', // 7
+  'T..PP....CCCCCC....MMMMMM....T', // 8  - PokéCenter roof / Mart roof
+  'T..PP....cccccc....mmmmmm....T', // 9  - PokéCenter wall / Mart wall
+  'T..PP....cceccc....mmnmmm....T', // 10 - PokéCenter door / Mart door
+  'T..PP......PP........PP......T', // 11
+  'T..PP......PP........PP......T', // 12
+  'T..PPPPPPPPPPPPPPPPPPPPPPPP..T', // 13 - another east-west road
+  'T..PP........................T', // 14
   'T..PP....AAAAAA..............T', // 15 - Gym roof
   'T..PP....gggggg..............T', // 16 - Gym wall
   'T..PP....ggaggg..............T', // 17 - Gym door
   'T..PP......PP................T', // 18
   'T..PP......PP.....f....f.....T', // 19
   'T..PPPPPPPPPP................T', // 20
-  'T..PP..........................T', // 21
+  'T..PP........................T', // 21
   'T..PP.....f........f.........T', // 22
-  'T..PP..........................T', // 23
+  'T..PP........................T', // 23
   'T..PP.........WWWWW..........T', // 24 - pond
   'T..PP.........WWWWW..........T', // 25
   'T..PP.........WWWWW..........T', // 26
-  'T..PP..........................T', // 27
-  'T..PP..........................T', // 28
-  'TTTTTTTTTTTTTTPPTTTTTTTTTTTTTTTT', // 29 - south exit to Route 1
+  'T..PP........................T', // 27
+  'T..PP........................T', // 28
+  'TTTTTTTTTTTTTTPPTTTTTTTTTTTTTT', // 29 - south exit to Route 1
 ]);
 
 export const viridianCity: MapDefinition = {
