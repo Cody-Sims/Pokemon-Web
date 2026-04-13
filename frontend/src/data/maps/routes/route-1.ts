@@ -2,46 +2,51 @@ import { MapDefinition, parseMap } from '../shared';
 
 const route1Ground = parseMap([
   // 01234567890123456789
-  'TTTTTTT.PP.TTTTTTTTT', // 0  - north exit to Viridian
-  'TFFFF...PP...FFFFF.T', // 1  - fence: Viridian City boundary
+  'TTTTTTT.PP.TTTTTTTTT', // 0  north exit to Viridian
+  'TFFFF...PP...FFFFF.T', // 1  fence: Viridian boundary
   'T.......PP.........T', // 2
-  'T..GG...PP..GGG..%.T', // 3  - asymmetric grass, bush
-  'T.GGGG.~PP.....GG..T', // 4  - rock off-path
-  'T..GGG..PP.........T', // 5
-  'T.......PP.....%...T', // 6
-  'T....PPPPP.........T', // 7  - path bends west
-  'T....PP....GG......T', // 8
-  'T....PP....JJJJJJ..T', // 9  - ledge shortcut #1
-  'T.GG.PP........GGG.T', // 10
-  'T.GGGPP.........GG.T', // 11
-  'T....PP..~...GGG...T', // 12 - rock near trainer
-  'T....PP....GG......T', // 13
-  'T..%.PP.........%..T', // 14 - bushes flanking route
-  'T....PPPPP.........T', // 15 - path bends east
+  // ═══ NORTH ZONE: dense meadows flanking path ═══
+  'T.GGGGG.PP..GGGGGG.T', // 3  thick grass both sides
+  'T.GGGGG.PP..GGGGGG.T', // 4  contiguous meadow
+  'T.GGGGG~PP..GGGGGG.T', // 5  rock marks west edge
+  'T..GGG..PP...GGGGG.T', // 6  grass thins toward path
+  'T....PPPPP....GGG..T', // 7  path bends west
+  'T....PP...........%T', // 8  bush guards east edge
+  // ═══ LEDGE ZONE: shortcut + east meadow ═══
+  'T....PP....JJJJJJ..T', // 9  ledge shortcut #1
+  'T....PP............T', // 10
+  'T..%.PP............T', // 11 bush flanks path
+  'T....PP...GGGGGG...T', // 12 east meadow starts
+  'T....PP...GGGGGG...T', // 13 contiguous block
+  'T....PP...GGGGGG...T', // 14 solid meadow
+  'T....PPPPP..GGG....T', // 15 path bends east
+  // ═══ FLOWER CLEARING: Rook rest area ═══
   'T.......PP.........T', // 16
-  'T.......PP.........T', // 17
-  'T..ff...PP.........T', // 18 - flower garden begins
-  'T.ffff..PP..ff.....T', // 19 - flowers both sides
-  'T..fff..PP.fff.%...T', // 20 - flower garden + bush
-  'T...ff..PP..ff.....T', // 21 - flowers taper off
-  'T.......PP.......~.T', // 22 - rock
-  'T.GGGG..PP.....GG..T', // 23
-  'T....GG.PP..GG.....T', // 24
-  'T.......PPJJJJJJ...T', // 25 - ledge shortcut #2
-  'T...PPPPPP.........T', // 26 - path bends west
-  'T...PP.......GGG.%.T', // 27 - bush
-  'T...PP....GGG......T', // 28
-  'T.G.PP..~....GG....T', // 29 - grass + rock
-  'TGGGPP.........GG..T', // 30 - dense grass edge
-  'T.GGPP.....GGGG....T', // 31
-  'T...PP.........GG..T', // 32
-  'T...PPPPPP.........T', // 33 - path bends east
-  'T.......PP.........T', // 34
-  'T.......PP......%..T', // 35 - bush near Pallet
-  'T..GG...PP...GG....T', // 36
-  'T...GG..PP.........T', // 37
+  'T..ff...PP.........T', // 17 wildflowers begin
+  'T.ffff..PP...fff...T', // 18 flower beds both sides
+  'T.ffff..PP..ffff...T', // 19 lush heart of clearing
+  'T..ff...PP...fff...T', // 20 flowers taper
+  'T.......PP.........T', // 21 open rest area
+  'T.......PP.......~.T', // 22 lone rock
+  // ═══ SOUTH MEADOWS: big meadow, second ledge ═══
+  'T.GGGGG.PP.........T', // 23 west meadow patch
+  'T.GGGGG.PP....GG...T', // 24 + small east grass
+  'T.......PPJJJJJJ...T', // 25 ledge shortcut #2
+  'T...PPPPPP.........T', // 26 path bends west
+  'T...PP.............T', // 27
+  'T...PP..GGGGGGG..%.T', // 28 large east meadow
+  'T...PP..GGGGGGG....T', // 29 contiguous block
+  'T...PP..GGGGGGG..~.T', // 30 rock at meadow corner
+  'T...PP..GGGGGGG....T', // 31
+  'T...PPPPPP.........T', // 32 path bends east
+  // ═══ SOUTH: open approach to Pallet ═══
+  'T.......PP.........T', // 33
+  'T..ff...PP.....f...T', // 34 sparse flowers
+  'T.......PP.........T', // 35
+  'T.......PP.........T', // 36
+  'T.......PP.........T', // 37
   'T.......PP.........T', // 38
-  'TTTTTTT.PP.TTTTTTTTT', // 39 - south exit to Pallet
+  'TTTTTTT.PP.TTTTTTTTT', // 39 south exit to Pallet
 ]);
 
 export const route1: MapDefinition = {
@@ -62,7 +67,7 @@ export const route1: MapDefinition = {
     {
       id: 'route1-npc-1',
       tileX: 14,
-      tileY: 6,
+      tileY: 2,
       textureKey: 'generic-trainer',
       facing: 'left',
       dialogue: [
@@ -72,8 +77,8 @@ export const route1: MapDefinition = {
     },
     {
       id: 'route1-npc-2',
-      tileX: 4,
-      tileY: 24,
+      tileX: 3,
+      tileY: 23,
       textureKey: 'npc-female-3',
       facing: 'right',
       dialogue: [
@@ -85,7 +90,7 @@ export const route1: MapDefinition = {
     {
       id: 'route1-rook',
       tileX: 12,
-      tileY: 20,
+      tileY: 21,
       textureKey: 'npc-male-6',
       facing: 'left',
       dialogue: [
@@ -112,8 +117,8 @@ export const route1: MapDefinition = {
     {
       id: 'route1-youngster',
       trainerId: 'youngster-1',
-      tileX: 13,
-      tileY: 18,
+      tileX: 14,
+      tileY: 19,
       textureKey: 'npc-male-2',
       facing: 'left',
       lineOfSight: 4,
@@ -121,17 +126,17 @@ export const route1: MapDefinition = {
     {
       id: 'route1-lass',
       trainerId: 'lass-1',
-      tileX: 3,
-      tileY: 12,
+      tileX: 14,
+      tileY: 13,
       textureKey: 'npc-lass',
-      facing: 'right',
+      facing: 'left',
       lineOfSight: 4,
     },
     {
       id: 'route1-youngster-2',
       trainerId: 'youngster-2',
-      tileX: 8,
-      tileY: 28,
+      tileX: 12,
+      tileY: 29,
       textureKey: 'npc-male-2',
       facing: 'left',
       lineOfSight: 3,
