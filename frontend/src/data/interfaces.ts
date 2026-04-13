@@ -82,6 +82,8 @@ export interface MoveInstance {
 export interface SaveData {
   version: number;
   timestamp: number;
+  difficulty?: string;
+  nuzlockeEncountered?: string[];
   player: {
     name: string;
     position: { mapKey: string; x: number; y: number; direction: string };

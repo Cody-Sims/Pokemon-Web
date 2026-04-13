@@ -38,6 +38,8 @@ export class SaveManager {
       flags: gm.getFlags(),
       trainersDefeated: gm.getTrainersDefeated(),
       boxes: gm.getBoxes(),
+      difficulty: gm.getDifficulty(),
+      nuzlockeEncountered: gm.getNuzlockeEncountered(),
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
   }

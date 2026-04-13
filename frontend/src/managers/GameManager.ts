@@ -1,4 +1,5 @@
 import { PokemonInstance } from '@data/interfaces';
+import { DifficultyMode, DifficultyConfig, DIFFICULTY_CONFIGS } from '@data/difficulty';
 
 /** Central game state: party, badges, playtime, flags. */
 export class GameManager {
@@ -17,6 +18,8 @@ export class GameManager {
   private playerPosition = { x: 7, y: 10, direction: 'down' as string };
   private boxes: PokemonInstance[][] = Array.from({ length: 12 }, () => []);
   private boxNames: string[] = Array.from({ length: 12 }, (_, i) => `Box ${i + 1}`);
+  private difficulty: DifficultyMode = 'classic';
+  private nuzlockeEncountered: string[] = []; // route keys where first encounter already happened
   private settings: Record<string, string | number | boolean> = {
     textSpeed: 'medium',
     musicVolume: 0.5,
@@ -123,6 +126,18 @@ export class GameManager {
   getPlaytime(): number { return this.playtime; }
   addPlaytime(seconds: number): void { this.playtime += seconds; }
 
+  // Difficulty
+  getDifficulty(): DifficultyMode { return this.difficulty; }
+  setDifficulty(mode: DifficultyMode): void { this.difficulty = mode; }
+  getDifficultyConfig(): DifficultyConfig { return DIFFICULTY_CONFIGS[this.difficulty]; }
+
+  // Nuzlocke tracking
+  getNuzlockeEncountered(): string[] { return this.nuzlockeEncountered; }
+  hasNuzlockeEncountered(routeKey: string): boolean { return this.nuzlockeEncountered.includes(routeKey); }
+  markNuzlockeEncountered(routeKey: string): void {
+    if (!this.nuzlockeEncountered.includes(routeKey)) this.nuzlockeEncountered.push(routeKey);
+  }
+
   // PC Boxes
   getBoxes(): PokemonInstance[][] { return this.boxes; }
   getBox(index: number): PokemonInstance[] { return this.boxes[index] ?? []; }
@@ -183,6 +198,8 @@ export class GameManager {
       boxes: this.boxes,
       boxNames: this.boxNames,
       settings: this.settings,
+      difficulty: this.difficulty,
+      nuzlockeEncountered: this.nuzlockeEncountered,
     };
   }
 
@@ -203,6 +220,8 @@ export class GameManager {
     if (data.boxes) this.boxes = data.boxes;
     if (data.boxNames) this.boxNames = data.boxNames;
     if (data.settings) this.settings = { ...this.settings, ...data.settings };
+    if (data.difficulty) this.difficulty = data.difficulty as DifficultyMode;
+    if (data.nuzlockeEncountered) this.nuzlockeEncountered = data.nuzlockeEncountered;
   }
 
   /** Restore state from a SaveData object (from localStorage). */
@@ -220,6 +239,8 @@ export class GameManager {
     flags: Record<string, boolean>;
     trainersDefeated: string[];
     boxes?: PokemonInstance[][];
+    difficulty?: string;
+    nuzlockeEncountered?: string[];
   }): void {
     this.party = save.player.party;
     this.bag = save.player.bag;
@@ -238,5 +259,7 @@ export class GameManager {
       direction: save.player.position.direction,
     };
     if (save.boxes) this.boxes = save.boxes;
+    if (save.difficulty) this.difficulty = save.difficulty as DifficultyMode;
+    if (save.nuzlockeEncountered) this.nuzlockeEncountered = save.nuzlockeEncountered;
   }
 }

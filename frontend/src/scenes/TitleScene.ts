@@ -5,6 +5,8 @@ import { COLORS, FONTS } from '@ui/theme';
 import { TouchControls } from '@ui/TouchControls';
 import { BGM, SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/ConfirmBox';
+import { GameManager } from '@managers/GameManager';
+import { DifficultyMode, DIFFICULTY_CONFIGS } from '@data/difficulty';
 
 export class TitleScene extends Phaser.Scene {
   private cursor!: number;
@@ -106,7 +108,7 @@ export class TitleScene extends Phaser.Scene {
     const label = this.menuItems[this.cursor].text;
     switch (label) {
       case 'New Game':
-        this.scene.start('OverworldScene');
+        this.showDifficultySelect();
         break;
       case 'Continue': {
         const saveData = SaveManager.getInstance().load();
@@ -137,5 +139,96 @@ export class TitleScene extends Phaser.Scene {
         );
         break;
     }
+  }
+
+  private showDifficultySelect(): void {
+    const { width, height } = this.cameras.main;
+    const modes: DifficultyMode[] = ['classic', 'hard', 'nuzlocke'];
+
+    // Dim background
+    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6).setDepth(50);
+
+    // Title
+    const title = this.add.text(width / 2, height * 0.25, 'SELECT DIFFICULTY', {
+      ...FONTS.heading, fontSize: '24px',
+    }).setOrigin(0.5).setDepth(51);
+
+    // Difficulty options
+    let diffCursor = 0;
+    const diffItems = modes.map((mode, i) => {
+      const cfg = DIFFICULTY_CONFIGS[mode];
+      const label = this.add.text(width / 2, height * 0.38 + i * 60, cfg.name, {
+        ...FONTS.menuItem, fontSize: '20px',
+      }).setOrigin(0.5).setDepth(51).setInteractive({ useHandCursor: true });
+
+      label.on('pointerover', () => { diffCursor = i; updateDiff(); });
+      label.on('pointerdown', () => { diffCursor = i; confirmDiff(); });
+      return label;
+    });
+
+    const desc = this.add.text(width / 2, height * 0.75, DIFFICULTY_CONFIGS[modes[0]].description, {
+      ...FONTS.caption, fontSize: '14px', color: COLORS.textDim, wordWrap: { width: 400 },
+    }).setOrigin(0.5).setDepth(51);
+
+    const diffArrow = this.add.text(0, 0, '▸', {
+      ...FONTS.menuItem, fontSize: '20px', color: COLORS.textHighlight,
+    }).setDepth(51);
+
+    const updateDiff = () => {
+      diffItems.forEach((item, i) => {
+        item.setColor(i === diffCursor ? COLORS.textHighlight : COLORS.textWhite);
+      });
+      const sel = diffItems[diffCursor];
+      diffArrow.setPosition(sel.x - sel.width / 2 - 20, sel.y - 10);
+      desc.setText(DIFFICULTY_CONFIGS[modes[diffCursor]].description);
+    };
+    updateDiff();
+
+    const confirmDiff = () => {
+      const gm = GameManager.getInstance();
+      gm.setDifficulty(modes[diffCursor]);
+      cleanup();
+      this.scene.start('OverworldScene');
+    };
+
+    const cancelDiff = () => {
+      cleanup();
+    };
+
+    const cleanup = () => {
+      this.input.keyboard!.off('keydown-UP', onUp);
+      this.input.keyboard!.off('keydown-DOWN', onDown);
+      this.input.keyboard!.off('keydown-ENTER', onEnter);
+      this.input.keyboard!.off('keydown-ESC', onEsc);
+      overlay.destroy();
+      title.destroy();
+      diffItems.forEach(i => i.destroy());
+      desc.destroy();
+      diffArrow.destroy();
+    };
+
+    const onUp = () => {
+      diffCursor = (diffCursor - 1 + modes.length) % modes.length;
+      updateDiff();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
+    };
+    const onDown = () => {
+      diffCursor = (diffCursor + 1) % modes.length;
+      updateDiff();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
+    };
+    const onEnter = () => {
+      AudioManager.getInstance().playSFX(SFX.CONFIRM);
+      confirmDiff();
+    };
+    const onEsc = () => {
+      AudioManager.getInstance().playSFX(SFX.CANCEL);
+      cancelDiff();
+    };
+
+    this.input.keyboard!.on('keydown-UP', onUp);
+    this.input.keyboard!.on('keydown-DOWN', onDown);
+    this.input.keyboard!.on('keydown-ENTER', onEnter);
+    this.input.keyboard!.on('keydown-ESC', onEsc);
   }
 }
