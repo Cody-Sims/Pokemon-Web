@@ -3,11 +3,11 @@ import { MapDefinition, parseMap } from './shared';
 const palletGround = parseMap([
   // col: 0         1         2  4
   //      0123456789012345678901234
-  'TTTTTTTTTTTPPPTTTTTTTTTTT', // 0  - north exit (PPP at 11-13)
+  'TTTTTTTTTTTPPPTTTTTTTTTTT', // 0  - north exit
   'T..........PPP..........T', // 1
-  'T.RRRRRRR..PPP..RRRRRRR.T', // 2  - roofs
-  'T.HHH&HHH..PPP..HHH&HHH.T', // 3  - walls with windows
-  'T.HHHDHHH..PPP..HHHDHHH.T', // 4  - doors + path connecting
+  'T.RRRRRRR..PPP..RRRRRRR.T', // 2  - roofs (7 wide)
+  'T.HHH&HHH..PPP..HH&HHHH.T', // 3  - walls with windows
+  'T.HHHDHHHPPPPPPPHHHDHHH.T', // 4  - doors + path connecting
   'T....PP....PPP....PP....T', // 5  - paths from doors
   'T....PPPPPPPPPPPPPPPPP..T', // 6  - main horizontal path
   'T..........PPP..........T', // 7
@@ -15,7 +15,7 @@ const palletGround = parseMap([
   'T..........PPP..........T', // 9
   'T....BBBBBBBBBBBBBBB....T', // 10 - Lab roof
   'T....LLLLLLLLLLLLLLL....T', // 11 - Lab walls
-  'T....LLLLLLLELLLLL......T', // 12 - Lab door (E at col 11)
+  'T....LLLLLLLELLLLLLL....T', // 12 - Lab door (E at col 12)
   'T..........PPP..........T', // 13 - path from lab
   'T.........PPPPP.........T', // 14
   'T..GG.....PPPPP.....GG..T', // 15 - grass patches
@@ -80,6 +80,6 @@ export const palletTown: MapDefinition = {
     'player-house': { x: 5, y: 5, direction: 'down' },
     'from-player-house': { x: 5, y: 5, direction: 'down' },
     'from-rival-house': { x: 19, y: 5, direction: 'down' },
-    'from-oak-lab': { x: 11, y: 13, direction: 'down' },
+    'from-oak-lab': { x: 12, y: 13, direction: 'down' },
   },
 };

@@ -20,6 +20,7 @@ import {
   Tile,
   SOLID_TILES,
   OVERLAY_BASE,
+  FOREGROUND_TILES,
 } from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
@@ -213,7 +214,11 @@ export class OverworldScene extends Phaser.Scene {
         // Draw the tile (or overlay) itself
         const sprite = this.add.image(px, py, 'tileset', tile);
         sprite.setScale(scale);
-        sprite.setDepth(baseTile !== undefined ? 0.5 : 0);
+        if (baseTile !== undefined) {
+          // Foreground overlays render ABOVE the player (tall grass, trees)
+          // Ground overlays render BELOW the player (doors, flowers, mats, etc.)
+          sprite.setDepth(FOREGROUND_TILES.has(tile) ? 2 : 0.5);
+        }
       }
     }
   }

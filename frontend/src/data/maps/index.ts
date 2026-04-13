@@ -6,6 +6,7 @@ export {
   TILE_COLORS,
   SOLID_TILES,
   OVERLAY_BASE,
+  FOREGROUND_TILES,
   parseMap,
   type NpcSpawn,
   type TrainerSpawn,

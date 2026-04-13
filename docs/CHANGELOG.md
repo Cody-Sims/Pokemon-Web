@@ -6,6 +6,19 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Fixed
+- **Can't enter Oak's Lab**: Lab door 'E' in Pallet Town was at col 12 but warp expected col 11. Fixed lab door row to place E at col 11. Also fixed row 3 (walls+windows) which was 27 chars instead of 25 due to window char insertion error.
+- **Player renders above tall grass**: Added `FOREGROUND_TILES` set for tiles that should render ABOVE the player (depth 2). Tall grass, trees, dense trees, and biome tree variants now draw in front of the player sprite, creating the classic Pokemon "walking through grass" visual.
+- **Chair not blocking movement**: Added CHAIR and PLANT to SOLID_TILES so they properly block player movement.
+- **Overlay depth system**: Ground overlays (doors, flowers, signs, mats, rugs, furniture) render at depth 0.5 (below player at depth 1). Foreground overlays (tall grass, trees) render at depth 2 (above player).
+
+### Added
+- **Comprehensive storyline bible** (`docs/storyline.md`): Full narrative document with 4-act structure, detailed character profiles (Kael, Marina, Rook, Aldric, Dr. Vex, Zara Lux), 8 Gym Leaders, Elite Four, 12 side quests with rewards, NPC interaction tables for every town, post-game content (Shattered Isles, legendaries, Father's Trail quest), and dialogue tone guide.
+
+### Changed
+- **Updated development plan** (`docs/plan.md`): Expanded storyline summary with character list and side quest references; updated Phase 3.6 (6 Kael encounters + 4 Marina encounters), Phase 3.7 (12 side quests); expanded Phase 5 with new towns (Verdantia Village, Voltara City), boss battles, and NPC quests; rewrote Phase 8 with full Act 3/4/post-game breakdown.
+
+## [2026-04-12]
+### Fixed
 - **House windows displaying as water**: Uppercase 'W' in Pallet Town house walls mapped to WATER tile. Added HOUSE_WINDOW (60), LAB_WINDOW (61), CENTER_WINDOW (62) exterior window tiles. Fixed Pallet Town, Viridian City, Pewter City maps.
 - **Doors, trees, flowers with opaque backgrounds**: Made tree, flower, and all 5 door tiles (house/lab/center/mart/gym) use transparent backgrounds. Added doors to OVERLAY_BASE so their wall type renders underneath. Trees show grass through trunk gaps, flowers sit on grass, doors show wall texture behind them.
 - Move category indicators (P/S/St) and type color dots no longer linger on screen after closing the move menu

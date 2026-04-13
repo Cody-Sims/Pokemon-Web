@@ -148,6 +148,19 @@ export const OVERLAY_BASE: Partial<Record<number, number>> = {
   [Tile.PALM_TREE]:     Tile.SAND,
 };
 
+/**
+ * Overlay tiles that render ABOVE the player (foreground layer).
+ * The player walks "under" these — e.g., tall grass blades cover feet.
+ */
+export const FOREGROUND_TILES = new Set<number>([
+  Tile.TALL_GRASS,
+  Tile.TREE,
+  Tile.DENSE_TREE,
+  Tile.PINE_TREE,
+  Tile.AUTUMN_TREE,
+  Tile.PALM_TREE,
+]);
+
 // Colors for each tile type
 export const TILE_COLORS: Record<number, number> = {
   [Tile.GRASS]:      0x5a9e3e,
@@ -235,6 +248,7 @@ export const SOLID_TILES = new Set<number>([
   // Interior solid tiles
   Tile.INDOOR_WALL, Tile.COUNTER, Tile.TABLE, Tile.BOOKSHELF,
   Tile.PC_TILE, Tile.HEAL_MACHINE, Tile.WINDOW, Tile.GYM_STATUE,
+  Tile.CHAIR, Tile.PLANT,
   // New solid tiles
   Tile.TV, Tile.BED, Tile.STAIRS, Tile.PINK_COUNTER, Tile.MART_SHELF,
   Tile.LAB_MACHINE, Tile.DISPLAY_CASE, Tile.FOSSIL, Tile.BOULDER,
