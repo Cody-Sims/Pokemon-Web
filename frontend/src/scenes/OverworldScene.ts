@@ -412,6 +412,8 @@ export class OverworldScene extends Phaser.Scene {
               enemyPokemon: enemyParty[0],
               isTrainer: true,
               trainerId: trainer.trainerId,
+              trainerSpriteKey: tData.spriteKey,
+              trainerName: tData.name,
               battleBg: this.mapDef.battleBg,
             },
             returnData: { mapKey: this.mapKey, spawnId: '__resume' },

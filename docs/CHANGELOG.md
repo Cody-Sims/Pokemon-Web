@@ -5,6 +5,9 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Added
+- **Trainer sprites in battle**: During trainer battles, the enemy trainer sprite appears behind their Pokémon (upper-right, semi-transparent) and the player character appears behind theirs (lower-left). Both slide in during the intro animation. Uses the trainer's `spriteKey` from trainer data.
+
 ### Changed
 - **Trainer LoS battle trigger**: Trainers now walk toward the player (step-by-step tween) after the `!` exclamation mark, stopping 1 tile away before initiating dialogue — matching classic Pokémon behavior.
 - **Wall-blocked line of sight**: Trainer `isInLineOfSight()` now checks for solid tiles between the trainer and player. A wall, tree, or boulder blocks vision so trainers can't see through obstacles.

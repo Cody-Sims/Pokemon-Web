@@ -88,6 +88,21 @@ export class BattleScene extends Phaser.Scene {
     this.add.ellipse(550, 200, 200, 50, 0x2d4a22);
     this.add.ellipse(200, 420, 240, 60, 0x2d4a22);
 
+    // ── Trainer sprites behind Pokémon (trainer battles only) ──
+    const trainerSpriteKey = data?.trainerSpriteKey as string | undefined;
+    if (this.isTrainerBattle && trainerSpriteKey && this.textures.exists(trainerSpriteKey)) {
+      // Enemy trainer stands behind their Pokémon (upper-right, smaller, faded)
+      const enemyTrainer = this.add.image(GAME_WIDTH + 100, 130, trainerSpriteKey, 0);
+      enemyTrainer.setScale(1.5).setAlpha(0.7).setDepth(0);
+      this.tweens.add({ targets: enemyTrainer, x: 620, duration: 600, delay: 200, ease: 'Power2' });
+    }
+    // Player trainer (back view) stands behind their Pokémon
+    if (this.isTrainerBattle && this.textures.exists('player-walk')) {
+      const playerTrainer = this.add.image(-100, 350, 'player-walk', 0);
+      playerTrainer.setScale(1.5).setAlpha(0.7).setDepth(0);
+      this.tweens.add({ targets: playerTrainer, x: 120, duration: 600, delay: 300, ease: 'Power2' });
+    }
+
     // Enemy pokemon sprite (front view) — starts offscreen right, slides in
     this.enemySprite = this.add.image(GAME_WIDTH + 100, 150, enemyData.spriteKeys.front).setScale(2);
 
