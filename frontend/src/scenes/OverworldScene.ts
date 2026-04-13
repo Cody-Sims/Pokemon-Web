@@ -508,15 +508,12 @@ export class OverworldScene extends Phaser.Scene {
 
     if (!input.direction) {
       const facing = this.player.getFacing();
-      const animDir = facing === 'right' ? 'left' : facing;
-      this.playAnim(`player-idle-${animDir}`, facing === 'right');
+      this.playAnim(`player-idle-${facing}`, false);
       return;
     }
 
     // Walk
-    const animDir = input.direction === 'right' ? 'left' : input.direction;
-    const flipX = input.direction === 'right';
-    this.playAnim(`player-walk-${animDir}`, flipX);
+    this.playAnim(`player-walk-${input.direction}`, false);
     this.player.move(input.direction);
   }
 }

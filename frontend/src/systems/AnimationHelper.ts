@@ -4,17 +4,16 @@ import Phaser from 'phaser';
 export class AnimationHelper {
   /** Register player walk animations from a texture atlas. */
   static registerPlayerAnimations(scene: Phaser.Scene): void {
-    // Only create animations for down/up/left — right is handled by flipping left
-    const directions = ['down', 'up', 'left'];
+    const directions = ['down', 'up', 'left', 'right'];
     for (const dir of directions) {
       scene.anims.create({
         key: `player-walk-${dir}`,
         frames: scene.anims.generateFrameNames('player-walk', {
           prefix: `walk-${dir}-`,
           start: 0,
-          end: 3,
+          end: 2,
         }),
-        frameRate: 8,
+        frameRate: 6,
         repeat: -1,
       });
 
