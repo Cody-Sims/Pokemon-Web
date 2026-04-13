@@ -91,6 +91,18 @@ export const palletOakLab: MapDefinition = {
         "His research is known worldwide.",
       ],
     },
+    {
+      id: 'lab-pc',
+      tileX: 11,
+      tileY: 10,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      dialogue: [
+        "Oak's Lab PC is booted up.",
+        'Access the Pokémon Storage System?',
+      ],
+      interactionType: 'pc',
+    },
   ],
   trainers: [],
   warps: [

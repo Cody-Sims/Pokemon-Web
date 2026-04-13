@@ -6,6 +6,7 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Fixed
+- **PC missing from Oak's Lab**: Added a PC terminal at the right-side lab machine so players can access the Pokémon Storage System from the lab
 - **Pokéball placement in Oak's Lab**: Moved starter Poké Balls one tile down so they appear ON the table instead of floating above it
 - **Starter selection flow**: Player must now talk to Prof. Oak first (sets `oakOfferedStarter` flag), then walk to the Poké Balls on the table and interact with them to trigger starter selection. Interacting with the balls before talking to Oak shows a hint message.
 
