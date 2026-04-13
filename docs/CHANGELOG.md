@@ -5,6 +5,10 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Fixed
+- Move category indicators (P/S/St) and type color dots no longer linger on screen after closing the move menu
+- ESC key no longer exits battle from the action menu; only the RUN action can flee
+
 ### Added
 - **21 new location-specific tile types** (tiles 39-59) expanding the tileset from 39 to 60 tiles:
   - **House**: TV (39), bed (40), potted plant (41), stairs (42)

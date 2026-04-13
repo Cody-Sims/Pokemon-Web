@@ -25,6 +25,7 @@ export class BattleUIScene extends Phaser.Scene {
   private actionTexts: Phaser.GameObjects.Text[] = [];
   private cursor = 0;
   private moveTexts: Phaser.GameObjects.Text[] = [];
+  private moveDecorations: Phaser.GameObjects.GameObject[] = [];
   private moveCursor = 0;
   private moveMenuBg?: Phaser.GameObjects.Rectangle;
   private actionMenuBg!: Phaser.GameObjects.Rectangle;
@@ -115,7 +116,6 @@ export class BattleUIScene extends Phaser.Scene {
     if (this.state === 'animating') return;
     AudioManager.getInstance().playSFX(SFX.CANCEL);
     if (this.state === 'moves') this.closeMoveMenu();
-    else if (this.state === 'actions') this.endBattle();
   }
 
   // ─── Action menu ───
@@ -169,11 +169,13 @@ export class BattleUIScene extends Phaser.Scene {
       // Move type color dot
       if (md) {
         const typeColor = TYPE_COLORS[md.type] ?? 0x888888;
-        this.add.circle(x - 80, y, 5, typeColor).setDepth(10);
+        const dot = this.add.circle(x - 80, y, 5, typeColor).setDepth(10);
+        this.moveDecorations.push(dot);
         // Category indicator (P/S/St)
         const catAbbr = md.category === 'physical' ? 'P' : md.category === 'special' ? 'S' : 'St';
         const catColor = CATEGORY_COLORS[md.category] ?? 0x888899;
-        this.add.text(x - 68, y - 5, catAbbr, { fontSize: '10px', color: `#${catColor.toString(16).padStart(6, '0')}`, fontFamily: 'monospace', fontStyle: 'bold' }).setDepth(10);
+        const catText = this.add.text(x - 68, y - 5, catAbbr, { fontSize: '10px', color: `#${catColor.toString(16).padStart(6, '0')}`, fontFamily: 'monospace', fontStyle: 'bold' }).setDepth(10);
+        this.moveDecorations.push(catText);
       }
 
       // PP coloring: normal=white, low (<=25%)=yellow, empty=red
@@ -788,6 +790,8 @@ export class BattleUIScene extends Phaser.Scene {
     this.moveMenuBg?.destroy();
     this.moveTexts.forEach(t => t.destroy());
     this.moveTexts = [];
+    this.moveDecorations.forEach(d => d.destroy());
+    this.moveDecorations = [];
     this.showActions();
     this.msg('What will you do?');
   }
