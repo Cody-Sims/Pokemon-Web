@@ -3,7 +3,7 @@ import { MapDefinition, parseMap } from '../shared';
 const palletGround = parseMap([
   // col: 0         1         2  4
   //      0123456789012345678901234
-  'TTTTTTTTTT.PPP.TTTTTTTTTT', // 0  - north exit
+  'TTTTTTTTTT.PPP.TTTTTTTTTT', // 0  - north exit to Route 1
   'T..........PPP..........T', // 1
   'T.RRRRRRR..PPP..RRRRRRR.T', // 2  - roofs (7 wide)
   'T.HHH&HHH..PPP..HH&HHHH.T', // 3  - walls with windows
@@ -15,20 +15,30 @@ const palletGround = parseMap([
   'T..........PPP..........T', // 9
   'T....BBBBBBBBBBBBBBB....T', // 10 - Lab roof
   'T....LLLLLLLLLLLLLLL....T', // 11 - Lab walls
-  'T....LLLLLLLELLLLLLL....T', // 12 - Lab door (E at col 12)
+  'T....LLLLLLLELLLLLLL....T', // 12 - Lab door
   'T..........PPP..........T', // 13 - path from lab
   'T.........PPPPP.........T', // 14
   'T..GG.....PPPPP.....GG..T', // 15 - grass patches
   'T..GG.....PPPPP.....GG..T', // 16
   'T..GG..f..PPPPP..f..GG..T', // 17 - grass + flowers
   'T.........PPPPP.........T', // 18
-  'TTTTTTTTTTTTTTTTTTTTTTTTT', // 19 - bottom border
+  'T..f......PPPPP......f..T', // 19
+  'T.........PPPPP.........T', // 20
+  'T.........PPPPP.........T', // 21
+  '..........PPPPP..........', // 22 - tree border ends, open south
+  'ss.....PPPPPPPPPPPPP..ss3', // 23 - sand, path widens to pier, palm
+  'ss7....PP..8888..PP..7ss.', // 24 - wet sand, path forks around dock
+  's77....PP..8..8..PP..77sW', // 25 - dock extends, water edge E
+  'W7s....PP..8..8..PP..s7WW', // 26 - shore curves, water grows
+  'WW7s...PP..8..8..PP.s7WWW', // 27 - dock over water
+  'WWW7s..PPPP8888PPPP.s7WWW', // 28 - dock end platform
+  'WWWWWWWWWWWWWWWWWWWWWWWWW', // 29 - open sea
 ]);
 
 export const palletTown: MapDefinition = {
   key: 'pallet-town',
   width: 25,
-  height: 20,
+  height: 30,
   ground: palletGround,
   encounterTableKey: '',  // no wild encounters in town
   npcs: [
@@ -96,6 +106,40 @@ export const palletTown: MapDefinition = {
           ],
         },
       ],
+    },
+    // ─── Fisherman Wade at the docks ───
+    {
+      id: 'pallet-wade',
+      tileX: 13,
+      tileY: 26,
+      textureKey: 'npc-sailor',
+      facing: 'down',
+      dialogue: [
+        'Wade: Beautiful day for fishing, isn\'t it?',
+        'Wade: I\'ve been casting a line off this dock for years.',
+        'Wade: Here, take this — an Old Rod!',
+        'Wade: Find any body of water and you can fish for Pokémon!',
+      ],
+      setsFlag: 'received_old_rod',
+      flagDialogue: [
+        {
+          flag: 'received_old_rod',
+          dialogue: [
+            'Wade: Caught anything good yet?',
+            'Wade: Magikarp are common, but they evolve into Gyarados!',
+            'Wade: Keep at it, young trainer!',
+          ],
+        },
+      ],
+    },
+    // ─── Dock sign ───
+    {
+      id: 'pallet-dock-sign',
+      tileX: 8,
+      tileY: 22,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      dialogue: ['PALLET TOWN PIER', '"Where the sea breeze begins"'],
     },
   ],
   trainers: [],

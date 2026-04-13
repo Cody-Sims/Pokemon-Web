@@ -5,6 +5,9 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-13]
+### Changed
+- **Pallet Town**: Expanded map from 25×20 to 25×30 with a southern dock and sea area. Path from Oak's Lab opens south to a wooden pier (DOCK_PLANK tiles) extending into the ocean. Shore has proper sand → wet sand → water transitions with a palm tree. Added Fisherman Wade NPC on the dock (gives Old Rod), and a pier sign.
+
 ### Fixed
 - **Pewter City**: Fixed row 19 width mismatch (31→30 chars). All rows now consistently 30 characters wide. Fixed east exit path to Route 3 with proper connectivity.
 - **Viridian City**: Fixed rows 14 and 19 width mismatches (29→30 chars). All rows now consistently 30 characters wide.
