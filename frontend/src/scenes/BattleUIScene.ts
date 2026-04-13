@@ -10,6 +10,7 @@ import type { PokemonInstance } from '@data/interfaces';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { trainerData } from '@data/trainer-data';
+import { evolutionData } from '@data/evolution-data';
 import { SFX, BGM } from '@utils/audio-keys';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message';
@@ -470,6 +471,10 @@ export class BattleUIScene extends Phaser.Scene {
     const prevLevel = player.level;
     const result = ExperienceCalculator.awardExp(player, expGained);
 
+    // Animate EXP bar
+    AudioManager.getInstance().playSFX(SFX.EXP_FILL);
+    b.animateExpBar(800);
+
     this.time.delayedCall(800, () => {
       if (result.levelsGained > 0) {
         AudioManager.getInstance().playSFX(SFX.LEVEL_UP);
@@ -478,7 +483,7 @@ export class BattleUIScene extends Phaser.Scene {
         });
       } else {
         this.time.delayedCall(1200, () => {
-          this.showTrainerRewardsThenEnd();
+          this.checkEvolutionThenEnd();
         });
       }
     });
@@ -609,8 +614,98 @@ export class BattleUIScene extends Phaser.Scene {
     if (moveIdx + 1 < newMoves.length) {
       this.offerNewMove(pokeName, newMoves, moveIdx + 1);
     } else {
-      this.showTrainerRewardsThenEnd();
+      this.checkEvolutionThenEnd();
     }
+  }
+
+  /** Check if the player's Pokémon should evolve after level-up. */
+  private checkEvolutionThenEnd(): void {
+    const b = this.battle();
+    const player = b.playerPokemon;
+    const evolutions = evolutionData[player.dataId];
+    if (!evolutions) {
+      this.showTrainerRewardsThenEnd();
+      return;
+    }
+
+    const evo = evolutions.find(e =>
+      e.condition.type === 'level' && e.condition.level != null && player.level >= e.condition.level
+    );
+    if (!evo) {
+      this.showTrainerRewardsThenEnd();
+      return;
+    }
+
+    const oldData = pokemonData[player.dataId];
+    const newData = pokemonData[evo.evolvesTo];
+    if (!newData) {
+      this.showTrainerRewardsThenEnd();
+      return;
+    }
+
+    const oldName = oldData?.name ?? '???';
+    this.msg(`What? ${oldName} is evolving!`);
+    this.state = 'animating';
+
+    // Evolution flash animation
+    this.time.delayedCall(1200, () => {
+      // Rapid white flashes
+      let flashCount = 0;
+      const flashTimer = this.time.addEvent({
+        delay: 150,
+        repeat: 7,
+        callback: () => {
+          flashCount++;
+          b.playerSprite.setAlpha(flashCount % 2 === 0 ? 1 : 0.1);
+          b.playerSprite.setTint(flashCount % 2 === 0 ? 0xffffff : 0xddddff);
+        },
+      });
+
+      this.time.delayedCall(1400, () => {
+        // Big flash
+        const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xffffff, 0.9);
+        this.tweens.add({
+          targets: flash,
+          alpha: 0,
+          duration: 600,
+          onComplete: () => flash.destroy(),
+        });
+
+        // Update the Pokémon data
+        player.dataId = evo.evolvesTo;
+
+        // Recalculate stats with new base stats
+        const newBase = newData.baseStats;
+        player.stats = {
+          hp: Math.floor(((2 * newBase.hp + player.ivs.hp) * player.level) / 100) + player.level + 10,
+          attack: Math.floor(((2 * newBase.attack + player.ivs.attack) * player.level) / 100) + 5,
+          defense: Math.floor(((2 * newBase.defense + player.ivs.defense) * player.level) / 100) + 5,
+          spAttack: Math.floor(((2 * newBase.spAttack + player.ivs.spAttack) * player.level) / 100) + 5,
+          spDefense: Math.floor(((2 * newBase.spDefense + player.ivs.spDefense) * player.level) / 100) + 5,
+          speed: Math.floor(((2 * newBase.speed + player.ivs.speed) * player.level) / 100) + 5,
+        };
+        player.currentHp = Math.min(player.currentHp, player.stats.hp);
+
+        // Swap sprite
+        b.playerSprite.setTexture(newData.spriteKeys.back);
+        b.playerSprite.setAlpha(1);
+        b.playerSprite.clearTint();
+
+        // Update name and mark in Pokédex
+        b.playerNameText.setText(newData.name);
+        const gm = GameManager.getInstance();
+        gm.markSeen(evo.evolvesTo);
+        gm.markCaught(evo.evolvesTo);
+
+        this.msg(`Congratulations! ${oldName} evolved into ${newData.name}!`);
+        b.updateHpBars();
+        b.updateLevelDisplay();
+
+        this.time.delayedCall(2500, () => {
+          this.showTrainerRewardsThenEnd();
+        });
+      });
+    });
   }
 
   /** Wait for a single Enter/Space press then run callback. */

@@ -50,43 +50,8 @@ A browser-based Pokémon-style RPG built with **Phaser 3 + TypeScript + Vite**. 
 
 ---
 
-## Phase 10: Polish & Quality of Life
-
-**Goal:** The game *feels* good. Animations, transitions, and small details.
-
-### 10.1 — Animations
-- **Player walk cycle:** 4 frames per direction (idle, step-left, idle, step-right).
-- **NPC idle animations:** Occasional blink or shift.
-- **Battle intro:** Pokémon slide in; trainer throws ball; ball opens with flash.
-- **Move animations:** Per-move sprite effects or simple particle effects (e.g., fire particles for Ember, water splash for Water Gun).
-- **Fainting animation:** Sprite drops and fades.
-- **Level-up animation:** Flash + stat display.
-- **Evolution animation:** Sprite morphs (white flash → new sprite).
-
-### 10.2 — Battle Transitions
-- Screen-wipe effect when entering a battle (classic mosaic/spiral/shatter pattern).
-- Reverse wipe when returning to overworld.
-
-### 10.3 — UI Polish
-- Button hover/press states for menus.
-- HP bar color grades: green > 50%, yellow 20–50%, red < 20%.
-- EXP bar smooth fill animation on gain.
-- Pokémon cry sound on encounter and on sending out.
-
-### 10.4 — Performance
-- Only load assets for the current map + adjacent maps.
-- Destroy distant map layers when transitioning.
-- Use texture atlases to minimize draw calls.
-- Profile with Chrome DevTools and Phaser's built-in debug mode.
-
-### 10.5 — Accessibility
-- Full keyboard navigation (no mouse required).
-- Configurable text speed (Slow / Medium / Fast / Instant).
-- Battle animation toggle (skip animations for faster battles).
-- High-contrast mode consideration for colorblind players (type icons supplement colors).
-
-### Deliverable
-The game feels polished: smooth transitions, satisfying battle animations, responsive menus, no visual glitches.
+## Phase 10: Polish & Quality of Life — ✅ COMPLETE
+> See [CHANGELOG.md](CHANGELOG.md) for details. Battle intro animations, EXP bar, stripe/circle/fade transitions, evolution animation, configurable text speed, save from menu, continue from save.
 
 ---
 

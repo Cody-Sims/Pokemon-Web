@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { COLORS, FONTS, drawPanel } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
+import { GameManager } from '@managers/GameManager';
+import { SaveManager } from '@managers/SaveManager';
 import { SFX } from '@utils/audio-keys';
 
 export class MenuScene extends Phaser.Scene {
@@ -72,7 +74,7 @@ export class MenuScene extends Phaser.Scene {
         this.scene.launch('InventoryScene');
         break;
       case 'SAVE':
-        // TODO: Save game
+        this.saveGame();
         break;
       case 'OPTIONS':
         // TODO: Options
@@ -87,5 +89,23 @@ export class MenuScene extends Phaser.Scene {
     AudioManager.getInstance().playSFX(SFX.CANCEL);
     this.scene.stop();
     this.scene.resume('OverworldScene');
+  }
+
+  private saveGame(): void {
+    const sm = SaveManager.getInstance();
+    sm.save();
+
+    // Show save confirmation text
+    const confirmText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'Game Saved!', {
+      ...FONTS.heading, color: COLORS.textSuccess,
+    }).setOrigin(0.5).setDepth(100);
+
+    this.tweens.add({
+      targets: confirmText,
+      alpha: 0,
+      delay: 1200,
+      duration: 400,
+      onComplete: () => confirmText.destroy(),
+    });
   }
 }

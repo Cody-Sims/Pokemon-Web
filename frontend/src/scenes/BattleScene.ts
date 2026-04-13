@@ -7,6 +7,7 @@ import { EncounterSystem } from '@systems/EncounterSystem';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM } from '@utils/audio-keys';
+import { ExperienceCalculator } from '@battle/ExperienceCalculator';
 
 export class BattleScene extends Phaser.Scene {
   public battleManager!: BattleManager;
@@ -31,6 +32,8 @@ export class BattleScene extends Phaser.Scene {
   public trainerId = '';
   public enemyStatusText!: Phaser.GameObjects.Text;
   public playerStatusText!: Phaser.GameObjects.Text;
+  public expBarBg!: Phaser.GameObjects.Rectangle;
+  public expBarFill!: Phaser.GameObjects.Rectangle;
 
   constructor() {
     super({ key: 'BattleScene' });
@@ -76,28 +79,58 @@ export class BattleScene extends Phaser.Scene {
     this.add.ellipse(550, 200, 200, 50, 0x2d4a22);
     this.add.ellipse(200, 420, 240, 60, 0x2d4a22);
 
-    // Enemy pokemon sprite (front view)
-    this.enemySprite = this.add.image(550, 150, enemyData.spriteKeys.front).setScale(2);
+    // Enemy pokemon sprite (front view) — starts offscreen right, slides in
+    this.enemySprite = this.add.image(GAME_WIDTH + 100, 150, enemyData.spriteKeys.front).setScale(2);
 
-    // Player pokemon sprite (back view, larger)
-    this.playerSprite = this.add.image(200, 370, playerData.spriteKeys.back).setScale(3);
+    // Player pokemon sprite (back view, larger) — starts offscreen left, slides in
+    this.playerSprite = this.add.image(-100, 370, playerData.spriteKeys.back).setScale(3);
 
-    // ── Enemy info box (top-left) ──
-    this.add.rectangle(170, 55, 300, 60, 0x222222, 0.85).setStrokeStyle(1, 0x888888);
-    this.enemyNameText = this.add.text(40, 35, `${enemyData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
-    this.add.text(240, 35, `Lv${this.enemyPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
-    this.enemyHpBg = this.add.rectangle(40, 62, 220, 10, 0x333333).setOrigin(0, 0.5);
-    this.enemyHpBar = this.add.rectangle(40, 62, 220, 10, 0x4caf50).setOrigin(0, 0.5);
-    this.enemyStatusText = this.add.text(270, 35, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
+    // ── Enemy info box (top-left) — starts above screen ──
+    const enemyInfoBox = this.add.rectangle(170, -60, 300, 60, 0x222222, 0.85).setStrokeStyle(1, 0x888888);
+    this.enemyNameText = this.add.text(40, -80, `${enemyData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
+    const enemyLvlText = this.add.text(240, -80, `Lv${this.enemyPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
+    this.enemyHpBg = this.add.rectangle(40, -55, 220, 10, 0x333333).setOrigin(0, 0.5);
+    this.enemyHpBar = this.add.rectangle(40, -55, 220, 10, 0x4caf50).setOrigin(0, 0.5);
+    this.enemyStatusText = this.add.text(270, -80, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
 
-    // ── Player info box (bottom-right) ──
-    this.add.rectangle(GAME_WIDTH - 170, 310, 300, 70, 0x222222, 0.85).setStrokeStyle(1, 0x888888);
-    this.playerNameText = this.add.text(GAME_WIDTH - 310, 285, `${playerData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
-    this.playerLevelText = this.add.text(GAME_WIDTH - 120, 285, `Lv${this.playerPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
-    this.playerHpBg = this.add.rectangle(GAME_WIDTH - 310, 315, 180, 10, 0x333333).setOrigin(0, 0.5);
-    this.playerHpBar = this.add.rectangle(GAME_WIDTH - 310, 315, 180, 10, 0x4caf50).setOrigin(0, 0.5);
-    this.playerHpText = this.add.text(GAME_WIDTH - 122, 309, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: '12px', color: '#ffffff' });
-    this.playerStatusText = this.add.text(GAME_WIDTH - 310, 330, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
+    // ── Player info box (bottom-right) — starts below screen ──
+    const playerInfoBox = this.add.rectangle(GAME_WIDTH - 170, GAME_HEIGHT + 60, 300, 70, 0x222222, 0.85).setStrokeStyle(1, 0x888888);
+    this.playerNameText = this.add.text(GAME_WIDTH - 310, GAME_HEIGHT + 40, `${playerData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
+    this.playerLevelText = this.add.text(GAME_WIDTH - 120, GAME_HEIGHT + 40, `Lv${this.playerPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
+    this.playerHpBg = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
+    this.playerHpBar = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
+    this.playerHpText = this.add.text(GAME_WIDTH - 122, GAME_HEIGHT + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: '12px', color: '#ffffff' });
+    this.playerStatusText = this.add.text(GAME_WIDTH - 310, GAME_HEIGHT + 85, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
+
+    // ── EXP bar (below player HP) ──
+    this.expBarBg = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 82, 180, 4, 0x222233).setOrigin(0, 0.5);
+    const expPct = this.getExpPercent();
+    this.expBarFill = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 82, 180 * expPct, 4, 0x4488ff).setOrigin(0, 0.5);
+
+    // ── Slide-in animation ──
+    const introDelay = 200;
+    const slideDuration = 600;
+
+    // Enemy sprite slides in from right
+    this.tweens.add({ targets: this.enemySprite, x: 550, duration: slideDuration, delay: introDelay, ease: 'Power2' });
+
+    // Player sprite slides in from left
+    this.tweens.add({ targets: this.playerSprite, x: 200, duration: slideDuration, delay: introDelay + 100, ease: 'Power2' });
+
+    // Enemy info slides down from top
+    const enemyInfoTargets = [enemyInfoBox, this.enemyNameText, enemyLvlText, this.enemyHpBg, this.enemyHpBar, this.enemyStatusText];
+    this.tweens.add({ targets: enemyInfoBox, y: 55, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: [this.enemyNameText, enemyLvlText, this.enemyStatusText], y: 35, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: [this.enemyHpBg, this.enemyHpBar], y: 62, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
+
+    // Player info slides up from bottom
+    this.tweens.add({ targets: playerInfoBox, y: 310, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: [this.playerNameText, this.playerLevelText], y: 285, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: [this.playerHpBg, this.playerHpBar], y: 315, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: this.playerHpText, y: 309, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: this.playerStatusText, y: 330, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: this.expBarBg, y: 328, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: this.expBarFill, y: 328, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
 
     // ── Audio: play battle BGM ──
     const audio = AudioManager.getInstance();
@@ -176,6 +209,26 @@ export class BattleScene extends Phaser.Scene {
       y: sprite.y + 40,
       alpha: 0,
       duration: 600,
+    });
+  }
+
+  /** Get EXP progress as 0-1 fraction toward next level. */
+  getExpPercent(): number {
+    const p = this.playerPokemon;
+    const currentLevelExp = ExperienceCalculator.expForLevel(p.level);
+    const nextLevelExp = ExperienceCalculator.expForLevel(p.level + 1);
+    const range = nextLevelExp - currentLevelExp;
+    if (range <= 0) return 1;
+    return Math.min(1, (p.exp - currentLevelExp) / range);
+  }
+
+  /** Animate the EXP bar fill. */
+  animateExpBar(duration = 600): void {
+    const pct = this.getExpPercent();
+    this.tweens.add({
+      targets: this.expBarFill,
+      displayWidth: 180 * pct,
+      duration,
     });
   }
 }

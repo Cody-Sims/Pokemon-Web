@@ -130,4 +130,37 @@ export class GameManager {
     this.currentMap = data.currentMap;
     this.playerPosition = data.playerPosition;
   }
+
+  /** Restore state from a SaveData object (from localStorage). */
+  loadFromSave(save: {
+    player: {
+      name: string;
+      position: { mapKey: string; x: number; y: number; direction: string };
+      party: PokemonInstance[];
+      bag: { itemId: string; quantity: number }[];
+      money: number;
+      badges: string[];
+      pokedex: { seen: number[]; caught: number[] };
+      playtime: number;
+    };
+    flags: Record<string, boolean>;
+    trainersDefeated: string[];
+  }): void {
+    this.party = save.player.party;
+    this.bag = save.player.bag;
+    this.money = save.player.money;
+    this.badges = save.player.badges;
+    this.flags = save.flags;
+    this.trainersDefeated = save.trainersDefeated;
+    this.pokedex.seen = new Set(save.player.pokedex.seen);
+    this.pokedex.caught = new Set(save.player.pokedex.caught);
+    this.playerName = save.player.name;
+    this.playtime = save.player.playtime;
+    this.currentMap = save.player.position.mapKey;
+    this.playerPosition = {
+      x: save.player.position.x,
+      y: save.player.position.y,
+      direction: save.player.position.direction,
+    };
+  }
 }

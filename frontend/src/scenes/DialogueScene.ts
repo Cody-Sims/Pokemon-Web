@@ -1,5 +1,14 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { GameManager } from '@managers/GameManager';
+
+/** Text speed options: delay (ms) per character. 0 = instant. */
+const TEXT_SPEEDS: Record<string, number> = {
+  slow: 55,
+  medium: 33,
+  fast: 16,
+  instant: 0,
+};
 
 export class DialogueScene extends Phaser.Scene {
   private dialogueText!: Phaser.GameObjects.Text;
@@ -8,6 +17,7 @@ export class DialogueScene extends Phaser.Scene {
   private isTyping = false;
   private fullText = '';
   private typeTimer?: Phaser.Time.TimerEvent;
+  private charDelay = 33;
 
   constructor() {
     super({ key: 'DialogueScene' });
@@ -19,6 +29,11 @@ export class DialogueScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Get text speed preference
+    const gm = GameManager.getInstance();
+    const speedPref = (gm.getFlag('textSpeed') as unknown as string) || 'medium';
+    this.charDelay = TEXT_SPEEDS[speedPref] ?? TEXT_SPEEDS.medium;
+
     // Dialogue box background
     const boxBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, 0x000000, 0.85);
     boxBg.setStrokeStyle(2, 0xffffff);
@@ -47,11 +62,19 @@ export class DialogueScene extends Phaser.Scene {
   private showLine(text: string): void {
     this.fullText = text;
     this.dialogueText.setText('');
+
+    // Instant mode — no typing animation
+    if (this.charDelay === 0) {
+      this.dialogueText.setText(text);
+      this.isTyping = false;
+      return;
+    }
+
     this.isTyping = true;
     let charIndex = 0;
 
     this.typeTimer = this.time.addEvent({
-      delay: 33, // ~30 chars/sec
+      delay: this.charDelay,
       repeat: text.length - 1,
       callback: () => {
         charIndex++;

@@ -9,7 +9,7 @@ import { Direction } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/EncounterSystem';
 import { TransitionManager } from '@managers/TransitionManager';
-import { PokemonInstance } from '@data/interfaces';
+import { PokemonInstance, SaveData } from '@data/interfaces';
 import { trainerData } from '@data/trainer-data';
 import { moveData } from '@data/move-data';
 import {
@@ -40,9 +40,17 @@ export class OverworldScene extends Phaser.Scene {
     super({ key: 'OverworldScene' });
   }
 
-  init(data?: { mapKey?: string; spawnId?: string }): void {
-    this.mapKey = data?.mapKey ?? GameManager.getInstance().getCurrentMap();
-    this.spawnId = data?.spawnId ?? 'default';
+  init(data?: { mapKey?: string; spawnId?: string; saveData?: SaveData }): void {
+    // Restore from save data if provided
+    if (data?.saveData) {
+      const gm = GameManager.getInstance();
+      gm.loadFromSave(data.saveData);
+      this.mapKey = gm.getCurrentMap();
+      this.spawnId = '__resume';
+    } else {
+      this.mapKey = data?.mapKey ?? GameManager.getInstance().getCurrentMap();
+      this.spawnId = data?.spawnId ?? 'default';
+    }
     this.transitioning = false;
     this.npcs = [];
     this.trainers = [];
@@ -306,6 +314,7 @@ export class OverworldScene extends Phaser.Scene {
         returnScene: 'OverworldScene',
         targetData: { enemyPokemon: pokemon },
         returnData: { mapKey: this.mapKey, spawnId: '__resume' },
+        style: 'stripes',
       });
     });
   }
@@ -355,6 +364,7 @@ export class OverworldScene extends Phaser.Scene {
             trainerId: trainer.trainerId,
           },
           returnData: { mapKey: this.mapKey, spawnId: '__resume' },
+          style: 'stripes',
         });
       });
     });
