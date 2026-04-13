@@ -14,6 +14,7 @@ export class InputManager {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasd!: Record<string, Phaser.Input.Keyboard.Key>;
   private confirmKey!: Phaser.Input.Keyboard.Key;
+  private spaceKey!: Phaser.Input.Keyboard.Key;
   private cancelKey!: Phaser.Input.Keyboard.Key;
   private touchControls?: TouchControls;
 
@@ -27,6 +28,7 @@ export class InputManager {
       D: kb.addKey(Phaser.Input.Keyboard.KeyCodes.D),
     };
     this.confirmKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.spaceKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.cancelKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
     // Create touch controls on touch-capable devices
@@ -55,7 +57,7 @@ export class InputManager {
 
     return {
       direction,
-      confirm: Phaser.Input.Keyboard.JustDown(this.confirmKey) || touchConfirm,
+      confirm: Phaser.Input.Keyboard.JustDown(this.confirmKey) || Phaser.Input.Keyboard.JustDown(this.spaceKey) || touchConfirm,
       cancel: escPressed || touchCancel,
       menu: escPressed || touchCancel,
     };

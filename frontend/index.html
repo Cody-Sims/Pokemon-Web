@@ -36,20 +36,7 @@
       border-radius: 50%; background: rgba(85,153,204,0.6);
       transform: translate(-50%,-50%); pointer-events: none; display: none;
     }
-    #action-buttons {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 12px; padding: 0 20px;
-    }
-    .action-btn {
-      width: 72px; height: 72px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-family: monospace; font-weight: bold; font-size: 24px;
-      -webkit-tap-highlight-color: transparent; touch-action: none;
-    }
-    #btn-a { background: rgba(68,170,85,0.6); }
-    #btn-b { background: rgba(170,68,68,0.6); }
-    .action-btn.pressed { filter: brightness(1.5); }
+
   </style>
 </head>
 <body>
@@ -57,10 +44,6 @@
     <div id="joystick-zone">
       <div id="joystick-base"></div>
       <div id="joystick-thumb"></div>
-    </div>
-    <div id="action-buttons">
-      <div id="btn-a" class="action-btn">A</div>
-      <div id="btn-b" class="action-btn">B</div>
     </div>
   </div>
   <script type="module" src="/src/main.ts"></script>

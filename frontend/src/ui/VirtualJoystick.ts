@@ -19,11 +19,11 @@ export class VirtualJoystick {
   private originX = 0;
   private originY = 0;
   private activePointerId: number | null = null;
-  private excludeHitTest?: (x: number, y: number) => boolean;
+  /** Fraction of screen width (from left) where joystick can activate. */
+  private activationZone = 0.6;
 
-  constructor(scene: Phaser.Scene, excludeHitTest?: (x: number, y: number) => boolean) {
+  constructor(scene: Phaser.Scene) {
     this.scene = scene;
-    this.excludeHitTest = excludeHitTest;
 
     this.container = scene.add.container(0, 0).setDepth(999).setScrollFactor(0).setVisible(false);
 
@@ -60,8 +60,9 @@ export class VirtualJoystick {
         const t = e.changedTouches[i];
         const { x, y } = getGameCoords(t.clientX, t.clientY);
 
-        // Skip if touch is in the excluded region (e.g. A/B buttons)
-        if (this.excludeHitTest?.(x, y)) continue;
+        // Only activate in the left portion of the screen
+        const screenWidth = this.scene.cameras.main.width;
+        if (x > screenWidth * this.activationZone) continue;
 
         this.activePointerId = t.identifier;
         this.originX = x;
@@ -135,7 +136,9 @@ export class VirtualJoystick {
     const handleMouseDown = (e: MouseEvent) => {
       if (this.activePointerId !== null) return;
       const { x, y } = getGameCoords(e.clientX, e.clientY);
-      if (this.excludeHitTest?.(x, y)) return;
+      // Only activate in the left portion of the screen
+      const screenWidth = this.scene.cameras.main.width;
+      if (x > screenWidth * this.activationZone) return;
 
       mouseDown = true;
       this.activePointerId = -1; // sentinel for mouse
@@ -198,6 +201,11 @@ export class VirtualJoystick {
 
   isActive(): boolean {
     return this.activePointerId !== null;
+  }
+
+  /** Check if the joystick is tracking a specific pointer/touch ID. */
+  isTrackingPointer(id: number): boolean {
+    return this.activePointerId === id;
   }
 
   setVisible(visible: boolean): void {

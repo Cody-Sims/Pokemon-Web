@@ -176,8 +176,8 @@ export class OverworldScene extends Phaser.Scene {
     const mapLabel = this.mapDef.displayName
       ?? this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const hudHint = TouchControls.isTouchDevice()
-      ? `${mapLabel}  |  A = Talk  |  B = Menu`
-      : `${mapLabel}  |  ENTER = Talk  |  ESC = Menu`;
+      ? `${mapLabel}  |  Tap = Talk`
+      : `${mapLabel}  |  SPACE = Talk  |  ESC = Menu`;
     this.add.text(width / 2, 20, hudHint, {
       fontSize: '14px',
       color: '#ffffff',
