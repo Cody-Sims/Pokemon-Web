@@ -15,8 +15,25 @@ export class GameManager {
   private playtime = 0;
   private currentMap = 'pallet-town';
   private playerPosition = { x: 7, y: 10, direction: 'down' as string };
+  private settings: Record<string, string | number | boolean> = {
+    textSpeed: 'medium',
+    musicVolume: 0.5,
+    sfxVolume: 0.7,
+    battleAnimations: true,
+  };
 
-  private constructor() {}
+  private constructor() {
+    // Load persisted settings from localStorage
+    try {
+      const stored = localStorage.getItem('pokemon-web-settings');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          this.settings = { ...this.settings, ...parsed };
+        }
+      }
+    } catch { /* ignore parse errors */ }
+  }
 
   static getInstance(): GameManager {
     if (!GameManager.instance) {
@@ -98,6 +115,11 @@ export class GameManager {
   getPlaytime(): number { return this.playtime; }
   addPlaytime(seconds: number): void { this.playtime += seconds; }
 
+  // Settings
+  getSettings(): Record<string, string | number | boolean> { return this.settings; }
+  getSetting(key: string): string | number | boolean | undefined { return this.settings[key]; }
+  setSetting(key: string, value: string | number | boolean): void { this.settings[key] = value; }
+
   /** Serialize state for saving. */
   serialize() {
     return {
@@ -112,6 +134,7 @@ export class GameManager {
       playtime: this.playtime,
       currentMap: this.currentMap,
       playerPosition: this.playerPosition,
+      settings: this.settings,
     };
   }
 
@@ -129,6 +152,7 @@ export class GameManager {
     this.playtime = data.playtime;
     this.currentMap = data.currentMap;
     this.playerPosition = data.playerPosition;
+    if (data.settings) this.settings = { ...this.settings, ...data.settings };
   }
 
   /** Restore state from a SaveData object (from localStorage). */

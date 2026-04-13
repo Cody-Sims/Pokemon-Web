@@ -5,6 +5,26 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Added
+- **Phase 1: UI Overhaul & Foundation — COMPLETE**
+  - **NinePatchPanel** (`frontend/src/ui/NinePatchPanel.ts`): Procedural nine-patch panel component with rounded corners, drop shadow, inner highlight, configurable fill/border/corner radius. Replaces flat `drawPanel()` rectangles across all menus
+  - **MenuController** (`frontend/src/ui/MenuController.ts`): Unified input controller for 1D/2D menu grids — keyboard (arrows, WASD, Enter/Space/Z confirm, ESC/X cancel), mouse hover-to-select and click-to-confirm, wrap-around navigation, audio feedback hooks, disabled state for animation blocking
+  - **Dialogue System Upgrade**: Speaker name panel with highlighted label, per-character typewriter SFX (blip every 2 chars), animated bouncing ▼ advance indicator, inline choice prompts (Yes/No rendered inside dialogue box with cursor navigation), nine-patch bordered dialogue boxes
+  - **Inventory Scene (Full Implementation)**: Complete bag screen with 5 category tabs (Medicine, Poké Balls, Battle, Key Items, TMs), scrollable item list with scroll indicators, detail panel showing description/effect/quantity, USE action (heals HP, cures status with party target picker), TOSS action with confirmation, key items protected from toss, money display, Q/E tab switching
+  - **Battle UI Polish**: Nine-patch panels for message bar and action menu, move type color dots and category indicators (P/S/St) in move selection, PP coloring (white normal, yellow ≤25%, red empty), floating damage number popups that rise and fade with effectiveness-based coloring, themed info boxes with consistent dark card styling
+  - **Party Screen Improvements**: Context menu on slot select (SUMMARY/SWITCH/Cancel), SWITCH mode for party reordering (tap source then destination), fainted Pokémon slots visually dimmed with FNT badge, mini-sprite icons if texture loaded, NinePatchPanel background
+  - **Settings Scene** (`frontend/src/scenes/SettingsScene.ts`): Accessible from Title Screen and Pause Menu "Options", settings: Text Speed (slow/medium/fast/instant), Music Volume slider (0-100%), SFX Volume slider (0-100%), Battle Animations toggle, Fullscreen toggle. Left/Right to adjust, persisted to localStorage, audio changes applied in real-time
+  - **GameManager settings**: New `settings` property with `getSettings()`/`getSetting()`/`setSetting()` methods, settings persisted in localStorage independently and included in save serialization, loaded on singleton construction
+  - Registered `SettingsScene` in game config scene list
+
+### Changed
+- `DialogueScene` now accepts `DialogueData` interface with optional `speaker`, `choices`, and `onChoice` fields
+- `MenuScene` uses NinePatchPanel instead of drawPanel; OPTIONS opens SettingsScene
+- `TitleScene` OPTIONS launches SettingsScene as overlay
+- `BattleScene` info boxes use themed COLORS.bgCard/border instead of hardcoded hex
+- `BattleUIScene` action menu and move menu use NinePatchPanel, FONTS, and COLORS consistently
+
+## [2026-04-12]
 ### Fixed
 - ESC key now opens the pause menu — `InputManager` was calling `JustDown` twice on the same ESC key object, so `cancel` consumed the event before `menu` could read it; now evaluates once and shares the result
 - Professor Oak no longer repeats starter selection dialogue after player already received a Pokémon — `starter-select` interaction now checks `receivedStarter` flag; NPCs are respawned after starter selection so the flag-gated `pallet-oak-after` NPC replaces `pallet-oak`

@@ -8,6 +8,7 @@ import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM } from '@utils/audio-keys';
 import { ExperienceCalculator } from '@battle/ExperienceCalculator';
+import { COLORS } from '@ui/theme';
 
 export class BattleScene extends Phaser.Scene {
   public battleManager!: BattleManager;
@@ -73,7 +74,7 @@ export class BattleScene extends Phaser.Scene {
     this.battleManager = new BattleManager(config);
 
     // ── Draw battle scene ──
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x1a1a2e);
+    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgPanel);
 
     // Ground areas
     this.add.ellipse(550, 200, 200, 50, 0x2d4a22);
@@ -86,7 +87,7 @@ export class BattleScene extends Phaser.Scene {
     this.playerSprite = this.add.image(-100, 370, playerData.spriteKeys.back).setScale(3);
 
     // ── Enemy info box (top-left) — starts above screen ──
-    const enemyInfoBox = this.add.rectangle(170, -60, 300, 60, 0x222222, 0.85).setStrokeStyle(1, 0x888888);
+    const enemyInfoBox = this.add.rectangle(170, -60, 300, 60, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
     this.enemyNameText = this.add.text(40, -80, `${enemyData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
     const enemyLvlText = this.add.text(240, -80, `Lv${this.enemyPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
     this.enemyHpBg = this.add.rectangle(40, -55, 220, 10, 0x333333).setOrigin(0, 0.5);
@@ -94,7 +95,7 @@ export class BattleScene extends Phaser.Scene {
     this.enemyStatusText = this.add.text(270, -80, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
 
     // ── Player info box (bottom-right) — starts below screen ──
-    const playerInfoBox = this.add.rectangle(GAME_WIDTH - 170, GAME_HEIGHT + 60, 300, 70, 0x222222, 0.85).setStrokeStyle(1, 0x888888);
+    const playerInfoBox = this.add.rectangle(GAME_WIDTH - 170, GAME_HEIGHT + 60, 300, 70, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
     this.playerNameText = this.add.text(GAME_WIDTH - 310, GAME_HEIGHT + 40, `${playerData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
     this.playerLevelText = this.add.text(GAME_WIDTH - 120, GAME_HEIGHT + 40, `Lv${this.playerPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
     this.playerHpBg = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 70, 180, 10, 0x333333).setOrigin(0, 0.5);

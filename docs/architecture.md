@@ -72,7 +72,8 @@ pokemon-web/
 │       │   ├── PartyScene.ts           # Party view — HP, types, status per slot
 │       │   ├── SummaryScene.ts         # 3-tab Pokémon detail (INFO/STATS/MOVES)
 │       │   ├── TransitionScene.ts      # Fade transitions between scenes
-│       │   └── StarterSelectScene.ts   # Starter Pokémon selection overlay
+│       │   ├── StarterSelectScene.ts   # Starter Pokémon selection overlay
+│       │   └── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
 │       │
 │       ├── entities/                   # Game object classes
 │       │   ├── Player.ts              # Grid-locked sprite + GridMovement
@@ -117,9 +118,11 @@ pokemon-web/
 │       │
 │       ├── ui/                         # Reusable UI components
 │       │   ├── theme.ts               # Shared colors, fonts, spacing, helpers
+│       │   ├── NinePatchPanel.ts      # Nine-patch style panel (rounded, shadowed)
+│       │   ├── MenuController.ts      # Unified menu input (1D/2D grid, kb+mouse)
 │       │   ├── HealthBar.ts           # Animated HP bar widget
 │       │   ├── TextBox.ts            # Typewriter text display
-│       │   ├── MenuList.ts           # Selectable vertical menu
+│       │   ├── MenuList.ts           # Selectable vertical menu (legacy)
 │       │   ├── ConfirmBox.ts         # Yes/No prompt
 │       │   └── BattleHUD.ts          # Composite: name + level + HP + EXP
 │       │

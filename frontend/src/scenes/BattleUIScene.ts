@@ -12,6 +12,8 @@ import { GameManager } from '@managers/GameManager';
 import { trainerData } from '@data/trainer-data';
 import { evolutionData } from '@data/evolution-data';
 import { SFX, BGM } from '@utils/audio-keys';
+import { NinePatchPanel } from '@ui/NinePatchPanel';
+import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS } from '@ui/theme';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message';
 
@@ -36,13 +38,18 @@ export class BattleUIScene extends Phaser.Scene {
     // Use the StatusEffectHandler from BattleManager (single source of truth)
     this.statusHandler = this.battle().battleManager.getStatusHandler();
 
-    // Message bar
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 120, GAME_WIDTH - 20, 30, 0x111111, 0.9);
-    this.messageText = this.add.text(30, GAME_HEIGHT - 132, 'What will you do?', { fontSize: '16px', color: '#ffffff' });
+    // Nine-patch message bar
+    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT - 120, GAME_WIDTH - 20, 30, {
+      fillColor: 0x0a0a18, fillAlpha: 0.92, borderColor: COLORS.border, borderWidth: 1, cornerRadius: 4,
+    });
+    this.messageText = this.add.text(30, GAME_HEIGHT - 132, 'What will you do?', { ...FONTS.body, fontSize: '16px' });
 
-    // Action menu
-    this.actionMenuBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, 0x333333, 0.9);
-    this.actionMenuBg.setStrokeStyle(2, 0xffffff);
+    // Nine-patch action menu
+    this.actionMenuBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, 0x1a1a2e, 0.95);
+    this.actionMenuBg.setStrokeStyle(2, COLORS.borderLight);
+    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, {
+      fillColor: COLORS.bgPanel, fillAlpha: 0.95, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 6,
+    });
 
     const actions = ['FIGHT', 'BAG', 'POKEMON', 'RUN'];
     this.actionTexts = actions.map((action, i) => {
@@ -50,7 +57,7 @@ export class BattleUIScene extends Phaser.Scene {
       const row = Math.floor(i / 2);
       const t = this.add.text(
         GAME_WIDTH / 2 - 80 + col * 160, GAME_HEIGHT - 85 + row * 35,
-        action, { fontSize: '18px', color: '#ffffff' }
+        action, { ...FONTS.menuItem, fontSize: '18px' }
       ).setOrigin(0.5).setInteractive({ useHandCursor: true });
       t.on('pointerover', () => { if (this.state === 'actions') { this.cursor = i; this.updateCursor(); } });
       t.on('pointerdown', () => { if (this.state === 'actions') { this.cursor = i; this.selectAction(); } });
@@ -100,7 +107,7 @@ export class BattleUIScene extends Phaser.Scene {
   }
 
   // ─── Action menu ───
-  private updateCursor(): void { this.actionTexts.forEach((t, i) => t.setColor(i === this.cursor ? '#ffcc00' : '#ffffff')); }
+  private updateCursor(): void { this.actionTexts.forEach((t, i) => t.setColor(i === this.cursor ? COLORS.textHighlight : COLORS.textWhite)); }
   private showActions(): void { this.actionMenuBg.setVisible(true); this.actionTexts.forEach(t => t.setVisible(true)); this.updateCursor(); }
   private hideActions(): void { this.actionMenuBg.setVisible(false); this.actionTexts.forEach(t => t.setVisible(false)); }
 
@@ -120,20 +127,45 @@ export class BattleUIScene extends Phaser.Scene {
     this.hideActions();
     const moves = this.battle().playerPokemon.moves;
 
-    this.moveMenuBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, 0x1a1a2e, 0.95).setStrokeStyle(2, 0xffffff);
+    this.moveMenuBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, 0x1a1a2e, 0.95).setStrokeStyle(2, COLORS.borderLight);
     this.moveTexts = moves.map((m, i) => {
       const md = moveData[m.moveId];
       const col = i % 2; const row = Math.floor(i / 2);
-      const t = this.add.text(GAME_WIDTH / 2 - 120 + col * 240, GAME_HEIGHT - 85 + row * 35,
+      const x = GAME_WIDTH / 2 - 120 + col * 240;
+      const y = GAME_HEIGHT - 85 + row * 35;
+
+      // Move type color dot
+      if (md) {
+        const typeColor = TYPE_COLORS[md.type] ?? 0x888888;
+        this.add.circle(x - 80, y, 5, typeColor).setDepth(10);
+        // Category indicator (P/S/St)
+        const catAbbr = md.category === 'physical' ? 'P' : md.category === 'special' ? 'S' : 'St';
+        const catColor = CATEGORY_COLORS[md.category] ?? 0x888899;
+        this.add.text(x - 68, y - 5, catAbbr, { fontSize: '10px', color: `#${catColor.toString(16).padStart(6, '0')}`, fontFamily: 'monospace', fontStyle: 'bold' }).setDepth(10);
+      }
+
+      // PP coloring: normal=white, low (<=25%)=yellow, empty=red
+      let ppColor: string = COLORS.textWhite;
+      if (md) {
+        const ppPct = m.currentPp / md.pp;
+        if (ppPct <= 0) ppColor = COLORS.textDanger;
+        else if (ppPct <= 0.25) ppColor = COLORS.textHighlight;
+      }
+
+      const t = this.add.text(x, y,
         md ? `${md.name}  ${m.currentPp}/${md.pp}` : m.moveId,
-        { fontSize: '16px', color: '#ffffff' }
+        { ...FONTS.body, fontSize: '15px' }
       ).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+      // Apply PP color to the PP portion by coloring the whole text based on PP status
+      if (ppColor !== COLORS.textWhite) t.setColor(ppColor);
+
       t.on('pointerover', () => { if (this.state === 'moves') { this.moveCursor = i; this.updateMoveCursor(); } });
       t.on('pointerdown', () => { if (this.state === 'moves') { this.moveCursor = i; this.selectMove(); } });
       return t;
     });
     // Back button
-    const back = this.add.text(GAME_WIDTH - 60, GAME_HEIGHT - 115, '← Back', { fontSize: '14px', color: '#aaaaaa' })
+    const back = this.add.text(GAME_WIDTH - 60, GAME_HEIGHT - 115, '← Back', { ...FONTS.bodySmall, fontSize: '14px' })
       .setInteractive({ useHandCursor: true });
     back.on('pointerdown', () => this.closeMoveMenu());
     this.moveTexts.push(back);
@@ -143,7 +175,7 @@ export class BattleUIScene extends Phaser.Scene {
 
   private updateMoveCursor(): void {
     const moveCount = this.battle().playerPokemon.moves.length;
-    this.moveTexts.forEach((t, i) => { if (i < moveCount) t.setColor(i === this.moveCursor ? '#ffcc00' : '#ffffff'); });
+    this.moveTexts.forEach((t, i) => { if (i < moveCount) t.setColor(i === this.moveCursor ? COLORS.textHighlight : COLORS.textWhite); });
   }
 
   private selectMove(): void {
@@ -269,6 +301,8 @@ export class BattleUIScene extends Phaser.Scene {
 
       if (result.moveHit && result.damage.damage > 0) {
         b.flashSprite(isPlayer ? b.enemySprite : b.playerSprite);
+        // Show floating damage number
+        this.showDamagePopup(result.damage.damage, !isPlayer, result.damage.effectiveness);
         // Play appropriate hit SFX
         const audio = AudioManager.getInstance();
         if (result.damage.isCritical) audio.playSFX(SFX.HIT_CRIT);
@@ -429,6 +463,32 @@ export class BattleUIScene extends Phaser.Scene {
   }
 
   private msg(text: string): void { this.messageText.setText(text); }
+
+  /** Show a floating damage number that rises and fades. */
+  private showDamagePopup(damage: number, isPlayer: boolean, effectiveness: number): void {
+    const b = this.battle();
+    const sprite = isPlayer ? b.playerSprite : b.enemySprite;
+    const x = sprite.x;
+    const y = sprite.y - 30;
+    let color = '#ffffff';
+    if (effectiveness > 1) color = '#ff5555';
+    else if (effectiveness < 1 && effectiveness > 0) color = '#8888aa';
+    else if (effectiveness === 0) color = '#666666';
+
+    const popup = this.add.text(x, y, `-${damage}`, {
+      fontSize: '22px', color, fontFamily: 'monospace', fontStyle: 'bold',
+      stroke: '#000000', strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(100);
+
+    this.tweens.add({
+      targets: popup,
+      y: y - 40,
+      alpha: 0,
+      duration: 900,
+      ease: 'Power2',
+      onComplete: () => popup.destroy(),
+    });
+  }
 
   private closeMoveMenu(): void {
     this.state = 'actions';

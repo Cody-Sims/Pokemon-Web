@@ -1,12 +1,20 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { GameManager } from '@managers/GameManager';
+import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon-data';
-import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawPanel, drawTypeBadge, drawHpBar, drawButton } from '@ui/theme';
+import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawHpBar, drawButton } from '@ui/theme';
+import { NinePatchPanel } from '@ui/NinePatchPanel';
+import { MenuController } from '@ui/MenuController';
+import { SFX } from '@utils/audio-keys';
 
 export class PartyScene extends Phaser.Scene {
   private cursor = 0;
   private slotBgs: Phaser.GameObjects.Rectangle[] = [];
+  private controller?: MenuController;
+  private contextMenu?: { panel: NinePatchPanel; texts: Phaser.GameObjects.Text[]; controller: MenuController };
+  private swapMode = false;
+  private swapSourceIdx = -1;
 
   constructor() {
     super({ key: 'PartyScene' });
@@ -17,13 +25,18 @@ export class PartyScene extends Phaser.Scene {
 
     // Full-screen background
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    drawPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 30, GAME_HEIGHT - 30);
+    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 30, GAME_HEIGHT - 30, {
+      fillColor: COLORS.bgPanel,
+      borderColor: COLORS.border,
+      cornerRadius: 8,
+    });
 
     this.add.text(GAME_WIDTH / 2, 30, 'POKEMON PARTY', FONTS.heading).setOrigin(0.5);
     this.add.rectangle(GAME_WIDTH / 2, 48, 200, 2, COLORS.borderHighlight, 0.4);
 
     this.slotBgs = [];
     this.cursor = 0;
+    this.swapMode = false;
 
     for (let i = 0; i < 6; i++) {
       const y = 64 + i * SPACING.slotHeight;
@@ -43,42 +56,68 @@ export class PartyScene extends Phaser.Scene {
       const pData = pokemonData[p.dataId];
       const name = p.nickname ?? pData?.name ?? '???';
       const slotY = y + SPACING.slotHeight / 2;
+      const isFainted = p.currentHp <= 0;
 
-      this.add.text(55, slotY - 18, name, { ...FONTS.body, fontStyle: 'bold' });
-      this.add.text(55, slotY + 4, `Lv. ${p.level}`, FONTS.caption);
+      // Mini sprite (icon) if texture exists
+      const iconKey = pData?.spriteKeys.icon;
+      if (iconKey && this.textures.exists(iconKey)) {
+        const icon = this.add.image(30, slotY, iconKey).setScale(1.5);
+        if (isFainted) icon.setAlpha(0.4).setTint(0x888888);
+      }
 
+      // Name (dimmed if fainted)
+      const nameText = this.add.text(55, slotY - 18, name, { ...FONTS.body, fontStyle: 'bold' });
+      if (isFainted) nameText.setAlpha(0.5);
+
+      // Level
+      const lvText = this.add.text(55, slotY + 4, `Lv. ${p.level}`, FONTS.caption);
+      if (isFainted) lvText.setAlpha(0.5);
+
+      // HP bar
       this.add.text(230, slotY - 18, 'HP', FONTS.label);
       drawHpBar(this, 256, slotY - 12, 170, 10, p.currentHp, p.stats.hp);
       this.add.text(434, slotY - 18, `${p.currentHp}/${p.stats.hp}`, FONTS.caption);
 
+      // Type badges
       if (pData) {
         pData.types.forEach((type, ti) => {
           drawTypeBadge(this, 256 + ti * 72, slotY + 10, type);
         });
       }
 
+      // Status condition badge
       if (p.status) {
         const col = STATUS_COLORS[p.status] ?? 0x888899;
         this.add.rectangle(GAME_WIDTH - 90, slotY, 64, 20, col).setStrokeStyle(1, 0xffffff);
         this.add.text(GAME_WIDTH - 90, slotY, p.status.toUpperCase(), { ...FONTS.label, color: '#ffffff' }).setOrigin(0.5);
       }
 
+      // Fainted indicator
+      if (isFainted) {
+        this.add.rectangle(GAME_WIDTH - 90, slotY, 64, 20, 0x661111).setStrokeStyle(1, 0xff3333);
+        this.add.text(GAME_WIDTH - 90, slotY, 'FNT', { ...FONTS.label, color: '#ff5555' }).setOrigin(0.5);
+        slotBg.setAlpha(0.6);
+      }
+
       slotBg.setInteractive({ useHandCursor: true });
-      slotBg.on('pointerover', () => { this.cursor = i; this.updateCursor(); });
-      slotBg.on('pointerdown', () => { this.cursor = i; this.openSummary(i); });
+      slotBg.on('pointerover', () => this.controller?.hoverIndex(i));
+      slotBg.on('pointerdown', () => this.controller?.clickIndex(i));
     }
+
+    this.controller = new MenuController(this, {
+      columns: 1,
+      itemCount: party.length,
+      wrap: false,
+      onMove: (idx) => { this.cursor = idx; this.updateCursor(); },
+      onConfirm: (idx) => this.onSlotConfirm(idx),
+      onCancel: () => this.closeScene(),
+      audioFeedback: true,
+    });
 
     this.updateCursor();
 
-    // Keyboard
-    this.input.keyboard!.on('keydown-UP', () => { this.cursor = Math.max(0, this.cursor - 1); this.updateCursor(); });
-    this.input.keyboard!.on('keydown-DOWN', () => { this.cursor = Math.min(party.length - 1, this.cursor + 1); this.updateCursor(); });
-    this.input.keyboard!.on('keydown-ENTER', () => this.openSummary(this.cursor));
-    this.input.keyboard!.on('keydown-SPACE', () => this.openSummary(this.cursor));
-    this.input.keyboard!.on('keydown-ESC', () => this.scene.stop());
-
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 52, 'Select a Pokémon to view details', FONTS.caption).setOrigin(0.5);
-    drawButton(this, GAME_WIDTH / 2, GAME_HEIGHT - 30, 'Close (ESC)', () => this.scene.stop(), 140, 30);
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 52, 'Select a Pokémon to view options', FONTS.caption).setOrigin(0.5);
+    drawButton(this, GAME_WIDTH / 2, GAME_HEIGHT - 30, 'Close (ESC)', () => this.closeScene(), 140, 30);
   }
 
   private updateCursor(): void {
@@ -90,14 +129,108 @@ export class PartyScene extends Phaser.Scene {
     });
   }
 
+  private onSlotConfirm(index: number): void {
+    const party = GameManager.getInstance().getParty();
+    if (index >= party.length) return;
+
+    if (this.swapMode) {
+      // Complete the swap
+      this.performSwap(this.swapSourceIdx, index);
+      return;
+    }
+
+    this.openContextMenu(index);
+  }
+
+  private openContextMenu(index: number): void {
+    this.controller?.setDisabled(true);
+    const actions = ['SUMMARY', 'SWITCH', 'Cancel'];
+    const menuX = GAME_WIDTH - 140;
+    const menuY = 64 + index * SPACING.slotHeight + SPACING.slotHeight / 2;
+
+    const panel = new NinePatchPanel(this, menuX, menuY, 130, actions.length * 32 + 12, {
+      fillColor: 0x0a0a18,
+      fillAlpha: 0.95,
+      borderColor: COLORS.borderLight,
+      cornerRadius: 6,
+    });
+
+    const texts = actions.map((label, i) => {
+      return this.add.text(menuX, menuY - ((actions.length - 1) * 16) + i * 32, label, {
+        ...FONTS.body, fontSize: '15px',
+      }).setOrigin(0.5);
+    });
+
+    const controller = new MenuController(this, {
+      columns: 1,
+      itemCount: actions.length,
+      wrap: true,
+      onMove: (ci) => {
+        texts.forEach((t, i) => t.setColor(i === ci ? COLORS.textHighlight : COLORS.textWhite));
+      },
+      onConfirm: (ci) => {
+        this.closeContextMenu();
+        const action = actions[ci];
+        if (action === 'SUMMARY') this.openSummary(index);
+        else if (action === 'SWITCH') this.startSwap(index);
+      },
+      onCancel: () => this.closeContextMenu(),
+    });
+    texts[0]?.setColor(COLORS.textHighlight);
+
+    this.contextMenu = { panel, texts, controller };
+  }
+
+  private closeContextMenu(): void {
+    if (!this.contextMenu) return;
+    this.contextMenu.controller.destroy();
+    this.contextMenu.panel.destroy();
+    this.contextMenu.texts.forEach(t => t.destroy());
+    this.contextMenu = undefined;
+    this.controller?.setDisabled(false);
+  }
+
+  private startSwap(sourceIdx: number): void {
+    this.swapMode = true;
+    this.swapSourceIdx = sourceIdx;
+    // Highlight source slot
+    if (sourceIdx < this.slotBgs.length) {
+      this.slotBgs[sourceIdx].setStrokeStyle(3, 0x55ff88);
+    }
+  }
+
+  private performSwap(srcIdx: number, destIdx: number): void {
+    if (srcIdx === destIdx) {
+      this.swapMode = false;
+      this.slotBgs[srcIdx]?.setStrokeStyle(2, COLORS.borderHighlight);
+      return;
+    }
+    const gm = GameManager.getInstance();
+    const party = gm.getParty();
+    const temp = party[srcIdx];
+    party[srcIdx] = party[destIdx];
+    party[destIdx] = temp;
+    AudioManager.getInstance().playSFX(SFX.CONFIRM);
+    this.swapMode = false;
+    // Refresh
+    this.controller?.destroy();
+    this.scene.restart();
+  }
+
   private openSummary(index: number): void {
     const party = GameManager.getInstance().getParty();
     if (index >= party.length) return;
+    this.controller?.setDisabled(true);
     this.scene.sleep();
     this.scene.launch('SummaryScene', { pokemon: party[index], partyIndex: index });
-    // When SummaryScene stops, wake PartyScene back up
     this.scene.get('SummaryScene').events.once('shutdown', () => {
       this.scene.wake();
+      this.controller?.setDisabled(false);
     });
+  }
+
+  private closeScene(): void {
+    this.controller?.destroy();
+    this.scene.stop();
   }
 }

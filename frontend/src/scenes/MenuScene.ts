@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { COLORS, FONTS, drawPanel } from '@ui/theme';
+import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SaveManager } from '@managers/SaveManager';
@@ -25,7 +26,11 @@ export class MenuScene extends Phaser.Scene {
     const panelH = this.menuLabels.length * 48 + 32;
     const panelX = GAME_WIDTH - panelW / 2 - 20;
     const panelY = GAME_HEIGHT / 2;
-    drawPanel(this, panelX, panelY, panelW, panelH);
+    new NinePatchPanel(this, panelX, panelY, panelW, panelH, {
+      fillColor: COLORS.bgPanel,
+      borderColor: COLORS.border,
+      cornerRadius: 8,
+    });
 
     const startY = panelY - panelH / 2 + 32;
     this.menuItems = this.menuLabels.map((label, i) => {
@@ -77,7 +82,11 @@ export class MenuScene extends Phaser.Scene {
         this.saveGame();
         break;
       case 'OPTIONS':
-        // TODO: Options
+        this.scene.sleep();
+        this.scene.launch('SettingsScene', { returnScene: 'MenuScene' });
+        this.scene.get('SettingsScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
         break;
       case 'EXIT':
         this.closeMenu();

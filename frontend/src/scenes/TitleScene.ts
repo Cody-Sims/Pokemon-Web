@@ -112,7 +112,11 @@ export class TitleScene extends Phaser.Scene {
         break;
       }
       case 'Options':
-        // TODO: Options menu
+        this.scene.sleep();
+        this.scene.launch('SettingsScene', { returnScene: 'TitleScene' });
+        this.scene.get('SettingsScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
         break;
     }
   }

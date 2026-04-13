@@ -12,6 +12,7 @@ import { PartyScene } from '@scenes/PartyScene';
 import { SummaryScene } from '@scenes/SummaryScene';
 import { TransitionScene } from '@scenes/TransitionScene';
 import { StarterSelectScene } from '@scenes/StarterSelectScene';
+import { SettingsScene } from '@scenes/SettingsScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -41,5 +42,6 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     SummaryScene,
     TransitionScene,
     StarterSelectScene,
+    SettingsScene,
   ],
 };
