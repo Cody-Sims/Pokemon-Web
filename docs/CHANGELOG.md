@@ -6,8 +6,8 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Fixed
+- ESC key now opens the pause menu — `InputManager` was calling `JustDown` twice on the same ESC key object, so `cancel` consumed the event before `menu` could read it; now evaluates once and shares the result
 - Professor Oak no longer repeats starter selection dialogue after player already received a Pokémon — `starter-select` interaction now checks `receivedStarter` flag; NPCs are respawned after starter selection so the flag-gated `pallet-oak-after` NPC replaces `pallet-oak`
-- DialogueScene can now be closed with ESC key at any point; regular dialogue now properly resumes OverworldScene on close
 - Rewrote `player-walk.json` atlas — sprite sheet is column-based (col0=down, col1=right, col2=up, col3=left) with 3 frames per direction, not row-based with 4 frames. Updated AnimationHelper to register all 4 directions (removed flipX hack for right) with correct frame range (0–2). Player now faces the correct direction when walking.
 - Player walk animation no longer spins/restarts every frame — restored `repeat: -1` for continuous walk cycle during movement, removed per-frame `lastAnimKey` reset that was causing the animation to restart from frame 0 each tick
 

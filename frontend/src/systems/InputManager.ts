@@ -14,7 +14,6 @@ export class InputManager {
   private wasd!: Record<string, Phaser.Input.Keyboard.Key>;
   private confirmKey!: Phaser.Input.Keyboard.Key;
   private cancelKey!: Phaser.Input.Keyboard.Key;
-  private menuKey!: Phaser.Input.Keyboard.Key;
 
   constructor(scene: Phaser.Scene) {
     const kb = scene.input.keyboard!;
@@ -27,7 +26,6 @@ export class InputManager {
     };
     this.confirmKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.cancelKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-    this.menuKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
   }
 
   /** Poll current input state. */
@@ -39,11 +37,13 @@ export class InputManager {
     else if (this.cursors.left.isDown || this.wasd.A.isDown) direction = 'left';
     else if (this.cursors.right.isDown || this.wasd.D.isDown) direction = 'right';
 
+    const escPressed = Phaser.Input.Keyboard.JustDown(this.cancelKey);
+
     return {
       direction,
       confirm: Phaser.Input.Keyboard.JustDown(this.confirmKey),
-      cancel: Phaser.Input.Keyboard.JustDown(this.cancelKey),
-      menu: Phaser.Input.Keyboard.JustDown(this.menuKey),
+      cancel: escPressed,
+      menu: escPressed,
     };
   }
 }
