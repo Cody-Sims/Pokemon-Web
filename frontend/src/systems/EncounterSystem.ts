@@ -3,7 +3,7 @@ import { BASE_ENCOUNTER_RATE } from '@utils/constants';
 import { weightedRandom, randomInt } from '@utils/math-helpers';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon-data';
-import { moveData } from '@data/move-data';
+import { moveData } from '@data/moves';
 import { ExperienceCalculator } from '@battle/ExperienceCalculator';
 
 /** Step counter → random wild encounter trigger. */

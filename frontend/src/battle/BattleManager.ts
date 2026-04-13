@@ -1,5 +1,5 @@
 import { PokemonInstance } from '@data/interfaces';
-import { moveData } from '@data/move-data';
+import { moveData } from '@data/moves';
 import { BattleStateMachine } from './BattleStateMachine';
 import { MoveExecutor } from './MoveExecutor';
 import { StatusEffectHandler } from './StatusEffectHandler';

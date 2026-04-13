@@ -94,10 +94,36 @@ pokemon-web/
 │       │
 │       ├── data/                       # Pure data (no game logic)
 │       │   ├── interfaces.ts          # All TypeScript interfaces
-│       │   ├── pokemon-data.ts        # ~30 Pokémon: base stats, learnsets, sprites
-│       │   ├── move-data.ts           # ~50 moves: power, accuracy, effects
+│       │   ├── maps/                  # Per-map definitions
+│       │   │   ├── index.ts           # Re-exports mapRegistry + shared types
+│       │   │   ├── shared.ts          # Tile constants, colors, map interfaces, parseMap
+│       │   │   ├── pallet-town.ts     # Pallet Town map definition
+│       │   │   ├── route-1.ts         # Route 1 map definition
+│       │   │   ├── viridian-city.ts   # Viridian City map definition
+│       │   │   ├── route-2.ts         # Route 2 map definition
+│       │   │   ├── viridian-forest.ts # Viridian Forest map definition
+│       │   │   └── pewter-city.ts     # Pewter City map definition
+│       │   ├── moves/                 # Per-type move definitions
+│       │   │   ├── index.ts           # Re-exports combined moveData record
+│       │   │   ├── normal.ts          # Normal-type moves (~70)
+│       │   │   ├── fire.ts            # Fire-type moves
+│       │   │   ├── water.ts           # Water-type moves
+│       │   │   ├── electric.ts        # Electric-type moves
+│       │   │   ├── grass.ts           # Grass-type moves
+│       │   │   ├── ice.ts             # Ice-type moves
+│       │   │   ├── fighting.ts        # Fighting-type moves
+│       │   │   ├── poison.ts          # Poison-type moves
+│       │   │   ├── ground.ts          # Ground-type moves
+│       │   │   ├── flying.ts          # Flying-type moves
+│       │   │   ├── psychic.ts         # Psychic-type moves
+│       │   │   ├── bug.ts             # Bug-type moves
+│       │   │   ├── rock.ts            # Rock-type moves
+│       │   │   ├── ghost.ts           # Ghost-type moves
+│       │   │   ├── dragon.ts          # Dragon-type moves
+│       │   │   └── dark.ts            # Dark-type moves
+│       │   ├── pokemon-data.ts        # ~44 Pokémon: base stats, learnsets, sprites
 │       │   ├── type-chart.ts          # 18×18 type effectiveness matrix
-│       │   ├── item-data.ts           # ~15 items (potions, balls, key items)
+│       │   ├── item-data.ts           # ~20 items (potions, balls, key items)
 │       │   ├── trainer-data.ts        # Trainer rosters, dialogue, rewards
 │       │   ├── encounter-tables.ts    # Per-route wild Pokémon + level ranges
 │       │   └── evolution-data.ts      # Evolution conditions (level, item, trade)

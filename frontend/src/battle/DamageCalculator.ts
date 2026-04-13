@@ -1,6 +1,6 @@
 import { PokemonInstance, MoveInstance } from '@data/interfaces';
 import { MoveData } from '@data/interfaces';
-import { moveData } from '@data/move-data';
+import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon-data';
 import { getCombinedEffectiveness } from '@data/type-chart';
 import { STAB_MULTIPLIER, CRIT_CHANCE, CRIT_MULTIPLIER, RANDOM_MIN, RANDOM_MAX } from '@utils/constants';

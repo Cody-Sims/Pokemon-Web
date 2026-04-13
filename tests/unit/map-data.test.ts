@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Tile, TILE_COLORS, SOLID_TILES } from '../../frontend/src/data/map-data';
+import { Tile, TILE_COLORS, SOLID_TILES } from '../../frontend/src/data/maps';
 
 describe('Map Data — Tile System', () => {
   describe('Tile constants', () => {

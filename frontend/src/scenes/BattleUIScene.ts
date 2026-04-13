@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
-import { moveData } from '@data/move-data';
+import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon-data';
 import { MoveExecutor } from '@battle/MoveExecutor';
 import { ExperienceCalculator } from '@battle/ExperienceCalculator';

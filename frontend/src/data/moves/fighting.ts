@@ -1,0 +1,13 @@
+import { MoveData } from '../interfaces';
+
+export const fightingMoves: Record<string, MoveData> = {
+  'karate-chop':  { id: 'karate-chop', name: 'Karate Chop', type: 'fighting', category: 'physical', power: 50, accuracy: 100, pp: 25 },
+  'double-kick':  { id: 'double-kick', name: 'Double Kick', type: 'fighting', category: 'physical', power: 30, accuracy: 100, pp: 30, effect: { type: 'multi-hit', target: 'enemy', hits: 2 } },
+  'jump-kick':    { id: 'jump-kick', name: 'Jump Kick', type: 'fighting', category: 'physical', power: 100, accuracy: 95, pp: 10 },
+  'high-jump-kick':{ id: 'high-jump-kick', name: 'High Jump Kick', type: 'fighting', category: 'physical', power: 130, accuracy: 90, pp: 10 },
+  'rolling-kick': { id: 'rolling-kick', name: 'Rolling Kick', type: 'fighting', category: 'physical', power: 60, accuracy: 85, pp: 15, effect: { type: 'flinch', target: 'enemy', chance: 30 } },
+  'low-kick':     { id: 'low-kick', name: 'Low Kick', type: 'fighting', category: 'physical', power: 50, accuracy: 100, pp: 20 },
+  'submission':   { id: 'submission', name: 'Submission', type: 'fighting', category: 'physical', power: 80, accuracy: 80, pp: 20, effect: { type: 'recoil', target: 'self', amount: 25 } },
+  'counter':      { id: 'counter', name: 'Counter', type: 'fighting', category: 'physical', power: null, accuracy: 100, pp: 20 },
+  'seismic-toss': { id: 'seismic-toss', name: 'Seismic Toss', type: 'fighting', category: 'physical', power: null, accuracy: 100, pp: 20, effect: { type: 'level-damage', target: 'enemy' } },
+};

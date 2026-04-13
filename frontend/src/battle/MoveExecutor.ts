@@ -1,5 +1,5 @@
 import { PokemonInstance } from '@data/interfaces';
-import { moveData } from '@data/move-data';
+import { moveData } from '@data/moves';
 import { DamageCalculator, DamageResult } from './DamageCalculator';
 import { StatusEffectHandler, EffectResult } from './StatusEffectHandler';
 import { randomInt } from '@utils/math-helpers';

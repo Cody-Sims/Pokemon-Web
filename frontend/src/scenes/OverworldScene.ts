@@ -11,7 +11,7 @@ import { EncounterSystem } from '@systems/EncounterSystem';
 import { TransitionManager } from '@managers/TransitionManager';
 import { PokemonInstance, SaveData } from '@data/interfaces';
 import { trainerData } from '@data/trainer-data';
-import { moveData } from '@data/move-data';
+import { moveData } from '@data/moves';
 import {
   mapRegistry,
   MapDefinition,
@@ -19,7 +19,7 @@ import {
   Tile,
   TILE_COLORS,
   SOLID_TILES,
-} from '@data/map-data';
+} from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
 

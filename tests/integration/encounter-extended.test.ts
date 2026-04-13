@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { EncounterSystem } from '../../frontend/src/systems/EncounterSystem';
 import { encounterTables } from '../../frontend/src/data/encounter-tables';
 import { pokemonData } from '../../frontend/src/data/pokemon-data';
-import { moveData } from '../../frontend/src/data/move-data';
+import { moveData } from '../../frontend/src/data/moves';
 import { ExperienceCalculator } from '../../frontend/src/battle/ExperienceCalculator';
 
 describe('EncounterSystem — Extended', () => {

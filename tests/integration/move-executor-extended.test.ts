@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MoveExecutor } from '../../frontend/src/battle/MoveExecutor';
 import { StatusEffectHandler } from '../../frontend/src/battle/StatusEffectHandler';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
-import { moveData } from '../../frontend/src/data/move-data';
+import { moveData } from '../../frontend/src/data/moves';
 
 beforeEach(() => { vi.spyOn(Math, 'random').mockReturnValue(0.5); });
 

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon-data';
-import { moveData } from '@data/move-data';
+import { moveData } from '@data/moves';
 import { ExperienceCalculator, getNatureMultiplier, getNatureDescription } from '@battle/ExperienceCalculator';
 import { COLORS, FONTS, SPACING, TYPE_COLORS, CATEGORY_COLORS, drawPanel, drawTypeBadge, drawHpBar, drawButton, hpColor } from '@ui/theme';
 

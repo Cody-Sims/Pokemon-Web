@@ -5,6 +5,20 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Changed
+- **Data folder restructure: maps/** — Split monolithic `map-data.ts` into `data/maps/` folder with individual files per map (`pallet-town.ts`, `route-1.ts`, `viridian-city.ts`, `route-2.ts`, `viridian-forest.ts`, `pewter-city.ts`), shared tile constants/interfaces in `shared.ts`, and barrel `index.ts`. Import path changed from `@data/map-data` to `@data/maps`
+- **Data folder restructure: moves/** — Split monolithic `move-data.ts` (~165 moves) into `data/moves/` folder with per-type files (`normal.ts`, `fire.ts`, `water.ts`, `electric.ts`, `grass.ts`, `ice.ts`, `fighting.ts`, `poison.ts`, `ground.ts`, `flying.ts`, `psychic.ts`, `bug.ts`, `rock.ts`, `ghost.ts`, `dragon.ts`, `dark.ts`) and barrel `index.ts`. Import path changed from `@data/move-data` to `@data/moves`
+- Updated all source and test imports to use new paths
+- Updated `docs/architecture.md` folder structure to reflect new layout
+
+### Removed
+- `frontend/src/data/map-data.ts` (replaced by `data/maps/`)
+- `frontend/src/data/move-data.ts` (replaced by `data/moves/`)
+
+## [2026-04-12]
+### Fixed
+- Fullscreen toggle in Settings now correctly shows ON/OFF — `scale.isFullscreen` is async so the UI was always reading the stale value; now tracks state locally
+
 ### Added
 - **Phase 1: UI Overhaul & Foundation — COMPLETE**
   - **NinePatchPanel** (`frontend/src/ui/NinePatchPanel.ts`): Procedural nine-patch panel component with rounded corners, drop shadow, inner highlight, configurable fill/border/corner radius. Replaces flat `drawPanel()` rectangles across all menus

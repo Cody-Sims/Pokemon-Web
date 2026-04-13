@@ -1,5 +1,5 @@
 import { PokemonInstance, MoveData } from '@data/interfaces';
-import { moveData } from '@data/move-data';
+import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon-data';
 import { clamp, randomInt } from '@utils/math-helpers';
 import { StatStages, StatusCondition, VolatileStatus, MoveEffect, PokemonType } from '@utils/type-helpers';

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { pokemonData } from '../../frontend/src/data/pokemon-data';
-import { moveData } from '../../frontend/src/data/move-data';
+import { moveData } from '../../frontend/src/data/moves';
 import { itemData } from '../../frontend/src/data/item-data';
 import { trainerData } from '../../frontend/src/data/trainer-data';
 import { encounterTables } from '../../frontend/src/data/encounter-tables';
