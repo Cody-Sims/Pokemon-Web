@@ -11,6 +11,9 @@ All notable changes to the Pokemon Web project.
 - **Map width consistency**: Normalized all exterior map row widths to match declared dimensions. Fixed viridian-city (rows were 31-32, now all 30), pewter-city (mixed 30/32, now all 30), viridian-forest (rows were 24, now all 25), route-2 (2 rows were 22, now 20).
 - **Pewter City warp positions**: Corrected door warp coordinates to match actual tile positions after width normalization — PokéCenter door at col 11, Gym door at col 15, Museum door at col 12.
 
+### Changed
+- **Tileset quality upgrade**: Replaced programmatically generated tileset with artist-drawn CC0 terrain tiles (ArMM1998 "Zelda-like tilesets") for grass, paths, trees, water, flowers, fences, ledges. Building and interior tiles redrawn as high-quality pixel art with proper shading, detail, and color schemes (e.g., PokéCenter red cross roof, Mart blue "M" roof, bookshelf with colored books, heal machine with ball tray, PC with glowing monitor).
+
 ### Added
 - **Tileset-Based Map Rendering — Replaced Procedural Rectangles with Sprite Tileset**
   - Generated a clean 16×16 pixel art tileset (`tileset.png`) with all 39 tile types in Pokemon GBA style: grass with checkered pattern, textured paths, blade-pattern tall grass, trees with trunk/canopy, wave-pattern water, brick-pattern house walls, shingle-line roofs, detailed doors with doorknobs, fences with posts/rails, multi-color flowers, signs, ledges, PokéCenter roof with white cross, Mart roof with "M", Gym roof with star, wood-plank floors, baseboard walls, counters, tables, bookshelves with colored books, patterned rugs, exit mats, PC with monitor/keyboard, heal machine, cross-pane windows, chairs, Poké Ball items, stone gym floors, gym statues
