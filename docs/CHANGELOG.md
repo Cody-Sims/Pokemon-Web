@@ -5,6 +5,10 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Added
+- **Phase 6 — Difficulty modes**: Classic, Hard (Lv+4, smart AI, no items in trainer battles, 0.75× money), Nuzlocke (permadeath, first-encounter-only). Difficulty selection on New Game.
+- **Phase 8 — Act 3+4 maps**: Route 6, Wraithmoor (Gym 6 Ghost—Morwen), Route 7 (Vex #2, Rook reveal), Scalecrest (Gym 7 Dragon—Drake), Cinderfall (Gym 8 Fire—Solara), Victory Road, Pokémon League (Elite Four Nerida + Champion Aldric). 9 interior maps. Encounter tables for Route 6/7/Victory Road. 15+ new trainers.
+
 ### Fixed
 - **PC missing from Oak's Lab**: Added a PC terminal at the right-side lab machine so players can access the Pokémon Storage System from the lab
 - **Pokéball placement in Oak's Lab**: Moved starter Poké Balls one tile down so they appear ON the table instead of floating above it

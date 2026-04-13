@@ -135,7 +135,23 @@ pokemon-web/
 │       │   │   ├── voltara-city.ts         # Voltara City: Town 6 (tech)
 │       │   │   ├── voltara-pokecenter.ts   # Interior: Voltara PokéCenter
 │       │   │   ├── voltara-pokemart.ts     # Interior: Voltara PokéMart
-│       │   │   └── voltara-gym.ts          # Interior: Voltara Gym (Electric)
+│       │   │   ├── voltara-gym.ts          # Interior: Voltara Gym (Electric)
+│       │   │   ├── route-6.ts              # Route 6 (Voltara → Wraithmoor)
+│       │   │   ├── wraithmoor-town.ts      # Wraithmoor Town: Town 7
+│       │   │   ├── wraithmoor-pokecenter.ts
+│       │   │   ├── wraithmoor-pokemart.ts
+│       │   │   ├── wraithmoor-gym.ts       # Interior: Wraithmoor Gym (Ghost)
+│       │   │   ├── route-7.ts              # Route 7 (Vex blockade)
+│       │   │   ├── scalecrest-citadel.ts   # Scalecrest Citadel: Town 8
+│       │   │   ├── scalecrest-pokecenter.ts
+│       │   │   ├── scalecrest-pokemart.ts
+│       │   │   ├── scalecrest-gym.ts       # Interior: Scalecrest Gym (Dragon)
+│       │   │   ├── cinderfall-town.ts      # Cinderfall Town: Town 9
+│       │   │   ├── cinderfall-pokecenter.ts
+│       │   │   ├── cinderfall-pokemart.ts
+│       │   │   ├── cinderfall-gym.ts       # Interior: Cinderfall Gym (Fire)
+│       │   │   ├── victory-road.ts         # Victory Road dungeon
+│       │   │   └── pokemon-league.ts       # Pokémon League (Elite Four + Champion)
 │       │   ├── moves/                 # Per-type move definitions
 │       │   │   ├── index.ts           # Re-exports combined moveData record
 │       │   │   ├── normal.ts          # Normal-type moves (~70)
