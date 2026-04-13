@@ -61,37 +61,6 @@ export const viridianCity: MapDefinition = {
       ],
     },
     {
-      id: 'viridian-nurse',
-      tileX: 10,
-      tileY: 10,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      dialogue: ['Welcome to the Pokémon Center!', 'We\'ll heal your Pokémon back to full health!'],
-      interactionType: 'heal',
-    },
-    {
-      id: 'viridian-clerk',
-      tileX: 22,
-      tileY: 10,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      dialogue: [
-        'Welcome to the PokéMart!',
-        'Oh wait, I have a package for Prof. Oak.',
-        'Would you deliver it for me?',
-      ],
-      flagDialogue: [
-        {
-          flag: 'deliveredParcel',
-          dialogue: [
-            'Welcome to the PokéMart!',
-            'We have Poké Balls, Potions, and more!',
-          ],
-        },
-      ],
-      setsFlag: 'hasParcel',
-    },
-    {
       id: 'viridian-gym-block',
       tileX: 10,
       tileY: 18,
@@ -116,10 +85,15 @@ export const viridianCity: MapDefinition = {
     // North exit → Route 2
     { tileX: 14, tileY: 0, targetMap: 'route-2', targetSpawnId: 'from-viridian' },
     { tileX: 15, tileY: 0, targetMap: 'route-2', targetSpawnId: 'from-viridian' },
+    // Building doors
+    { tileX: 11, tileY: 10, targetMap: 'viridian-pokecenter', targetSpawnId: 'default' },
+    { tileX: 21, tileY: 10, targetMap: 'viridian-pokemart', targetSpawnId: 'default' },
   ],
   spawnPoints: {
-    'default':       { x: 14, y: 15, direction: 'up' },
-    'from-route-1':  { x: 14, y: 28, direction: 'up' },
-    'from-route-2':  { x: 14, y: 1,  direction: 'down' },
+    'default':         { x: 14, y: 15, direction: 'up' },
+    'from-route-1':    { x: 14, y: 28, direction: 'up' },
+    'from-route-2':    { x: 14, y: 1,  direction: 'down' },
+    'from-pokecenter': { x: 11, y: 11, direction: 'down' },
+    'from-pokemart':   { x: 21, y: 11, direction: 'down' },
   },
 };

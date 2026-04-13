@@ -2,6 +2,7 @@ import { Direction } from '@utils/type-helpers';
 
 // ─── Tile type constants ───
 export const Tile = {
+  // Overworld tiles
   GRASS:       0,
   PATH:        1,
   TALL_GRASS:  2,
@@ -27,6 +28,21 @@ export const Tile = {
   GYM_ROOF:    22,
   GYM_DOOR:    23,
   DENSE_TREE:  24,
+  // Interior tiles
+  FLOOR:         25,
+  INDOOR_WALL:   26,
+  COUNTER:       27,
+  TABLE:         28,
+  BOOKSHELF:     29,
+  RUG:           30,
+  MAT:           31,
+  PC_TILE:       32,
+  HEAL_MACHINE:  33,
+  WINDOW:        34,
+  CHAIR:         35,
+  POKEBALL_ITEM: 36,
+  GYM_FLOOR:     37,
+  GYM_STATUE:    38,
 } as const;
 
 // Colors for each tile type
@@ -56,6 +72,21 @@ export const TILE_COLORS: Record<number, number> = {
   [Tile.GYM_ROOF]:    0x808080,
   [Tile.GYM_DOOR]:    0xa09070,
   [Tile.DENSE_TREE]:  0x1a4010,
+  // Interior colors
+  [Tile.FLOOR]:         0xd4b896,
+  [Tile.INDOOR_WALL]:   0xe8dcc8,
+  [Tile.COUNTER]:       0x8b6914,
+  [Tile.TABLE]:         0x9e7c4a,
+  [Tile.BOOKSHELF]:     0x6b4226,
+  [Tile.RUG]:           0xc04040,
+  [Tile.MAT]:           0x80a060,
+  [Tile.PC_TILE]:       0x4060a0,
+  [Tile.HEAL_MACHINE]:  0xe06060,
+  [Tile.WINDOW]:        0x90c8e0,
+  [Tile.CHAIR]:         0x8b6914,
+  [Tile.POKEBALL_ITEM]: 0xd4b896,
+  [Tile.GYM_FLOOR]:     0xc8b898,
+  [Tile.GYM_STATUE]:    0x909090,
 };
 
 // Solid tiles that block movement
@@ -66,6 +97,9 @@ export const SOLID_TILES = new Set<number>([
   Tile.MART_WALL, Tile.MART_ROOF,
   Tile.GYM_WALL, Tile.GYM_ROOF,
   Tile.DENSE_TREE,
+  // Interior solid tiles
+  Tile.INDOOR_WALL, Tile.COUNTER, Tile.TABLE, Tile.BOOKSHELF,
+  Tile.PC_TILE, Tile.HEAL_MACHINE, Tile.WINDOW, Tile.GYM_STATUE,
 ]);
 
 // ─── Map definition types ───
@@ -84,7 +118,7 @@ export interface NpcSpawn {
   /** On interaction, set this flag to true. */
   setsFlag?: string;
   /** Special interaction type instead of plain dialogue. */
-  interactionType?: 'heal' | 'shop' | 'starter-select';
+  interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select';
 }
 
 export interface TrainerSpawn {
@@ -120,6 +154,10 @@ export interface MapDefinition {
   trainers: TrainerSpawn[];
   warps: WarpDefinition[];
   spawnPoints: Record<string, SpawnPoint>;
+  /** If true, this is an interior map (smaller camera, no encounters). */
+  isInterior?: boolean;
+  /** Displayed when entering the map (e.g., "Oak's Laboratory"). */
+  displayName?: string;
 }
 
 // ─── Helper: parse string map into number grid ───
@@ -149,6 +187,21 @@ const CHAR_TO_TILE: Record<string, number> = {
   'A': Tile.GYM_ROOF,
   'a': Tile.GYM_DOOR,
   'X': Tile.DENSE_TREE,
+  // Interior tiles
+  '_': Tile.FLOOR,
+  '#': Tile.INDOOR_WALL,
+  'k': Tile.COUNTER,
+  't': Tile.TABLE,
+  'b': Tile.BOOKSHELF,
+  'r': Tile.RUG,
+  'v': Tile.MAT,
+  'p': Tile.PC_TILE,
+  'h': Tile.HEAL_MACHINE,
+  'w': Tile.WINDOW,
+  'i': Tile.CHAIR,
+  'o': Tile.POKEBALL_ITEM,
+  'y': Tile.GYM_FLOOR,
+  'z': Tile.GYM_STATUE,
 };
 
 export function parseMap(rows: string[]): number[][] {

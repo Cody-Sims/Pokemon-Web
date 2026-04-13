@@ -6,6 +6,29 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Map UI Overhaul — Enhanced Tile Rendering + Building Interiors**
+  - **Enhanced procedural tile rendering**: Replaced flat-color rectangles with multi-layered detail for all 25 overworld tile types. Trees now have trunk + canopy circles + shadow. Paths have pebble texture and edge darkening. Buildings have shingle lines on roofs, brick patterns on walls, door frames with doorknobs and steps. Water has wave highlights and sparkles. Tall grass has 5 blade layers with flower accents. Flowers have stems and colored petals. Signs have post + board detail. Fences have posts + rails. Dense trees have overlapping dark canopy circles.
+  - **14 new interior tile types** in `shared.ts`: FLOOR (wood planks), INDOOR_WALL (with baseboard), COUNTER, TABLE, BOOKSHELF (with colored books), RUG (patterned), MAT (exit warp), PC_TILE (monitor + keyboard), HEAL_MACHINE, WINDOW (cross-pane glass), CHAIR, POKEBALL_ITEM, GYM_FLOOR (rocky texture), GYM_STATUE (pedestal + statue)
+  - **8 interior maps** with full NPC placement and gameplay logic:
+    - `pallet-player-house` (8×8): Table, bookshelf, rug, Mom NPC with flag-gated dialogue
+    - `pallet-rival-house` (8×8): Rival's sister NPC, furniture
+    - `pallet-oak-lab` (13×12): Bookshelves, lab desks, starter Poké Balls on table, Prof. Oak + 2 lab aides (starter-select + parcel delivery logic moved inside)
+    - `viridian-pokecenter` (13×8): Healing counter, Nurse NPC (heal interaction), PC terminal, benches
+    - `viridian-pokemart` (10×8): Shop counter, Clerk NPC (parcel quest), shelves, shopper NPC
+    - `pewter-pokecenter` (13×8): Same layout as Viridian, Nurse NPC
+    - `pewter-gym` (14×12): Rocky gym floor, Brock trainer at back, gym guide NPC, statues
+    - `pewter-museum` (14×10): Display cases (bookshelves), guide/scientist/visitor NPCs
+  - **Door warp system**: Players can now enter buildings by stepping on door tiles. Warps added to Pallet Town (player house, rival house, Oak's lab), Viridian City (PokéCenter, PokéMart), and Pewter City (PokéCenter, gym, museum). Each interior has a MAT tile that warps back to the exterior.
+  - **Door open SFX**: `sfx-door-open.wav` plays when entering/exiting buildings (detected via door/mat tile types)
+  - **Interior camera**: Small interior maps that fit on screen use a centered fixed camera instead of following the player
+  - **Location name popup**: Entering an interior shows a fade-in/fade-out popup with the building name (e.g., "Oak's Laboratory", "Pokémon Center")
+  - **MapDefinition extensions**: Added `isInterior` flag (smaller camera, no encounters) and `displayName` field
+  - **BGM mappings**: PokéCenter interiors play `bgm-pokemon-center`, Pewter Gym plays `bgm-battle-gym`
+
+### Changed
+- NPCs moved from exterior to interior maps: Mom (→ player house), Prof. Oak + starter logic (→ Oak's lab), Nurse Joy (→ PokéCenter interiors), Mart Clerk + parcel quest (→ PokéMart interior), Brock + gym guide (→ Pewter Gym interior)
+- Pallet Town, Viridian City, Pewter City exterior maps updated with door warps and return spawn points
+
 - **Phase 2: Gameplay Depth — Battle System Expansion — COMPLETE**
   - **HeldItemHandler** (`frontend/src/battle/HeldItemHandler.ts`): Held item effect system with hooks for end-of-turn (Leftovers, Black Sludge), after-damage (Focus Sash survive at 1 HP), attack-landed (Life Orb recoil), status-applied (Lum Berry, type-specific cure berries), HP-threshold (Sitrus Berry, Oran Berry), and damage modifiers (Life Orb 1.3×, Choice Band/Specs 1.5×, Muscle Band 1.1×, Wise Glasses 1.1×). Berries consumed on use, permanent items persist.
   - **WeatherManager** (`frontend/src/battle/WeatherManager.ts`): Battle weather system with 4 conditions (Sun, Rain, Sandstorm, Hail), 5-turn default duration, damage multipliers (Sun: Fire ×1.5/Water ×0.5, Rain: Water ×1.5/Fire ×0.5), end-of-turn damage for Sandstorm/Hail (1/16 HP with type immunities), weather tick/expiry, weather indicator in battle UI

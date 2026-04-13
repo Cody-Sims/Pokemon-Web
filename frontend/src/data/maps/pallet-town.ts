@@ -55,26 +55,6 @@ export const palletTown: MapDefinition = {
       ],
     },
     {
-      id: 'pallet-npc-mom',
-      tileX: 4,
-      tileY: 5,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      dialogue: [
-        'Prof. Oak is in his lab to the south.',
-        'Go see him to get your first Pokémon!',
-      ],
-      flagDialogue: [
-        {
-          flag: 'receivedStarter',
-          dialogue: [
-            'Be safe on your adventure, dear!',
-            'Come home if your Pokémon need rest!',
-          ],
-        },
-      ],
-    },
-    {
       id: 'pallet-sign-lab',
       tileX: 10,
       tileY: 13,
@@ -82,60 +62,23 @@ export const palletTown: MapDefinition = {
       facing: 'down',
       dialogue: ['OAK POKÉMON RESEARCH LAB'],
     },
-    {
-      id: 'pallet-oak',
-      tileX: 12,
-      tileY: 12,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      dialogue: [
-        'Prof. Oak: Ah, there you are!',
-        'Prof. Oak: The world of Pokémon awaits!',
-        'Prof. Oak: Choose one of these three Pokémon!',
-      ],
-      interactionType: 'starter-select',
-      requireFlag: '!receivedStarter',
-    },
-    {
-      id: 'pallet-oak-after',
-      tileX: 12,
-      tileY: 12,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      dialogue: [
-        'Prof. Oak: Your Pokémon is looking great!',
-        'Prof. Oak: Go explore the world!',
-      ],
-      flagDialogue: [
-        {
-          flag: 'receivedPokedex',
-          dialogue: [
-            'Prof. Oak: Fill up that Pokédex for me!',
-            'Prof. Oak: There are 151 Pokémon to discover!',
-          ],
-        },
-        {
-          flag: 'hasParcel',
-          dialogue: [
-            'Prof. Oak: Oh! Is that a package from the PokéMart?',
-            'Prof. Oak: Thank you for delivering it!',
-            'Prof. Oak: Here, take this Pokédex!',
-            'Prof. Oak: It records data on all Pokémon you encounter.',
-          ],
-        },
-      ],
-      requireFlag: 'receivedStarter',
-    },
   ],
   trainers: [],
   warps: [
     // North exit → Route 1
     { tileX: 12, tileY: 0, targetMap: 'route-1', targetSpawnId: 'from-pallet' },
     { tileX: 13, tileY: 0, targetMap: 'route-1', targetSpawnId: 'from-pallet' },
+    // Building doors
+    { tileX: 5, tileY: 4, targetMap: 'pallet-player-house', targetSpawnId: 'default' },
+    { tileX: 20, tileY: 4, targetMap: 'pallet-rival-house', targetSpawnId: 'default' },
+    { tileX: 11, tileY: 12, targetMap: 'pallet-oak-lab', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default': { x: 12, y: 14, direction: 'up' },
     'from-route-1': { x: 12, y: 1, direction: 'down' },
     'player-house': { x: 5, y: 5, direction: 'down' },
+    'from-player-house': { x: 5, y: 5, direction: 'down' },
+    'from-rival-house': { x: 20, y: 5, direction: 'down' },
+    'from-oak-lab': { x: 11, y: 13, direction: 'down' },
   },
 };

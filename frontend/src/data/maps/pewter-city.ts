@@ -50,15 +50,6 @@ export const pewterCity: MapDefinition = {
       dialogue: ['PEWTER CITY', '"A Stone Gray City"'],
     },
     {
-      id: 'pewter-nurse',
-      tileX: 10,
-      tileY: 10,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      dialogue: ['Welcome to the Pokémon Center!', 'Let me heal your Pokémon!'],
-      interactionType: 'heal',
-    },
-    {
       id: 'pewter-npc-1',
       tileX: 20,
       tileY: 6,
@@ -68,26 +59,6 @@ export const pewterCity: MapDefinition = {
         'Brock is the Gym Leader here.',
         'He uses Rock-type Pokémon.',
         'Water and Grass moves work well against Rock types!',
-      ],
-    },
-    {
-      id: 'pewter-gym-guide',
-      tileX: 12,
-      tileY: 17,
-      textureKey: 'generic-trainer',
-      facing: 'up',
-      dialogue: [
-        'This is the Pewter City Gym!',
-        'The leader, Brock, is a rock-solid trainer!',
-      ],
-      flagDialogue: [
-        {
-          flag: 'defeatedBrock',
-          dialogue: [
-            'You beat Brock! Amazing!',
-            'The Boulder Badge is proof of your strength!',
-          ],
-        },
       ],
     },
     {
@@ -102,24 +73,21 @@ export const pewterCity: MapDefinition = {
       ],
     },
   ],
-  trainers: [
-    {
-      id: 'pewter-gym-brock',
-      trainerId: 'gym-brock',
-      tileX: 15,
-      tileY: 15,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      lineOfSight: 3,
-    },
-  ],
+  trainers: [],
   warps: [
     // South exit → Viridian Forest
     { tileX: 14, tileY: 29, targetMap: 'viridian-forest', targetSpawnId: 'from-pewter' },
     { tileX: 15, tileY: 29, targetMap: 'viridian-forest', targetSpawnId: 'from-pewter' },
+    // Building doors
+    { tileX: 10, tileY: 10, targetMap: 'pewter-pokecenter', targetSpawnId: 'default' },
+    { tileX: 12, tileY: 16, targetMap: 'pewter-gym', targetSpawnId: 'default' },
+    { tileX: 10, tileY: 27, targetMap: 'pewter-museum', targetSpawnId: 'default' },
   ],
   spawnPoints: {
-    'default':      { x: 14, y: 15, direction: 'up' },
-    'from-forest':  { x: 14, y: 28, direction: 'up' },
+    'default':         { x: 14, y: 15, direction: 'up' },
+    'from-forest':     { x: 14, y: 28, direction: 'up' },
+    'from-pokecenter': { x: 10, y: 11, direction: 'down' },
+    'from-gym':        { x: 12, y: 17, direction: 'down' },
+    'from-museum':     { x: 10, y: 28, direction: 'down' },
   },
 };

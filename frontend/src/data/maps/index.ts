@@ -20,6 +20,15 @@ import { viridianCity } from './viridian-city';
 import { route2 } from './route-2';
 import { viridianForest } from './viridian-forest';
 import { pewterCity } from './pewter-city';
+// Interior maps
+import { palletPlayerHouse } from './pallet-player-house';
+import { palletRivalHouse } from './pallet-rival-house';
+import { palletOakLab } from './pallet-oak-lab';
+import { viridianPokecenter } from './viridian-pokecenter';
+import { viridianPokemart } from './viridian-pokemart';
+import { pewterPokecenter } from './pewter-pokecenter';
+import { pewterGym } from './pewter-gym';
+import { pewterMuseum } from './pewter-museum';
 
 export const mapRegistry: Record<string, MapDefinition> = {
   'pallet-town': palletTown,
@@ -28,4 +37,13 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'route-2': route2,
   'viridian-forest': viridianForest,
   'pewter-city': pewterCity,
+  // Interiors
+  'pallet-player-house': palletPlayerHouse,
+  'pallet-rival-house': palletRivalHouse,
+  'pallet-oak-lab': palletOakLab,
+  'viridian-pokecenter': viridianPokecenter,
+  'viridian-pokemart': viridianPokemart,
+  'pewter-pokecenter': pewterPokecenter,
+  'pewter-gym': pewterGym,
+  'pewter-museum': pewterMuseum,
 };

@@ -39,10 +39,19 @@ export const SFX = {
 
 /** Map key → BGM key mapping. */
 export const MAP_BGM: Record<string, string> = {
-  'pallet-town':     BGM.PALLET_TOWN,
-  'route-1':         BGM.ROUTE,
-  'route-2':         BGM.ROUTE,
-  'viridian-city':   BGM.PALLET_TOWN,
-  'viridian-forest': BGM.ROUTE,
-  'pewter-city':     BGM.PALLET_TOWN,
+  'pallet-town':         BGM.PALLET_TOWN,
+  'route-1':             BGM.ROUTE,
+  'route-2':             BGM.ROUTE,
+  'viridian-city':       BGM.PALLET_TOWN,
+  'viridian-forest':     BGM.ROUTE,
+  'pewter-city':         BGM.PALLET_TOWN,
+  // Interiors
+  'pallet-player-house': BGM.PALLET_TOWN,
+  'pallet-rival-house':  BGM.PALLET_TOWN,
+  'pallet-oak-lab':      BGM.PALLET_TOWN,
+  'viridian-pokecenter':  BGM.POKEMON_CENTER,
+  'viridian-pokemart':    BGM.PALLET_TOWN,
+  'pewter-pokecenter':    BGM.POKEMON_CENTER,
+  'pewter-gym':           BGM.BATTLE_GYM,
+  'pewter-museum':        BGM.PALLET_TOWN,
 };

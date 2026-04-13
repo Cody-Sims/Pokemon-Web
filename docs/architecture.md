@@ -99,13 +99,21 @@ pokemon-web/
 │       │   ├── interfaces.ts          # All TypeScript interfaces
 │       │   ├── maps/                  # Per-map definitions
 │       │   │   ├── index.ts           # Re-exports mapRegistry + shared types
-│       │   │   ├── shared.ts          # Tile constants, colors, map interfaces, parseMap
+│       │   │   ├── shared.ts          # Tile constants (25 overworld + 14 interior), colors, map interfaces, parseMap
 │       │   │   ├── pallet-town.ts     # Pallet Town map definition
 │       │   │   ├── route-1.ts         # Route 1 map definition
 │       │   │   ├── viridian-city.ts   # Viridian City map definition
 │       │   │   ├── route-2.ts         # Route 2 map definition
 │       │   │   ├── viridian-forest.ts # Viridian Forest map definition
-│       │   │   └── pewter-city.ts     # Pewter City map definition
+│       │   │   ├── pewter-city.ts     # Pewter City map definition
+│       │   │   ├── pallet-player-house.ts  # Interior: Player's house
+│       │   │   ├── pallet-rival-house.ts   # Interior: Rival's house
+│       │   │   ├── pallet-oak-lab.ts       # Interior: Oak's Laboratory (starter select)
+│       │   │   ├── viridian-pokecenter.ts  # Interior: Viridian PokéCenter (heal)
+│       │   │   ├── viridian-pokemart.ts    # Interior: Viridian PokéMart (parcel quest)
+│       │   │   ├── pewter-pokecenter.ts    # Interior: Pewter PokéCenter (heal)
+│       │   │   ├── pewter-gym.ts           # Interior: Pewter Gym (Brock battle)
+│       │   │   └── pewter-museum.ts        # Interior: Pewter Museum of Science
 │       │   ├── moves/                 # Per-type move definitions
 │       │   │   ├── index.ts           # Re-exports combined moveData record
 │       │   │   ├── normal.ts          # Normal-type moves (~70)
