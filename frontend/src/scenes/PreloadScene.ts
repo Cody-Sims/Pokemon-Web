@@ -33,11 +33,11 @@ export class PreloadScene extends Phaser.Scene {
       loadingText.destroy();
     });
 
-    // Load Pokemon sprites
+    // Load Pokemon icon sprites (small; needed everywhere: menus, party, PC).
+    // Front/back battle sprites are loaded on demand by MapPreloader as the
+    // player approaches each route.
     for (const data of Object.values(pokemonData)) {
       const name = data.name.toLowerCase();
-      this.load.image(data.spriteKeys.front, `assets/sprites/pokemon/${name}-front.png`);
-      this.load.image(data.spriteKeys.back, `assets/sprites/pokemon/${name}-back.png`);
       this.load.image(data.spriteKeys.icon, `assets/sprites/pokemon/${name}-icon.png`);
     }
 

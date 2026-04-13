@@ -6,6 +6,16 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Proximity-based map preloading (MapPreloader system)**: New `MapPreloader` system in `frontend/src/systems/` that defers Pokémon front/back sprite loading from boot to on-demand, based on map proximity. Reduces initial boot asset count from 453 images to 151 (icons only). Front/back sprites are loaded per-map when entering a new area, and preloaded in the background when the player is within 8 tiles of a warp exit.
+- **On-demand sprite loading in StarterSelectScene**: Starter Pokémon front sprites are loaded just-in-time if not already cached.
+- **On-demand sprite loading in PokedexScene**: Pokémon front sprites load lazily when viewing a Pokédex entry.
+
+### Changed
+- **PreloadScene**: No longer loads all 302 Pokémon front/back sprites at boot; only loads icon sprites. Core assets (tilesets, player atlas, NPC atlases, audio) remain in the boot preload.
+- **OverworldScene**: Integrates MapPreloader — calls `ensureMapReady()` on map create (loads current map encounters + player party sprites), `preloadAdjacentMaps()` for fire-and-forget background loading of connected maps, and `checkProximity()` on each player step for warp-proximity preloading.
+
+## [2026-04-12]
+### Added
 - **Virtual joystick for mobile**: Replace static D-pad with a dynamic virtual joystick that appears at the user's touch location in the overworld. Drag to move in 4 cardinal directions; auto-hides on release.
 - **Mobile-scaled UI**: Added `mobileFontSize()`, `MOBILE_SCALE`, and `isMobile()` helpers in theme.ts. Menus, battle actions, dialogue, and move lists all scale up 1.35× on touch devices for readability.
 - **Tap-to-advance dialogue**: DialogueScene now responds to touch/tap to advance text and make choices.

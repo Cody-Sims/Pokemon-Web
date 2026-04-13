@@ -181,11 +181,21 @@ export class PokedexScene extends Phaser.Scene {
     const data = pokemonData[id];
     if (!data) return;
 
-    // Sprite
+    // Sprite — load on demand if not yet in texture cache
     const spriteKey = data.spriteKeys.front;
     if (spriteKey && this.textures.exists(spriteKey)) {
       const sprite = this.add.image(GAME_WIDTH - 155, y + 40, spriteKey).setScale(2);
       this.detailGroup.add(sprite);
+    } else if (spriteKey) {
+      const name = data.name.toLowerCase();
+      this.load.image(spriteKey, `assets/sprites/pokemon/${name}-front.png`);
+      this.load.once('complete', () => {
+        if (this.detailGroup && this.textures.exists(spriteKey)) {
+          const sprite = this.add.image(GAME_WIDTH - 155, y + 40, spriteKey).setScale(2);
+          this.detailGroup.add(sprite);
+        }
+      });
+      this.load.start();
     }
     y += 90;
 

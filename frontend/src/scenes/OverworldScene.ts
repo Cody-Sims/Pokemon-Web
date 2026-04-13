@@ -25,6 +25,7 @@ import {
 } from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
+import { MapPreloader } from '@systems/MapPreloader';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
@@ -86,6 +87,11 @@ export class OverworldScene extends Phaser.Scene {
 
     // Draw tile map
     this.drawMap(mapW, mapH);
+
+    // Preload Pokémon sprites for this map + player party, then adjacent maps
+    MapPreloader.ensureMapReady(this, this.mapKey).then(() => {
+      MapPreloader.preloadAdjacentMaps(this, this.mapKey);
+    });
 
     // Init encounter system
     this.encounterSystem = new EncounterSystem();
@@ -285,6 +291,9 @@ export class OverworldScene extends Phaser.Scene {
 
     const { x: tx, y: ty } = this.player.getTilePosition();
     const gm = GameManager.getInstance();
+
+    // Proximity-based preloading for nearby warp targets
+    MapPreloader.checkProximity(this, this.mapDef, tx, ty);
 
     // Persist position
     gm.setPlayerPosition({

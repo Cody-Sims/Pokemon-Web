@@ -22,6 +22,26 @@ export class StarterSelectScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Ensure starter front sprites are loaded (they're not in encounter tables)
+    let needsLoad = false;
+    for (const s of this.starters) {
+      const data = pokemonData[s.id];
+      if (!data) continue;
+      const name = data.name.toLowerCase();
+      if (!this.textures.exists(data.spriteKeys.front)) {
+        this.load.image(data.spriteKeys.front, `assets/sprites/pokemon/${name}-front.png`);
+        needsLoad = true;
+      }
+    }
+    if (needsLoad) {
+      this.load.once('complete', () => this.buildUI());
+      this.load.start();
+    } else {
+      this.buildUI();
+    }
+  }
+
+  private buildUI(): void {
     // Darken background
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7);
 

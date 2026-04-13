@@ -171,7 +171,8 @@ pokemon-web/
 │       │   ├── EncounterSystem.ts     # Step counter → random encounter + fishing
 │       │   ├── GameClock.ts           # Accelerated day/night cycle (10× speed)
 │       │   ├── InputManager.ts        # Unified WASD/Arrow/touch → direction
-│       │   └── AnimationHelper.ts     # Registers shared sprite animations
+│       │   ├── AnimationHelper.ts     # Registers shared sprite animations
+│       │   └── MapPreloader.ts        # Proximity-based Pokémon sprite preloader
 │       │
 │       ├── ui/                         # Reusable UI components
 │       │   ├── theme.ts               # Shared colors, fonts, spacing, mobile scaling helpers
@@ -235,9 +236,17 @@ pokemon-web/
 - Immediately transitions to `PreloadScene`.
 
 ### PreloadScene
-- Loads every asset (tilesets, spritesheets, Tiled JSONs, audio).
+- Loads shared essentials: tilesets, player/NPC atlases, audio, and Pokémon **icon** sprites.
+- Pokémon front/back battle sprites are **not** loaded here; they are deferred to `MapPreloader`.
 - Displays an animated progress bar using the assets from `BootScene`.
 - On completion → `TitleScene`.
+
+### Asset Preloading Strategy
+- **Boot**: `PreloadScene` loads only assets needed everywhere (tileset, player atlas, NPC atlases, all audio, Pokémon icons).
+- **Map enter**: `MapPreloader.ensureMapReady()` loads front/back sprites for the current map's encounter table + trainer parties + the player's party. Resolves as a Promise before adjacent preloading starts.
+- **Adjacent preload**: `MapPreloader.preloadAdjacentMaps()` queues sprites for all warp-connected maps in the background.
+- **Proximity preload**: On each player step, `MapPreloader.checkProximity()` checks Manhattan distance to every warp tile. When the player is within 8 tiles of a warp, the target map's sprites are preloaded.
+- **On-demand fallback**: `StarterSelectScene`, `PokedexScene`, and `SummaryScene` load individual sprites on demand if not yet cached.
 
 ### TitleScene
 - Animated title screen with menu: **New Game / Continue / Options**.
