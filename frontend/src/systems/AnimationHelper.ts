@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { WALK_DURATION } from '@utils/constants';
 
 /** Helper to register shared sprite animations. */
 export class AnimationHelper {
@@ -15,8 +14,8 @@ export class AnimationHelper {
           start: 0,
           end: 3,
         }),
-        duration: WALK_DURATION,
-        repeat: 0,
+        frameRate: 8,
+        repeat: -1,
       });
 
       scene.anims.create({

@@ -516,7 +516,6 @@ export class OverworldScene extends Phaser.Scene {
     // Walk
     const animDir = input.direction === 'right' ? 'left' : input.direction;
     const flipX = input.direction === 'right';
-    this.lastAnimKey = '';  // Reset so walk animation restarts each tile move
     this.playAnim(`player-walk-${animDir}`, flipX);
     this.player.move(input.direction);
   }

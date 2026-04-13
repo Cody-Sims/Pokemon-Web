@@ -5,6 +5,9 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Fixed
+- Player walk animation no longer spins/restarts every frame — restored `repeat: -1` for continuous walk cycle during movement, removed per-frame `lastAnimKey` reset that was causing the animation to restart from frame 0 each tick
+
 ### Added
 - **UI Testing — Scene State Machine & Regression Tests**
   - `overworld-animation.test.ts`: Validates animation key stability to prevent player rotation bugs — idle/walk animation resolution, facing→key mapping, rapid direction change handling
