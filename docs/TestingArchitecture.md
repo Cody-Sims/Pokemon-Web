@@ -4,7 +4,7 @@
 
 The testing system is a **5-layer automated test suite** designed to catch regressions in game logic, data integrity, UI flows, and scene stability — without requiring human playtesting. Tests are ordered by speed and cost: fast unit tests run on every change, while slow E2E/fuzz tests run before commits or nightly.
 
-**Current stats:** 1089 tests across 33 test files, running in ~1 second (unit + integration).
+**Current stats:** 1172 tests across 38 test files, running in ~1 second (unit + integration).
 
 ---
 
@@ -93,6 +93,11 @@ tests/
 | `map-data` | `map-data.test.ts` | Tile constants unique, all tiles have colors, SOLID_TILES correctness (trees/water/walls solid; paths/doors/grass not) |
 | `audio-keys` | `audio-keys.test.ts` | BGM/SFX keys non-empty, unique, expected tracks exist, MAP_BGM maps to valid BGM keys |
 | `constants` | `constants.test.ts` | All game constants valid ranges (TILE_SIZE > 0, CRIT_CHANCE ∈ (0,1), MAX_PARTY_SIZE = 6, etc.) |
+| `OverworldScene animation` | `overworld-animation.test.ts` | Idle animation stability (no thrashing/rotation), walk animation key resolution, facing→animation mapping, input gating during transitions, rapid direction change handling |
+| `BattleUIScene state machine` | `battle-ui-state-machine.test.ts` | Input blocking during animation, action/move menu navigation, state transitions (actions↔moves↔animating↔message), ESC-exits-battle bug documentation, exhaustive state×input matrix |
+| `Scene lifecycle` | `scene-lifecycle.test.ts` | Input gating across scene overlays, pause/resume correctness, transition guards, menu close→resume flow, battle end→overworld return sequence |
+| `GridMovement` | `grid-movement.test.ts` | 4-direction movement, collision blocking, facing updates, movement locking during tweens, multi-step paths, NPC collision, Trainer line-of-sight (all 4 directions), NPC opposite-direction facing |
+| `InputManager` | `input-manager.test.ts` | Direction priority (up>down>left>right), WASD alternatives, confirm/cancel JustDown behavior, ESC=cancel=menu shared key documentation |
 
 ---
 
@@ -123,6 +128,7 @@ tests/
 | `boot-to-title.spec.ts` | Canvas renders, no console errors on boot, canvas has valid dimensions |
 | `new-game-flow.spec.ts` | Title → New Game transition works without crash |
 | `menu-navigation.spec.ts` | Menu opens/closes without crash |
+| `ui-regression.spec.ts` | Player idle rotation bug check, ESC-in-battle safety, rapid ESC stress test, rapid direction changes, menu open/close/resume cycle, menu save option |
 
 ---
 
