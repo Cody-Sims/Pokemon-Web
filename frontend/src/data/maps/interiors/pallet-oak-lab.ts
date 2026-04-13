@@ -104,7 +104,18 @@ export const palletOakLab: MapDefinition = {
       interactionType: 'pc',
     },
   ],
-  trainers: [],
+  trainers: [
+    {
+      id: 'lab-rival-kael',
+      trainerId: 'rival-1',
+      tileX: 8,
+      tileY: 9,
+      textureKey: 'rival',
+      facing: 'left',
+      lineOfSight: 3,
+      condition: 'receivedStarter',
+    },
+  ],
   warps: [
     { tileX: 5, tileY: 11, targetMap: 'pallet-town', targetSpawnId: 'from-oak-lab' },
     { tileX: 6, tileY: 11, targetMap: 'pallet-town', targetSpawnId: 'from-oak-lab' },

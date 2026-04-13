@@ -69,9 +69,42 @@ A coastal island chain where ancient ruins dot the landscape and **Aether** flow
 ### Gameplay Polish ✓
 > Trainer walk-toward-player on LoS trigger with wall-blocked line of sight. Trainer sprites in battle (enemy trainer + player character behind Pokémon). Player depth fix (renders between ground and tall grass). Quit-to-title button in pause menu. Delete Save option on title screen.
 
+### Phase 9: Story & Quest Wiring (In Progress)
+> **Rival Encounters Placed**: Kael rival-1 in Oak's Lab (post-starter), Kael rival-2 on Route 3, Kael tag-battle NPC in Ironvale City, Kael rival-5 on Victory Road. Marina encounter on Route 2. **Missing Quest Definitions Added**: Captain Stern's Engine, The Chef's Special, Power Restoration, The Restless Spirit, The Dragon's Lament, Volcanic Survey, The Father's Trail (7 new quest definitions in quest-data.ts, total 12). **Dr. Ash NPC** placed in Cinderfall Town (Volcanic Survey quest giver). **Remaining work**: Kael encounter 4 needs Route 8 (Stormbreak Pass) map. Kael encounter 6 + Marina encounter 4 need post-game areas. Quest step trigger automation (observer pattern for flag→step mapping). Quest log/journal UI.
+
 ---
 
 ## Remaining Phases
+
+### Phase 9 Completion — Story & Quest Wiring (Immediate Next)
+
+**Rival System:**
+- Route 8 (Stormbreak Pass) map + Kael encounter 4 placement
+- Post-game Aether Sanctum map + Kael encounter 6
+- Crystal Cavern depths expansion + Marina encounter 4
+- Tag-battle system for Ironvale Kael/player vs. Synthesis Admins co-op
+
+**Quest Step Automation:**
+- Observer pattern: game events (defeated trainer, picked item, entered area) → auto-complete quest steps
+- Collector's Challenge: "show Pokémon" interaction with Magnus (detect party type)
+- Mine Clearance: link Ember Mines grunt defeats to quest step flags
+- Berry Farming: berry planting mechanic at route locations
+- Lost Pokémon: Geodude encounter trigger in Viridian Forest
+- Stern's Engine: place 3 grunt encounters guarding engine parts on Route 3 / Coral Harbor
+- Power Restoration: place 3 conduit interaction points in Voltara City
+- Restless Spirit: place 3 memory fragment objects in Wraithmoor Town
+- Dragon's Lament: place herb/mineral pickup objects in Verdantia and Ember Mines
+- Volcanic Survey: place 5 vent interaction points near Cinderfall/Victory Road
+
+**Quest UI:**
+- Quest Journal scene (accessible from pause menu)
+- Active quest tracker (HUD overlay showing current step)
+- Quest completion notifications
+
+**House Interiors:**
+- Generic reusable house interior (8×8) for residential buildings
+- Add warps from city house doors to generic interiors
+- Per-town NPC dialogue in houses for flavor and lore
 
 ### Post-Game Content (Not Yet Implemented)
 

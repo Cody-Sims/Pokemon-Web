@@ -71,6 +71,15 @@ export const route2: MapDefinition = {
   ],
   trainers: [
     {
+      id: 'route2-marina',
+      trainerId: 'marina-1',
+      tileX: 7,
+      tileY: 13,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      lineOfSight: 3,
+    },
+    {
       id: 'route2-youngster-4',
       trainerId: 'youngster-4',
       tileX: 14,

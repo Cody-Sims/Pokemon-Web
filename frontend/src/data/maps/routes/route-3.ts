@@ -88,6 +88,15 @@ export const route3: MapDefinition = {
   ],
   trainers: [
     {
+      id: 'route3-rival-kael',
+      trainerId: 'rival-2',
+      tileX: 10,
+      tileY: 4,
+      textureKey: 'rival',
+      facing: 'down',
+      lineOfSight: 4,
+    },
+    {
       id: 'route3-swimmer-1',
       trainerId: 'swimmer-1',
       tileX: 10,
