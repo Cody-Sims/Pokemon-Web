@@ -116,7 +116,7 @@ export const verdantiaVillage: MapDefinition = {
     // Buildings
     { tileX: 4, tileY: 4, targetMap: 'verdantia-pokecenter', targetSpawnId: 'default' },
     { tileX: 11, tileY: 9, targetMap: 'verdantia-pokemart', targetSpawnId: 'default' },
-    { tileX: 4, tileY: 19, targetMap: 'verdantia-gym', targetSpawnId: 'default' },
+    { tileX: 5, tileY: 19, targetMap: 'verdantia-gym', targetSpawnId: 'default' },
     // South exit → Voltara City
     { tileX: 9, tileY: 24, targetMap: 'voltara-city', targetSpawnId: 'from-verdantia' },
     { tileX: 10, tileY: 24, targetMap: 'voltara-city', targetSpawnId: 'from-verdantia' },
@@ -127,6 +127,6 @@ export const verdantiaVillage: MapDefinition = {
     'from-voltara':     { x: 10, y: 23, direction: 'up' },
     'from-pokecenter':  { x: 4, y: 5, direction: 'down' },
     'from-pokemart':    { x: 11, y: 10, direction: 'down' },
-    'from-gym':         { x: 4, y: 20, direction: 'down' },
+    'from-gym':         { x: 5, y: 20, direction: 'down' },
   },
 };

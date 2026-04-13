@@ -55,7 +55,7 @@ export const wraithmoorTown: MapDefinition = {
     { tileX: 12, tileY: 24, targetMap: 'route-7', targetSpawnId: 'from-wraithmoor' },
     { tileX: 4, tileY: 4, targetMap: 'wraithmoor-pokecenter', targetSpawnId: 'default' },
     { tileX: 11, tileY: 9, targetMap: 'wraithmoor-pokemart', targetSpawnId: 'default' },
-    { tileX: 4, tileY: 19, targetMap: 'wraithmoor-gym', targetSpawnId: 'default' },
+    { tileX: 5, tileY: 19, targetMap: 'wraithmoor-gym', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default': { x: 12, y: 12, direction: 'up' },
@@ -63,6 +63,6 @@ export const wraithmoorTown: MapDefinition = {
     'from-route-7': { x: 12, y: 23, direction: 'up' },
     'from-pokecenter': { x: 4, y: 5, direction: 'down' },
     'from-pokemart': { x: 11, y: 10, direction: 'down' },
-    'from-gym': { x: 4, y: 20, direction: 'down' },
+    'from-gym': { x: 5, y: 20, direction: 'down' },
   },
 };

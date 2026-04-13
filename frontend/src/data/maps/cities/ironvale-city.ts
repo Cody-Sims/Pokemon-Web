@@ -113,6 +113,31 @@ export const ironvaleCity: MapDefinition = {
       requireFlag: 'found_mines_terminal',
       setsFlag: 'saw_aldric_hologram',
     },
+    // Kael — tag-battle partner (story encounter 3)
+    {
+      id: 'ironvale-kael',
+      tileX: 15,
+      tileY: 15,
+      textureKey: 'rival',
+      facing: 'left',
+      dialogue: [
+        'Kael: Those Synthesis creeps are trying to take the forge!',
+        'Kael: I\'m not letting that happen. You with me?',
+        'Kael: Let\'s take them down — together!',
+      ],
+      flagDialogue: [
+        {
+          flag: 'ironvale_tag_battle_won',
+          dialogue: [
+            'Kael: Ha! They didn\'t stand a chance against the two of us!',
+            'Kael: ...Something about what they\'re doing to Pokémon really bugs me.',
+            'Kael: It\'s not right. Pokémon aren\'t lab experiments.',
+          ],
+        },
+      ],
+      requireFlag: 'found_mines_terminal',
+      setsFlag: 'met_kael_ironvale',
+    },
   ],
   trainers: [],
   warps: [
@@ -125,7 +150,7 @@ export const ironvaleCity: MapDefinition = {
     // Buildings
     { tileX: 4, tileY: 4, targetMap: 'ironvale-pokecenter', targetSpawnId: 'default' },
     { tileX: 11, tileY: 9, targetMap: 'ironvale-pokemart', targetSpawnId: 'default' },
-    { tileX: 4, tileY: 20, targetMap: 'ironvale-gym', targetSpawnId: 'default' },
+    { tileX: 5, tileY: 20, targetMap: 'ironvale-gym', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default':         { x: 12, y: 15, direction: 'up' },
@@ -133,6 +158,6 @@ export const ironvaleCity: MapDefinition = {
     'from-route-5':    { x: 12, y: 28, direction: 'up' },
     'from-pokecenter': { x: 4, y: 5, direction: 'down' },
     'from-pokemart':   { x: 11, y: 10, direction: 'down' },
-    'from-gym':        { x: 4, y: 21, direction: 'down' },
+    'from-gym':        { x: 5, y: 21, direction: 'down' },
   },
 };

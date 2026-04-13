@@ -153,7 +153,7 @@ export const voltaraCity: MapDefinition = {
     // Buildings
     { tileX: 4, tileY: 4, targetMap: 'voltara-pokecenter', targetSpawnId: 'default' },
     { tileX: 12, tileY: 9, targetMap: 'voltara-pokemart', targetSpawnId: 'default' },
-    { tileX: 4, tileY: 20, targetMap: 'voltara-gym', targetSpawnId: 'default' },
+    { tileX: 5, tileY: 20, targetMap: 'voltara-gym', targetSpawnId: 'default' },
     // North exit → Route 6
     { tileX: 11, tileY: 29, targetMap: 'route-6', targetSpawnId: 'from-voltara' },
     { tileX: 12, tileY: 29, targetMap: 'route-6', targetSpawnId: 'from-voltara' },
@@ -164,6 +164,6 @@ export const voltaraCity: MapDefinition = {
     'from-route-6':     { x: 12, y: 28, direction: 'up' },
     'from-pokecenter':  { x: 4, y: 5, direction: 'down' },
     'from-pokemart':    { x: 12, y: 10, direction: 'down' },
-    'from-gym':         { x: 4, y: 21, direction: 'down' },
+    'from-gym':         { x: 5, y: 21, direction: 'down' },
   },
 };

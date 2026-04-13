@@ -51,6 +51,32 @@ export const cinderfallTown: MapDefinition = {
       dialogue: ['Hot Spring Attendant: Welcome! Our springs heal all ailments.',
         'Your Pokémon feel refreshed and fully healed!'],
       interactionType: 'heal' },
+    // Dr. Ash — Volcanic Survey quest giver
+    { id: 'cinderfall-dr-ash', tileX: 18, tileY: 20, textureKey: 'generic-trainer', facing: 'left',
+      dialogue: [
+        'Dr. Ash: I\'m studying the volcanic activity around Cinderfall.',
+        'Dr. Ash: I need temperature readings from 5 vents, but the wild Pokémon are too aggressive.',
+        'Dr. Ash: Could you take this device and record the data for me?',
+      ],
+      setsFlag: 'quest_volcanicSurvey_started',
+      flagDialogue: [
+        {
+          flag: 'quest_volcanicSurvey_complete',
+          dialogue: [
+            'Dr. Ash: The data is incredible! Thank you!',
+            'Dr. Ash: Here — take this Fire Stone and Charcoal as thanks.',
+          ],
+        },
+        {
+          flag: 'quest_volcanicSurvey_started',
+          dialogue: [
+            'Dr. Ash: Still collecting readings?',
+            'Dr. Ash: The vents are scattered around Victory Road and the routes nearby.',
+            'Dr. Ash: Be careful — Fire-types guard the vents!',
+          ],
+        },
+      ],
+    },
   ],
   trainers: [],
   warps: [
@@ -60,7 +86,7 @@ export const cinderfallTown: MapDefinition = {
     { tileX: 12, tileY: 24, targetMap: 'victory-road', targetSpawnId: 'from-cinderfall' },
     { tileX: 4, tileY: 4, targetMap: 'cinderfall-pokecenter', targetSpawnId: 'default' },
     { tileX: 11, tileY: 9, targetMap: 'cinderfall-pokemart', targetSpawnId: 'default' },
-    { tileX: 4, tileY: 18, targetMap: 'cinderfall-gym', targetSpawnId: 'default' },
+    { tileX: 5, tileY: 18, targetMap: 'cinderfall-gym', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default': { x: 12, y: 12, direction: 'up' },
@@ -68,6 +94,6 @@ export const cinderfallTown: MapDefinition = {
     'from-victory-road': { x: 12, y: 23, direction: 'up' },
     'from-pokecenter': { x: 4, y: 5, direction: 'down' },
     'from-pokemart': { x: 11, y: 10, direction: 'down' },
-    'from-gym': { x: 4, y: 19, direction: 'down' },
+    'from-gym': { x: 5, y: 19, direction: 'down' },
   },
 };

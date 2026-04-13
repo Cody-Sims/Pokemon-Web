@@ -148,7 +148,7 @@ export const viridianCity: MapDefinition = {
     { tileX: 21, tileY: 10, targetMap: 'viridian-pokemart', targetSpawnId: 'default' },
   ],
   spawnPoints: {
-    'default':         { x: 14, y: 15, direction: 'up' },
+    'default':         { x: 14, y: 13, direction: 'up' },
     'from-route-1':    { x: 14, y: 28, direction: 'up' },
     'from-route-2':    { x: 14, y: 1,  direction: 'down' },
     'from-pokecenter': { x: 11, y: 11, direction: 'down' },

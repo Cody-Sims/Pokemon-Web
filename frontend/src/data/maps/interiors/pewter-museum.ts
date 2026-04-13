@@ -62,6 +62,6 @@ export const pewterMuseum: MapDefinition = {
     { tileX: 7, tileY: 9, targetMap: 'pewter-city', targetSpawnId: 'from-museum' },
   ],
   spawnPoints: {
-    'default': { x: 7, y: 8, direction: 'up' },
+    'default': { x: 7, y: 7, direction: 'up' },
   },
 };

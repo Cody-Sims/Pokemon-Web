@@ -5,7 +5,22 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Added
+- **Rival encounters placed on maps**: Kael rival-1 in Oak's Lab (post-starter trigger), Kael rival-2 on Route 3 (Tide Pool Path), Kael tag-battle NPC in Ironvale City (story-gated), Kael rival-5 on Victory Road entrance, Marina encounter on Route 2
+- **7 missing quest definitions**: Added Captain Stern's Engine, The Chef's Special, Power Restoration, The Restless Spirit, The Dragon's Lament, Volcanic Survey, and The Father's Trail to quest-data.ts (12 total quests now defined)
+- **Dr. Ash NPC**: Placed Volcanologist Dr. Ash in Cinderfall Town as Volcanic Survey quest giver with flag-gated dialogue
+- **Phase 9 in plan.md**: New "Story & Quest Wiring" phase documenting rival placement, quest definitions, and itemized remaining work (quest step automation, quest UI, house interiors, Route 8/post-game maps)
+
 ### Fixed
+- **Map connection audit & fixes**: Audited all 51 maps (195 warps, 123 spawn points) for connection integrity.
+  - Fixed default spawn in viridian-city landing on GYM_ROOF tile — moved to PATH.
+  - Fixed default spawn in pewter-city landing on GYM_WALL tile — moved to PATH.
+  - Fixed default spawn in pewter-museum landing on DISPLAY_CASE tile — moved to FLOOR.
+  - Fixed coral-harbor north warps to route-3 landing on TREE tiles — moved to PATH opening.
+  - Fixed coral-harbor PokéMart warp on MART_WALL — moved to MART_DOOR tile.
+  - Fixed gym warp tiles in coral-harbor, ironvale-city, verdantia-village, voltara-city, wraithmoor-town, scalecrest-citadel, and cinderfall-town from GYM_WALL to GYM_DOOR.
+  - Updated all corresponding from-gym and from-pokemart spawn points to align with corrected door positions.
+  - Opened victory-road north wall (rows 0–1) to create passable entrance for Pokémon League warps and from-league spawn.
 - **Battle trainer sprite size**: Increased enemy trainer sprite scale from 1.5 to 3 so the trainer appears larger than the Pokémon, and increased alpha from 0.7 to 0.85 for better visibility.
 - **Difficulty screen overlay**: Made difficulty selection background fully opaque so title screen no longer bleeds through. Disabled title menu keyboard/pointer handlers while difficulty screen is open and restored them on cancel.
 

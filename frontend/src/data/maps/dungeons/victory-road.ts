@@ -2,8 +2,8 @@ import { MapDefinition, parseMap } from '../shared';
 
 // Victory Road — Final dungeon before Pokémon League
 const victoryRoadGround = parseMap([
-  ';;;;;;;;;;;;;;;;;;;;',
-  ';,,,,,,,,;;,,,,,,,,;',
+  ';;;;;;;;,,;;;;;;;;;;',
+  ';,,,,,,,,,;,,,,,,,,;',
   ';,,q,,,,,;;,,,q,,,,;',
   ';,,,,,,,,,,,,,,,,,,;',
   ';,,,,,,,,,,,,,,,,,,;',
@@ -37,6 +37,7 @@ export const victoryRoad: MapDefinition = {
       dialogue: ['VICTORY ROAD', 'Only trainers with 8 Badges may pass!'] },
   ],
   trainers: [
+    { id: 'vr-rival-kael', trainerId: 'rival-5', tileX: 10, tileY: 21, textureKey: 'rival', facing: 'up', lineOfSight: 4 },
     { id: 'vr-ace-1', trainerId: 'ace-trainer-1', tileX: 5, tileY: 5, textureKey: 'generic-trainer', facing: 'right', lineOfSight: 4 },
     { id: 'vr-ace-2', trainerId: 'ace-trainer-2', tileX: 14, tileY: 12, textureKey: 'generic-trainer', facing: 'left', lineOfSight: 4 },
     { id: 'vr-ace-3', trainerId: 'ace-trainer-3', tileX: 5, tileY: 19, textureKey: 'generic-trainer', facing: 'right', lineOfSight: 4 },

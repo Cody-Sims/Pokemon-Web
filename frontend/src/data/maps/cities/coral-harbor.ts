@@ -162,22 +162,22 @@ export const coralHarbor: MapDefinition = {
   trainers: [],
   warps: [
     // North exit → Route 3
-    { tileX: 14, tileY: 0, targetMap: 'route-3', targetSpawnId: 'from-coral' },
-    { tileX: 15, tileY: 0, targetMap: 'route-3', targetSpawnId: 'from-coral' },
+    { tileX: 11, tileY: 0, targetMap: 'route-3', targetSpawnId: 'from-coral' },
+    { tileX: 12, tileY: 0, targetMap: 'route-3', targetSpawnId: 'from-coral' },
     // Building doors
     { tileX: 4, tileY: 4, targetMap: 'coral-pokecenter', targetSpawnId: 'default' },
-    { tileX: 13, tileY: 9, targetMap: 'coral-pokemart', targetSpawnId: 'default' },
-    { tileX: 4, tileY: 20, targetMap: 'coral-gym', targetSpawnId: 'default' },
+    { tileX: 11, tileY: 9, targetMap: 'coral-pokemart', targetSpawnId: 'default' },
+    { tileX: 5, tileY: 20, targetMap: 'coral-gym', targetSpawnId: 'default' },
     // South exit → Route 4
     { tileX: 4, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },
     { tileX: 5, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },
   ],
   spawnPoints: {
-    'default':           { x: 14, y: 15, direction: 'down' },
-    'from-route-3':      { x: 14, y: 1, direction: 'down' },
+    'default':           { x: 11, y: 15, direction: 'down' },
+    'from-route-3':      { x: 11, y: 1, direction: 'down' },
     'from-route-4':      { x: 5, y: 27, direction: 'up' },
     'from-pokecenter':   { x: 4, y: 5, direction: 'down' },
-    'from-pokemart':     { x: 13, y: 10, direction: 'down' },
-    'from-gym':          { x: 4, y: 21, direction: 'down' },
+    'from-pokemart':     { x: 11, y: 10, direction: 'down' },
+    'from-gym':          { x: 5, y: 21, direction: 'down' },
   },
 };

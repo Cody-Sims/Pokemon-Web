@@ -145,7 +145,7 @@ export const pewterCity: MapDefinition = {
     { tileX: 29, tileY: 19, targetMap: 'route-3', targetSpawnId: 'from-pewter' },
   ],
   spawnPoints: {
-    'default':         { x: 14, y: 15, direction: 'up' },
+    'default':         { x: 14, y: 12, direction: 'up' },
     'from-forest':     { x: 14, y: 28, direction: 'up' },
     'from-pokecenter': { x: 11, y: 11, direction: 'down' },
     'from-gym':        { x: 15, y: 17, direction: 'down' },
