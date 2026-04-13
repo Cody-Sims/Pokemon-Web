@@ -20,15 +20,27 @@ interface TrackedTouch {
  * The virtual joystick appears at the user's touch location (left 60% of screen).
  * Tapping anywhere on screen acts as spacebar / confirm for interactions and dialog.
  */
+interface ButtonDef {
+  cx: number;
+  cy: number;
+  radius: number;
+  action: 'confirm' | 'cancel';
+  bg: Phaser.GameObjects.Arc;
+}
+
 export class TouchControls {
   private scene: Phaser.Scene;
   private container: Phaser.GameObjects.Container;
+  private buttonContainer!: Phaser.GameObjects.Container;
   private joystick: VirtualJoystick;
   private joystickEnabled = true;
   private confirmPressed = false;
   private cancelPressed = false;
   private menuBtn!: Phaser.GameObjects.Container;
   private readonly menuBtnSize = 36;
+  private readonly btnSize = 72;
+  private readonly padding = 16;
+  private buttons: ButtonDef[] = [];
 
   // Tap tracking
   private trackedTouches = new Map<number, TrackedTouch>();
@@ -44,6 +56,13 @@ export class TouchControls {
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.container = scene.add.container(0, 0).setDepth(1000).setScrollFactor(0);
+    this.buttonContainer = scene.add.container(0, 0);
+    this.container.add([this.buttonContainer]);
+
+    // A/B buttons (bottom-right)
+    this.createButtons();
+    this.layout();
+    this.bindActionPointer();
 
     // Create joystick (activates on left 60% of screen)
     this.joystick = new VirtualJoystick(scene);
@@ -57,6 +76,7 @@ export class TouchControls {
 
     // Re-layout on resize
     scene.scale.on('resize', () => {
+      this.layout();
       this.layoutMenuButton();
       this.updateDOMLayout();
     });
@@ -90,8 +110,9 @@ export class TouchControls {
         // Don't count as tap if joystick was tracking this touch
         if (this.joystick.isTrackingPointer(t.identifier)) continue;
 
-        // Don't count as tap if it hit the menu button
+        // Don't count as tap if it hit the menu button or A/B buttons
         if (this.isMenuButtonHit(tracked.startX, tracked.startY)) continue;
+        if (this.isActionButtonHit(tracked.startX, tracked.startY)) continue;
 
         const elapsed = performance.now() - tracked.startTime;
         const dx = t.clientX - tracked.startX;
@@ -192,6 +213,7 @@ export class TouchControls {
     if (!controlsEl) return;
 
     this.setupDOMJoystick();
+    this.setupDOMButtons();
 
     // Initial layout + listen for orientation/resize changes
     requestAnimationFrame(() => this.updateDOMLayout());
@@ -299,6 +321,112 @@ export class TouchControls {
     zone.addEventListener('touchcancel', endHandler, { passive: true });
   }
 
+  private layout(): void {
+    const { width, height } = this.scene.cameras.main;
+    this.buttonContainer.setPosition(width - this.padding - this.btnSize / 2 - 8, height - this.padding - this.btnSize - 40);
+    this.recalcButtonPositions();
+  }
+
+  private recalcButtonPositions(): void {
+    const btnX = this.buttonContainer.x;
+    const btnY = this.buttonContainer.y;
+    for (const btn of this.buttons) {
+      const localX = btn.bg.parentContainer?.x ?? 0;
+      const localY = btn.bg.parentContainer?.y ?? 0;
+      btn.cx = btnX + localX;
+      btn.cy = btnY + localY;
+    }
+  }
+
+  /** Check if a game-coord point hits one of the action buttons. */
+  private isActionButtonHitGame(gx: number, gy: number): boolean {
+    for (const btn of this.buttons) {
+      const dx = gx - btn.cx;
+      const dy = gy - btn.cy;
+      const r = btn.radius + 10;
+      if (dx * dx + dy * dy <= r * r) return true;
+    }
+    return false;
+  }
+
+  /** Check if a client-coord tap hit an action button. */
+  private isActionButtonHit(clientX: number, clientY: number): boolean {
+    const canvas = this.scene.game.canvas;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = this.scene.cameras.main.width / rect.width;
+    const scaleY = this.scene.cameras.main.height / rect.height;
+    const gx = (clientX - rect.left) * scaleX;
+    const gy = (clientY - rect.top) * scaleY;
+    return this.isActionButtonHitGame(gx, gy);
+  }
+
+  private bindActionPointer(): void {
+    const canvas = this.scene.game.canvas;
+
+    const getGameCoords = (clientX: number, clientY: number) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = this.scene.cameras.main.width / rect.width;
+      const scaleY = this.scene.cameras.main.height / rect.height;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY,
+      };
+    };
+
+    const handleDown = (clientX: number, clientY: number) => {
+      if (!this.container.visible) return;
+      const { x: px, y: py } = getGameCoords(clientX, clientY);
+      for (const btn of this.buttons) {
+        const dx = px - btn.cx;
+        const dy = py - btn.cy;
+        if (dx * dx + dy * dy <= btn.radius * btn.radius) {
+          if (btn.action === 'confirm') {
+            this.confirmPressed = true;
+            btn.bg.fillAlpha = 0.9;
+          } else if (btn.action === 'cancel') {
+            this.cancelPressed = true;
+            btn.bg.fillAlpha = 0.9;
+          }
+          return;
+        }
+      }
+    };
+
+    const handleUp = () => {
+      for (const btn of this.buttons) {
+        btn.bg.fillAlpha = 0.5;
+      }
+    };
+
+    canvas.addEventListener('touchstart', (e) => {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        handleDown(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
+      }
+    }, { passive: true });
+    canvas.addEventListener('touchend', () => handleUp(), { passive: true });
+    canvas.addEventListener('touchcancel', () => handleUp(), { passive: true });
+    canvas.addEventListener('mousedown', (e) => handleDown(e.clientX, e.clientY));
+    canvas.addEventListener('mouseup', () => handleUp());
+  }
+
+  private createButtons(): void {
+    const aBtn = this.makeActionButton(0, -48, 'A', 0x44aa55, 'confirm');
+    const bBtn = this.makeActionButton(0, 48, 'B', 0xaa4444, 'cancel');
+    this.buttonContainer.add([aBtn, bBtn]);
+  }
+
+  private makeActionButton(x: number, y: number, label: string, color: number, action: 'confirm' | 'cancel'): Phaser.GameObjects.Container {
+    const c = this.scene.add.container(x, y);
+    const radius = this.btnSize * 0.48;
+    const bg = this.scene.add.circle(0, 0, radius, color, 0.5);
+    const txt = this.scene.add.text(0, 0, label, {
+      fontSize: '26px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
+    }).setOrigin(0.5);
+    c.add([bg, txt]);
+    this.buttons.push({ cx: 0, cy: 0, radius, action, bg });
+    return c;
+  }
+
   /** Check if a client-coordinate point hits the menu button area. */
   private isMenuButtonHit(clientX: number, clientY: number): boolean {
     const canvas = this.scene.game.canvas;
@@ -347,8 +475,32 @@ export class TouchControls {
     this.menuBtn.setPosition(width - this.menuBtnSize / 2 - 12, this.menuBtnSize / 2 + 12);
   }
 
+  private setupDOMButtons(): void {
+    const btnA = document.getElementById('btn-a');
+    const btnB = document.getElementById('btn-b');
+
+    if (btnA) {
+      btnA.addEventListener('touchstart', () => {
+        this.confirmPressed = true;
+        btnA.classList.add('pressed');
+      }, { passive: true });
+      btnA.addEventListener('touchend', () => btnA.classList.remove('pressed'), { passive: true });
+      btnA.addEventListener('touchcancel', () => btnA.classList.remove('pressed'), { passive: true });
+    }
+
+    if (btnB) {
+      btnB.addEventListener('touchstart', () => {
+        this.cancelPressed = true;
+        btnB.classList.add('pressed');
+      }, { passive: true });
+      btnB.addEventListener('touchend', () => btnB.classList.remove('pressed'), { passive: true });
+      btnB.addEventListener('touchcancel', () => btnB.classList.remove('pressed'), { passive: true });
+    }
+  }
+
   destroy(): void {
     this.container.destroy(true);
     this.joystick.destroy();
+    this.buttons = [];
   }
 }
