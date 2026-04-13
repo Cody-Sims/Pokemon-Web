@@ -6,6 +6,18 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Phase 2: Gameplay Depth — Battle System Expansion (partial)**
+  - **HeldItemHandler** (`frontend/src/battle/HeldItemHandler.ts`): Held item effect system with hooks for end-of-turn (Leftovers, Black Sludge), after-damage (Focus Sash survive at 1 HP), attack-landed (Life Orb recoil), status-applied (Lum Berry, type-specific cure berries), HP-threshold (Sitrus Berry, Oran Berry), and damage modifiers (Life Orb 1.3×, Choice Band/Specs 1.5×, Muscle Band 1.1×, Wise Glasses 1.1×). Berries consumed on use, permanent items persist.
+  - **WeatherManager** (`frontend/src/battle/WeatherManager.ts`): Battle weather system with 4 conditions (Sun, Rain, Sandstorm, Hail), 5-turn default duration, damage multipliers (Sun: Fire ×1.5/Water ×0.5, Rain: Water ×1.5/Fire ×0.5), end-of-turn damage for Sandstorm/Hail (1/16 HP with type immunities), weather tick/expiry, weather indicator in battle UI
+  - **Multi-condition evolution**: Updated evolution-data.ts type signature to use `EvolutionCondition` discriminated union supporting level, item, trade, friendship, location, and move-known conditions. Added `ExperienceCalculator.checkLevelUpEvolution()` for unified evolution checking (level + friendship + move-known). Friendship gains on level-up (+2-5 based on current friendship), friendship loss on faint (-1).
+  - **Held items in item-data**: Added Leftovers, Life Orb, Choice Band, Choice Specs, Focus Sash, Sitrus Berry, Oran Berry, Lum Berry, Cheri/Rawst/Aspear/Chesto/Pecha berries, and evolution stones (Fire/Water/Thunder/Leaf/Moon Stone)
+  - **DamageCalculator integration**: Now applies ability-based immunity checks, ability damage modifiers, held item damage modifiers, and weather damage multipliers
+  - **BattleManager integration**: Stores and exposes WeatherManager instance, cleans up on battle end
+  - **BattleUIScene integration**: Ability onAfterDamage hooks (contact effects), held item hooks (Life Orb recoil, Focus Sash, status berries, HP threshold berries) after each move, ability/held item/weather end-of-turn effects, weather tick with expiry messages, weather indicator display
+  - **Summary screen**: Shows Ability and Held Item on INFO tab
+  - AbilityHandler already existed with onSwitchIn, onAfterDamage, onEndOfTurn, modifyDamage, checkImmunity hooks (created by prior agent)
+
+### Added
 - **Complete Gen 1 Pokédex (151 Pokémon)** — Expanded from ~44 to all 151 original Pokémon with accurate base stats, learnsets, abilities, catch rates, exp yields, and evolution chains
 - **Data folder restructure: pokemon/** — Split `pokemon-data.ts` into `data/pokemon/` folder with per-primary-type files: `normal.ts` (22), `water.ts` (28), `poison.ts` (14), `grass.ts` (12), `fire.ts` (12), `bug.ts` (12), `electric.ts` (9), `rock.ts` (9), `ground.ts` (8), `psychic.ts` (8), `fighting.ts` (7), `ghost.ts` (3), `dragon.ts` (3), `fairy.ts` (2), `ice.ts` (2), and barrel `index.ts`
 - **Complete evolution data** — All Gen 1 evolution chains including level-up, stone evolutions (fire/water/thunder/moon/leaf), and trade evolutions

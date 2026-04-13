@@ -1,7 +1,7 @@
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
-import { TRAINER_EXP_MULTIPLIER } from '@utils/constants';
-
+import { TRAINER_EXP_MULTIPLIER } from '@utils/constants';import { EvolutionCondition } from '@utils/type-helpers';
+import { evolutionData } from '@data/evolution-data';
 /** Nature stat modifiers: [increased stat, decreased stat]. Neutral natures omitted. */
 const natureModifiers: Record<string, { up: keyof Omit<import('@utils/type-helpers').Stats, 'hp'>; down: keyof Omit<import('@utils/type-helpers').Stats, 'hp'> } | null> = {
   hardy: null, docile: null, serious: null, bashful: null, quirky: null,
@@ -93,6 +93,9 @@ export class ExperienceCalculator {
       if (data) {
         ExperienceCalculator.recalculateStats(pokemon);
       }
+
+      // Friendship gain on level up
+      ExperienceCalculator.applyFriendshipGain(pokemon);
     }
 
     return { levelsGained, newLevel: pokemon.level, newMoves };
@@ -124,5 +127,57 @@ export class ExperienceCalculator {
     if (pokemon.currentHp > pokemon.stats.hp) {
       pokemon.currentHp = pokemon.stats.hp;
     }
+  }
+
+  /**
+   * Check if a Pokémon meets any evolution condition after level-up.
+   * Checks level, friendship, and move-known conditions.
+   * Returns the evolvesTo id or null.
+   */
+  static checkLevelUpEvolution(pokemon: PokemonInstance): number | null {
+    const evos = evolutionData[pokemon.dataId];
+    if (!evos) return null;
+
+    for (const evo of evos) {
+      if (ExperienceCalculator.meetsCondition(pokemon, evo.condition)) {
+        return evo.evolvesTo;
+      }
+    }
+    return null;
+  }
+
+  /** Check if a Pokémon meets a single evolution condition. */
+  static meetsCondition(pokemon: PokemonInstance, condition: EvolutionCondition): boolean {
+    switch (condition.type) {
+      case 'level':
+        return condition.level != null && pokemon.level >= condition.level;
+      case 'friendship':
+        return condition.friendship != null && pokemon.friendship >= condition.friendship;
+      case 'move-known':
+        return condition.moveId != null && pokemon.moves.some(m => m.moveId === condition.moveId);
+      case 'item':
+        // Item evolutions are triggered from inventory, not level-up
+        return false;
+      case 'trade':
+        // Trade evolutions handled by NPC interaction
+        return false;
+      case 'location':
+        // Location evolutions need overworld checking
+        return false;
+      default:
+        return false;
+    }
+  }
+
+  /** Apply friendship gain on level up (+3 to +5 based on current friendship). */
+  static applyFriendshipGain(pokemon: PokemonInstance): void {
+    if (pokemon.friendship < 100) pokemon.friendship = Math.min(255, pokemon.friendship + 5);
+    else if (pokemon.friendship < 200) pokemon.friendship = Math.min(255, pokemon.friendship + 3);
+    else pokemon.friendship = Math.min(255, pokemon.friendship + 2);
+  }
+
+  /** Apply friendship loss on faint (-1). */
+  static applyFriendshipLoss(pokemon: PokemonInstance): void {
+    pokemon.friendship = Math.max(0, pokemon.friendship - 1);
   }
 }

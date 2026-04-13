@@ -3,6 +3,9 @@ import { moveData } from '@data/moves';
 import { BattleStateMachine } from './BattleStateMachine';
 import { MoveExecutor } from './MoveExecutor';
 import { StatusEffectHandler } from './StatusEffectHandler';
+import { WeatherManager } from './WeatherManager';
+import { AbilityHandler } from './AbilityHandler';
+import { HeldItemHandler } from './HeldItemHandler';
 
 export type BattleType = 'wild' | 'trainer';
 
@@ -22,6 +25,7 @@ export class BattleManager {
   private playerActiveIndex = 0;
   private enemyActiveIndex = 0;
   private statusHandler: StatusEffectHandler;
+  private weatherManager: WeatherManager;
 
   constructor(config: BattleConfig) {
     this.config = config;
@@ -29,6 +33,7 @@ export class BattleManager {
     this.enemyActive = config.enemyParty[0];
     this.fsm = new BattleStateMachine();
     this.statusHandler = new StatusEffectHandler();
+    this.weatherManager = new WeatherManager();
     this.statusHandler.initPokemon(this.playerActive);
     this.statusHandler.initPokemon(this.enemyActive);
     this.setupStates();
@@ -91,6 +96,7 @@ export class BattleManager {
   getEnemyActive() { return this.enemyActive; }
   getBattleType() { return this.config.type; }
   getStatusHandler() { return this.statusHandler; }
+  getWeatherManager() { return this.weatherManager; }
 
   /** Player selects a move. Uses StatusEffectHandler for stat stages, status checks, and effects. */
   selectMove(moveId: string): {
@@ -201,9 +207,10 @@ export class BattleManager {
     return true;
   }
 
-  /** Clean up the StatusEffectHandler when the battle ends. */
+  /** Clean up the StatusEffectHandler and WeatherManager when the battle ends. */
   cleanup(): void {
     this.statusHandler.cleanup();
+    this.weatherManager.cleanup();
   }
 
   private getEnemyMove(): string {

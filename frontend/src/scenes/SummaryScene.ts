@@ -3,6 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
+import { itemData } from '@data/item-data';
 import { ExperienceCalculator, getNatureMultiplier, getNatureDescription } from '@battle/ExperienceCalculator';
 import { COLORS, FONTS, SPACING, TYPE_COLORS, CATEGORY_COLORS, drawPanel, drawTypeBadge, drawHpBar, drawButton, hpColor } from '@ui/theme';
 
@@ -120,10 +121,14 @@ export class SummaryScene extends Phaser.Scene {
     this.contentGroup.add(spriteHint);
 
     // Info rows
+    const abilityName = p.ability ?? pData?.abilities?.[0] ?? 'None';
+    const heldItemName = p.heldItem ? (itemData[p.heldItem]?.name ?? p.heldItem) : 'None';
     const rows: [string, string][] = [
       ['Species', pData?.name ?? '???'],
       ['Dex No.', `#${String(p.dataId).padStart(3, '0')}`],
       ['Nature', `${p.nature.charAt(0).toUpperCase() + p.nature.slice(1)} (${getNatureDescription(p.nature)})`],
+      ['Ability', abilityName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')],
+      ['Held Item', heldItemName],
       ['Status', p.status ?? 'Healthy'],
       ['Friendship', `${p.friendship}`],
     ];

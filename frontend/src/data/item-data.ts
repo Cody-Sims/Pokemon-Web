@@ -83,4 +83,98 @@ export const itemData: Record<string, ItemData> = {
     description: 'A high-tech encyclopedia that records Pokémon data.',
     effect: { type: 'key' },
   },
+
+  // ─── Held Items (battle effect handled by HeldItemHandler) ───
+  'leftovers': {
+    id: 'leftovers', name: 'Leftovers', category: 'battle',
+    description: 'Restores 1/16 of max HP at the end of each turn in battle.',
+    effect: { type: 'key' },
+  },
+  'life-orb': {
+    id: 'life-orb', name: 'Life Orb', category: 'battle',
+    description: 'Boosts move power by 30% but costs 10% HP per attack.',
+    effect: { type: 'key' },
+  },
+  'choice-band': {
+    id: 'choice-band', name: 'Choice Band', category: 'battle',
+    description: 'Boosts Attack by 50% but locks into one move.',
+    effect: { type: 'key' },
+  },
+  'choice-specs': {
+    id: 'choice-specs', name: 'Choice Specs', category: 'battle',
+    description: 'Boosts Sp. Atk by 50% but locks into one move.',
+    effect: { type: 'key' },
+  },
+  'focus-sash': {
+    id: 'focus-sash', name: 'Focus Sash', category: 'battle',
+    description: 'Survives a one-hit KO from full HP, leaving 1 HP. Single use.',
+    effect: { type: 'key' },
+  },
+  'sitrus-berry': {
+    id: 'sitrus-berry', name: 'Sitrus Berry', category: 'medicine',
+    description: 'Restores 25% HP when HP drops below 50%. Consumed on use.',
+    effect: { type: 'heal-hp', amount: 0 },
+  },
+  'oran-berry': {
+    id: 'oran-berry', name: 'Oran Berry', category: 'medicine',
+    description: 'Restores 10 HP when HP drops below 50%. Consumed on use.',
+    effect: { type: 'heal-hp', amount: 10 },
+  },
+  'lum-berry': {
+    id: 'lum-berry', name: 'Lum Berry', category: 'medicine',
+    description: 'Cures any status condition when afflicted. Consumed on use.',
+    effect: { type: 'heal-status', status: 'all' },
+  },
+  'cheri-berry': {
+    id: 'cheri-berry', name: 'Cheri Berry', category: 'medicine',
+    description: 'Cures paralysis when afflicted. Consumed on use.',
+    effect: { type: 'heal-status', status: 'paralysis' },
+  },
+  'rawst-berry': {
+    id: 'rawst-berry', name: 'Rawst Berry', category: 'medicine',
+    description: 'Cures a burn when afflicted. Consumed on use.',
+    effect: { type: 'heal-status', status: 'burn' },
+  },
+  'aspear-berry': {
+    id: 'aspear-berry', name: 'Aspear Berry', category: 'medicine',
+    description: 'Cures freeze when afflicted. Consumed on use.',
+    effect: { type: 'heal-status', status: 'freeze' },
+  },
+  'chesto-berry': {
+    id: 'chesto-berry', name: 'Chesto Berry', category: 'medicine',
+    description: 'Wakes up when put to sleep. Consumed on use.',
+    effect: { type: 'heal-status', status: 'sleep' },
+  },
+  'pecha-berry': {
+    id: 'pecha-berry', name: 'Pecha Berry', category: 'medicine',
+    description: 'Cures poison when afflicted. Consumed on use.',
+    effect: { type: 'heal-status', status: 'poison' },
+  },
+
+  // ─── Evolution Stones ───
+  'fire-stone': {
+    id: 'fire-stone', name: 'Fire Stone', category: 'key',
+    description: 'A stone that evolves certain Pokémon. It is colored orange.',
+    effect: { type: 'key' },
+  },
+  'water-stone': {
+    id: 'water-stone', name: 'Water Stone', category: 'key',
+    description: 'A stone that evolves certain Pokémon. It is a blue shard.',
+    effect: { type: 'key' },
+  },
+  'thunder-stone': {
+    id: 'thunder-stone', name: 'Thunder Stone', category: 'key',
+    description: 'A stone that evolves certain Pokémon. It has a thunderbolt pattern.',
+    effect: { type: 'key' },
+  },
+  'leaf-stone': {
+    id: 'leaf-stone', name: 'Leaf Stone', category: 'key',
+    description: 'A stone that evolves certain Pokémon. It has a leaf pattern.',
+    effect: { type: 'key' },
+  },
+  'moon-stone': {
+    id: 'moon-stone', name: 'Moon Stone', category: 'key',
+    description: 'A stone that evolves certain Pokémon. It is found in caves.',
+    effect: { type: 'key' },
+  },
 };

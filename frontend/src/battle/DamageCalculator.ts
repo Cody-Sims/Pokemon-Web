@@ -6,8 +6,9 @@ import { getCombinedEffectiveness } from '@data/type-chart';
 import { STAB_MULTIPLIER, CRIT_CHANCE, CRIT_MULTIPLIER, RANDOM_MIN, RANDOM_MAX } from '@utils/constants';
 import { randomFloat } from '@utils/math-helpers';
 import { PokemonType } from '@utils/type-helpers';
-import type { StatusEffectHandler } from './StatusEffectHandler';
-
+import type { StatusEffectHandler } from './StatusEffectHandler';import { AbilityHandler } from './AbilityHandler';
+import { HeldItemHandler } from './HeldItemHandler';
+import type { WeatherManager } from './WeatherManager';
 export interface DamageResult {
   damage: number;
   effectiveness: number;
@@ -22,6 +23,7 @@ export class DamageCalculator {
     defender: PokemonInstance,
     move: MoveData,
     statusHandler?: StatusEffectHandler,
+    weatherManager?: WeatherManager,
   ): DamageResult {
     if (move.power === null || move.category === 'status') {
       return { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false };
@@ -31,6 +33,12 @@ export class DamageCalculator {
     const defenderData = pokemonData[defender.dataId];
     if (!attackerData || !defenderData) {
       return { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false };
+    }
+
+    // Check ability-based immunities
+    const immunityCheck = AbilityHandler.checkImmunity(defender, move);
+    if (immunityCheck.immune) {
+      return { damage: 0, effectiveness: 0, isCritical: false, isSTAB: false };
     }
 
     const level = attacker.level;
@@ -75,6 +83,17 @@ export class DamageCalculator {
 
     // Random factor
     damage *= randomFloat(RANDOM_MIN, RANDOM_MAX);
+
+    // Weather modifier
+    if (weatherManager) {
+      damage *= weatherManager.getWeatherDamageMultiplier(move.type as PokemonType);
+    }
+
+    // Ability modifier
+    damage *= AbilityHandler.modifyDamage(attacker, defender, move);
+
+    // Held item modifier
+    damage *= HeldItemHandler.modifyDamage(attacker, defender, move);
 
     return {
       damage: Math.max(1, Math.floor(damage)),

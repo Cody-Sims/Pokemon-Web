@@ -85,11 +85,14 @@ pokemon-web/
 │       ├── battle/                     # Battle subsystem
 │       │   ├── BattleManager.ts       # Orchestrates turns, win/loss, party
 │       │   ├── BattleStateMachine.ts  # FSM: INTRO → PLAYER_TURN → CHECK_FAINT → …
-│       │   ├── DamageCalculator.ts    # Pokémon damage formula (STAB, type, crit)
+│       │   ├── DamageCalculator.ts    # Pokémon damage formula (STAB, type, crit, weather, abilities, items)
 │       │   ├── MoveExecutor.ts        # Applies move effects (damage, status, PP)
 │       │   ├── StatusEffectHandler.ts # Burn/paralysis/poison/sleep/freeze logic
+│       │   ├── AbilityHandler.ts      # Ability hooks: switch-in, after-damage, end-of-turn, immunity
+│       │   ├── HeldItemHandler.ts     # Held item hooks: end-of-turn, after-damage, status cure, HP threshold
+│       │   ├── WeatherManager.ts      # Weather conditions (sun/rain/sandstorm/hail) with damage modifiers
 │       │   ├── AIController.ts        # Enemy move selection heuristics
-│       │   ├── ExperienceCalculator.ts # EXP yield, level-up, stat recalc, natures
+│       │   ├── ExperienceCalculator.ts # EXP yield, level-up, stat recalc, natures, evolution checks
 │       │   └── CatchCalculator.ts     # Poké Ball catch-rate formula
 │       │
 │       ├── data/                       # Pure data (no game logic)

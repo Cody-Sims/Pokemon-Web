@@ -5,12 +5,14 @@ import { pokemonData } from '@data/pokemon';
 import { MoveExecutor } from '@battle/MoveExecutor';
 import { ExperienceCalculator } from '@battle/ExperienceCalculator';
 import { StatusEffectHandler } from '@battle/StatusEffectHandler';
+import { AbilityHandler } from '@battle/AbilityHandler';
+import { HeldItemHandler } from '@battle/HeldItemHandler';
+import type { WeatherManager } from '@battle/WeatherManager';
 import type { BattleScene } from './BattleScene';
 import type { PokemonInstance } from '@data/interfaces';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { trainerData } from '@data/trainer-data';
-import { evolutionData } from '@data/evolution-data';
 import { SFX, BGM } from '@utils/audio-keys';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS } from '@ui/theme';
@@ -27,6 +29,8 @@ export class BattleUIScene extends Phaser.Scene {
   private state: UIState = 'actions';
   private messageText!: Phaser.GameObjects.Text;
   private statusHandler!: StatusEffectHandler;
+  private weatherManager!: WeatherManager;
+  private weatherText?: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'BattleUIScene' });
@@ -37,6 +41,12 @@ export class BattleUIScene extends Phaser.Scene {
 
     // Use the StatusEffectHandler from BattleManager (single source of truth)
     this.statusHandler = this.battle().battleManager.getStatusHandler();
+    this.weatherManager = this.battle().battleManager.getWeatherManager();
+
+    // Weather indicator (top-center, hidden initially)
+    this.weatherText = this.add.text(GAME_WIDTH / 2, 12, '', {
+      ...FONTS.caption, fontSize: '12px', color: COLORS.textHighlight,
+    }).setOrigin(0.5).setDepth(50);
 
     // Nine-patch message bar
     new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT - 120, GAME_WIDTH - 20, 30, {
@@ -334,7 +344,35 @@ export class BattleUIScene extends Phaser.Scene {
       }
 
       // Show effect messages (status applied, stat changes, drain, recoil, etc.)
-      const allEffectMsgs = result.effectMessages;
+      const allEffectMsgs = [...result.effectMessages];
+
+      // ── Ability: onAfterDamage (contact effects like Static, Flame Body) ──
+      if (result.moveHit && result.damage.damage > 0) {
+        const md = moveData[moveId];
+        if (md) {
+          const abilityResult = AbilityHandler.onAfterDamage(attacker, defender, md, result.damage.damage);
+          allEffectMsgs.push(...abilityResult.messages);
+        }
+        // ── Held item: Life Orb recoil on attacker ──
+        const lifeOrbResult = HeldItemHandler.onAttackLanded(attacker, result.damage.damage);
+        allEffectMsgs.push(...lifeOrbResult.messages);
+        // ── Held item: Focus Sash on defender ──
+        const focusResult = HeldItemHandler.onAfterDamage(defender, attacker, result.damage.damage, defender.currentHp + result.damage.damage);
+        allEffectMsgs.push(...focusResult.messages);
+        // ── Held item: HP threshold check (Sitrus Berry, etc.) ──
+        const threshResult = HeldItemHandler.checkHPThreshold(defender);
+        allEffectMsgs.push(...threshResult.messages);
+      }
+
+      // ── Held item: status berry check after StatusEffectHandler effects ──
+      if (defender.status) {
+        const statusBerryResult = HeldItemHandler.onStatusApplied(defender);
+        allEffectMsgs.push(...statusBerryResult.messages);
+      }
+      if (attacker.status) {
+        const atkStatusBerry = HeldItemHandler.onStatusApplied(attacker);
+        allEffectMsgs.push(...atkStatusBerry.messages);
+      }
 
       // Handle recoil updating attacker HP bar
       if (result.recoilDamage && result.recoilDamage > 0) {
@@ -424,36 +462,42 @@ export class BattleUIScene extends Phaser.Scene {
     const b = this.battle();
 
     if (idx >= pokemonToCheck.length) {
-      // All end-of-turn done — check if anyone fainted
-      if (b.enemyPokemon.currentHp <= 0) {
-        const defName = pokemonData[b.enemyPokemon.dataId]?.name ?? '???';
-        b.faintSprite(b.enemySprite);
-        this.msg(`${defName} fainted!`);
-        this.time.delayedCall(1500, () => this.runVictorySequence());
-        return;
-      }
-      if (b.playerPokemon.currentHp <= 0) {
-        const defName = pokemonData[b.playerPokemon.dataId]?.name ?? '???';
-        b.faintSprite(b.playerSprite);
-        this.msg(`${defName} fainted!`);
-        this.time.delayedCall(1500, () => {
-          this.msg('You blacked out...');
-          this.state = 'message';
-          this.time.delayedCall(2000, () => this.endBattle());
+      // Weather turn tick
+      const weatherTick = this.weatherManager.tickTurn();
+      if (weatherTick.length > 0) {
+        this.showMessageQueue(weatherTick, 0, () => {
+          this.updateWeatherDisplay();
+          this.checkEndOfTurnFaints();
         });
         return;
       }
-
-      // Next turn
-      this.time.delayedCall(600, () => { this.state = 'actions'; this.showActions(); this.msg('What will you do?'); });
+      this.updateWeatherDisplay();
+      this.checkEndOfTurnFaints();
       return;
     }
 
     const { pokemon, opponent, isPlayer } = pokemonToCheck[idx];
+    const allMessages: string[] = [];
+
+    // Status effect end-of-turn (burn, poison, etc.)
     const eotResult = this.statusHandler.applyEndOfTurn(pokemon, opponent);
-    if (eotResult.messages.length > 0) {
+    allMessages.push(...eotResult.messages);
+
+    // Ability end-of-turn (Speed Boost, Poison Heal, etc.)
+    const abilityEot = AbilityHandler.onEndOfTurn(pokemon);
+    allMessages.push(...abilityEot.messages);
+
+    // Held item end-of-turn (Leftovers, Black Sludge, etc.)
+    const itemEot = HeldItemHandler.onEndOfTurn(pokemon);
+    allMessages.push(...itemEot.messages);
+
+    // Weather end-of-turn damage (Sandstorm, Hail)
+    const weatherEot = this.weatherManager.applyEndOfTurn(pokemon);
+    allMessages.push(...weatherEot.messages);
+
+    if (allMessages.length > 0) {
       b.updateHpBars();
-      this.showMessageQueue(eotResult.messages, 0, () => {
+      this.showMessageQueue(allMessages, 0, () => {
         this.time.delayedCall(400, () => this.runEndOfTurnStep(pokemonToCheck, idx + 1));
       });
     } else {
@@ -466,6 +510,42 @@ export class BattleUIScene extends Phaser.Scene {
     if (idx >= messages.length) { callback(); return; }
     this.msg(messages[idx]);
     this.time.delayedCall(900, () => this.showMessageQueue(messages, idx + 1, callback));
+  }
+
+  /** Update the weather indicator text. */
+  private updateWeatherDisplay(): void {
+    const w = this.weatherManager.getWeather();
+    if (!w || !this.weatherText) {
+      this.weatherText?.setText('');
+      return;
+    }
+    const icons: Record<string, string> = { sun: '☀ Sun', rain: '🌧 Rain', sandstorm: '🌪 Sandstorm', hail: '❄ Hail' };
+    this.weatherText?.setText(`${icons[w] ?? w} (${this.weatherManager.getTurnsRemaining()})`);
+  }
+
+  /** Check if anyone fainted from end-of-turn effects, then advance to next turn. */
+  private checkEndOfTurnFaints(): void {
+    const b = this.battle();
+    if (b.enemyPokemon.currentHp <= 0) {
+      const defName = pokemonData[b.enemyPokemon.dataId]?.name ?? '???';
+      b.faintSprite(b.enemySprite);
+      this.msg(`${defName} fainted!`);
+      this.time.delayedCall(1500, () => this.runVictorySequence());
+      return;
+    }
+    if (b.playerPokemon.currentHp <= 0) {
+      const defName = pokemonData[b.playerPokemon.dataId]?.name ?? '???';
+      b.faintSprite(b.playerSprite);
+      this.msg(`${defName} fainted!`);
+      this.time.delayedCall(1500, () => {
+        this.msg('You blacked out...');
+        this.state = 'message';
+        this.time.delayedCall(2000, () => this.endBattle());
+      });
+      return;
+    }
+    // Next turn
+    this.time.delayedCall(600, () => { this.state = 'actions'; this.showActions(); this.msg('What will you do?'); });
   }
 
   private pickEnemyMove(enemy: PokemonInstance): string {
@@ -694,22 +774,16 @@ export class BattleUIScene extends Phaser.Scene {
   private checkEvolutionThenEnd(): void {
     const b = this.battle();
     const player = b.playerPokemon;
-    const evolutions = evolutionData[player.dataId];
-    if (!evolutions) {
-      this.showTrainerRewardsThenEnd();
-      return;
-    }
 
-    const evo = evolutions.find(e =>
-      e.condition.type === 'level' && e.condition.level != null && player.level >= e.condition.level
-    );
-    if (!evo) {
+    // Use ExperienceCalculator's unified evolution check (level, friendship, move-known)
+    const evolvesTo = ExperienceCalculator.checkLevelUpEvolution(player);
+    if (evolvesTo === null) {
       this.showTrainerRewardsThenEnd();
       return;
     }
 
     const oldData = pokemonData[player.dataId];
-    const newData = pokemonData[evo.evolvesTo];
+    const newData = pokemonData[evolvesTo];
     if (!newData) {
       this.showTrainerRewardsThenEnd();
       return;
@@ -744,7 +818,7 @@ export class BattleUIScene extends Phaser.Scene {
         });
 
         // Update the Pokémon data
-        player.dataId = evo.evolvesTo;
+        player.dataId = evolvesTo;
 
         // Recalculate stats with new base stats
         const newBase = newData.baseStats;
@@ -766,8 +840,8 @@ export class BattleUIScene extends Phaser.Scene {
         // Update name and mark in Pokédex
         b.playerNameText.setText(newData.name);
         const gm = GameManager.getInstance();
-        gm.markSeen(evo.evolvesTo);
-        gm.markCaught(evo.evolvesTo);
+        gm.markSeen(evolvesTo);
+        gm.markCaught(evolvesTo);
 
         this.msg(`Congratulations! ${oldName} evolved into ${newData.name}!`);
         b.updateHpBars();

@@ -112,12 +112,6 @@ export const evolutionData: Record<number, { evolvesTo: number; condition: Evolu
     { evolvesTo: 134, condition: { type: 'item', itemId: 'water-stone' } },
     { evolvesTo: 135, condition: { type: 'item', itemId: 'thunder-stone' } },
     { evolvesTo: 136, condition: { type: 'item', itemId: 'fire-stone' } },
-    { evolvesTo: 196, condition: { type: 'friendship', friendship: 220 } }, // Espeon (day)
-  ],
-  // ─── Friendship-based ───
-  // Golbat → Crobat
-  42: [
-    { evolvesTo: 169, condition: { type: 'friendship', friendship: 220 } },
   ],
   // ─── Fossils ───
   138: [{ evolvesTo: 139, condition: { type: 'level', level: 40 } }],
