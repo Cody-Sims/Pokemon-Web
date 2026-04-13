@@ -73,9 +73,7 @@ pokemon-web/
 │       │   ├── SummaryScene.ts         # 3-tab Pokémon detail (INFO/STATS/MOVES)
 │       │   ├── TransitionScene.ts      # Fade transitions between scenes
 │       │   ├── StarterSelectScene.ts   # Starter Pokémon selection overlay
-│       │   ├── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
-│       │   ├── ShopScene.ts           # PokéMart buy/sell UI with quantity selector
-│       │   └── PCScene.ts            # PC Storage: 12 boxes × 30 slots, party↔box transfers
+│       │   └── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
 │       │
 │       ├── entities/                   # Game object classes
 │       │   ├── Player.ts              # Grid-locked sprite + GridMovement
@@ -155,8 +153,7 @@ pokemon-web/
 │       │   ├── item-data.ts           # ~20 items (potions, balls, key items)
 │       │   ├── trainer-data.ts        # Trainer rosters, dialogue, rewards
 │       │   ├── encounter-tables.ts    # Per-route wild Pokémon + level ranges
-│       │   ├── evolution-data.ts      # Evolution conditions (level, item, trade)
-│       │   └── shop-data.ts          # Per-town PokéMart inventories
+│       │   └── evolution-data.ts      # Evolution conditions (level, item, trade)
 │       │
 │       ├── managers/                   # Singleton service classes
 │       │   ├── GameManager.ts         # Central state: party, bag, badges, flags
@@ -176,6 +173,7 @@ pokemon-web/
 │       │   ├── theme.ts               # Shared colors, fonts, spacing, helpers
 │       │   ├── NinePatchPanel.ts      # Nine-patch style panel (rounded, shadowed)
 │       │   ├── MenuController.ts      # Unified menu input (1D/2D grid, kb+mouse)
+│       │   ├── TouchControls.ts       # Virtual D-pad + A/B buttons for mobile
 │       │   ├── HealthBar.ts           # Animated HP bar widget
 │       │   ├── TextBox.ts            # Typewriter text display
 │       │   ├── MenuList.ts           # Selectable vertical menu (legacy)

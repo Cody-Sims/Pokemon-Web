@@ -22,6 +22,9 @@ export class GameManager {
     musicVolume: 0.5,
     sfxVolume: 0.7,
     battleAnimations: true,
+    textScale: 'medium',
+    colorblindMode: 'off',
+    reducedMotion: false,
   };
 
   private constructor() {

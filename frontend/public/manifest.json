@@ -1,0 +1,23 @@
+{
+  "name": "Pokemon Web",
+  "short_name": "PokéWeb",
+  "description": "A browser-based Pokémon-style RPG",
+  "start_url": "/Pokemon-Web/",
+  "scope": "/Pokemon-Web/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0f0f1a",
+  "theme_color": "#ffcc00",
+  "icons": [
+    {
+      "src": "assets/ui/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/ui/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

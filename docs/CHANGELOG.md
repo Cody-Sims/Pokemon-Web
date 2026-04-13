@@ -6,6 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Phase 7: Mobile & Accessibility — COMPLETE**
+  - **TouchControls** (`frontend/src/ui/TouchControls.ts`): Virtual D-pad (bottom-left) + A/B buttons (bottom-right) as Phaser GameObjects. Auto-detected via `navigator.maxTouchPoints`. D-pad emits directional input, A = confirm, B = cancel. Responsive layout on resize. Integrated into InputManager (touch direction/confirm/cancel merged with keyboard).
+  - **Accessibility settings in SettingsScene**: Text Size (small/medium/large), Colorblind Mode (off/protanopia/deuteranopia), Reduced Motion toggle. All persisted to localStorage via GameManager settings.
+  - **PWA Support**: `manifest.json` (standalone display, landscape orientation, theme color #ffcc00, app icons), `sw.js` service worker (cache-first for assets, network-first for HTML, cache cleanup on activation). `index.html` updated with manifest link, theme-color meta, apple-mobile-web-app meta, `touch-action: none`, viewport `user-scalable=no`, and SW registration script.
+  - Responsive scaling already existed (Phaser.Scale.FIT + CENTER_BOTH)
+
 - **Pokémon Catching — Full Implementation**
   - BattleUIScene: BAG now passes `battleMode: true` to InventoryScene; listens for `use-pokeball` event to trigger catch sequence
   - Catch sequence: CatchCalculator computes catch/shakes from HP%, status, ball multiplier → ball throw arc animation → 0-3 shake wobble animations with SFX → success (sparkle + add to party/PC + Pokédex + victory BGM) or failure (break-free message + enemy free attack)

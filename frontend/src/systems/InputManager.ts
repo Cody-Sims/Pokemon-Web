@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
+import { TouchControls } from '@ui/TouchControls';
 
 export interface InputState {
   direction: Direction | null;
@@ -8,12 +9,13 @@ export interface InputState {
   menu: boolean;
 }
 
-/** Unified input manager: WASD/Arrow keys + confirm/cancel. */
+/** Unified input manager: WASD/Arrow keys + touch controls. */
 export class InputManager {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasd!: Record<string, Phaser.Input.Keyboard.Key>;
   private confirmKey!: Phaser.Input.Keyboard.Key;
   private cancelKey!: Phaser.Input.Keyboard.Key;
+  private touchControls?: TouchControls;
 
   constructor(scene: Phaser.Scene) {
     const kb = scene.input.keyboard!;
@@ -26,9 +28,14 @@ export class InputManager {
     };
     this.confirmKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.cancelKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
+    // Create touch controls on touch-capable devices
+    if (TouchControls.isTouchDevice()) {
+      this.touchControls = new TouchControls(scene);
+    }
   }
 
-  /** Poll current input state. */
+  /** Poll current input state (keyboard + touch merged). */
   getState(): InputState {
     let direction: Direction | null = null;
 
@@ -37,13 +44,25 @@ export class InputManager {
     else if (this.cursors.left.isDown || this.wasd.A.isDown) direction = 'left';
     else if (this.cursors.right.isDown || this.wasd.D.isDown) direction = 'right';
 
+    // Merge touch input
+    if (!direction && this.touchControls) {
+      direction = this.touchControls.getDirection();
+    }
+
     const escPressed = Phaser.Input.Keyboard.JustDown(this.cancelKey);
+    const touchConfirm = this.touchControls?.consumeConfirm() ?? false;
+    const touchCancel = this.touchControls?.consumeCancel() ?? false;
 
     return {
       direction,
-      confirm: Phaser.Input.Keyboard.JustDown(this.confirmKey),
-      cancel: escPressed,
-      menu: escPressed,
+      confirm: Phaser.Input.Keyboard.JustDown(this.confirmKey) || touchConfirm,
+      cancel: escPressed || touchCancel,
+      menu: escPressed || touchCancel,
     };
+  }
+
+  /** Get the touch controls instance (or undefined on desktop). */
+  getTouchControls(): TouchControls | undefined {
+    return this.touchControls;
   }
 }

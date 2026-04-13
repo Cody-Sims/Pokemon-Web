@@ -23,6 +23,9 @@ const SETTING_DEFS: SettingDef[] = [
   { key: 'musicVolume', label: 'Music Volume', type: 'slider', min: 0, max: 1, step: 0.1, format: (v) => `${Math.round(v * 100)}%` },
   { key: 'sfxVolume', label: 'SFX Volume', type: 'slider', min: 0, max: 1, step: 0.1, format: (v) => `${Math.round(v * 100)}%` },
   { key: 'battleAnimations', label: 'Battle Animations', type: 'cycle', options: ['true', 'false'] },
+  { key: 'textScale', label: 'Text Size', type: 'cycle', options: ['small', 'medium', 'large'] },
+  { key: 'colorblindMode', label: 'Colorblind Mode', type: 'cycle', options: ['off', 'protanopia', 'deuteranopia'] },
+  { key: 'reducedMotion', label: 'Reduced Motion', type: 'cycle', options: ['false', 'true'] },
 ];
 
 export class SettingsScene extends Phaser.Scene {
@@ -55,8 +58,8 @@ export class SettingsScene extends Phaser.Scene {
     this.add.rectangle(GAME_WIDTH / 2, 70, 180, 2, COLORS.borderHighlight, 0.4);
 
     // Settings rows
-    const startY = 110;
-    const rowH = 50;
+    const startY = 100;
+    const rowH = 40;
     this.settingTexts = [];
 
     SETTING_DEFS.forEach((def, i) => {
@@ -160,8 +163,12 @@ export class SettingsScene extends Phaser.Scene {
     if (def.type === 'slider' && def.format) {
       return def.format(typeof val === 'number' ? val : parseFloat(String(val)) || 0);
     }
-    if (def.key === 'battleAnimations') {
+    if (def.key === 'battleAnimations' || def.key === 'reducedMotion') {
       return String(val) === 'true' ? 'ON' : 'OFF';
+    }
+    if (def.key === 'colorblindMode') {
+      const labels: Record<string, string> = { off: 'Off', protanopia: 'Protanopia', deuteranopia: 'Deuteranopia' };
+      return labels[String(val)] ?? String(val);
     }
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
   }

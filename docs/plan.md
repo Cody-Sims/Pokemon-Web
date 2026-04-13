@@ -259,7 +259,9 @@ Players have a reason to replay. Nuzlocke and Hard Mode create meaningfully diff
 
 ---
 
-## Phase 7: Mobile & Accessibility
+## Phase 7: Mobile & Accessibility — COMPLETE
+
+> **Completed 2026-04-12.** TouchControls component (virtual D-pad + A/B buttons, auto-detected on touch devices, integrated into InputManager). Responsive scaling already in place (Phaser.Scale.FIT + CENTER_BOTH). Accessibility settings: text size (small/medium/large), colorblind mode (off/protanopia/deuteranopia), reduced motion toggle — all in SettingsScene and persisted to localStorage. PWA support: manifest.json with standalone display + landscape orientation, service worker with cache-first for assets and network-first for HTML, add-to-home-screen ready. Index.html updated with theme-color, apple-mobile-web-app meta tags, touch-action:none, and SW registration.
 
 **Goal:** Make the game playable on mobile and accessible to more players.
 
