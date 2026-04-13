@@ -141,10 +141,12 @@ export class OverworldScene extends Phaser.Scene {
     const mapPixelH = mapH * TILE_SIZE;
 
     if (this.mapDef.isInterior && mapPixelW <= GAME_WIDTH && mapPixelH <= GAME_HEIGHT) {
-      // Small interior — center the camera on the map, don't follow player
+      // Small interior — center the map in the viewport, don't follow player
       this.cameras.main.stopFollow();
-      this.cameras.main.setBounds(0, 0, mapPixelW, mapPixelH);
-      this.cameras.main.centerOn(mapPixelW / 2, mapPixelH / 2);
+      this.cameras.main.setBackgroundColor(0x202020);
+      // Position camera so map is centered in the game window
+      this.cameras.main.scrollX = (mapPixelW - GAME_WIDTH) / 2;
+      this.cameras.main.scrollY = (mapPixelH - GAME_HEIGHT) / 2;
     } else {
       this.cameras.main.startFollow(this.player, true);
       this.cameras.main.setBounds(0, 0, mapPixelW, mapPixelH);

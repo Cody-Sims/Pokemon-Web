@@ -6,13 +6,15 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Fixed
+- **Interior map centering**: Small interior maps (Oak's Lab, houses, etc.) now render centered in the game window instead of anchored to the top-left corner. Fixed by using direct camera scroll offset instead of `setBounds`+`centerOn` which couldn't scroll past the small map bounds. Added dark background color for the area outside the map.
+
 - **Building entry warp blocking**: Players can now enter buildings before receiving a starter Pokémon. The "You should go see Prof. Oak first!" message now only blocks route exits, not building doors. Previously all warps were blocked when the party was empty, making it impossible to enter Oak's Lab to receive a starter.
 - **Pallet Town tile alignment**: Complete rewrite of Pallet Town map grid. Fixed north exit from single P to proper PP (2-wide). Connected house door paths to the main horizontal path (path now spans col 5-20). Fixed Oak's Lab wall gap on row 12 (was 12 tiles instead of 13). All 20 rows now exactly 25 characters matching declared width.
 - **Map width consistency**: Normalized all exterior map row widths to match declared dimensions. Fixed viridian-city (rows were 31-32, now all 30), pewter-city (mixed 30/32, now all 30), viridian-forest (rows were 24, now all 25), route-2 (2 rows were 22, now 20).
 - **Pewter City warp positions**: Corrected door warp coordinates to match actual tile positions after width normalization — PokéCenter door at col 11, Gym door at col 15, Museum door at col 12.
 
 ### Changed
-- **Tileset quality upgrade**: Replaced programmatically generated tileset with artist-drawn CC0 terrain tiles (ArMM1998 "Zelda-like tilesets") for grass, paths, trees, water, flowers, fences, ledges. Building and interior tiles redrawn as high-quality pixel art with proper shading, detail, and color schemes (e.g., PokéCenter red cross roof, Mart blue "M" roof, bookshelf with colored books, heal machine with ball tray, PC with glowing monitor).
+- **Tileset quality upgrade v2**: Using Tuxemon tileset by Buch (CC-BY 3.0) for grass terrain — clean Pokemon Gold/Silver-style green grass with subtle diagonal pattern. Custom warm dirt path tile matching the grass palette. Custom Pokemon-style tall grass with V-shaped blade pattern on grass base. Hand-drawn tree with trunk/canopy on grass base. Buildings and interior tiles refined with proper pixel art shading. Previous ArMM1998 CC0 tiles replaced where they didn't match the Pokemon art direction.
 
 ### Added
 - **Tileset-Based Map Rendering — Replaced Procedural Rectangles with Sprite Tileset**

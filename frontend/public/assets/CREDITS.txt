@@ -1,9 +1,10 @@
 - Overworld Tileset: "200+ Tileset - Legend of Pocket Monsters" by Chad Wolfe (Chloe Wolfe)
   License: CC-BY 3.0 | https://opengameart.org/content/200-tileset-legend-of-pocket-monsters
 
-- Map Tileset (tileset.png): Terrain tiles from "Zelda-like tilesets and sprites" by ArMM1998
-  License: CC0 (Public Domain) | https://opengameart.org/content/zelda-like-tilesets-and-sprites
-  Building and interior tiles: custom pixel art generated for this project
+- Map Tileset (tileset.png):
+  Grass, flowers, water, fence tiles from "Tuxemon tileset" by Buch
+  License: CC-BY 3.0 | https://opengameart.org/content/tuxemon-tileset
+  Path, trees, tall grass, buildings, and interior tiles: custom pixel art for this project
 
 - Character Sprites: "Tiny Characters Set" by Fleurman
   License: CC0 | https://opengameart.org/content/tiny-characters-set
