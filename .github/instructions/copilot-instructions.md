@@ -53,6 +53,34 @@ If a task introduces new scenes, managers, systems, entities, data files, or cha
 - `npm run build` — Type-check then build for production
 - `npm run preview` — Preview production build locally
 
+## Testing (MANDATORY)
+The project has a comprehensive 5-layer test suite. See [docs/TestingArchitecture.md](../../docs/TestingArchitecture.md) for full details.
+
+### Test Commands
+- `npm run test` — Run all unit + integration tests (< 2s)
+- `npm run test:unit` — Unit tests only
+- `npm run test:integration` — Integration tests only
+- `npm run test:watch` — Watch mode
+- `npm run test:coverage` — Tests with V8 coverage report
+- `npm run test:e2e` — Playwright E2E tests (needs dev server)
+- `npm run test:fuzz` — Fuzz/monkey testing
+- `npm run test:all` — All Vitest + Playwright tests
+
+### Test Workflow
+After making changes:
+1. Run `npm run test` — fast feedback on logic correctness
+2. If modifying battle logic, data files, or managers — check that relevant tests pass
+3. Before committing, run `npm run test:e2e` if UI/scene changes were made
+4. When adding new modules, add corresponding tests in `tests/unit/` or `tests/integration/`
+
+### Test Conventions
+- Unit tests go in `tests/unit/<module>.test.ts`
+- Integration tests go in `tests/integration/<feature>.test.ts`
+- E2E tests go in `tests/e2e/<flow>.spec.ts`
+- Seed `Math.random` in `beforeEach` for determinism
+- Reset singleton managers (`GameManager`, `SaveManager`, etc.) between tests
+- Use `it.each()` for data-driven exhaustive coverage
+
 ## Git Workflow (MANDATORY)
 After completing a task, **stage and commit all changed files** with a short but detailed commit message describing what was done. Use imperative mood (e.g., "Add fire-type moves and update type chart"). If a task spans multiple logical changes, use separate commits for each. Do not amend or force-push without explicit approval.
 
