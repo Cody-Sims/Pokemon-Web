@@ -15,6 +15,10 @@ All notable changes to the Pokemon Web project.
 ### Changed
 - **Mobile canvas centering**: Switched from `CENTER_BOTH` to `CENTER_HORIZONTALLY` on touch devices so the canvas sits at the top of the viewport, maximizing the area available for controls.
 
+### Fixed
+- **Double-tap zoom**: Blocked `dblclick` and Safari gesture events to prevent accidental zoom-in on mobile that couldn't be reversed due to touch controls consuming pinch gestures.
+- **Long-press copy/select**: Added `user-select: none`, `-webkit-touch-callout: none` on html/body/canvas and blocked `contextmenu` event to prevent accidental text selection and copy sheet on mobile.
+
 ---
 
 ## [2026-04-12]

@@ -10,7 +10,9 @@
   <title>Pokemon Web</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; touch-action: none; }
+    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; touch-action: none;
+      user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    canvas { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
     #mobile-controls {
       position: fixed; left: 0; right: 0; bottom: 0;
       display: none; flex-direction: row; align-items: center; justify-content: space-between;
@@ -62,6 +64,15 @@
     </div>
   </div>
   <script type="module" src="/src/main.ts"></script>
+  <script>
+    // Prevent double-tap zoom and pinch zoom on iOS/Android
+    document.addEventListener('dblclick', function(e) { e.preventDefault(); }, { passive: false });
+    document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+    document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
+    document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
+    // Block context menu (long-press copy)
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+  </script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
