@@ -5,6 +5,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
+import { TouchControls } from '@ui/TouchControls';
 
 /** Text speed options: delay (ms) per character. 0 = instant. */
 const TEXT_SPEEDS: Record<string, number> = {
@@ -128,6 +129,17 @@ export class DialogueScene extends Phaser.Scene {
 
     // Input — tap to advance on touch devices
     this.input.on('pointerdown', () => this.handleInput());
+  }
+
+  /** Poll touch A button each frame (raw DOM events bypass Phaser scenes). */
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeConfirm()) {
+      this.handleInput();
+    }
+    if (tc?.consumeCancel()) {
+      if (!this.inChoiceMode) this.closeDialogue();
+    }
   }
 
   private handleInput(): void {

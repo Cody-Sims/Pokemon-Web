@@ -18,6 +18,7 @@ import { trainerData } from '@data/trainer-data';
 import { SFX, BGM } from '@utils/audio-keys';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
+import { TouchControls } from '@ui/TouchControls';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message';
 
@@ -34,6 +35,7 @@ export class BattleUIScene extends Phaser.Scene {
   private statusHandler!: StatusEffectHandler;
   private weatherManager!: WeatherManager;
   private weatherText?: Phaser.GameObjects.Text;
+  private pendingWaitConfirm?: () => void;
 
   constructor() {
     super({ key: 'BattleUIScene' });
@@ -90,6 +92,21 @@ export class BattleUIScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-ENTER', () => this.confirm());
     this.input.keyboard!.on('keydown-SPACE', () => this.confirm());
     this.input.keyboard!.on('keydown-ESC', () => this.cancel());
+  }
+
+  /** Poll touch A/B buttons each frame. */
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeConfirm()) {
+      if (this.pendingWaitConfirm) {
+        const cb = this.pendingWaitConfirm;
+        this.pendingWaitConfirm = undefined;
+        cb();
+      } else {
+        this.confirm();
+      }
+    }
+    if (tc?.consumeCancel()) this.cancel();
   }
 
   private battle(): BattleScene { return this.scene.get('BattleScene') as BattleScene; }
@@ -1072,11 +1089,13 @@ export class BattleUIScene extends Phaser.Scene {
     const handler = () => {
       if (fired) return;
       fired = true;
+      this.pendingWaitConfirm = undefined;
       this.input.keyboard!.off('keydown-ENTER', handler);
       this.input.keyboard!.off('keydown-SPACE', handler);
       this.input.off('pointerdown', handler);
       callback();
     };
+    this.pendingWaitConfirm = handler;
     this.input.keyboard!.on('keydown-ENTER', handler);
     this.input.keyboard!.on('keydown-SPACE', handler);
     this.input.on('pointerdown', handler);

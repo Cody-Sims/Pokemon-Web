@@ -29,6 +29,7 @@ interface ButtonDef {
 }
 
 export class TouchControls {
+  private static activeInstance?: TouchControls;
   private scene: Phaser.Scene;
   private container: Phaser.GameObjects.Container;
   private buttonContainer!: Phaser.GameObjects.Container;
@@ -55,6 +56,7 @@ export class TouchControls {
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
+    TouchControls.activeInstance = this;
     this.container = scene.add.container(0, 0).setDepth(1000).setScrollFactor(0);
     this.buttonContainer = scene.add.container(0, 0);
     this.container.add([this.buttonContainer]);
@@ -199,6 +201,17 @@ export class TouchControls {
         this.updateDOMLayout();
       }
     }
+  }
+
+  /** Get the active TouchControls instance (if any). */
+  static getInstance(): TouchControls | undefined {
+    return TouchControls.activeInstance;
+  }
+
+  /** Drain any pending confirm/cancel without returning them. */
+  drain(): void {
+    this.confirmPressed = false;
+    this.cancelPressed = false;
   }
 
   /** Check if the device supports touch. */

@@ -40,6 +40,8 @@ export class OverworldScene extends Phaser.Scene {
   private lastAnimKey = '';
   private lastFlipX = false;
   private transitioning = false;
+  /** Frames to skip confirm input after resuming (prevents re-trigger). */
+  private resumeCooldown = 0;
 
   constructor() {
     super({ key: 'OverworldScene' });
@@ -164,6 +166,12 @@ export class OverworldScene extends Phaser.Scene {
 
     // Input
     this.inputManager = new InputManager(this);
+
+    // Drain pending touch input when resuming to prevent re-triggering interactions
+    this.events.on('resume', () => {
+      this.inputManager.getTouchControls()?.drain();
+      this.resumeCooldown = 2;
+    });
 
     // ── Audio: play map BGM ──
     const audio = AudioManager.getInstance();
@@ -669,6 +677,12 @@ export class OverworldScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(tint);
 
     const input = this.inputManager.getState();
+
+    // Cooldown after scene resume to prevent re-triggering interactions
+    if (this.resumeCooldown > 0) {
+      this.resumeCooldown--;
+      return;
+    }
 
     // Menu
     if (input.menu) {
