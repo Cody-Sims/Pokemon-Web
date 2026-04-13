@@ -8,6 +8,7 @@ All notable changes to the Pokemon Web project.
 ### Changed
 - **Pallet Town**: Expanded map from 25×20 to 25×30 with a southern dock and sea area. Path from Oak's Lab opens south to a wooden pier (DOCK_PLANK tiles) extending into the ocean. Shore has proper sand → wet sand → water transitions with a palm tree. Added Fisherman Wade NPC on the dock (gives Old Rod), and a pier sign.
 - **Route 1**: Complete ground redesign with coherent design zones. North has dense contiguous meadows flanking the path; upper-mid has a solid east meadow block with ledge shortcut; center has organized flower beds forming a clearing (Rook rest area); lower section has a large east meadow block; south is clean and open near Pallet. Replaced scattered random grass/rock/bush placements with intentional natural formations. Repositioned trainers to guard meadow edges.
+- **Route 2**: Complete ground redesign with four clear zones. North has dense forest-edge meadows on both sides; cave area has a proper cliff-face formation with rocks leading to a visible cave mouth entrance; center has a symmetrical flower clearing for the Marina rival battle; south has contiguous west and east meadow blocks with a ledge shortcut. Cleaned up random scattered tiles into intentional groupings. Repositioned trainers to guard meadows.
 
 ### Fixed
 - **Pewter City**: Fixed row 19 width mismatch (31→30 chars). All rows now consistently 30 characters wide. Fixed east exit path to Route 3 with proper connectivity.

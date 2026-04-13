@@ -2,36 +2,40 @@ import { MapDefinition, parseMap } from '../shared';
 
 const route2Ground = parseMap([
   // 01234567890123456789
-  'TTTTTTT.PP.TTTTTTTTT', // 0  - north exit to Viridian Forest
+  'TTTTTTT.PP.TTTTTTTTT', // 0  north exit to Viridian Forest
   'T........PP........T', // 1
-  'T..GGG...PP...GGG..T', // 2
-  'T..GGG...PP...GGG..T', // 3
-  'T..GGG...PP...GGG..T', // 4
-  'T........PP........T', // 5
-  'T....PPPPPPPPPP....T', // 6
-  'T....PP............T', // 7
-  'T....PP....GGG..^,,T', // 8  cave entrance east
-  'T....PP....GGG..^,,T', // 9
-  'T....PP.........^..T', // 10
-  'T....PPPPPPPPPP....T', // 11
+  // ═══ NORTH: forest-edge meadows ═══
+  'T.GGGGG..PP..GGGGG.T', // 2  dense grass both sides
+  'T.GGGGG..PP..GGGGG.T', // 3  contiguous meadow
+  'T..GGG...PP...GGG..T', // 4  tapers toward path
+  // ═══ CRYSTAL CAVERN: proper cave entrance ═══
+  'T........PP....^^^^T', // 5  cliff face wall begins
+  'T....PPPPPP...^^^^^T', // 6  path branches east to cave
+  'T....PP..~~..^^,,,,T', // 7  rocks lead to cave floor
+  'T....PP..~~.^^^,,,,T', // 8  cave entrance mouth
+  'T....PP..~~.^^^,,,,T', // 9  cave entrance mouth
+  'T....PP.....^^,,,,;T', // 10 deep cave corner
+  'T....PPPPPPPP.^^^..T', // 11 path reconnects, cliff ends
+  // ═══ MARINA CLEARING: open rival battle area ═══
   'T........PP........T', // 12
-  'T..GG....PP....GG..T', // 13
-  'T..GG....PP....GG..T', // 14
-  'T........PP........T', // 15
+  'T..ff....PP....ff..T', // 13 flowers frame the clearing
+  'T.ffff...PP...ffff.T', // 14 lush flower beds
+  'T..ff....PP....ff..T', // 15 symmetrical clearing
   'T........PP........T', // 16
-  'T...GGG..PP..GGG...T', // 17
-  'T...GGG..PP..GGG...T', // 18
-  'T...GGG..PP..GGG...T', // 19
-  'T........PP........T', // 20
-  'T..f.....PP.....f..T', // 21
-  'T........PP........T', // 22
-  'T..GG....PP....GG..T', // 23
-  'T..GG....PP....GG..T', // 24
+  // ═══ SOUTH MEADOWS: grass blocks + ledge ═══
+  'T.GGGGG..PP........T', // 17 west meadow block
+  'T.GGGGG..PP........T', // 18 contiguous
+  'T.GGGGG..PP..GGGGG.T', // 19 east meadow joins
+  'T........PP..GGGGG.T', // 20 east meadow continues
+  'T........PP..GGGGG.T', // 21
+  'TJJJJJ...PP........T', // 22 ledge shortcut
+  'T........PP........T', // 23
+  'T..%..~..PP........T', // 24 bush + rock accent
   'T........PP........T', // 25
   'T........PP........T', // 26
   'T........PP........T', // 27
-  'T........PP........T', // 28
-  'TTTTTTT.PP.TTTTTTTTT', // 29 - south exit to Viridian City
+  'T..FF....PP....FF..T', // 28 Viridian City boundary fence
+  'TTTTTTT.PP.TTTTTTTTT', // 29 south exit to Viridian City
 ]);
 
 export const route2: MapDefinition = {
@@ -52,7 +56,7 @@ export const route2: MapDefinition = {
     {
       id: 'route2-npc-1',
       tileX: 14,
-      tileY: 15,
+      tileY: 16,
       textureKey: 'npc-male-2',
       facing: 'left',
       dialogue: [
@@ -62,10 +66,10 @@ export const route2: MapDefinition = {
     },
     {
       id: 'route2-cavern-sign',
-      tileX: 16,
-      tileY: 10,
+      tileX: 7,
+      tileY: 7,
       textureKey: 'generic-trainer',
-      facing: 'up',
+      facing: 'right',
       dialogue: ['CRYSTAL CAVERN →', 'Caution: Strong Pokémon dwell within!'],
     },
   ],
@@ -74,7 +78,7 @@ export const route2: MapDefinition = {
       id: 'route2-marina',
       trainerId: 'marina-1',
       tileX: 7,
-      tileY: 13,
+      tileY: 14,
       textureKey: 'generic-trainer',
       facing: 'right',
       lineOfSight: 3,
@@ -83,15 +87,15 @@ export const route2: MapDefinition = {
       id: 'route2-youngster-4',
       trainerId: 'youngster-4',
       tileX: 14,
-      tileY: 10,
+      tileY: 3,
       textureKey: 'npc-male-2',
       facing: 'left',
-      lineOfSight: 4,
+      lineOfSight: 3,
     },
     {
       id: 'route2-lass-4',
       trainerId: 'lass-4',
-      tileX: 5,
+      tileX: 3,
       tileY: 18,
       textureKey: 'npc-lass',
       facing: 'right',
@@ -100,11 +104,11 @@ export const route2: MapDefinition = {
     {
       id: 'route2-camper-1',
       trainerId: 'camper-1',
-      tileX: 10,
-      tileY: 24,
+      tileX: 14,
+      tileY: 20,
       textureKey: 'npc-male-1',
-      facing: 'up',
-      lineOfSight: 4,
+      facing: 'left',
+      lineOfSight: 3,
     },
   ],
   warps: [
