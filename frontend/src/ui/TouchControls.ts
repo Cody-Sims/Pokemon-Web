@@ -29,6 +29,14 @@ export class TouchControls {
   private readonly padding = 16;
   private buttons: ButtonDef[] = [];
 
+  // DOM controls state
+  private domActive = false;
+  private domDirection: Direction | null = null;
+  private domJoystickPointerId: number | null = null;
+  private domJoystickOriginX = 0;
+  private domJoystickOriginY = 0;
+  private updatingLayout = false;
+
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.container = scene.add.container(0, 0).setDepth(1000).setScrollFactor(0);
@@ -43,7 +51,13 @@ export class TouchControls {
     this.joystick = new VirtualJoystick(scene, (x, y) => this.isActionButtonHit(x, y));
 
     // Re-layout on resize
-    scene.scale.on('resize', () => this.layout());
+    scene.scale.on('resize', () => {
+      this.layout();
+      this.updateDOMLayout();
+    });
+
+    // Initialize DOM controls for the area below the canvas
+    this.initDOMControls();
   }
 
   private layout(): void {
@@ -155,6 +169,8 @@ export class TouchControls {
 
   /** Poll touch direction from the virtual joystick (or null). */
   getDirection(): Direction | null {
+    // DOM joystick takes priority when active
+    if (this.domDirection !== null) return this.domDirection;
     if (!this.joystickEnabled) return null;
     return this.joystick.getDirection();
   }
@@ -180,18 +196,168 @@ export class TouchControls {
   /** Show/hide the joystick (hide during menus, show during overworld). */
   setDpadVisible(visible: boolean): void {
     this.joystickEnabled = visible;
-    if (!visible) this.joystick.setVisible(false);
+    if (!visible) {
+      this.joystick.setVisible(false);
+      this.domDirection = null;
+    }
   }
 
   /** Show/hide entire control overlay. */
   setVisible(visible: boolean): void {
     this.container.setVisible(visible);
     if (!visible) this.joystick.setVisible(false);
+    // Toggle DOM controls visibility alongside in-canvas
+    const controlsEl = document.getElementById('mobile-controls');
+    if (controlsEl) {
+      if (!visible) {
+        controlsEl.style.display = 'none';
+      } else {
+        this.updateDOMLayout();
+      }
+    }
   }
 
   /** Check if the device supports touch. */
   static isTouchDevice(): boolean {
     return navigator.maxTouchPoints > 0;
+  }
+
+  // ── DOM Controls (below-canvas control bar) ──────────────────────
+
+  private initDOMControls(): void {
+    const controlsEl = document.getElementById('mobile-controls');
+    if (!controlsEl) return;
+
+    this.setupDOMJoystick();
+    this.setupDOMButtons();
+
+    // Initial layout + listen for orientation/resize changes
+    requestAnimationFrame(() => this.updateDOMLayout());
+    window.addEventListener('resize', () => this.updateDOMLayout());
+  }
+
+  private updateDOMLayout(): void {
+    if (this.updatingLayout) return;
+    this.updatingLayout = true;
+
+    const canvas = this.scene.game.canvas;
+    const controlsEl = document.getElementById('mobile-controls');
+    if (!canvas || !controlsEl) {
+      this.updatingLayout = false;
+      return;
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const bottomSpace = window.innerHeight - rect.bottom;
+
+    if (bottomSpace > 100) {
+      // Enough space below canvas — show DOM controls, hide in-canvas
+      controlsEl.style.top = rect.bottom + 'px';
+      controlsEl.style.height = bottomSpace + 'px';
+      controlsEl.style.display = 'flex';
+      this.domActive = true;
+      this.container.setVisible(false);
+    } else {
+      // Not enough space — hide DOM controls, show in-canvas
+      controlsEl.style.display = 'none';
+      this.domActive = false;
+      this.container.setVisible(true);
+    }
+
+    this.updatingLayout = false;
+  }
+
+  private setupDOMJoystick(): void {
+    const zone = document.getElementById('joystick-zone');
+    const base = document.getElementById('joystick-base');
+    const thumb = document.getElementById('joystick-thumb');
+    if (!zone || !base || !thumb) return;
+
+    const DEAD_ZONE = 15;
+    const RADIUS = 60;
+
+    zone.addEventListener('touchstart', (e) => {
+      if (this.domJoystickPointerId !== null) return;
+      const t = e.changedTouches[0];
+      this.domJoystickPointerId = t.identifier;
+      const zoneRect = zone.getBoundingClientRect();
+      this.domJoystickOriginX = t.clientX;
+      this.domJoystickOriginY = t.clientY;
+
+      base.style.left = (t.clientX - zoneRect.left) + 'px';
+      base.style.top = (t.clientY - zoneRect.top) + 'px';
+      thumb.style.left = base.style.left;
+      thumb.style.top = base.style.top;
+      base.style.display = 'block';
+      thumb.style.display = 'block';
+      this.domDirection = null;
+    }, { passive: true });
+
+    zone.addEventListener('touchmove', (e) => {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier !== this.domJoystickPointerId) continue;
+
+        const dx = t.clientX - this.domJoystickOriginX;
+        const dy = t.clientY - this.domJoystickOriginY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const clampedDist = Math.min(dist, RADIUS);
+        const angle = Math.atan2(dy, dx);
+
+        const zoneRect = zone.getBoundingClientRect();
+        thumb.style.left = (this.domJoystickOriginX - zoneRect.left + Math.cos(angle) * clampedDist) + 'px';
+        thumb.style.top = (this.domJoystickOriginY - zoneRect.top + Math.sin(angle) * clampedDist) + 'px';
+
+        if (dist < DEAD_ZONE) {
+          this.domDirection = null;
+        } else {
+          const deg = angle * (180 / Math.PI);
+          if (deg > -45 && deg <= 45) this.domDirection = 'right';
+          else if (deg > 45 && deg <= 135) this.domDirection = 'down';
+          else if (deg > -135 && deg <= -45) this.domDirection = 'up';
+          else this.domDirection = 'left';
+        }
+        break;
+      }
+    }, { passive: true });
+
+    const endHandler = (e: TouchEvent) => {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === this.domJoystickPointerId) {
+          this.domJoystickPointerId = null;
+          this.domDirection = null;
+          base.style.display = 'none';
+          thumb.style.display = 'none';
+          break;
+        }
+      }
+    };
+
+    zone.addEventListener('touchend', endHandler, { passive: true });
+    zone.addEventListener('touchcancel', endHandler, { passive: true });
+  }
+
+  private setupDOMButtons(): void {
+    const btnA = document.getElementById('btn-a');
+    const btnB = document.getElementById('btn-b');
+
+    if (btnA) {
+      btnA.addEventListener('touchstart', () => {
+        this.confirmPressed = true;
+        btnA.classList.add('pressed');
+      }, { passive: true });
+      btnA.addEventListener('touchend', () => btnA.classList.remove('pressed'), { passive: true });
+      btnA.addEventListener('touchcancel', () => btnA.classList.remove('pressed'), { passive: true });
+    }
+
+    if (btnB) {
+      btnB.addEventListener('touchstart', () => {
+        this.cancelPressed = true;
+        btnB.classList.add('pressed');
+      }, { passive: true });
+      btnB.addEventListener('touchend', () => btnB.classList.remove('pressed'), { passive: true });
+      btnB.addEventListener('touchcancel', () => btnB.classList.remove('pressed'), { passive: true });
+    }
   }
 
   destroy(): void {

@@ -4,6 +4,24 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-13]
+### Added
+- **Mobile DOM controls below canvas**: On portrait mobile, the game canvas now anchors to the top of the screen and a dedicated touch-controls bar appears in the previously-black space below. Includes a floating virtual joystick (left zone) and A/B action buttons (right side).
+- **Adaptive layout**: Controls automatically switch between the below-canvas DOM bar (portrait, >100 px of space) and the existing in-canvas overlay (landscape or desktop). Responds to orientation changes and window resize.
+
+### Changed
+- **Mobile canvas centering**: Switched from `CENTER_BOTH` to `CENTER_HORIZONTALLY` on touch devices so the canvas sits at the top of the viewport, maximizing the area available for controls.
+
+---
+
+## [2026-04-12]
+### Fixed
+- **Map edge openings**: Replaced solid tree/wall borders adjacent to warp exits with grass/floor tiles across all 51 maps, creating visible path openings at every map transition point.
+- **Path connectivity in cities**: Added continuous PATH tile walkways connecting main roads to edge exits in viridian-city, pewter-city, ironvale-city, voltara-city, wraithmoor-town, scalecrest-citadel, cinderfall-town.
+- **Pewter museum path**: Shrunk museum from 5 to 4 tiles wide to route south path alongside it to exit.
+- **Dungeon entrances**: Widened cave entrance openings in victory-road, crystal-cavern, ember-mines and cleared interior wall obstructions.
+- **Coral Harbor**: Closed false south exit opening on row 29 and ensured proper path to south warp tiles.
+
 ## [2026-04-12]
 ### Added
 - **Proximity-based map preloading (MapPreloader system)**: New `MapPreloader` system in `frontend/src/systems/` that defers Pokémon front/back sprite loading from boot to on-demand, based on map proximity. Reduces initial boot asset count from 453 images to 151 (icons only). Front/back sprites are loaded per-map when entering a new area, and preloaded in the background when the player is within 8 tiles of a warp exit.

@@ -18,6 +18,8 @@ import { PCScene } from '@scenes/PCScene';
 import { PokedexScene } from '@scenes/PokedexScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
+const isMobile = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
+
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: GAME_WIDTH,
@@ -28,7 +30,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   },
   scale: {
     mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    autoCenter: isMobile ? Phaser.Scale.CENTER_HORIZONTALLY : Phaser.Scale.CENTER_BOTH,
   },
   physics: {
     default: 'arcade',
