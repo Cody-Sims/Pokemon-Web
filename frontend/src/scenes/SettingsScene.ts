@@ -74,7 +74,8 @@ export class SettingsScene extends Phaser.Scene {
     // Fullscreen row
     const fsY = startY + SETTING_DEFS.length * rowH;
     const fsLabel = this.add.text(100, fsY, 'Fullscreen', { ...FONTS.body, fontSize: '17px' });
-    const fsState = this.scale.isFullscreen ? 'ON' : 'OFF';
+    this.isFullscreen = this.scale.isFullscreen;
+    const fsState = this.isFullscreen ? 'ON' : 'OFF';
     const fsValue = this.add.text(GAME_WIDTH - 150, fsY, `◀ ${fsState} ▶`, {
       ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
     }).setOrigin(0.5, 0);
@@ -114,9 +115,10 @@ export class SettingsScene extends Phaser.Scene {
 
     // Fullscreen toggle (last row)
     if (idx === SETTING_DEFS.length) {
-      if (this.scale.isFullscreen) this.scale.stopFullscreen();
-      else this.scale.startFullscreen();
-      const state = this.scale.isFullscreen ? 'ON' : 'OFF';
+      this.isFullscreen = !this.isFullscreen;
+      if (this.isFullscreen) this.scale.startFullscreen();
+      else this.scale.stopFullscreen();
+      const state = this.isFullscreen ? 'ON' : 'OFF';
       this.settingTexts[idx].value.setText(`◀ ${state} ▶`);
       audio.playSFX(SFX.CURSOR);
       return;
