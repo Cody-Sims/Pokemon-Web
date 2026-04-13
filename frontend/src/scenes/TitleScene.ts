@@ -141,12 +141,33 @@ export class TitleScene extends Phaser.Scene {
     }
   }
 
+  private rebindTitleKeys(): void {
+    const audio = AudioManager.getInstance();
+    this.input.keyboard!.on('keydown-UP', () => {
+      this.cursor = (this.cursor - 1 + this.menuItems.length) % this.menuItems.length;
+      this.updateCursor();
+      audio.playSFX(SFX.CURSOR);
+    });
+    this.input.keyboard!.on('keydown-DOWN', () => {
+      this.cursor = (this.cursor + 1) % this.menuItems.length;
+      this.updateCursor();
+      audio.playSFX(SFX.CURSOR);
+    });
+    this.input.keyboard!.on('keydown-ENTER', () => { this.selectOption(); });
+    this.input.keyboard!.on('keydown-SPACE', () => { this.selectOption(); });
+  }
+
   private showDifficultySelect(): void {
     const { width, height } = this.cameras.main;
     const modes: DifficultyMode[] = ['classic', 'hard', 'nuzlocke'];
 
-    // Dim background
-    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6).setDepth(50);
+    // Disable title menu interaction
+    this.input.keyboard!.removeAllListeners();
+    this.menuItems.forEach(item => item.disableInteractive());
+    this.cursorIcon.setVisible(false);
+
+    // Opaque background to cover title screen
+    const overlay = this.add.rectangle(width / 2, height / 2, width, height, COLORS.bgDark).setDepth(50);
 
     // Title
     const title = this.add.text(width / 2, height * 0.25, 'SELECT DIFFICULTY', {
@@ -192,7 +213,7 @@ export class TitleScene extends Phaser.Scene {
     };
 
     const cancelDiff = () => {
-      cleanup();
+      restoreTitle();
     };
 
     const cleanup = () => {
@@ -205,6 +226,13 @@ export class TitleScene extends Phaser.Scene {
       diffItems.forEach(i => i.destroy());
       desc.destroy();
       diffArrow.destroy();
+    };
+
+    const restoreTitle = () => {
+      cleanup();
+      this.menuItems.forEach(item => item.setInteractive({ useHandCursor: true }));
+      this.cursorIcon.setVisible(true);
+      this.rebindTitleKeys();
     };
 
     const onUp = () => {

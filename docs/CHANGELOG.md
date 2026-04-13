@@ -5,6 +5,9 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Fixed
+- **Difficulty screen overlay**: Made difficulty selection background fully opaque so title screen no longer bleeds through. Disabled title menu keyboard/pointer handlers while difficulty screen is open and restored them on cancel.
+
 ### Changed
 - **Map file organization**: Moved 51 map definition files from flat `data/maps/` into `cities/`, `routes/`, `interiors/`, and `dungeons/` subdirectories. Updated all imports in `index.ts` and `../shared` references.
 
