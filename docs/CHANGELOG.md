@@ -5,6 +5,9 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Fixed
+- Player walk animation no longer loops infinitely; plays once per tile move using `repeat: 0` and `duration` matching `WALK_DURATION`
+
 ### Added
 - **Expanded Testing Suite — 1089 tests across 33 files**
   - 15 new test files covering previously untested modules and deep scenarios
