@@ -7,4 +7,5 @@ export const fireMoves: Record<string, MoveData> = {
   'fire-spin':    { id: 'fire-spin', name: 'Fire Spin', type: 'fire', category: 'special', power: 35, accuracy: 85, pp: 15, effect: { type: 'trap', target: 'enemy', chance: 100 } },
   'fire-punch':   { id: 'fire-punch', name: 'Fire Punch', type: 'fire', category: 'physical', power: 75, accuracy: 100, pp: 15, effect: { type: 'status', target: 'enemy', status: 'burn', chance: 10 } },
   'fire-fang':    { id: 'fire-fang', name: 'Fire Fang', type: 'fire', category: 'physical', power: 65, accuracy: 95, pp: 15, effect: { type: 'status', target: 'enemy', status: 'burn', chance: 10 } },
+  'sunny-day':    { id: 'sunny-day', name: 'Sunny Day', type: 'fire', category: 'status', power: null, accuracy: 100, pp: 5, effect: { type: 'weather', target: 'self', weather: 'sun' } },
 };

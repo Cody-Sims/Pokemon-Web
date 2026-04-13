@@ -7,4 +7,5 @@ export const iceMoves: Record<string, MoveData> = {
   'ice-punch':    { id: 'ice-punch', name: 'Ice Punch', type: 'ice', category: 'physical', power: 75, accuracy: 100, pp: 15, effect: { type: 'status', target: 'enemy', status: 'freeze', chance: 10 } },
   'mist':         { id: 'mist', name: 'Mist', type: 'ice', category: 'status', power: null, accuracy: 100, pp: 30 },
   'haze':         { id: 'haze', name: 'Haze', type: 'ice', category: 'status', power: null, accuracy: 100, pp: 30 },
+  'hail':         { id: 'hail', name: 'Hail', type: 'ice', category: 'status', power: null, accuracy: 100, pp: 10, effect: { type: 'weather', target: 'self', weather: 'hail' } },
 };

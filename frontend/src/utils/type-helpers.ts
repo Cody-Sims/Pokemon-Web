@@ -9,7 +9,7 @@ export type Direction = 'up' | 'down' | 'left' | 'right';
 
 // Status conditions
 export type StatusCondition = 'burn' | 'paralysis' | 'poison' | 'bad-poison' | 'sleep' | 'freeze';
-export type VolatileStatus = 'confusion' | 'flinch' | 'leech-seed' | 'trapped';
+export type VolatileStatus = 'confusion' | 'flinch' | 'leech-seed' | 'trapped' | 'protect';
 
 // Nature affects stats
 export type Nature =
@@ -34,7 +34,8 @@ export interface StatStages {
 // Move effect types
 export interface MoveEffect {
   type: 'stat-change' | 'status' | 'heal' | 'recoil' | 'drain' | 'multi-hit' | 'flinch'
-    | 'ohko' | 'fixed-damage' | 'level-damage' | 'self-destruct' | 'leech-seed' | 'trap';
+    | 'ohko' | 'fixed-damage' | 'level-damage' | 'self-destruct' | 'leech-seed' | 'trap'
+    | 'weather' | 'protect' | 'two-turn';
   target: 'self' | 'enemy';
   stat?: keyof Stats;
   stages?: number;
@@ -42,7 +43,12 @@ export interface MoveEffect {
   chance?: number; // 0-100 probability
   amount?: number; // Fixed damage, heal %, or recoil %
   hits?: number;   // Exact hit count for multi-hit (e.g. 2 for Double Kick)
+  weather?: WeatherCondition;
+  twoTurnMove?: string; // e.g. 'fly', 'dig', 'solar-beam'
 }
+
+// Weather conditions
+export type WeatherCondition = 'sun' | 'rain' | 'sandstorm' | 'hail';
 
 // Item effect types
 export interface ItemEffect {
@@ -70,7 +76,10 @@ export interface EvolutionNode {
 }
 
 export interface EvolutionCondition {
-  type: 'level' | 'item' | 'trade';
+  type: 'level' | 'item' | 'trade' | 'friendship' | 'location' | 'move-known';
   level?: number;
   itemId?: string;
+  friendship?: number;
+  mapKey?: string;
+  moveId?: string;
 }

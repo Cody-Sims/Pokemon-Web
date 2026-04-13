@@ -27,7 +27,7 @@ export const normalMoves: Record<string, MoveData> = {
   'strength':     { id: 'strength', name: 'Strength', type: 'normal', category: 'physical', power: 80, accuracy: 100, pp: 15 },
   'constrict':    { id: 'constrict', name: 'Constrict', type: 'normal', category: 'physical', power: 10, accuracy: 100, pp: 35, effect: { type: 'stat-change', target: 'enemy', stat: 'speed', stages: -1, chance: 10 } },
   'egg-bomb':     { id: 'egg-bomb', name: 'Egg Bomb', type: 'normal', category: 'physical', power: 100, accuracy: 75, pp: 10 },
-  'skull-bash':   { id: 'skull-bash', name: 'Skull Bash', type: 'normal', category: 'physical', power: 130, accuracy: 100, pp: 10 },
+  'skull-bash':   { id: 'skull-bash', name: 'Skull Bash', type: 'normal', category: 'physical', power: 130, accuracy: 100, pp: 10, effect: { type: 'two-turn', target: 'enemy', twoTurnMove: 'skull-bash' } },
   'dizzy-punch':  { id: 'dizzy-punch', name: 'Dizzy Punch', type: 'normal', category: 'physical', power: 70, accuracy: 100, pp: 10, effect: { type: 'status', target: 'enemy', status: 'confusion', chance: 20 } },
   'comet-punch':  { id: 'comet-punch', name: 'Comet Punch', type: 'normal', category: 'physical', power: 18, accuracy: 85, pp: 15, effect: { type: 'multi-hit', target: 'enemy' } },
   'fury-attack':  { id: 'fury-attack', name: 'Fury Attack', type: 'normal', category: 'physical', power: 15, accuracy: 85, pp: 20, effect: { type: 'multi-hit', target: 'enemy' } },
@@ -47,9 +47,11 @@ export const normalMoves: Record<string, MoveData> = {
   'swift':        { id: 'swift', name: 'Swift', type: 'normal', category: 'special', power: 60, accuracy: 100, pp: 20 },
   'tri-attack':   { id: 'tri-attack', name: 'Tri Attack', type: 'normal', category: 'special', power: 80, accuracy: 100, pp: 10, effect: { type: 'status', target: 'enemy', status: 'paralysis', chance: 20 } },
   'sonic-boom':   { id: 'sonic-boom', name: 'Sonic Boom', type: 'normal', category: 'special', power: null, accuracy: 90, pp: 20, effect: { type: 'fixed-damage', target: 'enemy', amount: 20 } },
-  'razor-wind':   { id: 'razor-wind', name: 'Razor Wind', type: 'normal', category: 'special', power: 80, accuracy: 100, pp: 10 },
+  'razor-wind':   { id: 'razor-wind', name: 'Razor Wind', type: 'normal', category: 'special', power: 80, accuracy: 100, pp: 10, effect: { type: 'two-turn', target: 'enemy', twoTurnMove: 'razor-wind' } },
 
   // ─── Normal – Status ───
+  'protect':      { id: 'protect', name: 'Protect', type: 'normal', category: 'status', power: null, accuracy: 100, pp: 10, priority: 4, effect: { type: 'protect', target: 'self' } },
+  'detect':       { id: 'detect', name: 'Detect', type: 'normal', category: 'status', power: null, accuracy: 100, pp: 5, priority: 4, effect: { type: 'protect', target: 'self' } },
   'growl':        { id: 'growl', name: 'Growl', type: 'normal', category: 'status', power: null, accuracy: 100, pp: 40, effect: { type: 'stat-change', target: 'enemy', stat: 'attack', stages: -1 } },
   'leer':         { id: 'leer', name: 'Leer', type: 'normal', category: 'status', power: null, accuracy: 100, pp: 30, effect: { type: 'stat-change', target: 'enemy', stat: 'defense', stages: -1 } },
   'tail-whip':    { id: 'tail-whip', name: 'Tail Whip', type: 'normal', category: 'status', power: null, accuracy: 100, pp: 30, effect: { type: 'stat-change', target: 'enemy', stat: 'defense', stages: -1 } },

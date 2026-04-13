@@ -11,4 +11,5 @@ export const waterMoves: Record<string, MoveData> = {
   'clamp':        { id: 'clamp', name: 'Clamp', type: 'water', category: 'physical', power: 35, accuracy: 85, pp: 15, effect: { type: 'trap', target: 'enemy', chance: 100 } },
   'withdraw':     { id: 'withdraw', name: 'Withdraw', type: 'water', category: 'status', power: null, accuracy: 100, pp: 40, effect: { type: 'stat-change', target: 'self', stat: 'defense', stages: 1 } },
   'water-pulse':  { id: 'water-pulse', name: 'Water Pulse', type: 'water', category: 'special', power: 60, accuracy: 100, pp: 20, effect: { type: 'status', target: 'enemy', status: 'confusion', chance: 20 } },
+  'rain-dance':   { id: 'rain-dance', name: 'Rain Dance', type: 'water', category: 'status', power: null, accuracy: 100, pp: 5, effect: { type: 'weather', target: 'self', weather: 'rain' } },
 };

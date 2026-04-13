@@ -2,6 +2,7 @@ import { PokemonInstance } from '@data/interfaces';
 import { moveData } from '@data/moves';
 import { DamageCalculator, DamageResult } from './DamageCalculator';
 import { StatusEffectHandler, EffectResult } from './StatusEffectHandler';
+import { WeatherManager } from './WeatherManager';
 import { randomInt } from '@utils/math-helpers';
 
 export interface MoveExecutionResult {
@@ -15,6 +16,8 @@ export interface MoveExecutionResult {
   healedHp?: number;
   recoilDamage?: number;
   selfDestruct?: boolean;
+  weatherSet?: import('@utils/type-helpers').WeatherCondition;  // weather to set
+  isCharging?: boolean;  // true if this is the charge turn of a two-turn move
 }
 
 /** Applies move effects: damage, status changes, stat changes. */
@@ -24,6 +27,7 @@ export class MoveExecutor {
     defender: PokemonInstance,
     moveId: string,
     statusHandler?: StatusEffectHandler,
+    weatherManager?: WeatherManager,
   ): MoveExecutionResult {
     const move = moveData[moveId];
     const attackerName = attacker.nickname ?? `Pokemon #${attacker.dataId}`;
@@ -39,6 +43,98 @@ export class MoveExecutor {
     });
 
     if (!move) return miss();
+
+    // ── Two-turn move: charge turn ──
+    if (move.effect?.type === 'two-turn' && statusHandler) {
+      const charging = statusHandler.getChargingMove(attacker);
+      if (!charging) {
+        // Start charging — skip the attack this turn
+        statusHandler.startCharging(attacker, moveId);
+        // Deduct PP on the charge turn
+        const moveInstance = attacker.moves.find(m => m.moveId === moveId);
+        if (moveInstance && moveInstance.currentPp > 0) moveInstance.currentPp--;
+
+        const chargeMessages: Record<string, string> = {
+          'fly': `${attackerName} flew up high!`,
+          'dig': `${attackerName} burrowed underground!`,
+          'solar-beam': `${attackerName} absorbed light!`,
+          'skull-bash': `${attackerName} lowered its head!`,
+          'sky-attack': `${attackerName} is glowing!`,
+          'razor-wind': `${attackerName} whipped up a whirlwind!`,
+        };
+        const msg = chargeMessages[moveId] ?? `${attackerName} is charging up!`;
+
+        return {
+          damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false },
+          moveHit: true,
+          moveName: move.name,
+          attackerName,
+          defenderName,
+          effectMessages: [msg],
+          isCharging: true,
+        };
+      }
+      // Attack turn — clear charging and proceed with normal execution
+      statusHandler.clearCharging(attacker);
+    }
+
+    // ── Protect / Detect: check if defender is protected ──
+    if (statusHandler && move.effect?.type !== 'protect' && statusHandler.isProtected(defender)) {
+      // Deduct PP even though the move is blocked
+      const moveInstance = attacker.moves.find(m => m.moveId === moveId);
+      if (moveInstance && moveInstance.currentPp > 0) moveInstance.currentPp--;
+
+      return {
+        damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false },
+        moveHit: false,
+        moveName: move.name,
+        attackerName,
+        defenderName,
+        effectMessages: [`${defenderName} protected itself!`],
+      };
+    }
+
+    // Reset protect success rate when using any non-protect move
+    if (statusHandler && move.effect?.type !== 'protect') {
+      statusHandler.resetProtectRate(attacker);
+    }
+
+    // ── Protect / Detect move itself ──
+    if (move.effect?.type === 'protect' && statusHandler) {
+      const moveInstance = attacker.moves.find(m => m.moveId === moveId);
+      if (moveInstance && moveInstance.currentPp > 0) moveInstance.currentPp--;
+
+      const effectResult = statusHandler.applyMoveEffect(attacker, defender, move, 0);
+      return {
+        damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false },
+        moveHit: true,
+        moveName: move.name,
+        attackerName,
+        defenderName,
+        effectMessages: effectResult.messages,
+      };
+    }
+
+    // ── Weather-setting moves ──
+    if (move.effect?.type === 'weather') {
+      const moveInstance = attacker.moves.find(m => m.moveId === moveId);
+      if (moveInstance && moveInstance.currentPp > 0) moveInstance.currentPp--;
+
+      const weatherCondition = move.effect.weather;
+      const weatherMessages: string[] = [];
+      if (weatherCondition && weatherManager) {
+        weatherMessages.push(...weatherManager.setWeather(weatherCondition));
+      }
+      return {
+        damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false },
+        moveHit: true,
+        moveName: move.name,
+        attackerName,
+        defenderName,
+        effectMessages: weatherMessages,
+        weatherSet: weatherCondition,
+      };
+    }
 
     // Check accuracy
     if (!DamageCalculator.doesMoveHit(move)) return miss();

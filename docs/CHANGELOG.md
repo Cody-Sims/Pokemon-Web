@@ -6,7 +6,7 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
-- **Phase 2: Gameplay Depth — Battle System Expansion (partial)**
+- **Phase 2: Gameplay Depth — Battle System Expansion — COMPLETE**
   - **HeldItemHandler** (`frontend/src/battle/HeldItemHandler.ts`): Held item effect system with hooks for end-of-turn (Leftovers, Black Sludge), after-damage (Focus Sash survive at 1 HP), attack-landed (Life Orb recoil), status-applied (Lum Berry, type-specific cure berries), HP-threshold (Sitrus Berry, Oran Berry), and damage modifiers (Life Orb 1.3×, Choice Band/Specs 1.5×, Muscle Band 1.1×, Wise Glasses 1.1×). Berries consumed on use, permanent items persist.
   - **WeatherManager** (`frontend/src/battle/WeatherManager.ts`): Battle weather system with 4 conditions (Sun, Rain, Sandstorm, Hail), 5-turn default duration, damage multipliers (Sun: Fire ×1.5/Water ×0.5, Rain: Water ×1.5/Fire ×0.5), end-of-turn damage for Sandstorm/Hail (1/16 HP with type immunities), weather tick/expiry, weather indicator in battle UI
   - **Multi-condition evolution**: Updated evolution-data.ts type signature to use `EvolutionCondition` discriminated union supporting level, item, trade, friendship, location, and move-known conditions. Added `ExperienceCalculator.checkLevelUpEvolution()` for unified evolution checking (level + friendship + move-known). Friendship gains on level-up (+2-5 based on current friendship), friendship loss on faint (-1).
@@ -16,6 +16,7 @@ All notable changes to the Pokemon Web project.
   - **BattleUIScene integration**: Ability onAfterDamage hooks (contact effects), held item hooks (Life Orb recoil, Focus Sash, status berries, HP threshold berries) after each move, ability/held item/weather end-of-turn effects, weather tick with expiry messages, weather indicator display
   - **Summary screen**: Shows Ability and Held Item on INFO tab
   - AbilityHandler already existed with onSwitchIn, onAfterDamage, onEndOfTurn, modifyDamage, checkImmunity hooks (created by prior agent)
+  - **2.5 Expanded Move Effects**: Weather-setting moves (Sunny Day, Rain Dance, Sandstorm, Hail), Protect/Detect with +4 priority and consecutive-use success decay, two-turn moves (Fly, Dig, Solar Beam, Skull Bash, Sky Attack, Razor Wind) with charge-then-attack mechanic and auto-execute on next turn. StatusEffectHandler extended with protect state, protectSuccessRate, twoTurnCharging fields. MoveExecutor handles protect blocking, weather setting via WeatherManager, and two-turn charge/attack flow.
 
 ### Added
 - **Complete Gen 1 Pokédex (151 Pokémon)** — Expanded from ~44 to all 151 original Pokémon with accurate base stats, learnsets, abilities, catch rates, exp yields, and evolution chains

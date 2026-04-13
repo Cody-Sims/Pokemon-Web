@@ -220,12 +220,16 @@ export class BattleUIScene extends Phaser.Scene {
     const player = b.playerPokemon;
     const enemy = b.enemyPokemon;
 
+    // Check if player is charging a two-turn move — auto-execute it
+    const playerCharging = this.statusHandler.getChargingMove(player);
+    const actualPlayerMoveId = playerCharging ?? playerMoveId;
+
     // Use effective speed (accounts for stat stages and paralysis)
     const playerSpeed = this.statusHandler.getEffectiveStat(player, 'speed');
     const enemySpeed = this.statusHandler.getEffectiveStat(enemy, 'speed');
 
     // Check move priority
-    const playerMove = moveData[playerMoveId];
+    const playerMove = moveData[actualPlayerMoveId];
     const enemyMoveId = this.pickEnemyMove(enemy);
     const enemyMove = moveData[enemyMoveId];
     const playerPriority = playerMove?.priority ?? 0;
@@ -235,8 +239,8 @@ export class BattleUIScene extends Phaser.Scene {
       || (playerPriority === enemyPriority && playerSpeed >= enemySpeed);
 
     const order: { attacker: PokemonInstance; defender: PokemonInstance; moveId: string; isPlayer: boolean }[] = playerFirst
-      ? [{ attacker: player, defender: enemy, moveId: playerMoveId, isPlayer: true }, { attacker: enemy, defender: player, moveId: enemyMoveId, isPlayer: false }]
-      : [{ attacker: enemy, defender: player, moveId: enemyMoveId, isPlayer: false }, { attacker: player, defender: enemy, moveId: playerMoveId, isPlayer: true }];
+      ? [{ attacker: player, defender: enemy, moveId: actualPlayerMoveId, isPlayer: true }, { attacker: enemy, defender: player, moveId: enemyMoveId, isPlayer: false }]
+      : [{ attacker: enemy, defender: player, moveId: enemyMoveId, isPlayer: false }, { attacker: player, defender: enemy, moveId: actualPlayerMoveId, isPlayer: true }];
 
     this.runTurnStep(order, 0);
   }
@@ -318,8 +322,21 @@ export class BattleUIScene extends Phaser.Scene {
     this.msg(`${name} used ${moveName}!`);
 
     this.time.delayedCall(700, () => {
-      const result = MoveExecutor.execute(attacker, defender, moveId, this.statusHandler);
+      const result = MoveExecutor.execute(attacker, defender, moveId, this.statusHandler, this.weatherManager);
       b.updateHpBars();
+
+      // Weather move: update display
+      if (result.weatherSet) {
+        this.updateWeatherDisplay();
+      }
+
+      // Two-turn charge: skip damage display, just show charging message
+      if (result.isCharging) {
+        this.showMessageQueue(result.effectMessages, 0, () => {
+          this.time.delayedCall(400, () => this.runTurnStep(order, idx + 1));
+        });
+        return;
+      }
 
       if (result.moveHit && result.damage.damage > 0) {
         b.flashSprite(isPlayer ? b.enemySprite : b.playerSprite);
@@ -545,7 +562,17 @@ export class BattleUIScene extends Phaser.Scene {
       return;
     }
     // Next turn
-    this.time.delayedCall(600, () => { this.state = 'actions'; this.showActions(); this.msg('What will you do?'); });
+    this.time.delayedCall(600, () => {
+      // If player is charging a two-turn move, auto-execute it
+      const charging = this.statusHandler.getChargingMove(b.playerPokemon);
+      if (charging) {
+        this.state = 'animating';
+        this.hideActions();
+        this.executeTurn(charging);
+        return;
+      }
+      this.state = 'actions'; this.showActions(); this.msg('What will you do?');
+    });
   }
 
   private pickEnemyMove(enemy: PokemonInstance): string {

@@ -31,6 +31,8 @@ interface BattlePokemonState {
   volatileStatuses: Set<VolatileStatus>;
   confusionTurns: number;
   trapTurns: number;
+  protectSuccessRate: number;  // Halves each consecutive use (1.0, 0.5, 0.25...)
+  twoTurnCharging: string | null;  // Move ID being charged (Fly, Dig, Solar Beam)
 }
 
 // ── Stage multipliers ──────────────────────────────────────────
@@ -68,6 +70,8 @@ export class StatusEffectHandler {
       volatileStatuses: new Set(),
       confusionTurns: 0,
       trapTurns: 0,
+      protectSuccessRate: 1.0,
+      twoTurnCharging: null,
     });
   }
 
@@ -405,6 +409,35 @@ export class StatusEffectHandler {
         }
         break;
       }
+
+      // ── Weather-setting moves ──
+      case 'weather': {
+        // Weather is set by the caller (BattleUIScene) using WeatherManager.
+        // This case signals that the move was a weather move.
+        // The actual weather setting happens in executeMove.
+        break;
+      }
+
+      // ── Protect / Detect ──
+      case 'protect': {
+        const atkState = this.getState(attacker);
+        // Success chance halves each consecutive use
+        if (Math.random() < atkState.protectSuccessRate) {
+          atkState.volatileStatuses.add('protect');
+          atkState.protectSuccessRate *= 0.5;
+          messages.push(`${pokeName(attacker)} protected itself!`);
+        } else {
+          atkState.protectSuccessRate = 1.0;
+          messages.push(`But it failed!`);
+        }
+        break;
+      }
+
+      // ── Two-turn moves (charge turn handled in MoveExecutor) ──
+      case 'two-turn': {
+        // Handled in MoveExecutor — this is a no-op here
+        break;
+      }
     }
 
     return { messages, healedHp, recoilDamage, selfDestruct };
@@ -484,5 +517,40 @@ export class StatusEffectHandler {
     for (const [, state] of this.states) {
       state.statStages = { attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 };
     }
+  }
+
+  // ── Protect ─────────────────────────────────────────────────
+
+  /** Check if a Pokémon is protected this turn. Clears protect after check. */
+  isProtected(pokemon: PokemonInstance): boolean {
+    const state = this.getState(pokemon);
+    if (state.volatileStatuses.has('protect')) {
+      state.volatileStatuses.delete('protect');
+      return true;
+    }
+    return false;
+  }
+
+  /** Reset protect success rate (call when a non-protect move is used). */
+  resetProtectRate(pokemon: PokemonInstance): void {
+    const state = this.getState(pokemon);
+    state.protectSuccessRate = 1.0;
+  }
+
+  // ── Two-turn moves ──────────────────────────────────────────
+
+  /** Check if a Pokémon is charging a two-turn move. Returns the move ID or null. */
+  getChargingMove(pokemon: PokemonInstance): string | null {
+    return this.getState(pokemon).twoTurnCharging;
+  }
+
+  /** Start charging a two-turn move. */
+  startCharging(pokemon: PokemonInstance, moveId: string): void {
+    this.getState(pokemon).twoTurnCharging = moveId;
+  }
+
+  /** Clear charging state after the attack turn. */
+  clearCharging(pokemon: PokemonInstance): void {
+    this.getState(pokemon).twoTurnCharging = null;
   }
 }

@@ -32,89 +32,15 @@ The player arrives in **Littoral Town** (replacing Pallet Town) as the child of 
 
 ---
 
-## Phase 1: UI Overhaul & Foundation
+## Phase 1: UI Overhaul & Foundation — COMPLETE
 
-**Goal:** Elevate the UI from functional placeholder to polished, game-quality interface before building more content on top of it.
-
-### Research Findings
-
-The current UI uses raw Phaser `Graphics` and `Text` objects with manual positioning. Key improvement opportunities identified from the `phaser3-rex-plugins` UI ecosystem and standard Phaser patterns:
-
-| Area | Current State | Target State |
-|------|--------------|--------------|
-| Dialogue boxes | Flat dark rectangles via `Graphics.fillRect()` | Nine-patch bordered boxes with proper padding, typewriter SFX per character |
-| Menu navigation | Manual `keydown` event handlers per scene, duplicated logic | Shared `MenuController` system with unified keyboard + mouse + gamepad support |
-| Battle UI | Hardcoded 2x2 grid with manual coordinate math | Layout-driven panels using reusable component system |
-| Party screen | Basic list with manual slot positioning | Card-based layout with sprite previews, status icons, drag-to-reorder |
-| Inventory | Stub (37 lines, no logic) | Full item list with categories, descriptions, use/give/toss actions |
-| Transitions | Basic fade/stripe effects | Consistent scene transition system with configurable effects |
-| Responsive scaling | Fixed canvas size | Proper Scale Manager configuration for different screen sizes |
-
-### 1.1 — Nine-Patch Panel System
-- Create a `NinePatchPanel` UI component in `frontend/src/ui/` that renders stretchable bordered boxes from a 9-slice spritesheet.
-- Design a **dialogue box spritesheet** (message box, menu box, battle box variants) in pixel art style.
-- Replace all `drawPanel()` calls in `theme.ts` with `NinePatchPanel` instances.
-- Panels support: configurable border width, fill color/alpha, corner radius from sprite, dynamic resize.
-
-### 1.2 — Unified Menu Controller
-- Create `MenuController` class in `frontend/src/ui/` that encapsulates:
-  - Cursor tracking (row/column index for 1D and 2D menus).
-  - Input binding: arrow keys, WASD, ENTER/SPACE/Z for confirm, ESC/X for cancel.
-  - Mouse hover-to-select and click-to-confirm.
-  - Wrap-around navigation (optional).
-  - Audio feedback hooks (`SFX.CURSOR`, `SFX.CONFIRM`, `SFX.CANCEL`).
-  - Disabled state (block input during animations).
-- Refactor `MenuList.ts` to use `MenuController` internally.
-- Refactor `BattleUIScene` action/move grids to use `MenuController`.
-- Refactor all scene-local keyboard handlers to delegate to `MenuController`.
-
-### 1.3 — Dialogue System Upgrade
-- Integrate per-character SFX during typewriter animation (pitched blip sound, like classic Pokémon).
-- Add speaker name display in dialogue box header.
-- Support **choice prompts** inline in dialogue (e.g., "Do you want to nickname this Pokémon?" with Yes/No choices rendered inside the dialogue box).
-- Add portrait support (optional NPC face icon in dialogue box).
-- Queue multiple dialogue pages with a down-arrow indicator for "press to continue".
-
-### 1.4 — Inventory Scene (Full Implementation)
-- **Category tabs**: Medicine, Poké Balls, Key Items, Battle Items, TMs.
-- **Item list**: Scrollable list with item icon + name + quantity. Cursor navigation with `MenuController`.
-- **Detail panel**: Selected item shows description, effect text, and context actions (USE, GIVE, TOSS).
-- **USE action**: Applies item effect (heal HP, cure status, teach move) with appropriate scene/animation.
-- **GIVE action**: Opens party picker, assigns held item to Pokémon.
-- **TOSS action**: Confirmation prompt, removes items from inventory.
-- **Quantity selector**: For multi-use items (e.g., use 3 Potions), up/down to set quantity.
-
-### 1.5 — Battle UI Polish
-- Replace flat colored rectangles with nine-patch panels for all battle boxes.
-- Add move type icon next to each move in the move selection menu.
-- Show move category (Physical/Special/Status) icon.
-- Add PP coloring: normal (white), low (yellow at 25% or less), empty (red at 0).
-- Animate HP bar changes with smooth tween (not instant redraw).
-- Add damage number popup (float up and fade) after each hit.
-- Status condition icon displayed next to Pokémon name in battle HUD.
-- Poké Ball throw animation refinement: arc trajectory, shake animation, click SFX.
-
-### 1.6 — Party Screen Improvements
-- Show Pokémon mini-sprites (icons) next to each slot.
-- Display held item icon if Pokémon is holding an item.
-- Add "SUMMARY", "SWITCH", "ITEM" context menu when a party member is selected.
-- Drag-to-reorder support (mouse) alongside cursor-based swap (keyboard).
-- Fainted Pokémon slots visually dimmed with a cross/faint indicator.
-
-### 1.7 — Settings / Options Menu
-- Implement the TODO "Options" menu from the title screen and pause menu.
-- Settings: Text speed (Slow/Medium/Fast/Instant), Music volume slider, SFX volume slider, Battle animations (On/Shift/Off), Screen mode (Windowed/Fullscreen).
-- Persist settings in `localStorage` alongside save data.
-- Accessible from both Title screen and in-game Menu.
-
-### Deliverable
-All menus and UI elements use a cohesive nine-patch visual style, shared input controller, and feel polished. Inventory is fully functional. Settings menu works.
+> **Completed 2026-04-12.** NinePatchPanel procedural panel system, MenuController unified input, DialogueScene with speaker names/SFX/choices, full InventoryScene with 5 categories and USE/TOSS, Battle UI with type indicators/PP coloring/damage popups, PartyScene with context menu/SWITCH/fainted indicators, SettingsScene with text speed/volume/fullscreen. See CHANGELOG.md for details.
 
 ---
 
-## Phase 2: Gameplay Depth — Battle System Expansion
+## Phase 2: Gameplay Depth — Battle System Expansion — COMPLETE
 
-**Goal:** Add strategic depth to battles with abilities, held items, weather, and multi-condition evolution.
+> **Completed 2026-04-12.** AbilityHandler with switch-in/after-damage/end-of-turn/immunity/damage-modifier hooks for 20+ abilities. HeldItemHandler with Leftovers/Life Orb/Focus Sash/Choice items/berries. WeatherManager with Sun/Rain/Sandstorm/Hail (damage modifiers, end-of-turn damage, 5-turn duration, UI indicator). Multi-condition evolution (level/item/trade/friendship/location/move-known) with friendship tracking. Protect/Detect with consecutive-use decay. Two-turn moves (Fly/Dig/Solar Beam/Skull Bash/Sky Attack/Razor Wind) with charge-then-attack flow. Weather-setting moves (Sunny Day/Rain Dance/Sandstorm/Hail). All hooks wired into DamageCalculator, BattleManager, and BattleUIScene. See CHANGELOG.md for details.
 
 ### 2.1 — Pokémon Abilities
 - Add `abilities: string[]` field to `PokemonData` interface and populate for all ~30 existing species.
@@ -253,6 +179,7 @@ The world feels alive with optional exploration, time-based changes, collectible
 - Key items cannot be sold (grayed out).
 
 ### 4.2 — Economy & Trainer Rewards
+- Set Up Trainer Battles
 - Money field in `GameManager` (persisted in save data).
 - Trainer battle reward: `base_payout * highest_level` of their team.
 - Pickup items from overworld (sparkle sprite on ground, interact to collect).
