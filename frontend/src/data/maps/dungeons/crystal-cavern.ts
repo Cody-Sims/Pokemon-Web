@@ -1,39 +1,44 @@
 import { MapDefinition, parseMap } from '../shared';
 
 // Crystal Cavern — Optional dungeon off Route 2
-// Multi-floor cave with crystal formations, boulder puzzles
+// Structured cave with crystal veins, rooms, and passages
 // Width: 20, Height: 30
 const floor1Ground = parseMap([
+  // ═══ BACK CHAMBER: crystal shrine ═══
   ';;;;;;;;;;;;;;;;;;;;', // 0  solid walls
-  ';,,,,,,;;,,÷,,,,,,÷;', // 1  crystal cluster NE
-  ';,,÷,,,;;,,,,,,,,,,;', // 2  crystal W
-  ';,,,,,,,,,,,,,,,,,;;', // 3
-  ';,,,,,,,,,,,,÷,,,,,;', // 4  crystal
-  ';,,,q,,,,÷,,,,q,,,,;', // 5  boulders + crystal
-  ';,,,,,,;;;;;;,,,,,,;', // 6  central rock formation
-  ';,,÷,,,;;;;;,,,,÷,,;', // 7  crystals flanking
+  ';,,,,,,,,,,,,,,,,,,;', // 1
+  ';,÷÷,,,,,,,,,,,,,÷÷;', // 2  crystal veins along walls
+  ';,÷÷,,,,,,,,,,,,,÷÷;', // 3  thick crystal formations
+  ';,,,,,,,,,,,,,,,,,,;', // 4
+  ';,,,,÷÷÷÷÷÷÷÷÷÷,,,,;', // 5  crystal shrine arc
+  ';,,,,,,,,,,,,,,,,,,;', // 6
+  // ═══ UPPER PASSAGE: narrow squeeze ═══
+  ';;;;;;,,,,,,,,;;;;;;', // 7  walls close in
   ';,,,,,,,,,,,,,,,,,,;', // 8
-  ';;,,,÷,,,,,,,,,,,,,;', // 9  crystal near W wall
-  ';;,,q,,,,,,,÷,q,,,,;', // 10 boulders + crystal
+  ';;,,,,,,,,,,,,,,,,,;', // 9  west wall juts
+  ';,,,,,,,,,,,,,,,,,;;', // 10 east wall juts
   ';,,,,,,,,,,,,,,,,,,;', // 11
-  ';,÷,,,,,,;;,,,,,,÷,;', // 12 crystals framing pillar
-  ';,,,,q,,,;;,,,,q,,,;', // 13 boulders near pillar
-  ';,,,,,,,,;;,,,,,,,,;', // 14
-  ';,,,,,,,,,,,,,,,,,,;', // 15
-  ';,,,÷,,,,,,,,÷,,,,,;', // 16 crystal pair
-  ';,,,q,,,,,,,,,,q,,,;', // 17 boulder pair
-  ';;,,,,,,,,,,,,,,,,;;', // 18 narrowing walls
-  ';;,,÷,,,;;,,,,÷,,,;;', // 19 crystals + central pillar
+  // ═══ CENTRAL CHAMBER: boulder maze ═══
+  ';;;,,,,,,,,,,,,,;;;;', // 12 chamber opens
+  ';,,,,q,,,,,,,,q,,,,;', // 13 sentinel boulders
+  ';,,,,,,,,,,,,,,,,,,;', // 14
+  ';,,q,,,,÷÷,,,,,,q,,;', // 15 boulders frame crystals
+  ';,,,,,,,,÷÷,,,,,,,,;', // 16 crystal cluster center
+  ';,,,,,,,,,,,,,,,,,,;', // 17
+  ';,,q,,,,,,,,,,,,q,,;', // 18 boulders guard south
+  ';;;,,,,,,,,,,,,,;;;;', // 19 chamber exit
+  // ═══ LOWER PASSAGE: to entrance ═══
   ';,,,,,,,,,,,,,,,,,,;', // 20
-  ';,,q,,,÷,,,,,÷,q,,,;', // 21 boulders + crystals
-  ';,,,,,,,,,,,,,,,,,,;', // 22
+  ';;,,,,,,,,,,,,,,,,;;', // 21 walls close
+  ';,,,÷,,,,,,,,,,÷,,,;', // 22 crystal pair
   ';,,,,,,,,,,,,,,,,,,;', // 23
-  ';,,÷,,,,,,,,,,,÷,,,;', // 24 crystals near entrance
-  ';;,,,,,,,,,,,,,,,,;;', // 25 narrowing
+  ';;,,,,,,,,,,,,,,,,;;', // 24 walls close
+  ';,,,,,,,,,,,,,,,,,,;', // 25
+  // ═══ ENTRANCE HALL ═══
   ';;,,,,,,,,,,,,,,,,;;', // 26
-  ';,,,,q,,,,,,,,q,,,,;', // 27 boulder sentinels
+  ';,,,,,,,,,,,,,,,,,,;', // 27
   ';,,,,,,,,,,,,,,,,,,;', // 28
-  ';;;;;;,,,,,,,,;;;;;;', // 29 wide entrance opening
+  ';;;;;;,,,,,,,,;;;;;;', // 29 entrance
 ]);
 
 export const crystalCavern: MapDefinition = {
@@ -55,8 +60,8 @@ export const crystalCavern: MapDefinition = {
     },
     {
       id: 'cavern-hiker',
-      tileX: 14,
-      tileY: 4,
+      tileX: 10,
+      tileY: 8,
       textureKey: 'npc-hiker',
       facing: 'down',
       dialogue: [
@@ -67,8 +72,8 @@ export const crystalCavern: MapDefinition = {
     },
     {
       id: 'cavern-item-1',
-      tileX: 3,
-      tileY: 13,
+      tileX: 4,
+      tileY: 3,
       textureKey: 'generic-trainer',
       facing: 'down',
       dialogue: ['You found a Revive!'],
@@ -77,8 +82,8 @@ export const crystalCavern: MapDefinition = {
     },
     {
       id: 'cavern-item-2',
-      tileX: 16,
-      tileY: 21,
+      tileX: 15,
+      tileY: 22,
       textureKey: 'generic-trainer',
       facing: 'down',
       dialogue: ['You found an Escape Rope!'],
@@ -90,17 +95,17 @@ export const crystalCavern: MapDefinition = {
     {
       id: 'cavern-hiker-1',
       trainerId: 'hiker-1',
-      tileX: 5,
-      tileY: 8,
+      tileX: 10,
+      tileY: 20,
       textureKey: 'npc-hiker',
-      facing: 'right',
+      facing: 'up',
       lineOfSight: 4,
     },
     {
       id: 'cavern-hiker-2',
       trainerId: 'hiker-2',
       tileX: 14,
-      tileY: 15,
+      tileY: 14,
       textureKey: 'npc-hiker',
       facing: 'left',
       lineOfSight: 3,
@@ -108,17 +113,17 @@ export const crystalCavern: MapDefinition = {
     {
       id: 'cavern-hiker-3',
       trainerId: 'hiker-3',
-      tileX: 8,
-      tileY: 22,
+      tileX: 5,
+      tileY: 14,
       textureKey: 'npc-hiker',
-      facing: 'up',
-      lineOfSight: 4,
+      facing: 'right',
+      lineOfSight: 3,
     },
     {
       id: 'cavern-hiker-5',
       trainerId: 'hiker-5',
-      tileX: 15,
-      tileY: 10,
+      tileX: 10,
+      tileY: 4,
       textureKey: 'npc-hiker',
       facing: 'down',
       lineOfSight: 3,
@@ -126,8 +131,8 @@ export const crystalCavern: MapDefinition = {
     {
       id: 'cavern-camper-2',
       trainerId: 'camper-2',
-      tileX: 4,
-      tileY: 18,
+      tileX: 5,
+      tileY: 9,
       textureKey: 'npc-male-1',
       facing: 'right',
       lineOfSight: 4,
