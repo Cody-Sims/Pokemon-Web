@@ -3,9 +3,9 @@ import { MapDefinition, parseMap } from './shared';
 const ground = parseMap([
   // 01234567
   '########', // 0 - north wall
-  '#w____w#', // 1 - windows + floor
+  '#w_V__w#', // 1 - window + TV
   '#_t__b_#', // 2 - table + bookshelf
-  '#_i__b_#', // 3 - chair + bookshelf
+  '#_i__N_#', // 3 - chair + plant
   '#______#', // 4
   '#__rr__#', // 5 - rug
   '#__rr__#', // 6 - rug

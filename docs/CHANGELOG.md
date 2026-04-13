@@ -6,7 +6,25 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **21 new location-specific tile types** (tiles 39-59) expanding the tileset from 39 to 60 tiles:
+  - **House**: TV (39), bed (40), potted plant (41), stairs (42)
+  - **PokéCenter**: pink/white checkered floor (43), pink service counter (44)
+  - **PokéMart**: blue/white commercial tile floor (45), merchandise shelf with colored items (46)
+  - **Lab**: white tile floor (47), lab equipment/machine with green screen (48)
+  - **Museum**: glass display case (49), fossil on pedestal (50)
+  - **Gym**: rocky arena floor (51), boulder obstacle (52), battle arena markings (53)
+  - **Overworld**: sand (54), small rock (55), bush (56), cliff face (57), cave floor (58), cave wall (59)
+- All new overlay tiles use transparent backgrounds for proper compositing with their base floor tiles
+
 - **Two-layer tile rendering with overlay compositing**: Added `OVERLAY_BASE` mapping in `shared.ts` that defines which tiles are "overlay objects" that should have a base ground tile rendered underneath. Overworld overlays (trees, tall grass, flowers, signs, fences, ledges, dense trees) render grass below. Interior overlays (tables, chairs, pokeballs, rugs, mats, PCs, heal machines, gym statues, bookshelves, counters) render floor below. Windows render indoor wall below. Tileset images for overlay tiles now have transparent backgrounds so the base tile shows through. `drawMap()` draws the base layer at depth 0, overlay tiles at depth 0.5, and NPCs at depth 1 for proper layering.
+
+### Changed
+- **PokéCenter interiors** (Viridian, Pewter): Now use pink checkered CENTER_FLOOR tiles and PINK_COUNTER instead of generic wood floor/counter. Distinctive healing station feel.
+- **PokéMart interior** (Viridian): Now uses blue MART_FLOOR tiles and MART_SHELF with colorful merchandise instead of generic bookshelves.
+- **Oak's Lab interior**: Now uses white LAB_FLOOR tiles with lab machine, giving it a scientific laboratory feel.
+- **Pewter Gym interior**: Now uses ROCK_FLOOR with BOULDER obstacles and ARENA_MARK battle lines instead of generic gym floor.
+- **Pewter Museum interior**: Now uses DISPLAY_CASE and FOSSIL tiles instead of generic bookshelves.
+- **Player's House**: Added TV and potted plant for a cozier home feel.
 
 ### Fixed
 - **Grass tile showing cliff edge**: The grass tile (Tile 0) was using Tuxemon tileset position (4,0) which has a brown cliff/ledge border in the corner — it's a terrain edge tile, not flat grass. Replaced with position (5,5) which is the actual clean flat grass pattern. Also fixed 4 overlay tiles (tree, tall grass, sign, ledge) that used the same bad tile as their base. Replaced water tile (had dirt edge from Tuxemon pond border) with a custom clean blue tile with wave pattern.

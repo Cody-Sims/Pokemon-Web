@@ -4,11 +4,11 @@ const ground = parseMap([
   // 0123456789
   '##########', // 0 - north wall
   '#w______w#', // 1 - windows
-  '#_kkkkkk_#', // 2 - counter
-  '#________#', // 3
-  '#_b____b_#', // 4 - shelves
-  '#_b____b_#', // 5 - shelves
-  '#________#', // 6
+  '#IkkkkkII#', // 2 - counter on mart floor
+  '#IIIIIIII#', // 3 - mart floor
+  '#IYYIIYYI#', // 4 - shelves
+  '#IYYIIYYI#', // 5 - shelves
+  '#IIIIIIII#', // 6
   '#____v___#', // 7 - exit mat
 ]);
 

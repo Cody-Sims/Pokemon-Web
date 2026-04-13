@@ -43,6 +43,42 @@ export const Tile = {
   POKEBALL_ITEM: 36,
   GYM_FLOOR:     37,
   GYM_STATUE:    38,
+
+  // ── New tiles: Location-specific ──
+  // House interior
+  TV:            39,    // television/screen on stand
+  BED:           40,    // bed (solid)
+  PLANT:         41,    // potted plant decoration
+  STAIRS:        42,    // staircase (solid)
+
+  // PokéCenter interior
+  CENTER_FLOOR:  43,    // pink/white tile floor (walkable)
+  PINK_COUNTER:  44,    // PokéCenter service counter (solid)
+
+  // PokéMart interior
+  MART_FLOOR:    45,    // blue/white commercial tile floor (walkable)
+  MART_SHELF:    46,    // merchandise shelf (solid)
+
+  // Lab interior
+  LAB_FLOOR:     47,    // white tile lab floor (walkable)
+  LAB_MACHINE:   48,    // lab equipment/microscope (solid)
+
+  // Museum
+  DISPLAY_CASE:  49,    // glass display case (solid)
+  FOSSIL:        50,    // fossil on pedestal (solid)
+
+  // Gym (Pewter/Rock theme)
+  ROCK_FLOOR:    51,    // rocky arena floor (walkable)
+  BOULDER:       52,    // boulder obstacle (solid)
+  ARENA_MARK:    53,    // battle arena floor marking (walkable)
+
+  // Overworld extras
+  SAND:          54,    // beach/desert sand (walkable)
+  ROCK:          55,    // small rock obstacle (solid)
+  BUSH:          56,    // short bush (solid)
+  CLIFF_FACE:    57,    // cliff/mountain wall (solid)
+  CAVE_FLOOR:    58,    // dark cave floor (walkable)
+  CAVE_WALL:     59,    // cave wall (solid)
 } as const;
 
 /**
@@ -70,6 +106,20 @@ export const OVERLAY_BASE: Partial<Record<number, number>> = {
   [Tile.BOOKSHELF]:     Tile.FLOOR,
   [Tile.COUNTER]:       Tile.FLOOR,
   [Tile.WINDOW]:        Tile.INDOOR_WALL,
+  // New overlay tiles
+  [Tile.TV]:            Tile.FLOOR,
+  [Tile.BED]:           Tile.FLOOR,
+  [Tile.PLANT]:         Tile.FLOOR,
+  [Tile.STAIRS]:        Tile.FLOOR,
+  [Tile.PINK_COUNTER]:  Tile.CENTER_FLOOR,
+  [Tile.MART_SHELF]:    Tile.MART_FLOOR,
+  [Tile.LAB_MACHINE]:   Tile.LAB_FLOOR,
+  [Tile.DISPLAY_CASE]:  Tile.FLOOR,
+  [Tile.FOSSIL]:        Tile.FLOOR,
+  [Tile.BOULDER]:       Tile.ROCK_FLOOR,
+  [Tile.ARENA_MARK]:    Tile.ROCK_FLOOR,
+  [Tile.ROCK]:          Tile.GRASS,
+  [Tile.BUSH]:          Tile.GRASS,
 };
 
 // Colors for each tile type
@@ -114,6 +164,28 @@ export const TILE_COLORS: Record<number, number> = {
   [Tile.POKEBALL_ITEM]: 0xd4b896,
   [Tile.GYM_FLOOR]:     0xc8b898,
   [Tile.GYM_STATUE]:    0x909090,
+  // New tiles
+  [Tile.TV]:            0x303040,
+  [Tile.BED]:           0xe8e0d0,
+  [Tile.PLANT]:         0x40a040,
+  [Tile.STAIRS]:        0x9e7c4a,
+  [Tile.CENTER_FLOOR]:  0xf0d8d8,
+  [Tile.PINK_COUNTER]:  0xe08080,
+  [Tile.MART_FLOOR]:    0xd0e0f0,
+  [Tile.MART_SHELF]:    0x6a9ac0,
+  [Tile.LAB_FLOOR]:     0xe8e8f0,
+  [Tile.LAB_MACHINE]:   0x808898,
+  [Tile.DISPLAY_CASE]:  0x90b0c8,
+  [Tile.FOSSIL]:        0xb0a088,
+  [Tile.ROCK_FLOOR]:    0xb8a888,
+  [Tile.BOULDER]:       0x908070,
+  [Tile.ARENA_MARK]:    0xd0c0a0,
+  [Tile.SAND]:          0xe8d8a0,
+  [Tile.ROCK]:          0x808070,
+  [Tile.BUSH]:          0x3a8a30,
+  [Tile.CLIFF_FACE]:    0x706050,
+  [Tile.CAVE_FLOOR]:    0x605848,
+  [Tile.CAVE_WALL]:     0x484038,
 };
 
 // Solid tiles that block movement
@@ -127,6 +199,10 @@ export const SOLID_TILES = new Set<number>([
   // Interior solid tiles
   Tile.INDOOR_WALL, Tile.COUNTER, Tile.TABLE, Tile.BOOKSHELF,
   Tile.PC_TILE, Tile.HEAL_MACHINE, Tile.WINDOW, Tile.GYM_STATUE,
+  // New solid tiles
+  Tile.TV, Tile.BED, Tile.STAIRS, Tile.PINK_COUNTER, Tile.MART_SHELF,
+  Tile.LAB_MACHINE, Tile.DISPLAY_CASE, Tile.FOSSIL, Tile.BOULDER,
+  Tile.ROCK, Tile.BUSH, Tile.CLIFF_FACE, Tile.CAVE_WALL,
 ]);
 
 // ─── Map definition types ───
@@ -229,6 +305,28 @@ const CHAR_TO_TILE: Record<string, number> = {
   'o': Tile.POKEBALL_ITEM,
   'y': Tile.GYM_FLOOR,
   'z': Tile.GYM_STATUE,
+  // New tiles
+  'V': Tile.TV,
+  'Z': Tile.BED,
+  'N': Tile.PLANT,
+  'U': Tile.STAIRS,
+  'O': Tile.CENTER_FLOOR,
+  'K': Tile.PINK_COUNTER,
+  'I': Tile.MART_FLOOR,
+  'Y': Tile.MART_SHELF,
+  'l': Tile.LAB_FLOOR,
+  'x': Tile.LAB_MACHINE,
+  'd': Tile.DISPLAY_CASE,
+  'j': Tile.FOSSIL,
+  'u': Tile.ROCK_FLOOR,
+  'q': Tile.BOULDER,
+  'Q': Tile.ARENA_MARK,
+  's': Tile.SAND,
+  '~': Tile.ROCK,
+  '%': Tile.BUSH,
+  '^': Tile.CLIFF_FACE,
+  ',': Tile.CAVE_FLOOR,
+  ';': Tile.CAVE_WALL,
 };
 
 export function parseMap(rows: string[]): number[][] {

@@ -4,13 +4,13 @@ const ground = parseMap([
   // 01234567890123
   '##############', // 0  - north wall
   '#w__________w#', // 1  - windows
-  '#__bbbbbbbb__#', // 2  - display cases (bookshelves)
+  '#__dddddddd__#', // 2  - display cases
   '#____________#', // 3
-  '#__bbbbbbbb__#', // 4  - display cases
+  '#__dddddddd__#', // 4  - display cases
   '#____________#', // 5
-  '#__t______t__#', // 6  - info plaques
+  '#__j______j__#', // 6  - fossils
   '#____________#', // 7
-  '#__bbbbbbbb__#', // 8  - fossil display
+  '#__dddddddd__#', // 8  - display cases
   '#______v_____#', // 9  - exit mat
 ]);
 

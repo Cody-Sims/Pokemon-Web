@@ -3,16 +3,16 @@ import { MapDefinition, parseMap } from './shared';
 const ground = parseMap([
   // 0123456789012
   '#############', // 0  - north wall
-  '#w__b_b_b__w#', // 1  - windows + bookshelves
-  '#___b_b_b___#', // 2  - bookshelves (research area)
-  '#___________#', // 3
-  '#_t_t_t_t_t_#', // 4  - lab desks
-  '#_i_i_i_i_i_#', // 5  - chairs
-  '#___________#', // 6
-  '#____ooo____#', // 7  - starter Poké Balls on table
-  '#____ttt____#', // 8  - table for starters
-  '#___________#', // 9
-  '#___________#', // 10
+  '#w_lb_b_b__w#', // 1  - windows + bookshelves on lab floor
+  '#ll_b_b_b_ll#', // 2  - lab floor + bookshelves
+  '#lllllllllll#', // 3  - lab floor
+  '#lt_t_t_t_tl#', // 4  - lab desks
+  '#li_i_i_i_il#', // 5  - chairs
+  '#lllllllllll#', // 6  - lab floor
+  '#llllooollll#', // 7  - starter Poké Balls
+  '#lllltttllll#', // 8  - table for starters
+  '#lllllllllll#', // 9  - lab floor
+  '#ll___x___ll#', // 10 - lab machine
   '#_____v_____#', // 11 - exit mat
 ]);
 

@@ -3,16 +3,16 @@ import { MapDefinition, parseMap } from './shared';
 const ground = parseMap([
   // 01234567890123
   '##############', // 0  - north wall
-  '#w____yy____w#', // 1  - gym floor
-  '#_yyyy_yyyyyy#', // 2
-  '#_yyyyyyy_yyy#', // 3
-  '#_yyyy_yyyyyy#', // 4
-  '#zyyyyyyyyyz_#', // 5  - statues
-  '#_yyyyyyyyyy_#', // 6
-  '#_yyyy_yyyyyy#', // 7
-  '#_yyyyyyy_yyy#', // 8
-  '#zyyyyyyyyyz_#', // 9  - statues
-  '#_yyyyyyyyyy_#', // 10
+  '#w____uu____w#', // 1  - rock floor arena
+  '#_uuuuQuuuuuu#', // 2  - arena markings
+  '#_uuuuuuuu_uu#', // 3
+  '#_uuuuQuuuuuu#', // 4
+  '#zuuuuuuuuuz_#', // 5  - statues
+  '#_uuuuuuuuuu_#', // 6
+  '#_uuuuQuuuuuu#', // 7
+  '#_uuuuuuuu_uu#', // 8
+  '#zuuuqquuuuz_#', // 9  - statues + boulders
+  '#_uuuuuuuuuu_#', // 10
   '#______v_____#', // 11 - exit mat
 ]);
 
