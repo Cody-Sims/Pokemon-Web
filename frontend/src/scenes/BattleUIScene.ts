@@ -114,8 +114,20 @@ export class BattleUIScene extends Phaser.Scene {
   private selectAction(): void {
     switch (this.actionTexts[this.cursor].text) {
       case 'FIGHT': this.openMoveMenu(); break;
-      case 'BAG': this.scene.launch('InventoryScene'); break;
-      case 'POKEMON': this.scene.launch('PartyScene'); break;
+      case 'BAG':
+        this.scene.sleep();
+        this.scene.launch('InventoryScene');
+        this.scene.get('InventoryScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
+        break;
+      case 'POKEMON':
+        this.scene.sleep();
+        this.scene.launch('PartyScene');
+        this.scene.get('PartyScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
+        break;
       case 'RUN': this.endBattle(); break;
     }
   }

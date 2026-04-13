@@ -73,10 +73,18 @@ export class MenuScene extends Phaser.Scene {
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
     switch (this.menuLabels[this.cursor]) {
       case 'POKEMON':
+        this.scene.sleep();
         this.scene.launch('PartyScene');
+        this.scene.get('PartyScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
         break;
       case 'BAG':
+        this.scene.sleep();
         this.scene.launch('InventoryScene');
+        this.scene.get('InventoryScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
         break;
       case 'SAVE':
         this.saveGame();

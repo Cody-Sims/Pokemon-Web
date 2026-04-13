@@ -88,15 +88,13 @@ describe('Scene Lifecycle — Input Gating', () => {
 
   describe('battle sub-scene overlays', () => {
     it('when InventoryScene launches from battle, BattleUIScene input should be blocked', () => {
-      // In the current code, scene.launch('InventoryScene') runs it alongside BattleUIScene.
-      // BattleUIScene doesn't pause itself, which means ESC can hit both scenes.
+      // BattleUIScene now sleeps itself before launching InventoryScene,
+      // so it is no longer in the active set and should not accept input.
       const state: SceneState = {
-        active: new Set(['BattleScene', 'BattleUIScene', 'InventoryScene']),
+        active: new Set(['BattleScene', 'InventoryScene']),
         paused: new Set(),
       };
-      // BUG: Both BattleUIScene and InventoryScene accept input simultaneously
-      // This documents the issue for future fixing
-      expect(shouldAcceptInput('BattleUIScene', state)).toBe(true);
+      expect(shouldAcceptInput('BattleUIScene', state)).toBe(false);
       expect(shouldAcceptInput('InventoryScene', state)).toBe(true);
     });
   });
