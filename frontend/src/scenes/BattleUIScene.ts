@@ -17,7 +17,7 @@ import { GameManager } from '@managers/GameManager';
 import { trainerData } from '@data/trainer-data';
 import { SFX, BGM } from '@utils/audio-keys';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
-import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message';
 
@@ -753,7 +753,7 @@ export class BattleUIScene extends Phaser.Scene {
         // Play victory BGM
         audio.playBGM(BGM.VICTORY);
         this.state = 'message';
-        this.msg('Press Enter to continue...');
+        this.msg(isMobile() ? 'Tap to continue...' : 'Press Enter to continue...');
         this.waitForConfirmThen(() => this.endBattle());
       });
     });
@@ -875,7 +875,7 @@ export class BattleUIScene extends Phaser.Scene {
           this.offerNewMove(name, newMoves, moveIdx);
         } else {
           this.state = 'message';
-          this.msg('Press Enter to continue...');
+          this.msg(isMobile() ? 'Tap to continue...' : 'Press Enter to continue...');
           this.waitForConfirmThen(() => this.endBattle());
         }
       });
@@ -1066,15 +1066,20 @@ export class BattleUIScene extends Phaser.Scene {
     });
   }
 
-  /** Wait for a single Enter/Space press then run callback. */
+  /** Wait for a single Enter/Space press or tap then run callback. */
   private waitForConfirmThen(callback: () => void): void {
+    let fired = false;
     const handler = () => {
+      if (fired) return;
+      fired = true;
       this.input.keyboard!.off('keydown-ENTER', handler);
       this.input.keyboard!.off('keydown-SPACE', handler);
+      this.input.off('pointerdown', handler);
       callback();
     };
     this.input.keyboard!.on('keydown-ENTER', handler);
     this.input.keyboard!.on('keydown-SPACE', handler);
+    this.input.on('pointerdown', handler);
   }
 
   /** Show trainer reward messages (money, badge, dialogue), then end battle. */
@@ -1097,14 +1102,15 @@ export class BattleUIScene extends Phaser.Scene {
     }
 
     if (messages.length > 0) {
+      const continueMsg = isMobile() ? 'Tap to continue...' : 'Press Enter to continue...';
       this.showMessageQueue(messages, 0, () => {
         this.state = 'message';
-        this.msg('Press Enter to continue...');
+        this.msg(continueMsg);
         this.waitForConfirmThen(() => this.endBattle());
       });
     } else {
       this.state = 'message';
-      this.msg('Press Enter to continue...');
+      this.msg(isMobile() ? 'Tap to continue...' : 'Press Enter to continue...');
       this.waitForConfirmThen(() => this.endBattle());
     }
   }

@@ -18,6 +18,8 @@ All notable changes to the Pokemon Web project.
 ### Fixed
 - **Double-tap zoom**: Blocked `dblclick` and Safari gesture events to prevent accidental zoom-in on mobile that couldn't be reversed due to touch controls consuming pinch gestures.
 - **Long-press copy/select**: Added `user-select: none`, `-webkit-touch-callout: none` on html/body/canvas and blocked `contextmenu` event to prevent accidental text selection and copy sheet on mobile.
+- **Battle continue stuck on mobile**: `waitForConfirmThen()` in BattleUIScene now listens for `pointerdown` (tap) in addition to keyboard events, fixing the inability to dismiss the "Press Enter to continue" screen on touch devices.
+- **Mobile battle prompt text**: Changed "Press Enter to continue..." to "Tap to continue..." on mobile devices.
 
 ---
 
