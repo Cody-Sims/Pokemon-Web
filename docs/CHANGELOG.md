@@ -6,6 +6,7 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Fixed
+- **Battle trainer sprite size**: Increased enemy trainer sprite scale from 1.5 to 3 so the trainer appears larger than the Pokémon, and increased alpha from 0.7 to 0.85 for better visibility.
 - **Difficulty screen overlay**: Made difficulty selection background fully opaque so title screen no longer bleeds through. Disabled title menu keyboard/pointer handlers while difficulty screen is open and restored them on cancel.
 
 ### Changed
