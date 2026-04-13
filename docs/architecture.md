@@ -101,57 +101,20 @@ pokemon-web/
 │       │   ├── maps/                  # Per-map definitions
 │       │   │   ├── index.ts           # Re-exports mapRegistry + shared types
 │       │   │   ├── shared.ts          # Tile constants (25 overworld + 14 interior), colors, map interfaces, parseMap
-│       │   │   ├── pallet-town.ts     # Pallet Town map definition
-│       │   │   ├── route-1.ts         # Route 1 map definition
-│       │   │   ├── viridian-city.ts   # Viridian City map definition
-│       │   │   ├── route-2.ts         # Route 2 map definition
-│       │   │   ├── viridian-forest.ts # Viridian Forest map definition
-│       │   │   ├── pewter-city.ts     # Pewter City map definition
-│       │   │   ├── pallet-player-house.ts  # Interior: Player's house
-│       │   │   ├── pallet-rival-house.ts   # Interior: Rival's house
-│       │   │   ├── pallet-oak-lab.ts       # Interior: Oak's Laboratory (starter select)
-│       │   │   ├── viridian-pokecenter.ts  # Interior: Viridian PokéCenter (heal)
-│       │   │   ├── viridian-pokemart.ts    # Interior: Viridian PokéMart (parcel quest)
-│       │   │   ├── pewter-pokecenter.ts    # Interior: Pewter PokéCenter (heal)
-│       │   │   ├── pewter-gym.ts           # Interior: Pewter Gym (Brock battle)
-│       │   │   ├── pewter-museum.ts        # Interior: Pewter Museum of Science
-│       │   │   ├── crystal-cavern.ts       # Dungeon: Crystal Cavern (off Route 2)
-│       │   │   ├── route-3.ts              # Route 3: Tide Pool Path (coastal)
-│       │   │   ├── coral-harbor.ts         # Coral Harbor: Town 3 (port town)
-│       │   │   ├── coral-pokecenter.ts     # Interior: Coral Harbor PokéCenter
-│       │   │   ├── coral-pokemart.ts       # Interior: Coral Harbor PokéMart
-│       │   │   ├── coral-gym.ts            # Interior: Coral Harbor Gym (Water)
-│       │   │   ├── route-4.ts              # Route 4: Basalt Ridge (volcanic)
-│       │   │   ├── ember-mines.ts          # Dungeon: Ember Mines (Synthesis lab)
-│       │   │   ├── ironvale-city.ts        # Ironvale City: Town 4 (industrial)
-│       │   │   ├── ironvale-pokecenter.ts  # Interior: Ironvale PokéCenter
-│       │   │   ├── ironvale-pokemart.ts    # Interior: Ironvale PokéMart
-│       │   │   ├── ironvale-gym.ts         # Interior: Ironvale Gym (Steel)
-│       │   │   ├── route-5.ts              # Route 5: Canopy Trail (forest)
-│       │   │   ├── verdantia-village.ts    # Verdantia Village: Town 5
-│       │   │   ├── verdantia-pokecenter.ts # Interior: Verdantia PokéCenter
-│       │   │   ├── verdantia-pokemart.ts   # Interior: Verdantia PokéMart
-│       │   │   ├── verdantia-gym.ts        # Interior: Verdantia Gym (Grass)
-│       │   │   ├── voltara-city.ts         # Voltara City: Town 6 (tech)
-│       │   │   ├── voltara-pokecenter.ts   # Interior: Voltara PokéCenter
-│       │   │   ├── voltara-pokemart.ts     # Interior: Voltara PokéMart
-│       │   │   ├── voltara-gym.ts          # Interior: Voltara Gym (Electric)
-│       │   │   ├── route-6.ts              # Route 6 (Voltara → Wraithmoor)
-│       │   │   ├── wraithmoor-town.ts      # Wraithmoor Town: Town 7
-│       │   │   ├── wraithmoor-pokecenter.ts
-│       │   │   ├── wraithmoor-pokemart.ts
-│       │   │   ├── wraithmoor-gym.ts       # Interior: Wraithmoor Gym (Ghost)
-│       │   │   ├── route-7.ts              # Route 7 (Vex blockade)
-│       │   │   ├── scalecrest-citadel.ts   # Scalecrest Citadel: Town 8
-│       │   │   ├── scalecrest-pokecenter.ts
-│       │   │   ├── scalecrest-pokemart.ts
-│       │   │   ├── scalecrest-gym.ts       # Interior: Scalecrest Gym (Dragon)
-│       │   │   ├── cinderfall-town.ts      # Cinderfall Town: Town 9
-│       │   │   ├── cinderfall-pokecenter.ts
-│       │   │   ├── cinderfall-pokemart.ts
-│       │   │   ├── cinderfall-gym.ts       # Interior: Cinderfall Gym (Fire)
-│       │   │   ├── victory-road.ts         # Victory Road dungeon
-│       │   │   └── pokemon-league.ts       # Pokémon League (Elite Four + Champion)
+│       │   │   ├── cities/            # City & town overworld maps
+│       │   │   │   ├── pallet-town.ts, viridian-city.ts, pewter-city.ts
+│       │   │   │   ├── coral-harbor.ts, ironvale-city.ts, verdantia-village.ts
+│       │   │   │   ├── voltara-city.ts, wraithmoor-town.ts, scalecrest-citadel.ts
+│       │   │   │   └── cinderfall-town.ts
+│       │   │   ├── routes/            # Route maps (Route 1–7)
+│       │   │   │   └── route-1.ts … route-7.ts
+│       │   │   ├── interiors/         # Interior maps (gyms, pokécenters, pokémarts, houses, labs)
+│       │   │   │   ├── pallet-player-house.ts, pallet-rival-house.ts, pallet-oak-lab.ts
+│       │   │   │   ├── *-pokecenter.ts, *-pokemart.ts, *-gym.ts (per city)
+│       │   │   │   ├── pewter-museum.ts
+│       │   │   │   └── pokemon-league.ts
+│       │   │   └── dungeons/          # Dungeon & special area maps
+│       │   │       └── viridian-forest.ts, crystal-cavern.ts, ember-mines.ts, victory-road.ts
 │       │   ├── moves/                 # Per-type move definitions
 │       │   │   ├── index.ts           # Re-exports combined moveData record
 │       │   │   ├── normal.ts          # Normal-type moves (~70)

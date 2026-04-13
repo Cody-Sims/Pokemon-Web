@@ -16,44 +16,65 @@ export {
 } from './shared';
 
 import { MapDefinition } from './shared';
-import { palletTown } from './pallet-town';
-import { route1 } from './route-1';
-import { viridianCity } from './viridian-city';
-import { route2 } from './route-2';
-import { viridianForest } from './viridian-forest';
-import { pewterCity } from './pewter-city';
-// Interior maps
-import { palletPlayerHouse } from './pallet-player-house';
-import { palletRivalHouse } from './pallet-rival-house';
-import { palletOakLab } from './pallet-oak-lab';
-import { viridianPokecenter } from './viridian-pokecenter';
-import { viridianPokemart } from './viridian-pokemart';
-import { pewterPokecenter } from './pewter-pokecenter';
-import { pewterGym } from './pewter-gym';
-import { pewterMuseum } from './pewter-museum';
+
+// Cities & Towns
+import { palletTown } from './cities/pallet-town';
+import { viridianCity } from './cities/viridian-city';
+import { pewterCity } from './cities/pewter-city';
+import { coralHarbor } from './cities/coral-harbor';
+import { ironvaleCity } from './cities/ironvale-city';
+import { verdantiaVillage } from './cities/verdantia-village';
+import { voltaraCity } from './cities/voltara-city';
+import { wraithmoorTown } from './cities/wraithmoor-town';
+import { scalecrestCitadel } from './cities/scalecrest-citadel';
+import { cinderfallTown } from './cities/cinderfall-town';
+
+// Routes
+import { route1 } from './routes/route-1';
+import { route2 } from './routes/route-2';
+import { route3 } from './routes/route-3';
+import { route4 } from './routes/route-4';
+import { route5 } from './routes/route-5';
+import { route6 } from './routes/route-6';
+import { route7 } from './routes/route-7';
+
+// Interiors
+import { palletPlayerHouse } from './interiors/pallet-player-house';
+import { palletRivalHouse } from './interiors/pallet-rival-house';
+import { palletOakLab } from './interiors/pallet-oak-lab';
+import { viridianPokecenter } from './interiors/viridian-pokecenter';
+import { viridianPokemart } from './interiors/viridian-pokemart';
+import { pewterPokecenter } from './interiors/pewter-pokecenter';
+import { pewterGym } from './interiors/pewter-gym';
+import { pewterMuseum } from './interiors/pewter-museum';
+import { coralPokecenter } from './interiors/coral-pokecenter';
+import { coralPokemart } from './interiors/coral-pokemart';
+import { coralGym } from './interiors/coral-gym';
+import { ironvalePokecenter } from './interiors/ironvale-pokecenter';
+import { ironvalePokemart } from './interiors/ironvale-pokemart';
+import { ironvaleGym } from './interiors/ironvale-gym';
+import { verdantiaPokecenter } from './interiors/verdantia-pokecenter';
+import { verdantiaPokemart } from './interiors/verdantia-pokemart';
+import { verdantiaGym } from './interiors/verdantia-gym';
+import { voltaraPokecenter } from './interiors/voltara-pokecenter';
+import { voltaraPokemart } from './interiors/voltara-pokemart';
+import { voltaraGym } from './interiors/voltara-gym';
+import { wraithmoorPokecenter } from './interiors/wraithmoor-pokecenter';
+import { wraithmoorPokemart } from './interiors/wraithmoor-pokemart';
+import { wraithmoorGym } from './interiors/wraithmoor-gym';
+import { scalecrestPokecenter } from './interiors/scalecrest-pokecenter';
+import { scalecrestPokemart } from './interiors/scalecrest-pokemart';
+import { scalecrestGym } from './interiors/scalecrest-gym';
+import { cinderfallPokecenter } from './interiors/cinderfall-pokecenter';
+import { cinderfallPokemart } from './interiors/cinderfall-pokemart';
+import { cinderfallGym } from './interiors/cinderfall-gym';
+import { pokemonLeague } from './interiors/pokemon-league';
+
 // Dungeons
-import { crystalCavern } from './crystal-cavern';
-// Act 2 maps
-import { route3 } from './route-3';
-import { coralHarbor } from './coral-harbor';
-import { coralPokecenter } from './coral-pokecenter';
-import { coralPokemart } from './coral-pokemart';
-import { coralGym } from './coral-gym';
-import { route4 } from './route-4';
-import { emberMines } from './ember-mines';
-import { ironvaleCity } from './ironvale-city';
-import { ironvalePokecenter } from './ironvale-pokecenter';
-import { ironvalePokemart } from './ironvale-pokemart';
-import { ironvaleGym } from './ironvale-gym';
-import { route5 } from './route-5';
-import { verdantiaVillage } from './verdantia-village';
-import { verdantiaPokecenter } from './verdantia-pokecenter';
-import { verdantiaPokemart } from './verdantia-pokemart';
-import { verdantiaGym } from './verdantia-gym';
-import { voltaraCity } from './voltara-city';
-import { voltaraPokecenter } from './voltara-pokecenter';
-import { voltaraPokemart } from './voltara-pokemart';
-import { voltaraGym } from './voltara-gym';
+import { viridianForest } from './dungeons/viridian-forest';
+import { crystalCavern } from './dungeons/crystal-cavern';
+import { emberMines } from './dungeons/ember-mines';
+import { victoryRoad } from './dungeons/victory-road';
 
 export const mapRegistry: Record<string, MapDefinition> = {
   'pallet-town': palletTown,
@@ -94,4 +115,22 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'voltara-pokecenter': voltaraPokecenter,
   'voltara-pokemart': voltaraPokemart,
   'voltara-gym': voltaraGym,
+  // Act 3
+  'route-6': route6,
+  'wraithmoor-town': wraithmoorTown,
+  'wraithmoor-pokecenter': wraithmoorPokecenter,
+  'wraithmoor-pokemart': wraithmoorPokemart,
+  'wraithmoor-gym': wraithmoorGym,
+  'route-7': route7,
+  'scalecrest-citadel': scalecrestCitadel,
+  'scalecrest-pokecenter': scalecrestPokecenter,
+  'scalecrest-pokemart': scalecrestPokemart,
+  'scalecrest-gym': scalecrestGym,
+  'cinderfall-town': cinderfallTown,
+  'cinderfall-pokecenter': cinderfallPokecenter,
+  'cinderfall-pokemart': cinderfallPokemart,
+  'cinderfall-gym': cinderfallGym,
+  // Act 4
+  'victory-road': victoryRoad,
+  'pokemon-league': pokemonLeague,
 };

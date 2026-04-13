@@ -5,6 +5,9 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Changed
+- **Map file organization**: Moved 51 map definition files from flat `data/maps/` into `cities/`, `routes/`, `interiors/`, and `dungeons/` subdirectories. Updated all imports in `index.ts` and `../shared` references.
+
 ### Fixed
 - **ShopScene tab navigation**: Added LEFT/RIGHT arrow keys to switch between Buy/Sell tabs (previously only Q/E worked), updated hint text
 - **Nurse Joy counter interaction**: Extended NPC interaction check to reach across counter tiles (COUNTER, PINK_COUNTER), allowing players to talk to NPCs behind counters
