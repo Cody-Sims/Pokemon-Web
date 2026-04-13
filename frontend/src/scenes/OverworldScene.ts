@@ -113,6 +113,7 @@ export class OverworldScene extends Phaser.Scene {
 
     this.player = new Player(this, spawnX, spawnY);
     this.player.setScale(2);
+    this.player.setDepth(1); // Between ground (0) and foreground overlays like tall grass (2)
     const animDir = spawnDir === 'right' ? 'left' : spawnDir;
     this.player.play(`player-idle-${animDir}`);
     if (spawnDir === 'right') this.player.setFlipX(true);

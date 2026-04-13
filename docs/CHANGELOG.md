@@ -5,6 +5,9 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Fixed
+- **Player hidden under tall grass**: Player was at depth 0 (same as ground), so foreground overlays like tall grass (depth 2) completely covered them. Set player depth to 1 — body visible with grass overlaying feet, matching classic Pokémon.
+
 ### Added
 - **Trainer sprites in battle**: During trainer battles, the enemy trainer sprite appears behind their Pokémon (upper-right, semi-transparent) and the player character appears behind theirs (lower-left). Both slide in during the intro animation. Uses the trainer's `spriteKey` from trainer data.
 
@@ -14,7 +17,6 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 - **Oak's Lab exit blocked**: Moved lab machines from center (tile 6,10) to sides (tiles 3,10 and 9,10) so the player can walk straight down to the exit mat.
-- **Oak's Lab pokeball collision**: Removed standalone POKEBALL_ITEM tiles on row 7 that sat above the starter table; the row is now walkable lab floor.
 - **Oak's Lab exit warp width**: Widened exit warp from 1 tile to 3 tiles (positions 5–7 on row 11) for easier navigation.
 
 ### Added
