@@ -73,8 +73,16 @@ export class BattleScene extends Phaser.Scene {
     };
     this.battleManager = new BattleManager(config);
 
-    // ── Draw battle scene ──
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgPanel);
+    // ── Draw battle scene background ──
+    const battleBg = data?.battleBg as string | undefined;
+    if (battleBg && this.textures.exists(battleBg)) {
+      // Use image-based battle background
+      const bg = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, battleBg);
+      bg.setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
+    } else {
+      // Fallback: procedural solid background
+      this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgPanel);
+    }
 
     // Ground areas
     this.add.ellipse(550, 200, 200, 50, 0x2d4a22);

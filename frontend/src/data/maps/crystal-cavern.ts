@@ -43,6 +43,7 @@ export const crystalCavern: MapDefinition = {
   ground: floor1Ground,
   encounterTableKey: 'crystal-cavern',
   displayName: 'Crystal Cavern',
+  battleBg: 'bg-cave',
   npcs: [
     {
       id: 'cavern-sign',

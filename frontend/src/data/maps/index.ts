@@ -33,6 +33,12 @@ import { pewterGym } from './pewter-gym';
 import { pewterMuseum } from './pewter-museum';
 // Dungeons
 import { crystalCavern } from './crystal-cavern';
+// Act 2 maps
+import { route3 } from './route-3';
+import { coralHarbor } from './coral-harbor';
+import { coralPokecenter } from './coral-pokecenter';
+import { coralPokemart } from './coral-pokemart';
+import { coralGym } from './coral-gym';
 
 export const mapRegistry: Record<string, MapDefinition> = {
   'pallet-town': palletTown,
@@ -52,4 +58,10 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'pewter-museum': pewterMuseum,
   // Dungeons
   'crystal-cavern': crystalCavern,
+  // Act 2
+  'route-3': route3,
+  'coral-harbor': coralHarbor,
+  'coral-pokecenter': coralPokecenter,
+  'coral-pokemart': coralPokemart,
+  'coral-gym': coralGym,
 };

@@ -91,6 +91,62 @@ export const Tile = {
   PALM_TREE:     65,    // tropical palm tree for beach (solid)
   DARK_GRASS:    66,    // darker forest grass (walkable)
   LIGHT_GRASS:   67,    // light meadow grass (walkable)
+
+  // ── Phase 4.5: Biome expansion tiles ──
+  // Coastal
+  TIDE_POOL:     68,    // shallow tidal pool (walkable, fishable)
+  WET_SAND:      69,    // damp sand near water (walkable)
+  DOCK_PLANK:    70,    // wooden dock/pier plank (walkable)
+  CORAL_BLOCK:   71,    // coral-marked building wall (solid)
+  // Volcanic
+  LAVA_ROCK:     72,    // dark volcanic rock ground (walkable)
+  MAGMA_CRACK:   73,    // glowing magma crack (solid)
+  VOLCANIC_WALL: 74,    // basalt cliff wall (solid)
+  // Mine/Dungeon
+  MINE_TRACK:    75,    // minecart track on cave floor (walkable)
+  MINE_SUPPORT:  76,    // wooden mine beam (solid)
+  // Industrial
+  METAL_FLOOR:   77,    // steel/iron plating floor (walkable)
+  METAL_WALL:    78,    // riveted metal wall (solid)
+  PIPE:          79,    // exposed pipe decoration (solid)
+  GEAR:          80,    // decorative/puzzle gear on wall (solid)
+  // Forest
+  VINE:          81,    // hanging vine (walkable overlay)
+  MOSS_STONE:    82,    // mossy stone block (solid)
+  GIANT_ROOT:    83,    // large tree root (solid)
+  BERRY_TREE:    84,    // berry-bearing tree (solid, interactable)
+  // Electric/Tech
+  CONDUIT:       85,    // aether energy conduit on floor (walkable)
+  ELECTRIC_PANEL:86,    // control panel (solid, interactable)
+  WIRE_FLOOR:    87,    // floor with cable runs (walkable)
+  // Ghost/Ruin
+  GRAVE_MARKER:  88,    // tombstone (solid)
+  CRACKED_FLOOR: 89,    // broken stone floor (walkable)
+  RUIN_WALL:     90,    // ancient crumbling wall (solid)
+  RUIN_PILLAR:   91,    // stone column (solid)
+  MIST:          92,    // low fog overlay (walkable)
+  // Dragon
+  DRAGON_SCALE_FLOOR: 93, // ornate scale-pattern stone (walkable)
+  DRAGON_STATUE: 94,    // dragon statue decoration (solid)
+  FORTRESS_WALL: 95,    // ancient fortress masonry (solid)
+  // Volcanic/Fire
+  ASH_GROUND:    96,    // ashy gray soil (walkable)
+  EMBER_VENT:    97,    // steam/ember vent (solid)
+  HOT_SPRING:    98,    // hot spring pool (solid, heal)
+  // Synthesis Collective HQ
+  SYNTHESIS_FLOOR: 99,  // clean white lab tile (walkable)
+  SYNTHESIS_WALL: 100,  // teal-white paneled wall (solid)
+  SYNTHESIS_DOOR: 101,  // sliding lab door (walkable warp)
+  CONTAINMENT_POD:102,  // pokémon containment unit (solid)
+  AETHER_CONDUIT: 103,  // glowing aether pipe (solid)
+  TERMINAL:      104,   // data terminal (solid, interactable)
+  // Post-game
+  SHATTERED_GROUND:105, // fractured earth (walkable)
+  AETHER_CRYSTAL: 106,  // exposed crystal formation (solid)
+  // Pokémon League
+  LEAGUE_FLOOR:  107,   // grand marble floor (walkable)
+  LEAGUE_WALL:   108,   // ornate marble wall (solid)
+  CHAMPION_THRONE:109,  // champion's throne (solid)
 } as const;
 
 /**
@@ -146,6 +202,24 @@ export const OVERLAY_BASE: Partial<Record<number, number>> = {
   [Tile.PINE_TREE]:     Tile.GRASS,
   [Tile.AUTUMN_TREE]:   Tile.GRASS,
   [Tile.PALM_TREE]:     Tile.SAND,
+  // Phase 4.5 overlays
+  [Tile.VINE]:            Tile.DARK_GRASS,
+  [Tile.MIST]:            Tile.CRACKED_FLOOR,
+  [Tile.MINE_TRACK]:      Tile.CAVE_FLOOR,
+  [Tile.CONDUIT]:         Tile.METAL_FLOOR,
+  [Tile.WIRE_FLOOR]:      Tile.METAL_FLOOR,
+  [Tile.TIDE_POOL]:       Tile.WET_SAND,
+  [Tile.GRAVE_MARKER]:    Tile.CRACKED_FLOOR,
+  [Tile.DRAGON_STATUE]:   Tile.DRAGON_SCALE_FLOOR,
+  [Tile.EMBER_VENT]:      Tile.ASH_GROUND,
+  [Tile.HOT_SPRING]:      Tile.ASH_GROUND,
+  [Tile.CONTAINMENT_POD]: Tile.SYNTHESIS_FLOOR,
+  [Tile.AETHER_CONDUIT]:  Tile.SYNTHESIS_FLOOR,
+  [Tile.TERMINAL]:        Tile.SYNTHESIS_FLOOR,
+  [Tile.SYNTHESIS_DOOR]:  Tile.SYNTHESIS_WALL,
+  [Tile.AETHER_CRYSTAL]:  Tile.SHATTERED_GROUND,
+  [Tile.CHAMPION_THRONE]: Tile.LEAGUE_FLOOR,
+  [Tile.BERRY_TREE]:      Tile.LIGHT_GRASS,
 };
 
 /**
@@ -159,6 +233,9 @@ export const FOREGROUND_TILES = new Set<number>([
   Tile.PINE_TREE,
   Tile.AUTUMN_TREE,
   Tile.PALM_TREE,
+  Tile.VINE,
+  Tile.BERRY_TREE,
+  Tile.MIST,
 ]);
 
 // Colors for each tile type
@@ -235,6 +312,49 @@ export const TILE_COLORS: Record<number, number> = {
   [Tile.PALM_TREE]:     0x40a040,
   [Tile.DARK_GRASS]:    0x3a7a28,
   [Tile.LIGHT_GRASS]:   0x70b848,
+  // Phase 4.5 colors
+  [Tile.TIDE_POOL]:       0x5098c0,
+  [Tile.WET_SAND]:        0xc8b878,
+  [Tile.DOCK_PLANK]:      0x9e7c4a,
+  [Tile.CORAL_BLOCK]:     0xd08888,
+  [Tile.LAVA_ROCK]:       0x484040,
+  [Tile.MAGMA_CRACK]:     0xe06020,
+  [Tile.VOLCANIC_WALL]:   0x504840,
+  [Tile.MINE_TRACK]:      0x706858,
+  [Tile.MINE_SUPPORT]:    0x8b6914,
+  [Tile.METAL_FLOOR]:     0xa0a0a8,
+  [Tile.METAL_WALL]:      0x707078,
+  [Tile.PIPE]:            0x808890,
+  [Tile.GEAR]:            0x909098,
+  [Tile.VINE]:            0x40a030,
+  [Tile.MOSS_STONE]:      0x608850,
+  [Tile.GIANT_ROOT]:      0x6b4226,
+  [Tile.BERRY_TREE]:      0xc04060,
+  [Tile.CONDUIT]:         0x40e0d0,
+  [Tile.ELECTRIC_PANEL]:  0x606880,
+  [Tile.WIRE_FLOOR]:      0x909098,
+  [Tile.GRAVE_MARKER]:    0x808088,
+  [Tile.CRACKED_FLOOR]:   0x989088,
+  [Tile.RUIN_WALL]:       0x908878,
+  [Tile.RUIN_PILLAR]:     0xa09880,
+  [Tile.MIST]:            0xc0c8d0,
+  [Tile.DRAGON_SCALE_FLOOR]: 0x607898,
+  [Tile.DRAGON_STATUE]:   0x506878,
+  [Tile.FORTRESS_WALL]:   0x585860,
+  [Tile.ASH_GROUND]:      0xa0a098,
+  [Tile.EMBER_VENT]:      0xc04020,
+  [Tile.HOT_SPRING]:      0x60b0c0,
+  [Tile.SYNTHESIS_FLOOR]: 0xe0e8e8,
+  [Tile.SYNTHESIS_WALL]:  0x60b0b0,
+  [Tile.SYNTHESIS_DOOR]:  0x80c0c0,
+  [Tile.CONTAINMENT_POD]: 0x40a0a0,
+  [Tile.AETHER_CONDUIT]:  0x30e0c0,
+  [Tile.TERMINAL]:        0x405060,
+  [Tile.SHATTERED_GROUND]:0x807060,
+  [Tile.AETHER_CRYSTAL]:  0x60e0d0,
+  [Tile.LEAGUE_FLOOR]:    0xd0c8b8,
+  [Tile.LEAGUE_WALL]:     0xb0a890,
+  [Tile.CHAMPION_THRONE]: 0xc0a040,
 };
 
 // Solid tiles that block movement
@@ -256,6 +376,16 @@ export const SOLID_TILES = new Set<number>([
   // Exterior windows + biome trees
   Tile.HOUSE_WINDOW, Tile.LAB_WINDOW, Tile.CENTER_WINDOW,
   Tile.PINE_TREE, Tile.AUTUMN_TREE, Tile.PALM_TREE,
+  // Phase 4.5 solid tiles
+  Tile.CORAL_BLOCK, Tile.MAGMA_CRACK, Tile.VOLCANIC_WALL,
+  Tile.MINE_SUPPORT, Tile.METAL_WALL, Tile.PIPE, Tile.GEAR,
+  Tile.MOSS_STONE, Tile.GIANT_ROOT, Tile.BERRY_TREE,
+  Tile.ELECTRIC_PANEL,
+  Tile.GRAVE_MARKER, Tile.RUIN_WALL, Tile.RUIN_PILLAR,
+  Tile.DRAGON_STATUE, Tile.FORTRESS_WALL,
+  Tile.EMBER_VENT, Tile.HOT_SPRING,
+  Tile.SYNTHESIS_WALL, Tile.CONTAINMENT_POD, Tile.AETHER_CONDUIT, Tile.TERMINAL,
+  Tile.AETHER_CRYSTAL, Tile.LEAGUE_WALL, Tile.CHAMPION_THRONE,
 ]);
 
 // ─── Map definition types ───
@@ -314,6 +444,8 @@ export interface MapDefinition {
   isInterior?: boolean;
   /** Displayed when entering the map (e.g., "Oak's Laboratory"). */
   displayName?: string;
+  /** Battle background key for encounters on this map. Falls back to procedural if not set. */
+  battleBg?: string;
 }
 
 // ─── Helper: parse string map into number grid ───
@@ -390,6 +522,49 @@ const CHAR_TO_TILE: Record<string, number> = {
   '3': Tile.PALM_TREE,
   '4': Tile.DARK_GRASS,
   '5': Tile.LIGHT_GRASS,
+  // Phase 4.5 chars
+  '6': Tile.TIDE_POOL,
+  '7': Tile.WET_SAND,
+  '8': Tile.DOCK_PLANK,
+  '9': Tile.CORAL_BLOCK,
+  'Ø': Tile.LAVA_ROCK,
+  'µ': Tile.MAGMA_CRACK,
+  'Þ': Tile.VOLCANIC_WALL,
+  '=': Tile.MINE_TRACK,
+  '|': Tile.MINE_SUPPORT,
+  'Ʃ': Tile.METAL_FLOOR,
+  'Ɯ': Tile.METAL_WALL,
+  'π': Tile.PIPE,
+  'Ω': Tile.GEAR,
+  '¡': Tile.VINE,
+  '¢': Tile.MOSS_STONE,
+  '£': Tile.GIANT_ROOT,
+  '¤': Tile.BERRY_TREE,
+  '¥': Tile.CONDUIT,
+  '¦': Tile.ELECTRIC_PANEL,
+  '§': Tile.WIRE_FLOOR,
+  '†': Tile.GRAVE_MARKER,
+  '‡': Tile.CRACKED_FLOOR,
+  '®': Tile.RUIN_WALL,
+  '©': Tile.RUIN_PILLAR,
+  '°': Tile.MIST,
+  'Ð': Tile.DRAGON_SCALE_FLOOR,
+  'ð': Tile.DRAGON_STATUE,
+  'Æ': Tile.FORTRESS_WALL,
+  '«': Tile.ASH_GROUND,
+  '»': Tile.EMBER_VENT,
+  '±': Tile.HOT_SPRING,
+  'Ŧ': Tile.SYNTHESIS_FLOOR,
+  'Ħ': Tile.SYNTHESIS_WALL,
+  'Đ': Tile.SYNTHESIS_DOOR,
+  'Ŋ': Tile.CONTAINMENT_POD,
+  'Ɖ': Tile.AETHER_CONDUIT,
+  'ƫ': Tile.TERMINAL,
+  '¬': Tile.SHATTERED_GROUND,
+  '÷': Tile.AETHER_CRYSTAL,
+  '×': Tile.LEAGUE_FLOOR,
+  'Ł': Tile.LEAGUE_WALL,
+  'Ý': Tile.CHAMPION_THRONE,
 };
 
 export function parseMap(rows: string[]): number[][] {

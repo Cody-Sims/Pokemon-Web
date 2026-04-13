@@ -285,6 +285,71 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 240,
   },
 
+  // ─── Route 3: Tide Pool Path trainers ───
+  'swimmer-1': {
+    id: 'swimmer-1', name: 'Swimmer Derek', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 120, level: 13, moves: ['tackle', 'water-gun', 'harden'] },
+      { pokemonId: 72, level: 13, moves: ['poison-sting', 'supersonic', 'wrap'] },
+    ],
+    dialogue: {
+      before: ['The waves are perfect today!', 'Let\'s ride them into battle!'],
+      after: ['Wipeout! You\'re pretty good!'],
+    },
+    rewardMoney: 260,
+  },
+  'lass-2': {
+    id: 'lass-2', name: 'Lass Cynthia', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 29, level: 12, moves: ['scratch', 'poison-sting', 'tail-whip'] },
+      { pokemonId: 35, level: 13, moves: ['pound', 'growl', 'sing'] },
+    ],
+    dialogue: {
+      before: ['I love walking along the shore!', 'Will your Pokémon play with mine?'],
+      after: ['Oh no, they\'re too tired to play now...'],
+    },
+    rewardMoney: 260,
+  },
+  'youngster-3': {
+    id: 'youngster-3', name: 'Youngster Kevin', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 27, level: 13, moves: ['scratch', 'sand-attack', 'slash'] },
+      { pokemonId: 21, level: 12, moves: ['peck', 'leer', 'fury-attack'] },
+      { pokemonId: 56, level: 13, moves: ['scratch', 'karate-chop', 'leer'] },
+    ],
+    dialogue: {
+      before: ['I\'ve been training on the beach all day!', 'Come on, fight me!'],
+      after: ['Sand got in my eyes... that\'s why I lost!'],
+    },
+    rewardMoney: 260,
+  },
+
+  // ─── Gym 2: Coral (Water-type Gym Leader) ───
+  'gym-coral': {
+    id: 'gym-coral', name: 'Gym Leader Coral', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 120, level: 18, moves: ['water-gun', 'tackle', 'harden', 'swift'] },
+      { pokemonId: 90, level: 18, moves: ['tackle', 'withdraw', 'ice-beam', 'clamp'] },
+      { pokemonId: 121, level: 21, moves: ['water-gun', 'swift', 'recover', 'psychic'] },
+    ],
+    dialogue: {
+      before: [
+        'Coral: Hey there, challenger! Welcome to the Coral Harbor Gym!',
+        'Coral: The ocean is my home and Water Pokémon are my family!',
+        'Coral: I\'ve noticed the tides have been strange lately...',
+        'Coral: Something in the water isn\'t right. But first — let\'s battle!',
+      ],
+      after: [
+        'Coral: Whoa! You ride the waves like a pro!',
+        'Coral: Here\'s the Tide Badge — you earned it!',
+        'Coral: Hey, listen... Pokémon have been disappearing near the reef.',
+        'Coral: I don\'t have proof, but I think those "researchers" are involved.',
+        'Coral: If you find anything, let me know.',
+      ],
+    },
+    rewardMoney: 2100,
+  },
+
   // ─── Route 1 / Viridian Forest: Original trainers ───
   'bug-catcher-1': {
     id: 'bug-catcher-1', name: 'Bug Catcher Rick', spriteKey: 'generic-trainer',

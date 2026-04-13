@@ -30,6 +30,14 @@ export const encounterTables: Record<string, EncounterEntry[]> = {
     { pokemonId: 50, levelRange: [9, 12], weight: 10 },  // Diglett
     { pokemonId: 104, levelRange: [9, 11], weight: 5 },  // Cubone (rare)
   ],
+  'route-3': [
+    { pokemonId: 21, levelRange: [10, 14], weight: 25 },  // Spearow
+    { pokemonId: 23, levelRange: [10, 13], weight: 20 },  // Ekans
+    { pokemonId: 27, levelRange: [10, 14], weight: 20 },  // Sandshrew
+    { pokemonId: 56, levelRange: [11, 14], weight: 15 },  // Mankey
+    { pokemonId: 16, levelRange: [10, 13], weight: 15 },  // Pidgey
+    { pokemonId: 63, levelRange: [12, 14], weight: 5 },   // Abra (rare)
+  ],
 };
 
 /** Fishing encounter tables: per-route + per-rod tier. */
@@ -66,6 +74,38 @@ export const fishingTables: Record<string, Partial<Record<RodTier, EncounterEntr
     good:  [
       { pokemonId: 129, levelRange: [10, 15], weight: 70 },
       { pokemonId: 118, levelRange: [10, 15], weight: 30 },
+    ],
+  },
+  'route-3': {
+    old:   [{ pokemonId: 129, levelRange: [5, 10], weight: 100 }],
+    good:  [
+      { pokemonId: 129, levelRange: [10, 15], weight: 40 },
+      { pokemonId: 120, levelRange: [10, 15], weight: 30 },  // Staryu
+      { pokemonId: 116, levelRange: [10, 15], weight: 30 },  // Horsea
+    ],
+    super: [
+      { pokemonId: 120, levelRange: [15, 25], weight: 30 },  // Staryu
+      { pokemonId: 116, levelRange: [15, 25], weight: 25 },  // Horsea
+      { pokemonId: 98,  levelRange: [20, 28], weight: 15 },  // Krabby
+      { pokemonId: 90,  levelRange: [20, 28], weight: 15 },  // Shellder
+      { pokemonId: 130, levelRange: [20, 30], weight: 5 },   // Gyarados (rare)
+      { pokemonId: 131, levelRange: [25, 30], weight: 10 },  // Lapras (rare)
+    ],
+  },
+  'coral-harbor': {
+    old:   [{ pokemonId: 129, levelRange: [5, 10], weight: 100 }],
+    good:  [
+      { pokemonId: 129, levelRange: [10, 15], weight: 30 },
+      { pokemonId: 72,  levelRange: [12, 18], weight: 40 },  // Tentacool
+      { pokemonId: 120, levelRange: [12, 18], weight: 30 },  // Staryu
+    ],
+    super: [
+      { pokemonId: 73,  levelRange: [20, 30], weight: 20 },  // Tentacruel
+      { pokemonId: 121, levelRange: [20, 30], weight: 20 },  // Starmie
+      { pokemonId: 116, levelRange: [15, 25], weight: 30 },  // Horsea
+      { pokemonId: 117, levelRange: [25, 35], weight: 10 },  // Seadra (rare)
+      { pokemonId: 130, levelRange: [20, 30], weight: 10 },  // Gyarados
+      { pokemonId: 131, levelRange: [25, 30], weight: 10 },  // Lapras (rare)
     ],
   },
 };

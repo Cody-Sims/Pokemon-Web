@@ -20,8 +20,8 @@ const pewterGround = parseMap([
   'T..PP......gggggggg..........T', // 15 - Gym wall
   'T..PP......ggggaggg..........T', // 16 - Gym door
   'T..PP........PP..............T', // 17
-  'T..PP........PP..............T', // 18
-  'T..PPPPPPPPPPPP..............T', // 19
+  'T..PP........PP.............PP', // 18 east exit to Route 3
+  'T..PPPPPPPPPPPP.............PP', // 19
   'T..PP........................T', // 20
   'T..PP.....f........f.........T', // 21
   'T..PP........................T', // 22
@@ -140,6 +140,9 @@ export const pewterCity: MapDefinition = {
     { tileX: 11, tileY: 10, targetMap: 'pewter-pokecenter', targetSpawnId: 'default' },
     { tileX: 15, tileY: 16, targetMap: 'pewter-gym', targetSpawnId: 'default' },
     { tileX: 12, tileY: 27, targetMap: 'pewter-museum', targetSpawnId: 'default' },
+    // East exit → Route 3
+    { tileX: 29, tileY: 18, targetMap: 'route-3', targetSpawnId: 'from-pewter' },
+    { tileX: 29, tileY: 19, targetMap: 'route-3', targetSpawnId: 'from-pewter' },
   ],
   spawnPoints: {
     'default':         { x: 14, y: 15, direction: 'up' },
@@ -147,5 +150,6 @@ export const pewterCity: MapDefinition = {
     'from-pokecenter': { x: 11, y: 11, direction: 'down' },
     'from-gym':        { x: 15, y: 17, direction: 'down' },
     'from-museum':     { x: 12, y: 28, direction: 'down' },
+    'from-route-3':    { x: 28, y: 18, direction: 'left' },
   },
 };

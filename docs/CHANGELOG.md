@@ -5,6 +5,14 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Added
+- **Phase 4.5 — 42 new tile types** (IDs 68–109): Coastal, Volcanic, Mine, Industrial, Forest, Electric, Ghost/Ruin, Dragon, Fire, Synthesis HQ, Post-game, League. All with colors, solid flags, overlays, foreground tiles, char mappings.
+- **Battle background system**: `MapDefinition.battleBg` + `BattleScene` image-based bg with procedural fallback. Passed through wild + trainer encounters.
+- **Phase 5 — Route 3 (Tide Pool Path)**: 20×40 coastal route, 3 trainers, encounter + fishing tables (Spearow, Ekans, Sandshrew, Mankey, Staryu, Horsea, Lapras).
+- **Phase 5 — Coral Harbor**: 25×30 port town with PokéCenter, PokéMart, Gym 2 (Water — Coral), docks. NPCs: Captain Stern, Diver Lena, Chef Marco, disguised Zara Lux.
+- **Phase 5 — Coral Harbor interiors**: PokéCenter, PokéMart, Water Gym with Leader Coral (Staryu/Shellder/Starmie Lv 18–21, Tide Badge).
+- **Pewter City east exit** to Route 3 with warps and spawn point.
+
 ### Fixed
 - **Mobile D-pad buttons not working**: Rewrote TouchControls to use native DOM touchstart/mousedown events with manual hit-testing instead of Phaser's per-object interactive handlers inside containers. Phaser's hit-testing fails on interactive objects nested inside `setScrollFactor(0)` containers — the native approach bypasses this entirely and works reliably on all touch devices.
 - **Settings scene unusable on mobile**: Added tappable ◀/▶ arrow buttons for each setting row, invisible hit areas for row selection, and a visible [ Back ] button. Settings hint text now shows touch-friendly instructions on mobile devices.

@@ -115,7 +115,12 @@ pokemon-web/
 │       │   │   ├── pewter-pokecenter.ts    # Interior: Pewter PokéCenter (heal)
 │       │   │   ├── pewter-gym.ts           # Interior: Pewter Gym (Brock battle)
 │       │   │   ├── pewter-museum.ts        # Interior: Pewter Museum of Science
-│       │   │   └── crystal-cavern.ts       # Dungeon: Crystal Cavern (off Route 2)
+│       │   │   ├── crystal-cavern.ts       # Dungeon: Crystal Cavern (off Route 2)
+│       │   │   ├── route-3.ts              # Route 3: Tide Pool Path (coastal)
+│       │   │   ├── coral-harbor.ts         # Coral Harbor: Town 3 (port town)
+│       │   │   ├── coral-pokecenter.ts     # Interior: Coral Harbor PokéCenter
+│       │   │   ├── coral-pokemart.ts       # Interior: Coral Harbor PokéMart
+│       │   │   └── coral-gym.ts            # Interior: Coral Harbor Gym (Water)
 │       │   ├── moves/                 # Per-type move definitions
 │       │   │   ├── index.ts           # Re-exports combined moveData record
 │       │   │   ├── normal.ts          # Normal-type moves (~70)

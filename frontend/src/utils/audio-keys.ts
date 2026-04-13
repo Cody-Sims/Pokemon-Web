@@ -54,4 +54,10 @@ export const MAP_BGM: Record<string, string> = {
   'pewter-pokecenter':    BGM.POKEMON_CENTER,
   'pewter-gym':           BGM.BATTLE_GYM,
   'pewter-museum':        BGM.PALLET_TOWN,
+  'crystal-cavern':        BGM.ROUTE,
+  'route-3':               BGM.ROUTE,
+  'coral-harbor':          BGM.PALLET_TOWN,
+  'coral-pokecenter':      BGM.POKEMON_CENTER,
+  'coral-pokemart':        BGM.PALLET_TOWN,
+  'coral-gym':             BGM.BATTLE_GYM,
 };
