@@ -107,23 +107,34 @@ export class ShopScene extends Phaser.Scene {
     this.scrollDownIndicator = this.add.text(250, GAME_HEIGHT - 50, '▼', { ...FONTS.body, color: COLORS.textDim }).setOrigin(0.5).setVisible(false);
 
     // Close hint
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, 'ESC to leave  |  Q/E switch tabs', FONTS.caption).setOrigin(0.5);
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, 'ESC to leave  |  ◀/▶ or Q/E switch tabs', FONTS.caption).setOrigin(0.5);
 
     // Tab switching keys
-    this.input.keyboard!.on('keydown-Q', () => {
+    const switchTab = () => {
       if (this.mode !== 'browse') return;
       this.tab = this.tab === 'buy' ? 'sell' : 'buy';
       this.scrollOffset = 0;
       this.switchTab();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
-    });
-    this.input.keyboard!.on('keydown-E', () => {
-      if (this.mode !== 'browse') return;
-      this.tab = this.tab === 'buy' ? 'sell' : 'buy';
+    };
+    const switchToBuy = () => {
+      if (this.mode !== 'browse' || this.tab === 'buy') return;
+      this.tab = 'buy';
       this.scrollOffset = 0;
       this.switchTab();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
-    });
+    };
+    const switchToSell = () => {
+      if (this.mode !== 'browse' || this.tab === 'sell') return;
+      this.tab = 'sell';
+      this.scrollOffset = 0;
+      this.switchTab();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
+    };
+    this.input.keyboard!.on('keydown-Q', switchTab);
+    this.input.keyboard!.on('keydown-E', switchTab);
+    this.input.keyboard!.on('keydown-LEFT', switchToBuy);
+    this.input.keyboard!.on('keydown-RIGHT', switchToSell);
 
     this.switchTab();
   }

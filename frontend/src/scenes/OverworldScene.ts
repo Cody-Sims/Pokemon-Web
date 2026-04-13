@@ -439,10 +439,30 @@ export class OverworldScene extends Phaser.Scene {
       case 'right': targetX++; break;
     }
 
+    // Check the tile directly in front; if it's a counter, also check one tile further
+    const tilesToCheck: { tx: number; ty: number }[] = [{ tx: targetX, ty: targetY }];
+    if (
+      targetY >= 0 && targetY < this.mapDef.height &&
+      targetX >= 0 && targetX < this.mapDef.width
+    ) {
+      const frontTile = this.mapDef.ground[targetY][targetX];
+      if (frontTile === Tile.COUNTER || frontTile === Tile.PINK_COUNTER) {
+        let behindX = targetX;
+        let behindY = targetY;
+        switch (facing) {
+          case 'up':    behindY--; break;
+          case 'down':  behindY++; break;
+          case 'left':  behindX--; break;
+          case 'right': behindX++; break;
+        }
+        tilesToCheck.push({ tx: behindX, ty: behindY });
+      }
+    }
+
     for (const npc of this.npcs) {
       const npcTX = Math.floor(npc.x / TILE_SIZE);
       const npcTY = Math.floor(npc.y / TILE_SIZE);
-      if (npcTX === targetX && npcTY === targetY) {
+      if (tilesToCheck.some(t => t.tx === npcTX && t.ty === npcTY)) {
         // NPC turns to face the player
         npc.faceDirection(NPC.getOpposite(facing));
 
