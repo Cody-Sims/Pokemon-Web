@@ -368,7 +368,7 @@ export const SOLID_TILES = new Set<number>([
   // Interior solid tiles
   Tile.INDOOR_WALL, Tile.COUNTER, Tile.TABLE, Tile.BOOKSHELF,
   Tile.PC_TILE, Tile.HEAL_MACHINE, Tile.WINDOW, Tile.GYM_STATUE,
-  Tile.CHAIR, Tile.PLANT,
+  Tile.CHAIR, Tile.PLANT, Tile.POKEBALL_ITEM,
   // New solid tiles
   Tile.TV, Tile.BED, Tile.STAIRS, Tile.PINK_COUNTER, Tile.MART_SHELF,
   Tile.LAB_MACHINE, Tile.DISPLAY_CASE, Tile.FOSSIL, Tile.BOULDER,

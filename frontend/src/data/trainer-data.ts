@@ -495,6 +495,168 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 480,
   },
 
+  // ─── Gym 6: Morwen (Ghost-type Gym Leader) ───
+  'gym-morwen': {
+    id: 'gym-morwen', name: 'Gym Leader Morwen', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 93, level: 38, moves: ['lick', 'hypnosis', 'dream-eater', 'confuse-ray'] },
+      { pokemonId: 94, level: 40, moves: ['lick', 'hypnosis', 'dream-eater', 'night-shade'] },
+      { pokemonId: 93, level: 38, moves: ['night-shade', 'confuse-ray', 'hypnosis', 'lick'] },
+    ],
+    dialogue: {
+      before: ['Morwen: The spirits whisper of your coming...', 'Morwen: Let us see if you can face what lies beyond the veil.'],
+      after: ['Morwen: The spirits approve. Take the Phantom Badge.', 'Morwen: The sleeper beneath the spire will not distinguish between savior and destroyer.', 'Morwen: Be certain of your resolve.'],
+    },
+    rewardMoney: 4000,
+  },
+
+  // ─── Gym 7: Drake (Dragon-type Gym Leader) ───
+  'gym-drake': {
+    id: 'gym-drake', name: 'Gym Leader Drake', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 148, level: 42, moves: ['dragon-rage', 'slam', 'thunder-wave', 'agility'] },
+      { pokemonId: 130, level: 42, moves: ['hydro-pump', 'bite', 'dragon-rage', 'thrash'] },
+      { pokemonId: 149, level: 45, moves: ['dragon-rage', 'slam', 'thunder-wave', 'agility'] },
+    ],
+    dialogue: {
+      before: ['Drake: My ancestors swore to protect the ley lines.', 'Drake: Only the worthy may pass. Prove yourself!'],
+      after: ['Drake: You have proven your worth. The Scale Badge is yours.', 'Drake: My dragons sense a great disturbance. The final battle approaches.'],
+    },
+    rewardMoney: 4500,
+  },
+
+  // ─── Gym 8: Solara (Fire-type Gym Leader) ───
+  'gym-solara': {
+    id: 'gym-solara', name: 'Gym Leader Solara', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 78, level: 44, moves: ['fire-spin', 'stomp', 'agility', 'fire-blast'] },
+      { pokemonId: 59, level: 44, moves: ['flamethrower', 'bite', 'take-down', 'agility'] },
+      { pokemonId: 126, level: 46, moves: ['flamethrower', 'fire-punch', 'smokescreen', 'fire-blast'] },
+      { pokemonId: 6, level: 48, moves: ['flamethrower', 'slash', 'dragon-rage', 'fire-blast'] },
+    ],
+    dialogue: {
+      before: ['Solara: Aldric was my teacher. The greatest trainer I ever knew.', 'Solara: But the man he became...', 'Solara: Show me the fire in your heart!'],
+      after: ['Solara: The Ember Badge is yours.', 'Solara: End this. For his sake as much as ours.'],
+    },
+    rewardMoney: 4800,
+  },
+
+  // ─── Dr. Vex boss battle #2 ───
+  'admin-vex-2': {
+    id: 'admin-vex-2', name: 'Admin Vex', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 110, level: 36, moves: ['sludge', 'smokescreen', 'self-destruct', 'fire-blast'] },
+      { pokemonId: 89, level: 37, moves: ['sludge', 'body-slam', 'acid', 'fire-punch'] },
+      { pokemonId: 110, level: 38, moves: ['sludge', 'smokescreen', 'explosion', 'thunder-punch'] },
+    ],
+    dialogue: {
+      before: ['Dr. Vex: You again. Persistent subject.', 'Dr. Vex: The Director has begun the ritual. You are too late.'],
+      after: ['Dr. Vex: ...The Aether Lens. So Rook gave it to you.', 'Dr. Vex: It doesn\'t matter. The Director is already at the League.'],
+    },
+    rewardMoney: 1900,
+  },
+
+  // ─── Route 6 trainers ───
+  'psychic-1': {
+    id: 'psychic-1', name: 'Psychic Elena', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 65, level: 32, moves: ['psychic', 'psybeam', 'recover', 'reflect'] },
+      { pokemonId: 97, level: 33, moves: ['psychic', 'hypnosis', 'dream-eater', 'confusion'] },
+    ],
+    dialogue: {
+      before: ['I foresaw your arrival...', 'My Psychic Pokémon and I await your challenge!'],
+      after: ['I did not foresee... my defeat.'],
+    },
+    rewardMoney: 660,
+  },
+
+  // ─── Victory Road Ace Trainers ───
+  'ace-trainer-1': {
+    id: 'ace-trainer-1', name: 'Ace Trainer Victor', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 68, level: 42, moves: ['karate-chop', 'seismic-toss', 'submission', 'body-slam'] },
+      { pokemonId: 76, level: 42, moves: ['earthquake', 'rock-throw', 'body-slam', 'explosion'] },
+      { pokemonId: 18, level: 43, moves: ['wing-attack', 'quick-attack', 'mirror-move', 'agility'] },
+    ],
+    dialogue: {
+      before: ['Only the strongest reach Victory Road!', 'Prove you belong here!'],
+      after: ['You earned your place. Go get \'em!'],
+    },
+    rewardMoney: 2100,
+  },
+  'ace-trainer-2': {
+    id: 'ace-trainer-2', name: 'Ace Trainer Luna', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 121, level: 43, moves: ['psychic', 'surf', 'ice-beam', 'recover'] },
+      { pokemonId: 103, level: 43, moves: ['psychic', 'solar-beam', 'sleep-powder', 'leech-seed'] },
+      { pokemonId: 59, level: 44, moves: ['flamethrower', 'bite', 'take-down', 'agility'] },
+    ],
+    dialogue: {
+      before: ['The Champion awaits beyond!', 'Do you have what it takes?'],
+      after: ['You do. Go show them what you\'re made of!'],
+    },
+    rewardMoney: 2150,
+  },
+  'ace-trainer-3': {
+    id: 'ace-trainer-3', name: 'Ace Trainer Rex', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 130, level: 44, moves: ['hydro-pump', 'bite', 'dragon-rage', 'thrash'] },
+      { pokemonId: 65, level: 44, moves: ['psychic', 'recover', 'reflect', 'psybeam'] },
+      { pokemonId: 112, level: 45, moves: ['earthquake', 'rock-throw', 'body-slam', 'horn-attack'] },
+    ],
+    dialogue: {
+      before: ['I\'m the last wall before the League!', 'Give me everything you\'ve got!'],
+      after: ['The wall has fallen. Good luck in there!'],
+    },
+    rewardMoney: 2200,
+  },
+
+  // ─── Elite Four ───
+  'elite-nerida': {
+    id: 'elite-nerida', name: 'Elite Four Nerida', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 87, level: 50, moves: ['ice-beam', 'surf', 'body-slam', 'rest'] },
+      { pokemonId: 91, level: 50, moves: ['ice-beam', 'clamp', 'supersonic', 'aurora-beam'] },
+      { pokemonId: 131, level: 52, moves: ['ice-beam', 'surf', 'thunderbolt', 'sing'] },
+      { pokemonId: 62, level: 50, moves: ['surf', 'body-slam', 'earthquake', 'hypnosis'] },
+      { pokemonId: 121, level: 51, moves: ['surf', 'psychic', 'ice-beam', 'thunderbolt'] },
+    ],
+    dialogue: {
+      before: ['Nerida: Welcome, challenger. The waters run deep here.', 'Nerida: Let us see how long you can hold your breath.'],
+      after: ['Nerida: You swim against the current and prevail. Impressive.', 'Nerida: The next challenge awaits.'],
+    },
+    rewardMoney: 5000,
+  },
+
+  // ─── Champion Aldric Maren ───
+  'champion-aldric': {
+    id: 'champion-aldric', name: 'Champion Aldric', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 94, level: 52, moves: ['lick', 'dream-eater', 'hypnosis', 'night-shade'] },
+      { pokemonId: 65, level: 52, moves: ['psychic', 'recover', 'reflect', 'psybeam'] },
+      { pokemonId: 130, level: 53, moves: ['hydro-pump', 'bite', 'dragon-rage', 'thrash'] },
+      { pokemonId: 59, level: 53, moves: ['flamethrower', 'bite', 'take-down', 'fire-blast'] },
+      { pokemonId: 149, level: 54, moves: ['dragon-rage', 'slam', 'agility', 'thunder-wave'] },
+      { pokemonId: 150, level: 55, moves: ['psychic', 'recover', 'ice-beam', 'thunderbolt'] },
+    ],
+    dialogue: {
+      before: [
+        'Aldric: So you\'ve come.',
+        'Aldric: I\'ve seen what nature does to the creatures we claim to love.',
+        'Aldric: I choose to do better.',
+        'Aldric: You fight to preserve a broken world. I fight to build a perfect one.',
+        'Aldric: Let us settle this — Champion to challenger.',
+      ],
+      after: [
+        'Aldric: ...Impossible.',
+        'Aldric: Perhaps... perhaps I was wrong.',
+        'Aldric: The bond between you and your Pokémon... it\'s real.',
+        'Aldric: Something I forgot long ago.',
+      ],
+    },
+    rewardMoney: 11000,
+  },
+
   // ─── Route 1 / Viridian Forest: Original trainers ───
   'bug-catcher-1': {
     id: 'bug-catcher-1', name: 'Bug Catcher Rick', spriteKey: 'generic-trainer',

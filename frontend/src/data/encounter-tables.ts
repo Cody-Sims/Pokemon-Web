@@ -67,6 +67,36 @@ export const encounterTables: Record<string, EncounterEntry[]> = {
     { pokemonId: 123, levelRange: [25, 28], weight: 5 },  // Scyther (rare)
     { pokemonId: 17, levelRange: [22, 26], weight: 10 },  // Pidgeotto
   ],
+  'route-6': [
+    { pokemonId: 92, levelRange: [28, 33], weight: 20 },  // Gastly
+    { pokemonId: 93, levelRange: [30, 35], weight: 10 },  // Haunter
+    { pokemonId: 96, levelRange: [28, 33], weight: 20 },  // Drowzee
+    { pokemonId: 97, levelRange: [32, 36], weight: 10 },  // Hypno
+    { pokemonId: 49, levelRange: [28, 33], weight: 15 },  // Venomoth
+    { pokemonId: 17, levelRange: [28, 33], weight: 15 },  // Pidgeotto
+    { pokemonId: 64, levelRange: [30, 35], weight: 10 },  // Kadabra (rare)
+  ],
+  'route-7': [
+    { pokemonId: 92, levelRange: [32, 37], weight: 15 },  // Gastly
+    { pokemonId: 93, levelRange: [34, 38], weight: 15 },  // Haunter
+    { pokemonId: 109, levelRange: [32, 37], weight: 15 }, // Koffing
+    { pokemonId: 110, levelRange: [35, 39], weight: 10 }, // Weezing
+    { pokemonId: 88, levelRange: [32, 37], weight: 15 },  // Grimer
+    { pokemonId: 24, levelRange: [32, 37], weight: 15 },  // Arbok
+    { pokemonId: 42, levelRange: [34, 38], weight: 15 },  // Golbat
+  ],
+  'victory-road': [
+    { pokemonId: 66, levelRange: [40, 45], weight: 15 },  // Machop
+    { pokemonId: 67, levelRange: [42, 47], weight: 10 },  // Machoke
+    { pokemonId: 74, levelRange: [40, 45], weight: 15 },  // Geodude
+    { pokemonId: 75, levelRange: [42, 47], weight: 10 },  // Graveler
+    { pokemonId: 95, levelRange: [42, 47], weight: 10 },  // Onix
+    { pokemonId: 42, levelRange: [40, 45], weight: 15 },  // Golbat
+    { pokemonId: 105, levelRange: [42, 47], weight: 10 }, // Marowak
+    { pokemonId: 112, levelRange: [44, 48], weight: 5 },  // Rhydon (rare)
+    { pokemonId: 126, levelRange: [44, 48], weight: 5 },  // Magmar (rare)
+    { pokemonId: 125, levelRange: [44, 48], weight: 5 },  // Electabuzz (rare)
+  ],
 };
 
 /** Fishing encounter tables: per-route + per-rod tier. */

@@ -75,4 +75,22 @@ export const MAP_BGM: Record<string, string> = {
   'voltara-pokecenter':    BGM.POKEMON_CENTER,
   'voltara-pokemart':      BGM.PALLET_TOWN,
   'voltara-gym':           BGM.BATTLE_GYM,
+  // Act 3
+  'route-6':               BGM.ROUTE,
+  'wraithmoor-town':       BGM.PALLET_TOWN,
+  'wraithmoor-pokecenter': BGM.POKEMON_CENTER,
+  'wraithmoor-pokemart':   BGM.PALLET_TOWN,
+  'wraithmoor-gym':        BGM.BATTLE_GYM,
+  'route-7':               BGM.ROUTE,
+  'scalecrest-citadel':    BGM.PALLET_TOWN,
+  'scalecrest-pokecenter': BGM.POKEMON_CENTER,
+  'scalecrest-pokemart':   BGM.PALLET_TOWN,
+  'scalecrest-gym':        BGM.BATTLE_GYM,
+  'cinderfall-town':       BGM.PALLET_TOWN,
+  'cinderfall-pokecenter': BGM.POKEMON_CENTER,
+  'cinderfall-pokemart':   BGM.PALLET_TOWN,
+  'cinderfall-gym':        BGM.BATTLE_GYM,
+  // Act 4
+  'victory-road':          BGM.ROUTE,
+  'pokemon-league':        BGM.BATTLE_GYM,
 };
