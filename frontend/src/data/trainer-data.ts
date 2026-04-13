@@ -350,6 +350,151 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 2100,
   },
 
+  // ─── Gym 3: Ferris (Steel-type Gym Leader) ───
+  'gym-ferris': {
+    id: 'gym-ferris', name: 'Gym Leader Ferris', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 81, level: 24, moves: ['thunder-shock', 'sonic-boom', 'supersonic', 'tackle'] },
+      { pokemonId: 82, level: 24, moves: ['thunder-shock', 'sonic-boom', 'tri-attack'] },
+      { pokemonId: 95, level: 27, moves: ['rock-throw', 'bind', 'slam', 'screech'] },
+    ],
+    dialogue: {
+      before: [
+        'Ferris: So you\'re the trainer who\'s been causing trouble for the Collective.',
+        'Ferris: Good. We need strong trainers right now.',
+        'Ferris: But first, you\'ll need to prove yourself against my Steel Pokémon!',
+        'Ferris: My forge has tempered them to perfection!',
+      ],
+      after: [
+        'Ferris: Ha! You\'re as strong as the stories say!',
+        'Ferris: Take the Anvil Badge — you\'ve earned it!',
+        'Ferris: Those Collective agents tried to take my forge.',
+        'Ferris: The ley line beneath it powers everything here.',
+        'Ferris: If they get it, Ironvale is finished.',
+      ],
+    },
+    rewardMoney: 2700,
+  },
+
+  // ─── Gym 4: Ivy (Grass-type Gym Leader) ───
+  'gym-ivy': {
+    id: 'gym-ivy', name: 'Gym Leader Ivy', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 70, level: 28, moves: ['razor-leaf', 'sleep-powder', 'vine-whip', 'wrap'] },
+      { pokemonId: 47, level: 28, moves: ['spore', 'mega-drain', 'slash', 'growth'] },
+      { pokemonId: 3, level: 31, moves: ['solar-beam', 'sleep-powder', 'razor-leaf', 'growth'] },
+    ],
+    dialogue: {
+      before: [
+        'Ivy: Welcome to my sanctuary, young one.',
+        'Ivy: The plants here grow strong because of the Aether in the soil.',
+        'Ivy: ...Or they did, until recently.',
+        'Ivy: Show me the strength of your bond with your Pokémon.',
+      ],
+      after: [
+        'Ivy: Such gentle power... Your Pokémon trust you completely.',
+        'Ivy: The Canopy Badge is yours.',
+        'Ivy: I discovered something terrible beneath the village...',
+        'Ivy: A hidden laboratory. They\'ve been here all along.',
+        'Ivy: Please... root them out.',
+      ],
+    },
+    rewardMoney: 3100,
+  },
+
+  // ─── Gym 5: Blitz (Electric-type Gym Leader) ───
+  'gym-blitz': {
+    id: 'gym-blitz', name: 'Gym Leader Blitz', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 100, level: 32, moves: ['thunderbolt', 'swift', 'self-destruct', 'screech'] },
+      { pokemonId: 26, level: 33, moves: ['thunderbolt', 'quick-attack', 'double-team', 'thunder-wave'] },
+      { pokemonId: 101, level: 33, moves: ['thunderbolt', 'swift', 'explosion', 'screech'] },
+      { pokemonId: 125, level: 35, moves: ['thunderbolt', 'thunder-punch', 'screech', 'swift'] },
+    ],
+    dialogue: {
+      before: [
+        'Blitz: YOOO! Welcome to Voltara Gym!',
+        'Blitz: I built this place with my own two hands!',
+        'Blitz: My Electric Pokémon run on pure Aether energy!',
+        'Blitz: Let\'s see if you can handle the VOLTAGE!',
+      ],
+      after: [
+        'Blitz: WHAAAT?! You shorted my whole circuit!',
+        'Blitz: Here — the Circuit Badge! You earned it, champ!',
+        'Blitz: Listen, I traced a massive power drain to coordinates in the eastern sea.',
+        'Blitz: That\'s gotta be the Synthesis Collective\'s base.',
+        'Blitz: I\'ll upload the coordinates to your map.',
+      ],
+    },
+    rewardMoney: 3500,
+  },
+
+  // ─── Dr. Vex Corbin (Admin — Boss encounter 1) ───
+  'admin-vex-1': {
+    id: 'admin-vex-1', name: 'Admin Vex', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 109, level: 22, moves: ['sludge', 'smokescreen', 'tackle', 'self-destruct'] },
+      { pokemonId: 89, level: 23, moves: ['sludge', 'body-slam', 'acid', 'harden'] },
+      { pokemonId: 110, level: 24, moves: ['sludge', 'smokescreen', 'self-destruct', 'tackle'] },
+    ],
+    dialogue: {
+      before: [
+        'Dr. Vex: Ah. The persistent trainer.',
+        'Dr. Vex: Subject demonstrates adequate combat potential. Noted.',
+        'Dr. Vex: You\'ve delayed our extraction schedule by... twelve minutes.',
+        'Dr. Vex: Sentiment is a variable I eliminated long ago.',
+        'Dr. Vex: Let me show you what efficiency looks like.',
+      ],
+      after: [
+        'Dr. Vex: ...Inconvenient.',
+        'Dr. Vex: You\'ve delayed us by hours. We\'ve been working for years.',
+        'Dr. Vex: The Director will not be pleased.',
+        'Dr. Vex: But make no mistake — this changes nothing.',
+      ],
+    },
+    rewardMoney: 1200,
+  },
+
+  // ─── Route 4 trainers ───
+  'hiker-4': {
+    id: 'hiker-4', name: 'Hiker Raymond', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 74, level: 16, moves: ['rock-throw', 'tackle', 'defense-curl'] },
+      { pokemonId: 75, level: 17, moves: ['rock-throw', 'tackle', 'defense-curl'] },
+    ],
+    dialogue: {
+      before: ['This ridge is treacherous!', 'Only the toughest trainers pass!'],
+      after: ['You\'re tougher than basalt!'],
+    },
+    rewardMoney: 340,
+  },
+
+  // ─── Route 5 trainers ───
+  'bug-catcher-4': {
+    id: 'bug-catcher-4', name: 'Bug Catcher Tommy', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 12, level: 23, moves: ['psybeam', 'sleep-powder', 'gust'] },
+      { pokemonId: 15, level: 23, moves: ['twineedle', 'fury-attack', 'focus-energy'] },
+    ],
+    dialogue: {
+      before: ['These forest bugs are fully evolved!', 'Think you can handle them?'],
+      after: ['My beautiful bugs!'],
+    },
+    rewardMoney: 460,
+  },
+  'lass-3': {
+    id: 'lass-3', name: 'Lass Fiona', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 44, level: 24, moves: ['acid', 'sleep-powder', 'razor-leaf'] },
+      { pokemonId: 36, level: 24, moves: ['sing', 'body-slam', 'double-slap'] },
+    ],
+    dialogue: {
+      before: ['The forest air is so refreshing!', 'Let\'s have a battle to celebrate!'],
+      after: ['You\'re really strong!'],
+    },
+    rewardMoney: 480,
+  },
+
   // ─── Route 1 / Viridian Forest: Original trainers ───
   'bug-catcher-1': {
     id: 'bug-catcher-1', name: 'Bug Catcher Rick', spriteKey: 'generic-trainer',

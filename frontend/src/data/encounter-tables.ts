@@ -38,6 +38,35 @@ export const encounterTables: Record<string, EncounterEntry[]> = {
     { pokemonId: 16, levelRange: [10, 13], weight: 15 },  // Pidgey
     { pokemonId: 63, levelRange: [12, 14], weight: 5 },   // Abra (rare)
   ],
+  'route-4': [
+    { pokemonId: 27, levelRange: [15, 19], weight: 20 },  // Sandshrew
+    { pokemonId: 74, levelRange: [15, 18], weight: 20 },  // Geodude
+    { pokemonId: 66, levelRange: [16, 19], weight: 15 },  // Machop
+    { pokemonId: 58, levelRange: [15, 18], weight: 15 },  // Growlithe
+    { pokemonId: 21, levelRange: [15, 18], weight: 15 },  // Spearow
+    { pokemonId: 95, levelRange: [17, 20], weight: 5 },   // Onix (rare)
+    { pokemonId: 77, levelRange: [17, 20], weight: 10 },  // Ponyta
+  ],
+  'ember-mines': [
+    { pokemonId: 41, levelRange: [18, 22], weight: 25 },  // Zubat
+    { pokemonId: 74, levelRange: [18, 22], weight: 20 },  // Geodude
+    { pokemonId: 75, levelRange: [20, 24], weight: 10 },  // Graveler
+    { pokemonId: 109, levelRange: [18, 22], weight: 15 }, // Koffing
+    { pokemonId: 88, levelRange: [18, 22], weight: 15 },  // Grimer
+    { pokemonId: 95, levelRange: [20, 24], weight: 5 },   // Onix (rare)
+    { pokemonId: 126, levelRange: [22, 25], weight: 5 },  // Magmar (rare)
+    { pokemonId: 50, levelRange: [18, 22], weight: 5 },   // Diglett
+  ],
+  'route-5': [
+    { pokemonId: 43, levelRange: [22, 26], weight: 20 },  // Oddish
+    { pokemonId: 46, levelRange: [22, 26], weight: 15 },  // Paras
+    { pokemonId: 48, levelRange: [22, 26], weight: 15 },  // Venonat
+    { pokemonId: 69, levelRange: [22, 26], weight: 15 },  // Bellsprout
+    { pokemonId: 102, levelRange: [24, 28], weight: 10 }, // Exeggcute
+    { pokemonId: 114, levelRange: [24, 28], weight: 10 }, // Tangela
+    { pokemonId: 123, levelRange: [25, 28], weight: 5 },  // Scyther (rare)
+    { pokemonId: 17, levelRange: [22, 26], weight: 10 },  // Pidgeotto
+  ],
 };
 
 /** Fishing encounter tables: per-route + per-rod tier. */

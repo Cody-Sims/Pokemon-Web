@@ -120,7 +120,22 @@ pokemon-web/
 │       │   │   ├── coral-harbor.ts         # Coral Harbor: Town 3 (port town)
 │       │   │   ├── coral-pokecenter.ts     # Interior: Coral Harbor PokéCenter
 │       │   │   ├── coral-pokemart.ts       # Interior: Coral Harbor PokéMart
-│       │   │   └── coral-gym.ts            # Interior: Coral Harbor Gym (Water)
+│       │   │   ├── coral-gym.ts            # Interior: Coral Harbor Gym (Water)
+│       │   │   ├── route-4.ts              # Route 4: Basalt Ridge (volcanic)
+│       │   │   ├── ember-mines.ts          # Dungeon: Ember Mines (Synthesis lab)
+│       │   │   ├── ironvale-city.ts        # Ironvale City: Town 4 (industrial)
+│       │   │   ├── ironvale-pokecenter.ts  # Interior: Ironvale PokéCenter
+│       │   │   ├── ironvale-pokemart.ts    # Interior: Ironvale PokéMart
+│       │   │   ├── ironvale-gym.ts         # Interior: Ironvale Gym (Steel)
+│       │   │   ├── route-5.ts              # Route 5: Canopy Trail (forest)
+│       │   │   ├── verdantia-village.ts    # Verdantia Village: Town 5
+│       │   │   ├── verdantia-pokecenter.ts # Interior: Verdantia PokéCenter
+│       │   │   ├── verdantia-pokemart.ts   # Interior: Verdantia PokéMart
+│       │   │   ├── verdantia-gym.ts        # Interior: Verdantia Gym (Grass)
+│       │   │   ├── voltara-city.ts         # Voltara City: Town 6 (tech)
+│       │   │   ├── voltara-pokecenter.ts   # Interior: Voltara PokéCenter
+│       │   │   ├── voltara-pokemart.ts     # Interior: Voltara PokéMart
+│       │   │   └── voltara-gym.ts          # Interior: Voltara Gym (Electric)
 │       │   ├── moves/                 # Per-type move definitions
 │       │   │   ├── index.ts           # Re-exports combined moveData record
 │       │   │   ├── normal.ts          # Normal-type moves (~70)

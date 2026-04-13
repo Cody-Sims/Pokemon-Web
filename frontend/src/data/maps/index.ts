@@ -39,6 +39,21 @@ import { coralHarbor } from './coral-harbor';
 import { coralPokecenter } from './coral-pokecenter';
 import { coralPokemart } from './coral-pokemart';
 import { coralGym } from './coral-gym';
+import { route4 } from './route-4';
+import { emberMines } from './ember-mines';
+import { ironvaleCity } from './ironvale-city';
+import { ironvalePokecenter } from './ironvale-pokecenter';
+import { ironvalePokemart } from './ironvale-pokemart';
+import { ironvaleGym } from './ironvale-gym';
+import { route5 } from './route-5';
+import { verdantiaVillage } from './verdantia-village';
+import { verdantiaPokecenter } from './verdantia-pokecenter';
+import { verdantiaPokemart } from './verdantia-pokemart';
+import { verdantiaGym } from './verdantia-gym';
+import { voltaraCity } from './voltara-city';
+import { voltaraPokecenter } from './voltara-pokecenter';
+import { voltaraPokemart } from './voltara-pokemart';
+import { voltaraGym } from './voltara-gym';
 
 export const mapRegistry: Record<string, MapDefinition> = {
   'pallet-town': palletTown,
@@ -64,4 +79,19 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'coral-pokecenter': coralPokecenter,
   'coral-pokemart': coralPokemart,
   'coral-gym': coralGym,
+  'route-4': route4,
+  'ember-mines': emberMines,
+  'ironvale-city': ironvaleCity,
+  'ironvale-pokecenter': ironvalePokecenter,
+  'ironvale-pokemart': ironvalePokemart,
+  'ironvale-gym': ironvaleGym,
+  'route-5': route5,
+  'verdantia-village': verdantiaVillage,
+  'verdantia-pokecenter': verdantiaPokecenter,
+  'verdantia-pokemart': verdantiaPokemart,
+  'verdantia-gym': verdantiaGym,
+  'voltara-city': voltaraCity,
+  'voltara-pokecenter': voltaraPokecenter,
+  'voltara-pokemart': voltaraPokemart,
+  'voltara-gym': voltaraGym,
 };

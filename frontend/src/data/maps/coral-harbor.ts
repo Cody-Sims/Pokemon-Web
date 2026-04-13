@@ -168,10 +168,14 @@ export const coralHarbor: MapDefinition = {
     { tileX: 4, tileY: 4, targetMap: 'coral-pokecenter', targetSpawnId: 'default' },
     { tileX: 13, tileY: 9, targetMap: 'coral-pokemart', targetSpawnId: 'default' },
     { tileX: 4, tileY: 20, targetMap: 'coral-gym', targetSpawnId: 'default' },
+    // South exit → Route 4
+    { tileX: 4, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },
+    { tileX: 5, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },
   ],
   spawnPoints: {
     'default':           { x: 14, y: 15, direction: 'down' },
     'from-route-3':      { x: 14, y: 1, direction: 'down' },
+    'from-route-4':      { x: 5, y: 27, direction: 'up' },
     'from-pokecenter':   { x: 4, y: 5, direction: 'down' },
     'from-pokemart':     { x: 13, y: 10, direction: 'down' },
     'from-gym':          { x: 4, y: 21, direction: 'down' },

@@ -6,6 +6,21 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Phase 5 — Route 4 (Basalt Ridge)**: 20×30 volcanic route with cliffs, cave floor, Rook story NPC, Synthesis grunt encounter. Encounter table (Sandshrew, Geodude, Machop, Growlithe, Ponyta, Onix).
+- **Phase 5 — Ember Mines**: 20×25 dungeon with mine tracks, boulders. 2 Synthesis grunts + Dr. Vex boss battle #1. Story NPCs: data terminal, caged Pokémon. Encounter table (Zubat, Geodude, Graveler, Koffing, Grimer, Magmar).
+- **Phase 5 — Ironvale City**: 25×30 industrial town with PokéCenter, PokéMart, Gym 3 (Steel — Ferris). NPCs: Miner Gil (Mine Clearance quest), Aldric hologram (story), Professor Willow kidnapping event.
+- **Phase 5 — Gym Leader Ferris**: Magneton/Magneton/Onix Lv 24–27, awards Anvil Badge.
+- **Phase 5 — Route 5 (Canopy Trail)**: 22×30 dense forest with dark grass. Marina co-op event, Synthesis traps. Encounter table (Oddish, Paras, Venonat, Bellsprout, Exeggcute, Tangela, Scyther).
+- **Phase 5 — Verdantia Village**: 25×25 herbalist village with PokéCenter, PokéMart, Gym 4 (Grass — Ivy). NPCs: Elder Moss (Solatheon legend + Amulet Coin), Berry Farmer Hana (Berry quest).
+- **Phase 5 — Gym Leader Ivy**: Weepinbell/Parasect/Venusaur Lv 28–31, awards Canopy Badge.
+- **Phase 5 — Voltara City**: 25×30 tech city with PokéCenter, PokéMart, Gym 5 (Electric — Blitz). NPCs: Engineer Sparks (Power Restore quest), Move Tutor Bolt, Blitz HQ discovery event, Willow kidnapping event.
+- **Phase 5 — Gym Leader Blitz**: Voltorb/Raichu/Electrode/Electabuzz Lv 32–35, awards Circuit Badge.
+- **Phase 5 — Dr. Vex Corbin (Admin)**: Boss encounter #1 in Ember Mines with Koffing/Muk/Weezing Lv 22–24.
+- **15 new interior maps**: PokéCenters, PokéMarts, and Gyms for Ironvale, Verdantia, and Voltara.
+- **Map connections**: Coral Harbor ↔ Route 4 ↔ Ironvale, Ironvale ↔ Route 5 ↔ Verdantia ↔ Voltara. All warps and spawn points wired.
+
+## [2026-04-12]
+### Added
 - **Phase 4.5 — 42 new tile types** (IDs 68–109): Coastal, Volcanic, Mine, Industrial, Forest, Electric, Ghost/Ruin, Dragon, Fire, Synthesis HQ, Post-game, League. All with colors, solid flags, overlays, foreground tiles, char mappings.
 - **Battle background system**: `MapDefinition.battleBg` + `BattleScene` image-based bg with procedural fallback. Passed through wild + trainer encounters.
 - **Phase 5 — Route 3 (Tide Pool Path)**: 20×40 coastal route, 3 trainers, encounter + fishing tables (Spearow, Ekans, Sandshrew, Mankey, Staryu, Horsea, Lapras).
