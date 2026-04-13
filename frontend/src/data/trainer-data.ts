@@ -147,7 +147,7 @@ export const trainerData: Record<string, TrainerData> = {
   // ─── Secondary Rival: Marina Oleander ───
   // Encounter 1: Route 2 — friendly challenge
   'marina-1': {
-    id: 'marina-1', name: 'Marina', spriteKey: 'npc-lass',
+    id: 'marina-1', name: 'Marina', spriteKey: 'npc-marina',
     party: [
       { pokemonId: 7, level: 12, moves: ['tackle', 'tail-whip', 'water-gun', 'withdraw'] },
       { pokemonId: 43, level: 10, moves: ['absorb', 'growth', 'poison-powder'] },
@@ -169,7 +169,7 @@ export const trainerData: Record<string, TrainerData> = {
   },
   // Encounter 4: Post-game Crystal Cavern — optional research battle
   'marina-4': {
-    id: 'marina-4', name: 'Marina', spriteKey: 'npc-lass',
+    id: 'marina-4', name: 'Marina', spriteKey: 'npc-marina',
     party: [
       { pokemonId: 9, level: 58, moves: ['hydro-pump', 'ice-beam', 'skull-bash', 'rain-dance'] },
       { pokemonId: 45, level: 55, moves: ['solar-beam', 'sludge', 'sleep-powder', 'petal-dance'] },
@@ -196,7 +196,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Synthesis Collective: Grunts ───
   'synthesis-grunt-1': {
-    id: 'synthesis-grunt-1', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
+    id: 'synthesis-grunt-1', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
     party: [
       { pokemonId: 41, level: 13, moves: ['leech-life', 'supersonic'] },
       { pokemonId: 109, level: 14, moves: ['tackle', 'smog', 'poison-gas'] },
@@ -213,7 +213,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 280,
   },
   'synthesis-grunt-2': {
-    id: 'synthesis-grunt-2', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
+    id: 'synthesis-grunt-2', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
     party: [
       { pokemonId: 88, level: 14, moves: ['pound', 'poison-gas', 'harden'] },
       { pokemonId: 23, level: 14, moves: ['wrap', 'leer', 'poison-sting'] },
@@ -229,7 +229,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 280,
   },
   'synthesis-grunt-3': {
-    id: 'synthesis-grunt-3', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
+    id: 'synthesis-grunt-3', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
     party: [
       { pokemonId: 109, level: 22, moves: ['sludge', 'smokescreen', 'self-destruct'] },
       { pokemonId: 42, level: 22, moves: ['wing-attack', 'bite', 'confuse-ray'] },
@@ -558,7 +558,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Route 6 trainers ───
   'psychic-1': {
-    id: 'psychic-1', name: 'Psychic Elena', spriteKey: 'npc-female-3',
+    id: 'psychic-1', name: 'Psychic Elena', spriteKey: 'npc-psychic',
     party: [
       { pokemonId: 65, level: 32, moves: ['psychic', 'psybeam', 'recover', 'reflect'] },
       { pokemonId: 97, level: 33, moves: ['psychic', 'hypnosis', 'dream-eater', 'confusion'] },
@@ -938,7 +938,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 340,
   },
   'synthesis-grunt-4': {
-    id: 'synthesis-grunt-4', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
+    id: 'synthesis-grunt-4', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
     party: [
       { pokemonId: 88, level: 17, moves: ['pound', 'poison-gas', 'sludge'] },
       { pokemonId: 41, level: 17, moves: ['leech-life', 'supersonic', 'bite'] },
@@ -960,7 +960,7 @@ export const trainerData: Record<string, TrainerData> = {
 
   // ─── Ember Mines: Additional grunt ───
   'synthesis-grunt-5': {
-    id: 'synthesis-grunt-5', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
+    id: 'synthesis-grunt-5', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
     party: [
       { pokemonId: 42, level: 21, moves: ['wing-attack', 'bite', 'confuse-ray', 'supersonic'] },
       { pokemonId: 89, level: 22, moves: ['sludge', 'body-slam', 'harden', 'pound'] },
@@ -1030,7 +1030,7 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 480,
   },
   'synthesis-grunt-6': {
-    id: 'synthesis-grunt-6', name: 'Synthesis Grunt', spriteKey: 'npc-scientist',
+    id: 'synthesis-grunt-6', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
     party: [
       { pokemonId: 24, level: 24, moves: ['poison-sting', 'bite', 'glare', 'acid'] },
       { pokemonId: 110, level: 24, moves: ['sludge', 'smokescreen', 'tackle', 'self-destruct'] },

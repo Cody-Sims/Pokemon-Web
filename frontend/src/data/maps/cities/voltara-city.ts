@@ -115,7 +115,7 @@ export const voltaraCity: MapDefinition = {
       id: 'voltara-blitz-story',
       tileX: 12,
       tileY: 12,
-      textureKey: 'npc-scientist',
+      textureKey: 'npc-gym-blitz',
       facing: 'down',
       dialogue: [
         'Blitz: I\'ve been running diagnostics all night!',

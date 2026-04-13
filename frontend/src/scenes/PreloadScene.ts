@@ -64,6 +64,7 @@ export class PreloadScene extends Phaser.Scene {
       'npc-professor', 'npc-scientist', 'npc-male-4', 'npc-swimmer', 'npc-male-5',
       'npc-sailor', 'npc-male-6',
       'npc-bug-catcher', 'npc-ace-trainer', 'npc-ace-trainer-f',
+      'npc-grunt', 'npc-marina', 'npc-psychic',
       'npc-gym-brock', 'npc-gym-blitz', 'npc-gym-ferris', 'npc-admin-vex',
     ];
     for (const key of npcSprites) {

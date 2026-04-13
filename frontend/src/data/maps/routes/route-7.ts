@@ -53,9 +53,9 @@ export const route7: MapDefinition = {
       requireFlag: 'saw_aldric_hologram', setsFlag: 'rook_identity_revealed' },
   ],
   trainers: [
-    { id: 'route7-grunt-6', trainerId: 'synthesis-grunt-3', tileX: 6, tileY: 7, textureKey: 'npc-scientist', facing: 'right', lineOfSight: 4 },
-    { id: 'route7-grunt-7', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 13, textureKey: 'npc-scientist', facing: 'left', lineOfSight: 3 },
-    { id: 'route7-grunt-8', trainerId: 'synthesis-grunt-3', tileX: 6, tileY: 19, textureKey: 'npc-scientist', facing: 'right', lineOfSight: 4 },
+    { id: 'route7-grunt-6', trainerId: 'synthesis-grunt-3', tileX: 6, tileY: 7, textureKey: 'npc-grunt', facing: 'right', lineOfSight: 4 },
+    { id: 'route7-grunt-7', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 13, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 3 },
+    { id: 'route7-grunt-8', trainerId: 'synthesis-grunt-3', tileX: 6, tileY: 19, textureKey: 'npc-grunt', facing: 'right', lineOfSight: 4 },
     { id: 'route7-vex-2', trainerId: 'admin-vex-2', tileX: 10, tileY: 10, textureKey: 'npc-admin-vex', facing: 'down', lineOfSight: 5 },
   ],
   warps: [

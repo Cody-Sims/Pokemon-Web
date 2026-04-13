@@ -6,23 +6,33 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-13]
 ### Added
-- **Bug Catcher sprite** (`npc-bug-catcher`): New palette-swapped sprite with green shirt, khaki pants, and straw-colored hat for Bug Catcher trainers.
-- **Ace Trainer sprites** (`npc-ace-trainer`, `npc-ace-trainer-f`): Male and female Ace Trainer sprites with navy blue outfit and gold accents.
+- **Bug Catcher sprite** (`npc-bug-catcher`): New palette-swapped sprite with green/olive nature tones for Bug Catcher trainers.
+- **Ace Trainer sprites** (`npc-ace-trainer`, `npc-ace-trainer-f`): Male and female Ace Trainer sprites with bold red/elite look.
 - **Unique Gym Leader sprites**: `npc-gym-brock` (dark earthy tones), `npc-gym-blitz` (electric blue/yellow), `npc-gym-ferris` (steel gray/forge orange) — each gym leader now visually distinct from generic NPCs.
-- **Admin Vex sprite** (`npc-admin-vex`): Dark purple outfit with crimson accents, distinct from regular Synthesis Grunts.
+- **Admin Vex sprite** (`npc-admin-vex`): Dark purple outfit, distinct from regular Synthesis Grunts.
+- **Synthesis Grunt sprite** (`npc-grunt`): Dark purple/magenta menacing palette swap, distinct from scientists and Admin Vex.
+- **Marina sprite** (`npc-marina`): Blue/teal research assistant palette, unique from generic Lass trainers.
+- **Psychic sprite** (`npc-psychic`): Dark purple mystical palette for Psychic trainer class.
+- **Rival sprite overhaul**: Rival Kael now has a distinct blue-toned sprite instead of sharing identical pixels with Professor Oak.
 
 ### Changed
-- **NPC sprite audit & reassignment**: Reviewed all 67 trainer sprite assignments and fixed mismatches.
+- **NPC sprite audit & reassignment**: Comprehensive review of all trainer sprite assignments.
 - Bug Catchers (5) now use `npc-bug-catcher` instead of generic `npc-male-3`.
+- Synthesis Grunts (6) now use `npc-grunt` instead of `npc-scientist`.
+- Admin Vex (2 encounters) now uses `npc-admin-vex` instead of `npc-scientist`.
 - Ace Trainer Victor/Rex use `npc-ace-trainer`; Ace Trainer Luna uses `npc-ace-trainer-f`.
-- Gym Leader Brock, Blitz, and Ferris each have unique sprites instead of sharing with generic NPCs.
-- Admin Vex now has a unique villainous sprite instead of matching regular Synthesis Grunts.
+- Gym Leader Brock, Blitz, and Ferris each have unique sprites.
+- Marina (secondary rival) uses `npc-marina` instead of generic `npc-lass`.
+- Psychic Elena uses `npc-psychic` instead of generic sprite.
+- Blitz story NPC in Voltara City uses `npc-gym-blitz` instead of `npc-scientist`.
+- `npc-scientist` reduced from 13+ characters to just actual scientists/engineers (lab aides, Dr. Ash, Voltara engineers).
+- Updated all map files (routes 4-7, ember-mines, voltara-city, route-6) with correct sprite keys.
 
 ### Fixed
+- **Rival/Professor identity crisis**: `rival.png` was pixel-identical to `npc-professor.png` — rival Kael now has a distinct palette.
 - **Gender mismatch**: Ace Trainer Luna (female) was using male sprite `npc-male-5` → now uses `npc-ace-trainer-f`.
 - **Gender mismatch**: Camper Rosa (female) was using male sprite `npc-male-1` → now uses `npc-female-4`.
-- **Gender mismatch**: Psychic Elena (female) was using male sprite `npc-scientist` → now uses `npc-female-3`.
-- **Sprite overuse**: `npc-scientist` was shared by 13 characters (grunts, gym leader, admin, ace trainers, engineers, psychic). Reduced to 8 by giving key characters unique sprites.
+- **Psychic Elena** was using generic `npc-female-3` → now uses dedicated `npc-psychic` sprite.
 
 ## [2026-04-13]
 ### Fixed
