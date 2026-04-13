@@ -9,6 +9,8 @@ All notable changes to the Pokemon Web project.
 - Player walk animation no longer loops infinitely; plays once per tile move using `repeat: 0` and `duration` matching `WALK_DURATION`
 
 ### Added
+- CI workflow (`.github/workflows/ci.yml`) runs tests and type-check on PRs and pushes to main
+- Test step added to deploy workflow so failing tests block deployment
 - **Expanded Testing Suite — 1089 tests across 33 files**
   - 15 new test files covering previously untested modules and deep scenarios
   - Extended unit tests: DamageCalculator (burn/stat stage/formula verification), StatusEffectHandler (all 11 stat stages, escalating toxic, confusion self-hit, trap timing, effect chance gating, single-status rule), AIController (power×effectiveness scoring, PP avoidance), type-chart (exhaustive 324 matchups + 48 SE + 8 immunities), data integrity (learnset sorting/dedup, starter balance, move effect validation, evolution acyclicity, route progression)
