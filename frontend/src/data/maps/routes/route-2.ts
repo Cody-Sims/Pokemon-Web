@@ -8,14 +8,14 @@ const route2Ground = parseMap([
   'T.GGGGG..PP..GGGGG.T', // 2  dense grass both sides
   'T.GGGGG..PP..GGGGG.T', // 3  contiguous meadow
   'T..GGG...PP...GGG..T', // 4  tapers toward path
-  // ═══ CRYSTAL CAVERN: cliff wall with cave mouth ═══
-  'T........PP..^^^^^^T', // 5  solid cliff wall forms east
-  'T....PPPPPP..^^^^^^T', // 6  path forks east to cliff
-  'T....PP.....^^^,,,,T', // 7  cliff opens to cave floor
-  'T....PP.....^^,,,,,T', // 8  wide cave mouth (warp here)
-  'T....PP.....^^,,,,,T', // 9  cave entrance continues
-  'T....PP.....^^^,,,,T', // 10 cliff closes back in
-  'T....PPPPPPPP.^^^^.T', // 11 path reconnects, cliff tapers
+  // ═══ CRYSTAL CAVERN: cliff with narrow cave mouth ═══
+  'T........PP....^^^^T', // 5  cliff wall begins
+  'T....PPPPPP...^^^^^T', // 6  path forks east toward cliff
+  'T....PP...PPP.^^^^^T', // 7  side path approaches cliff
+  'T....PP...PPP^^,,^^T', // 8  narrow 2-tile cave mouth
+  'T....PP...PPP^^,,^^T', // 9  cave entrance (warp tiles)
+  'T....PP...PPP.^^^^^T', // 10 cliff continues below mouth
+  'T....PPPPPPPP..^^^^T', // 11 path reconnects, cliff ends
   // ═══ MARINA CLEARING: open rival battle area ═══
   'T........PP........T', // 12
   'T..ff....PP....ff..T', // 13 flowers frame the clearing
@@ -34,8 +34,8 @@ const route2Ground = parseMap([
   'T........PP........T', // 25
   'T........PP........T', // 26
   'T........PP........T', // 27
-  'TFFFFFFF.PP.FFFFFFFT', // 28 fence border to Viridian City
-  'TFFFFFFF.PP.FFFFFFFT', // 29 south exit to Viridian City
+  'T........PP........T', // 28
+  'FFFFFFFF.PP.FFFFFFFF', // 29 fence border to Viridian City
 ]);
 
 export const route2: MapDefinition = {
@@ -119,13 +119,15 @@ export const route2: MapDefinition = {
     { tileX: 8, tileY: 0, targetMap: 'viridian-forest', targetSpawnId: 'from-route-2' },
     { tileX: 9, tileY: 0, targetMap: 'viridian-forest', targetSpawnId: 'from-route-2' },
     // East cave entrance → Crystal Cavern
-    { tileX: 18, tileY: 8, targetMap: 'crystal-cavern', targetSpawnId: 'from-route-2' },
-    { tileX: 18, tileY: 9, targetMap: 'crystal-cavern', targetSpawnId: 'from-route-2' },
+    { tileX: 15, tileY: 8, targetMap: 'crystal-cavern', targetSpawnId: 'from-route-2' },
+    { tileX: 16, tileY: 8, targetMap: 'crystal-cavern', targetSpawnId: 'from-route-2' },
+    { tileX: 15, tileY: 9, targetMap: 'crystal-cavern', targetSpawnId: 'from-route-2' },
+    { tileX: 16, tileY: 9, targetMap: 'crystal-cavern', targetSpawnId: 'from-route-2' },
   ],
   spawnPoints: {
     'default':        { x: 9, y: 15, direction: 'up' },
     'from-viridian':  { x: 9, y: 28, direction: 'up' },
     'from-forest':    { x: 9, y: 1,  direction: 'down' },
-    'from-cavern':    { x: 17, y: 9,  direction: 'left' },
+    'from-cavern':    { x: 14, y: 9,  direction: 'left' },
   },
 };
