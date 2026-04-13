@@ -107,7 +107,7 @@ export const palletTown: MapDefinition = {
     // Building doors
     { tileX: 5, tileY: 4, targetMap: 'pallet-player-house', targetSpawnId: 'default' },
     { tileX: 19, tileY: 4, targetMap: 'pallet-rival-house', targetSpawnId: 'default' },
-    { tileX: 11, tileY: 12, targetMap: 'pallet-oak-lab', targetSpawnId: 'default' },
+    { tileX: 12, tileY: 12, targetMap: 'pallet-oak-lab', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default': { x: 12, y: 14, direction: 'up' },
