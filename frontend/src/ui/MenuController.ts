@@ -159,6 +159,21 @@ export class MenuController {
     this.confirm();
   }
 
+  /**
+   * Wire up pointer events on interactive game objects.
+   * Each element maps to an item index — pointerover triggers hoverIndex,
+   * pointerdown triggers clickIndex.
+   */
+  bindInteractive(elements: Phaser.GameObjects.GameObject[]): void {
+    elements.forEach((el, i) => {
+      if ('setInteractive' in el && typeof (el as Phaser.GameObjects.Text).setInteractive === 'function') {
+        (el as Phaser.GameObjects.Text).setInteractive({ useHandCursor: true });
+      }
+      el.on('pointerover', () => this.hoverIndex(i));
+      el.on('pointerdown', () => this.clickIndex(i));
+    });
+  }
+
   destroy(): void {
     const kb = this.scene.input.keyboard;
     if (kb) {

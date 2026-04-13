@@ -89,7 +89,8 @@ export class InventoryScene extends Phaser.Scene {
     });
 
     // Close hint
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 22, 'ESC to close', FONTS.caption).setOrigin(0.5);
+    const closeHint = (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ? 'Tap B to close' : 'ESC to close';
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 22, closeHint, FONTS.caption).setOrigin(0.5);
 
     this.switchCategory();
 

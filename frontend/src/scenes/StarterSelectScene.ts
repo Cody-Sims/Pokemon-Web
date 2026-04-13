@@ -78,7 +78,9 @@ export class StarterSelectScene extends Phaser.Scene {
     }
 
     // Hint text
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, 'Use ← → to choose, Enter to confirm', {
+    const hintText = (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0)
+      ? 'Swipe or tap to choose' : 'Use ← → to choose, Enter to confirm';
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, hintText, {
       fontSize: '14px', color: '#888888',
     }).setOrigin(0.5);
 

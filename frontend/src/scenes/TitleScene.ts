@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { SaveManager } from '@managers/SaveManager';
 import { AudioManager } from '@managers/AudioManager';
 import { COLORS, FONTS } from '@ui/theme';
+import { TouchControls } from '@ui/TouchControls';
 import { BGM, SFX } from '@utils/audio-keys';
 
 export class TitleScene extends Phaser.Scene {
@@ -61,7 +62,8 @@ export class TitleScene extends Phaser.Scene {
     this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, fontSize: '22px', color: COLORS.textHighlight });
 
     // Version / hint
-    this.add.text(width / 2, height - 30, 'Press Enter to select', {
+    const hintText = TouchControls.isTouchDevice() ? 'Tap to select' : 'Press Enter to select';
+    this.add.text(width / 2, height - 30, hintText, {
       ...FONTS.caption, color: COLORS.textDim,
     }).setOrigin(0.5);
 

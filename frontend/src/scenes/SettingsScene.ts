@@ -4,6 +4,7 @@ import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { MenuController } from '@ui/MenuController';
+import { TouchControls } from '@ui/TouchControls';
 import { COLORS, FONTS } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 
@@ -30,7 +31,7 @@ const SETTING_DEFS: SettingDef[] = [
 
 export class SettingsScene extends Phaser.Scene {
   private controller?: MenuController;
-  private settingTexts: { label: Phaser.GameObjects.Text; value: Phaser.GameObjects.Text }[] = [];
+  private settingTexts: { label: Phaser.GameObjects.Text; value: Phaser.GameObjects.Text; leftArrow: Phaser.GameObjects.Text; rightArrow: Phaser.GameObjects.Text }[] = [];
   private returnScene = 'TitleScene';
   private isFullscreen = false;
 
@@ -44,6 +45,7 @@ export class SettingsScene extends Phaser.Scene {
 
   create(): void {
     const gm = GameManager.getInstance();
+    const isMobile = TouchControls.isTouchDevice();
 
     // Background
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
@@ -61,17 +63,38 @@ export class SettingsScene extends Phaser.Scene {
     const startY = 100;
     const rowH = 40;
     this.settingTexts = [];
+    const rowHitAreas: Phaser.GameObjects.Rectangle[] = [];
 
     SETTING_DEFS.forEach((def, i) => {
       const y = startY + i * rowH;
       const label = this.add.text(100, y, def.label, { ...FONTS.body, fontSize: '17px' });
       const currentVal = gm.getSetting(def.key);
       const displayVal = this.formatValue(def, currentVal);
-      const value = this.add.text(GAME_WIDTH - 150, y, `◀ ${displayVal} ▶`, {
+
+      // Tappable left arrow
+      const leftArrow = this.add.text(GAME_WIDTH - 210, y, '◀', {
+        ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
+      }).setInteractive({ useHandCursor: true });
+      leftArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(-1); });
+
+      // Value display
+      const value = this.add.text(GAME_WIDTH - 150, y, displayVal, {
         ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
       }).setOrigin(0.5, 0);
 
-      this.settingTexts.push({ label, value });
+      // Tappable right arrow
+      const rightArrow = this.add.text(GAME_WIDTH - 95, y, '▶', {
+        ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
+      }).setInteractive({ useHandCursor: true });
+      rightArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(1); });
+
+      // Invisible row hit area for touch selection
+      const hitArea = this.add.rectangle(GAME_WIDTH / 2, y + 10, GAME_WIDTH - 80, rowH, 0x000000, 0)
+        .setInteractive({ useHandCursor: true });
+      hitArea.on('pointerover', () => { this.controller?.setCursor(i); this.highlightRow(i); });
+      rowHitAreas.push(hitArea);
+
+      this.settingTexts.push({ label, value, leftArrow, rightArrow });
     });
 
     // Fullscreen row
@@ -79,13 +102,39 @@ export class SettingsScene extends Phaser.Scene {
     const fsLabel = this.add.text(100, fsY, 'Fullscreen', { ...FONTS.body, fontSize: '17px' });
     this.isFullscreen = this.scale.isFullscreen;
     const fsState = this.isFullscreen ? 'ON' : 'OFF';
-    const fsValue = this.add.text(GAME_WIDTH - 150, fsY, `◀ ${fsState} ▶`, {
+
+    const fsLeftArrow = this.add.text(GAME_WIDTH - 210, fsY, '◀', {
+      ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
+    }).setInteractive({ useHandCursor: true });
+    fsLeftArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(-1); });
+
+    const fsValue = this.add.text(GAME_WIDTH - 150, fsY, fsState, {
       ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
     }).setOrigin(0.5, 0);
-    this.settingTexts.push({ label: fsLabel, value: fsValue });
+
+    const fsRightArrow = this.add.text(GAME_WIDTH - 95, fsY, '▶', {
+      ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
+    }).setInteractive({ useHandCursor: true });
+    fsRightArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(1); });
+
+    const fsHitArea = this.add.rectangle(GAME_WIDTH / 2, fsY + 10, GAME_WIDTH - 80, rowH, 0x000000, 0)
+      .setInteractive({ useHandCursor: true });
+    fsHitArea.on('pointerover', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); });
+    rowHitAreas.push(fsHitArea);
+
+    this.settingTexts.push({ label: fsLabel, value: fsValue, leftArrow: fsLeftArrow, rightArrow: fsRightArrow });
+
+    // Back button (visible for touch users, always works)
+    const backBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 70, '[ Back ]', {
+      ...FONTS.body, fontSize: '20px', color: COLORS.textHighlight,
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    backBtn.on('pointerdown', () => this.closeSettings());
+    backBtn.on('pointerover', () => backBtn.setColor(COLORS.textWhite));
+    backBtn.on('pointerout', () => backBtn.setColor(COLORS.textHighlight));
 
     // Close hint
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, 'ESC to go back   ◀ ▶ to change values', FONTS.caption).setOrigin(0.5);
+    const hintText = isMobile ? 'Tap ◀ ▶ to change  •  Tap [ Back ] to return' : 'ESC to go back   ◀ ▶ to change values';
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, hintText, FONTS.caption).setOrigin(0.5);
 
     const allItemCount = SETTING_DEFS.length + 1; // +1 for fullscreen
 
@@ -122,7 +171,7 @@ export class SettingsScene extends Phaser.Scene {
       if (this.isFullscreen) this.scale.startFullscreen();
       else this.scale.stopFullscreen();
       const state = this.isFullscreen ? 'ON' : 'OFF';
-      this.settingTexts[idx].value.setText(`◀ ${state} ▶`);
+      this.settingTexts[idx].value.setText(state);
       audio.playSFX(SFX.CURSOR);
       return;
     }
@@ -138,7 +187,7 @@ export class SettingsScene extends Phaser.Scene {
       const newIdx = (curIdx + dir + def.options.length) % def.options.length;
       const newVal = def.options[newIdx];
       gm.setSetting(def.key, newVal);
-      this.settingTexts[idx].value.setText(`◀ ${this.formatValue(def, newVal)} ▶`);
+      this.settingTexts[idx].value.setText(this.formatValue(def, newVal));
     } else if (def.type === 'slider') {
       const min = def.min ?? 0;
       const max = def.max ?? 1;
@@ -146,7 +195,7 @@ export class SettingsScene extends Phaser.Scene {
       const curNum = typeof currentVal === 'number' ? currentVal : parseFloat(String(currentVal)) || min;
       const newVal = Math.round(Math.max(min, Math.min(max, curNum + dir * step)) * 100) / 100;
       gm.setSetting(def.key, newVal);
-      this.settingTexts[idx].value.setText(`◀ ${this.formatValue(def, newVal)} ▶`);
+      this.settingTexts[idx].value.setText(this.formatValue(def, newVal));
     }
 
     // Apply audio changes in real-time

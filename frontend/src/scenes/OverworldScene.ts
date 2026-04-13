@@ -5,6 +5,7 @@ import { NPC } from '@entities/NPC';
 import { Trainer } from '@entities/Trainer';
 import { AnimationHelper } from '@systems/AnimationHelper';
 import { InputManager } from '@systems/InputManager';
+import { TouchControls } from '@ui/TouchControls';
 import { Direction } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/EncounterSystem';
@@ -167,7 +168,10 @@ export class OverworldScene extends Phaser.Scene {
     const { width } = this.cameras.main;
     const mapLabel = this.mapDef.displayName
       ?? this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    this.add.text(width / 2, 20, `${mapLabel}  |  ENTER = Talk  |  ESC = Menu`, {
+    const hudHint = TouchControls.isTouchDevice()
+      ? `${mapLabel}  |  A = Talk  |  B = Menu`
+      : `${mapLabel}  |  ENTER = Talk  |  ESC = Menu`;
+    this.add.text(width / 2, 20, hudHint, {
       fontSize: '14px',
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
@@ -354,7 +358,7 @@ export class OverworldScene extends Phaser.Scene {
       this.scene.start('TransitionScene', {
         targetScene: 'BattleScene',
         returnScene: 'OverworldScene',
-        targetData: { enemyPokemon: pokemon },
+        targetData: { enemyPokemon: pokemon, battleBg: this.mapDef.battleBg },
         returnData: { mapKey: this.mapKey, spawnId: '__resume' },
         style: 'stripes',
       });
@@ -404,6 +408,7 @@ export class OverworldScene extends Phaser.Scene {
             enemyPokemon: enemyParty[0],
             isTrainer: true,
             trainerId: trainer.trainerId,
+            battleBg: this.mapDef.battleBg,
           },
           returnData: { mapKey: this.mapKey, spawnId: '__resume' },
           style: 'stripes',

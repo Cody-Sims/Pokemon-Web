@@ -60,7 +60,8 @@ export class PokedexScene extends Phaser.Scene {
     });
 
     // Close hint
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, 'ESC to close', FONTS.caption).setOrigin(0.5);
+    const closeHint = (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ? 'Tap B to close' : 'ESC to close';
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, closeHint, FONTS.caption).setOrigin(0.5);
 
     this.scrollOffset = 0;
     this.cursor = 0;
