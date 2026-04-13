@@ -6,12 +6,13 @@ import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SaveManager } from '@managers/SaveManager';
 import { SFX } from '@utils/audio-keys';
+import { ConfirmBox } from '@ui/ConfirmBox';
 
 export class MenuScene extends Phaser.Scene {
   private cursor = 0;
   private menuItems!: Phaser.GameObjects.Text[];
   private cursorIcon!: Phaser.GameObjects.Text;
-  private menuLabels = ['POKEDEX', 'POKEMON', 'BAG', 'SAVE', 'OPTIONS', 'EXIT'];
+  private menuLabels = ['POKEDEX', 'POKEMON', 'BAG', 'SAVE', 'OPTIONS', 'QUIT', 'EXIT'];
 
   constructor() {
     super({ key: 'MenuScene' });
@@ -109,6 +110,9 @@ export class MenuScene extends Phaser.Scene {
           this.scene.wake();
         });
         break;
+      case 'QUIT':
+        this.confirmQuit();
+        break;
       case 'EXIT':
         this.closeMenu();
         break;
@@ -137,5 +141,21 @@ export class MenuScene extends Phaser.Scene {
       duration: 400,
       onComplete: () => confirmText.destroy(),
     });
+  }
+
+  private confirmQuit(): void {
+    new ConfirmBox(
+      this,
+      GAME_WIDTH / 2 - 70,
+      GAME_HEIGHT / 2 - 45,
+      'Quit to title?',
+      (confirmed) => {
+        if (confirmed) {
+          this.scene.stop();
+          this.scene.stop('OverworldScene');
+          this.scene.start('TitleScene');
+        }
+      },
+    );
   }
 }

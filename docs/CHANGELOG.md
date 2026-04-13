@@ -9,6 +9,8 @@ All notable changes to the Pokemon Web project.
 - **Player hidden under tall grass**: Player was at depth 0 (same as ground), so foreground overlays like tall grass (depth 2) completely covered them. Set player depth to 1 — body visible with grass overlaying feet, matching classic Pokémon.
 
 ### Added
+- **Quit to title**: New "QUIT" option in the pause menu with a Yes/No confirmation dialog. Stops the overworld and returns to the title screen.
+- **Delete save data**: New "Delete Save" option on the title screen (only shown when a save exists). Uses a Yes/No confirmation, then removes the save from localStorage and refreshes the title screen.
 - **Trainer sprites in battle**: During trainer battles, the enemy trainer sprite appears behind their Pokémon (upper-right, semi-transparent) and the player character appears behind theirs (lower-left). Both slide in during the intro animation. Uses the trainer's `spriteKey` from trainer data.
 
 ### Changed

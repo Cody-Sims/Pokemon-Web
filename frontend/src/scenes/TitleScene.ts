@@ -4,6 +4,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { COLORS, FONTS } from '@ui/theme';
 import { TouchControls } from '@ui/TouchControls';
 import { BGM, SFX } from '@utils/audio-keys';
+import { ConfirmBox } from '@ui/ConfirmBox';
 
 export class TitleScene extends Phaser.Scene {
   private cursor!: number;
@@ -43,6 +44,7 @@ export class TitleScene extends Phaser.Scene {
     const options = ['New Game'];
     if (SaveManager.getInstance().hasSave()) {
       options.unshift('Continue');
+      options.push('Delete Save');
     }
     options.push('Options');
 
@@ -119,6 +121,20 @@ export class TitleScene extends Phaser.Scene {
         this.scene.get('SettingsScene').events.once('shutdown', () => {
           this.scene.wake();
         });
+        break;
+      case 'Delete Save':
+        new ConfirmBox(
+          this,
+          this.cameras.main.width / 2 - 70,
+          this.cameras.main.height / 2 - 45,
+          'Delete save data?',
+          (confirmed) => {
+            if (confirmed) {
+              SaveManager.getInstance().deleteSave();
+              this.scene.restart(); // Refresh title screen without Continue option
+            }
+          },
+        );
         break;
     }
   }
