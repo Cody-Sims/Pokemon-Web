@@ -21,40 +21,7 @@ A browser-based Pokémon-style RPG built with **Phaser 3 + TypeScript + Vite**. 
 
 ---
 
-## Phase 4: Overworld Systems — 🔶 PARTIAL
-
-**Goal:** The player walks around a Tiled map with grid-based movement, collides with walls, talks to NPCs, and triggers encounters in tall grass.
-
-**✅ Done:** Grid-based player movement with tweens, Player/NPC/Trainer entities, EncounterSystem, InputManager, AnimationHelper, camera follow, player walk-cycle spritesheet.
-
-**⬜ Remaining:**
-
-### 4.1 — Tiled Map Creation
-- Create maps in Tiled: **Pallet Town** (30×30), **Route 1** (20×60), etc.
-  - Layers: `Ground`, `World` (collidable), `Above Player`, `Encounters`, `Spawns`, `Warps`.
-  - Mark collidable tiles with `collides: true` property.
-  - Export as JSON into `public/assets/maps/`.
-
-### 4.2 — Tilemap Loading in OverworldScene
-- Parse Tiled JSON, create tilemap layers, set collision by property.
-- Spawn NPCs/Trainers from Tiled object layers.
-
-### 4.5 — NPC Interaction Wiring
-- Spawn NPCs from Tiled `Spawns` layer. On player interact (press Confirm while facing NPC):
-  - Launch `DialogueScene` with NPC's dialogue text.
-  - NPC turns to face the player.
-- **Trainer NPCs** with `lineOfSight` trigger exclamation mark → forced walk → battle.
-
-### 4.7 — Map Transitions (Warps)
-- Warp objects in Tiled with `targetMap`, `targetSpawnId` properties.
-- On step: fade-to-black → restart OverworldScene with new map → fade-from-black.
-
-### 4.8 — Wild Encounter Trigger
-- Wire EncounterSystem to grass tiles in the overworld.
-- On trigger: flash screen → pick Pokémon from route table → launch BattleScene.
-
-### Deliverable
-Walk around Pallet Town, collide with walls, talk to NPCs, transition to Route 1, encounter wild Pokémon in grass.
+## Phase 4: Overworld Systems — ✅ COMPLETE\n> See [CHANGELOG.md](CHANGELOG.md) for details. Grid movement, Player/NPC/Trainer entities, EncounterSystem, InputManager, AnimationHelper, procedural map rendering, NPC spawning with flag-gated dialogue, map transitions via warps, wild encounter triggers in tall grass.
 
 ---
 
@@ -78,37 +45,8 @@ Walk around Pallet Town, collide with walls, talk to NPCs, transition to Route 1
 
 ---
 
-## Phase 9: Game Content — World Building
-
-**Goal:** Build out the game world from a single town to a multi-route adventure.
-
-### 9.1 — Maps to Create
-
-| Map | Size (tiles) | Key Features |
-|-----|-------------|--------------|
-| Pallet Town | 30×30 | Player's house, Rival's house, Oak's Lab |
-| Route 1 | 20×60 | Tall grass (Pidgey, Rattata), ledges |
-| Viridian City | 40×40 | Pokémon Center, PokéMart, Gym (locked initially) |
-| Route 2 | 20×40 | Tall grass, entrance to Viridian Forest |
-| Viridian Forest | 50×50 | Dense grass (Caterpie, Weedle, Pikachu), Bug Catcher trainers |
-| Pewter City | 40×40 | Pokémon Center, Gym (Brock — Rock type) |
-
-### 9.2 — Key Story Beats
-1. **Intro:** Player leaves house → walks to Oak's Lab → receives starter Pokémon (choose from 3).
-2. **Rival Battle 1:** Rival picks the type-advantaged starter → battle in the lab.
-3. **Oak's Parcel:** Deliver a package from Viridian City PokéMart to Oak → receive Pokédex.
-4. **Route 1 → Viridian City:** First wild encounters.
-5. **Viridian Forest:** Trainer gauntlet, catch new Pokémon.
-6. **Pewter Gym:** First Gym battle vs. Brock (Geodude + Onix).
-7. **Badge earned:** Game loop validated end-to-end.
-
-### 9.3 — Story Flags System
-Use `GameManager.flags` (a `Record<string, boolean>`) to track progress:
-- `receivedStarter`, `deliveredParcel`, `receivedPokedex`, `defeatedBrock`, etc.
-- NPCs and warps check flags to gate content (e.g., Oak's aide blocks Route 2 until you have the Pokédex).
-
-### Deliverable
-A playable adventure from Pallet Town through Pewter Gym, with 6 maps, 3 starter Pokémon, ~15 wild species, ~10 trainer battles, and the first badge.
+## Phase 9: Game Content — World Building — ✅ COMPLETE
+> See [CHANGELOG.md](CHANGELOG.md) for details. 6 maps (Pallet Town, Route 1, Viridian City, Route 2, Viridian Forest, Pewter City), starter selection, flag-gated NPCs, PokéCenter healing, trainer rewards & badges, story flow from Oak’s Lab to Boulder Badge.
 
 ---
 

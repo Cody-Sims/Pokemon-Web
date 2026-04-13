@@ -71,7 +71,8 @@ pokemon-web/
 │       │   ├── InventoryScene.ts       # Bag / item management
 │       │   ├── PartyScene.ts           # Party view — HP, types, status per slot
 │       │   ├── SummaryScene.ts         # 3-tab Pokémon detail (INFO/STATS/MOVES)
-│       │   └── TransitionScene.ts      # Fade transitions between scenes
+│       │   ├── TransitionScene.ts      # Fade transitions between scenes
+│       │   └── StarterSelectScene.ts   # Starter Pokémon selection overlay
 │       │
 │       ├── entities/                   # Game object classes
 │       │   ├── Player.ts              # Grid-locked sprite + GridMovement

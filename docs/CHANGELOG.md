@@ -6,6 +6,26 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Phase 9: Game Content — World Building — COMPLETE**
+  - 4 new maps: Viridian City (30×30), Route 2 (20×30), Viridian Forest (25×40), Pewter City (30×30)
+  - 10 new tile types: PokéCenter (wall/roof/door), PokéMart (wall/roof/door), Gym (wall/roof/door), Dense Tree
+  - New trainers: Youngster Ben (Route 2), 3 Bug Catchers placed in Viridian Forest, Gym Leader Brock in Pewter City Gym
+  - `StarterSelectScene`: overlay UI for choosing Bulbasaur/Charmander/Squirtle with card layout, sprite preview, keyboard+mouse navigation
+  - Flag-gated NPC system: `NpcSpawn.requireFlag`, `flagDialogue` (alternative dialogue per flag), `setsFlag`, `interactionType`
+  - Story flag flow: Oak gives starter (→ `receivedStarter`), Mart clerk gives parcel (→ `hasParcel`), Oak accepts parcel (→ `deliveredParcel`, `receivedPokedex`), Brock defeated (→ `defeatedBrock`)
+  - Pokémon Center healing: fully restores HP, PP, and status for all party members
+  - Trainer defeat rewards: money awarded, trainer marked defeated, Boulder Badge granted for Brock
+  - Post-battle trainer messages: defeat announcement, money reward, badge, after-dialogue
+  - Block warps when player has no Pokémon (directs to Oak)
+  - Map transitions: Route 1 north → Viridian City, Viridian City north → Route 2, Route 2 north → Viridian Forest, Forest north → Pewter City
+
+### Changed
+  - Mom NPC dialogue is flag-gated (pre/post starter)
+  - OverworldScene NPC spawning respects `requireFlag` conditions
+  - BattleScene stores `isTrainerBattle` and `trainerId` from transition data
+  - BattleUIScene victory sequence handles trainer rewards, money, badges, and after-dialogue
+  - ExperienceCalculator now receives proper isTrainer flag for trainer battles
+
 - **Comprehensive Testing System (All 5 Phases)**
   - **Phase 1 — Unit Tests (Vitest):** DamageCalculator, CatchCalculator, ExperienceCalculator, type-chart, BattleStateMachine, StatusEffectHandler, AIController, math-helpers, and full data integrity tests
   - **Phase 2 — Integration Tests:** GameManager (party, bag, money, badges, serialize/deserialize), SaveManager round-trip, BattleManager full battle flow, MoveExecutor (all move types), EncounterSystem, EventManager, evolution, inventory

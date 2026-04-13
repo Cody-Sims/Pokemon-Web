@@ -72,6 +72,18 @@ export const trainerData: Record<string, TrainerData> = {
     },
     rewardMoney: 70,
   },
+  'youngster-2': {
+    id: 'youngster-2', name: 'Youngster Ben', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 19, level: 9 },
+      { pokemonId: 16, level: 9 },
+    ],
+    dialogue: {
+      before: ['I just caught some cool Pokémon! Wanna see?'],
+      after: ['Guess yours were cooler...'],
+    },
+    rewardMoney: 90,
+  },
   'gym-brock': {
     id: 'gym-brock', name: 'Gym Leader Brock', spriteKey: 'generic-trainer',
     party: [

@@ -42,7 +42,7 @@ export const MAP_BGM: Record<string, string> = {
   'pallet-town':     BGM.PALLET_TOWN,
   'route-1':         BGM.ROUTE,
   'route-2':         BGM.ROUTE,
-  'viridian-city':   BGM.PALLET_TOWN,   // reuse town theme for now
+  'viridian-city':   BGM.PALLET_TOWN,
   'viridian-forest': BGM.ROUTE,
   'pewter-city':     BGM.PALLET_TOWN,
 };

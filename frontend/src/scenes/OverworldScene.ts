@@ -11,9 +11,11 @@ import { EncounterSystem } from '@systems/EncounterSystem';
 import { TransitionManager } from '@managers/TransitionManager';
 import { PokemonInstance } from '@data/interfaces';
 import { trainerData } from '@data/trainer-data';
+import { moveData } from '@data/move-data';
 import {
   mapRegistry,
   MapDefinition,
+  NpcSpawn,
   Tile,
   TILE_COLORS,
   SOLID_TILES,
@@ -51,8 +53,8 @@ export class OverworldScene extends Phaser.Scene {
   create(): void {
     const gm = GameManager.getInstance();
 
-    // Ensure player has a starter Pokemon
-    if (gm.getParty().length === 0) {
+    // Ensure player has a starter Pokemon (fallback — normally received from Oak)
+    if (gm.getParty().length === 0 && gm.getFlag('receivedStarter')) {
       const starter = EncounterSystem.createWildPokemon(1, 5);
       starter.nickname = 'Bulbasaur';
       gm.addToParty(starter);
@@ -172,19 +174,46 @@ export class OverworldScene extends Phaser.Scene {
           this.add.circle(px, py - 2, 4, 0xf06060);
           this.add.circle(px, py - 2, 2, 0xf0e040);
         }
+        // PokéCenter cross marker
+        if (tile === Tile.CENTER_ROOF) {
+          this.add.rectangle(px, py, 6, 2, 0xffffff);
+          this.add.rectangle(px, py, 2, 6, 0xffffff);
+        }
+        // Mart "M" marker
+        if (tile === Tile.MART_ROOF) {
+          this.add.text(px, py, 'M', { fontSize: '10px', color: '#ffffff' }).setOrigin(0.5);
+        }
+        // Gym star marker
+        if (tile === Tile.GYM_ROOF) {
+          this.add.text(px, py, '★', { fontSize: '10px', color: '#ffcc00' }).setOrigin(0.5);
+        }
+        // Dense tree extra detail
+        if (tile === Tile.DENSE_TREE) {
+          this.add.circle(px, py - 2, 5, 0x0d300a);
+        }
       }
     }
   }
 
   // ── NPC / Trainer spawning ────────────────────────────────
   private spawnNPCs(): void {
+    const gm = GameManager.getInstance();
     for (const def of this.mapDef.npcs) {
+      // Check flag requirement
+      if (def.requireFlag) {
+        const negate = def.requireFlag.startsWith('!');
+        const flagName = negate ? def.requireFlag.slice(1) : def.requireFlag;
+        const flagVal = gm.getFlag(flagName);
+        if (negate ? flagVal : !flagVal) continue;
+      }
       const npc = new NPC(
         this, def.tileX, def.tileY,
         def.textureKey, def.id, def.dialogue, def.facing,
       );
       npc.setScale(2);
       npc.setDepth(1);
+      // Store the full spawn definition for special interactions
+      (npc as NPC & { spawnDef?: NpcSpawn }).spawnDef = def;
       this.npcs.push(npc);
     }
   }
@@ -212,19 +241,31 @@ export class OverworldScene extends Phaser.Scene {
     if (this.transitioning) return;
 
     const { x: tx, y: ty } = this.player.getTilePosition();
+    const gm = GameManager.getInstance();
 
     // Persist position
-    GameManager.getInstance().setPlayerPosition({
+    gm.setPlayerPosition({
       x: tx, y: ty, direction: this.player.getFacing(),
     });
 
     // Warps
     for (const warp of this.mapDef.warps) {
       if (warp.tileX === tx && warp.tileY === ty) {
+        // Block leaving town without a starter
+        if (gm.getParty().length === 0) {
+          this.scene.pause();
+          this.scene.launch('DialogueScene', {
+            dialogue: ['You should go see Prof. Oak first!'],
+          });
+          return;
+        }
         this.doWarp(warp.targetMap, warp.targetSpawnId);
         return;
       }
     }
+
+    // Only check battles if player has Pokémon
+    if (gm.getParty().length === 0) return;
 
     // Trainer line-of-sight
     for (const trainer of this.trainers) {
@@ -346,12 +387,81 @@ export class OverworldScene extends Phaser.Scene {
           return;
         }
 
+        // Get spawn def for special interactions
+        const spawnDef = (npc as NPC & { spawnDef?: NpcSpawn }).spawnDef;
+        const gm = GameManager.getInstance();
+
+        // Determine the right dialogue (flag-gated overrides)
+        let dialogue = npc.dialogue;
+        if (spawnDef?.flagDialogue) {
+          for (const fd of spawnDef.flagDialogue) {
+            if (gm.getFlag(fd.flag)) {
+              dialogue = fd.dialogue;
+              break;
+            }
+          }
+        }
+
+        // Set flag on interaction if configured
+        if (spawnDef?.setsFlag && !gm.getFlag(spawnDef.setsFlag)) {
+          gm.setFlag(spawnDef.setsFlag);
+        }
+
+        // Special: Oak parcel delivery triggers multiple flags
+        if (spawnDef?.id === 'pallet-oak-after' && gm.getFlag('hasParcel') && !gm.getFlag('receivedPokedex')) {
+          gm.setFlag('deliveredParcel');
+          gm.setFlag('receivedPokedex');
+        }
+
+        // Handle special interaction types
+        if (spawnDef?.interactionType === 'heal') {
+          this.scene.pause();
+          this.scene.launch('DialogueScene', { dialogue });
+          this.scene.get('DialogueScene').events.once('shutdown', () => {
+            this.healParty();
+            this.scene.resume();
+          });
+          return;
+        }
+
+        if (spawnDef?.interactionType === 'starter-select') {
+          this.scene.pause();
+          this.scene.launch('DialogueScene', { dialogue });
+          this.scene.get('DialogueScene').events.once('shutdown', () => {
+            this.scene.resume();
+            this.launchStarterSelection();
+          });
+          return;
+        }
+
         // Regular dialogue
         this.scene.pause();
-        this.scene.launch('DialogueScene', { dialogue: npc.dialogue });
+        this.scene.launch('DialogueScene', { dialogue });
         return;
       }
     }
+  }
+
+  /** Heal all Pokémon in the party to full HP and PP. */
+  private healParty(): void {
+    const gm = GameManager.getInstance();
+    for (const pokemon of gm.getParty()) {
+      pokemon.currentHp = pokemon.stats.hp;
+      pokemon.status = null;
+      pokemon.statusTurns = undefined;
+      for (const move of pokemon.moves) {
+        const md = moveData[move.moveId];
+        move.currentPp = md?.pp ?? move.currentPp;
+      }
+    }
+    // Show healing flash
+    this.cameras.main.flash(300, 255, 255, 255);
+  }
+
+  /** Launch the starter Pokémon selection UI. */
+  private launchStarterSelection(): void {
+    this.scene.pause();
+    this.scene.launch('StarterSelectScene');
   }
 
   // ── Animation helper ──────────────────────────────────────

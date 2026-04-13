@@ -8,6 +8,8 @@ import { StatusEffectHandler } from '@battle/StatusEffectHandler';
 import type { BattleScene } from './BattleScene';
 import type { PokemonInstance } from '@data/interfaces';
 import { AudioManager } from '@managers/AudioManager';
+import { GameManager } from '@managers/GameManager';
+import { trainerData } from '@data/trainer-data';
 import { SFX, BGM } from '@utils/audio-keys';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message';
@@ -440,11 +442,26 @@ export class BattleUIScene extends Phaser.Scene {
   private runVictorySequence(): void {
     const b = this.battle();
     const player = b.playerPokemon;
-    const expGained = ExperienceCalculator.calculateExp(b.enemyPokemon, false);
+    const expGained = ExperienceCalculator.calculateExp(b.enemyPokemon, b.isTrainerBattle);
     const name = pokemonData[player.dataId]?.name ?? '???';
 
     // Switch to victory BGM
     AudioManager.getInstance().playBGM(BGM.VICTORY);
+
+    // Handle trainer battle rewards
+    if (b.isTrainerBattle && b.trainerId) {
+      const gm = GameManager.getInstance();
+      gm.defeatTrainer(b.trainerId);
+      const tData = trainerData[b.trainerId];
+      if (tData) {
+        gm.addMoney(tData.rewardMoney);
+        // Grant badge for gym leaders
+        if (b.trainerId === 'gym-brock') {
+          gm.addBadge('boulder');
+          gm.setFlag('defeatedBrock');
+        }
+      }
+    }
 
     this.msg(`${name} gained ${expGained} EXP. Points!`);
     this.state = 'animating';
@@ -461,9 +478,7 @@ export class BattleUIScene extends Phaser.Scene {
         });
       } else {
         this.time.delayedCall(1200, () => {
-          this.state = 'message';
-          this.msg('Press Enter to continue...');
-          this.waitForConfirmThen(() => this.endBattle());
+          this.showTrainerRewardsThenEnd();
         });
       }
     });
@@ -594,9 +609,7 @@ export class BattleUIScene extends Phaser.Scene {
     if (moveIdx + 1 < newMoves.length) {
       this.offerNewMove(pokeName, newMoves, moveIdx + 1);
     } else {
-      this.state = 'message';
-      this.msg('Press Enter to continue...');
-      this.waitForConfirmThen(() => this.endBattle());
+      this.showTrainerRewardsThenEnd();
     }
   }
 
@@ -609,6 +622,38 @@ export class BattleUIScene extends Phaser.Scene {
     };
     this.input.keyboard!.on('keydown-ENTER', handler);
     this.input.keyboard!.on('keydown-SPACE', handler);
+  }
+
+  /** Show trainer reward messages (money, badge, dialogue), then end battle. */
+  private showTrainerRewardsThenEnd(): void {
+    const b = this.battle();
+    const messages: string[] = [];
+
+    if (b.isTrainerBattle && b.trainerId) {
+      const tData = trainerData[b.trainerId];
+      if (tData) {
+        messages.push(`You defeated ${tData.name}!`);
+        messages.push(`Got ¥${tData.rewardMoney} for winning!`);
+        if (b.trainerId === 'gym-brock') {
+          messages.push('You received the Boulder Badge!');
+        }
+        if (tData.dialogue.after.length > 0) {
+          messages.push(...tData.dialogue.after);
+        }
+      }
+    }
+
+    if (messages.length > 0) {
+      this.showMessageQueue(messages, 0, () => {
+        this.state = 'message';
+        this.msg('Press Enter to continue...');
+        this.waitForConfirmThen(() => this.endBattle());
+      });
+    } else {
+      this.state = 'message';
+      this.msg('Press Enter to continue...');
+      this.waitForConfirmThen(() => this.endBattle());
+    }
   }
 
   private endBattle(): void {

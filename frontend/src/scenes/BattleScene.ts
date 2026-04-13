@@ -27,6 +27,8 @@ export class BattleScene extends Phaser.Scene {
   public playerHpText!: Phaser.GameObjects.Text;
   public returnScene = 'OverworldScene';
   public returnData: Record<string, unknown> = {};
+  public isTrainerBattle = false;
+  public trainerId = '';
   public enemyStatusText!: Phaser.GameObjects.Text;
   public playerStatusText!: Phaser.GameObjects.Text;
 
@@ -40,6 +42,8 @@ export class BattleScene extends Phaser.Scene {
     // Store return info passed through from TransitionScene
     this.returnScene = (data?._returnScene as string) ?? 'OverworldScene';
     this.returnData = (data?._returnData as Record<string, unknown>) ?? {};
+    this.isTrainerBattle = (data?.isTrainer as boolean) ?? false;
+    this.trainerId = (data?.trainerId as string) ?? '';
 
     // Initialize starter if party is empty
     if (gm.getParty().length === 0) {
