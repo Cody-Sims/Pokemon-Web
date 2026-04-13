@@ -19,6 +19,7 @@ import {
   NpcSpawn,
   Tile,
   SOLID_TILES,
+  OVERLAY_BASE,
 } from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
@@ -201,9 +202,18 @@ export class OverworldScene extends Phaser.Scene {
         const px = x * TILE_SIZE + TILE_SIZE / 2;
         const py = y * TILE_SIZE + TILE_SIZE / 2;
 
-        // Use the tileset spritesheet: frame index = tile type constant
+        // If this tile is an overlay object, draw the base ground tile first
+        const baseTile = OVERLAY_BASE[tile];
+        if (baseTile !== undefined) {
+          const base = this.add.image(px, py, 'tileset', baseTile);
+          base.setScale(scale);
+          base.setDepth(0);
+        }
+
+        // Draw the tile (or overlay) itself
         const sprite = this.add.image(px, py, 'tileset', tile);
         sprite.setScale(scale);
+        sprite.setDepth(baseTile !== undefined ? 0.5 : 0);
       }
     }
   }

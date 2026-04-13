@@ -5,6 +5,9 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Added
+- **Two-layer tile rendering with overlay compositing**: Added `OVERLAY_BASE` mapping in `shared.ts` that defines which tiles are "overlay objects" that should have a base ground tile rendered underneath. Overworld overlays (trees, tall grass, flowers, signs, fences, ledges, dense trees) render grass below. Interior overlays (tables, chairs, pokeballs, rugs, mats, PCs, heal machines, gym statues, bookshelves, counters) render floor below. Windows render indoor wall below. Tileset images for overlay tiles now have transparent backgrounds so the base tile shows through. `drawMap()` draws the base layer at depth 0, overlay tiles at depth 0.5, and NPCs at depth 1 for proper layering.
+
 ### Fixed
 - **Interior map centering**: Small interior maps (Oak's Lab, houses, etc.) now render centered in the game window instead of anchored to the top-left corner. Fixed by using direct camera scroll offset instead of `setBounds`+`centerOn` which couldn't scroll past the small map bounds. Added dark background color for the area outside the map.
 

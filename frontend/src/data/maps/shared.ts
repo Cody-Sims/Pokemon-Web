@@ -45,6 +45,33 @@ export const Tile = {
   GYM_STATUE:    38,
 } as const;
 
+/**
+ * Tiles that are "overlay" objects — they should have a base ground tile drawn
+ * underneath them for proper layering.  Maps to the base tile type to render below.
+ */
+export const OVERLAY_BASE: Partial<Record<number, number>> = {
+  // Overworld: overlay on grass
+  [Tile.TREE]:          Tile.GRASS,
+  [Tile.TALL_GRASS]:    Tile.GRASS,
+  [Tile.FLOWER]:        Tile.GRASS,
+  [Tile.SIGN]:          Tile.GRASS,
+  [Tile.FENCE]:         Tile.GRASS,
+  [Tile.LEDGE]:         Tile.GRASS,
+  [Tile.DENSE_TREE]:    Tile.GRASS,
+  // Interior: overlay on floor
+  [Tile.TABLE]:         Tile.FLOOR,
+  [Tile.CHAIR]:         Tile.FLOOR,
+  [Tile.POKEBALL_ITEM]: Tile.FLOOR,
+  [Tile.RUG]:           Tile.FLOOR,
+  [Tile.MAT]:           Tile.FLOOR,
+  [Tile.PC_TILE]:       Tile.FLOOR,
+  [Tile.HEAL_MACHINE]:  Tile.FLOOR,
+  [Tile.GYM_STATUE]:    Tile.FLOOR,
+  [Tile.BOOKSHELF]:     Tile.FLOOR,
+  [Tile.COUNTER]:       Tile.FLOOR,
+  [Tile.WINDOW]:        Tile.INDOOR_WALL,
+};
+
 // Colors for each tile type
 export const TILE_COLORS: Record<number, number> = {
   [Tile.GRASS]:      0x5a9e3e,
