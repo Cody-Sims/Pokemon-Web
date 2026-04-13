@@ -6,6 +6,20 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-12]
 ### Added
+- **Tileset-Based Map Rendering — Replaced Procedural Rectangles with Sprite Tileset**
+  - Generated a clean 16×16 pixel art tileset (`tileset.png`) with all 39 tile types in Pokemon GBA style: grass with checkered pattern, textured paths, blade-pattern tall grass, trees with trunk/canopy, wave-pattern water, brick-pattern house walls, shingle-line roofs, detailed doors with doorknobs, fences with posts/rails, multi-color flowers, signs, ledges, PokéCenter roof with white cross, Mart roof with "M", Gym roof with star, wood-plank floors, baseboard walls, counters, tables, bookshelves with colored books, patterned rugs, exit mats, PC with monitor/keyboard, heal machine, cross-pane windows, chairs, Poké Ball items, stone gym floors, gym statues
+  - PreloadScene loads `tileset.png` as a Phaser spritesheet (16×16 frames, 10 columns × 4 rows)
+  - OverworldScene `drawMap()` replaced: ~430 lines of procedural rectangle/circle drawing reduced to ~15 lines using `this.add.image()` with tileset frame index, rendered at 2× scale for 32px game tiles
+  - Massive reduction in scene object count: each tile is now 1 sprite instead of 2–15 overlapping shapes
+
+- **Phase 3.1-3.4: Side Content**
+  - **Fishing System**: 3 rod tiers (Old/Good/Super Rod) as key items, per-route fishing encounter tables (`fishingTables` in encounter-tables.ts) with weighted species, fishing interaction when facing water tiles in OverworldScene, 50% bite rate, dialogue sequence ("...!", "Not even a nibble...")
+  - **Day/Night Cycle**: GameClock (`frontend/src/systems/GameClock.ts`) with 10× accelerated time (1 real min = 10 game min), 4 time periods (morning/day/evening/night) with camera tint colors, HH:MM clock, save/restore elapsed minutes
+  - **Shiny Pokémon**: `isShiny` field on PokemonInstance, 1/4096 chance in `createWildPokemon`, sparkle particle effect on battle intro (6 rotating sparkles), shiny ★ star on Summary screen species name
+  - **Pokédex Scene**: Full `PokedexScene` with scrollable 151-species list, seen/caught status (●/○), detail panel with sprite + types + base stats (caught only), registered in game-config and accessible via POKEDEX in pause menu
+  - New constants: `SHINY_CHANCE`, `FISHING_ENCOUNTER_RATE`
+  - Rod items added to item-data (old-rod, good-rod, super-rod)
+
 - **Phase 7: Mobile & Accessibility — COMPLETE**
   - **TouchControls** (`frontend/src/ui/TouchControls.ts`): Virtual D-pad (bottom-left) + A/B buttons (bottom-right) as Phaser GameObjects. Auto-detected via `navigator.maxTouchPoints`. D-pad emits directional input, A = confirm, B = cancel. Responsive layout on resize. Integrated into InputManager (touch direction/confirm/cancel merged with keyboard).
   - **Accessibility settings in SettingsScene**: Text Size (small/medium/large), Colorblind Mode (off/protanopia/deuteranopia), Reduced Motion toggle. All persisted to localStorage via GameManager settings.

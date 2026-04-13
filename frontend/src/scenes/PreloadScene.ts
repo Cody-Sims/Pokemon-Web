@@ -41,8 +41,12 @@ export class PreloadScene extends Phaser.Scene {
       this.load.image(data.spriteKeys.icon, `assets/sprites/pokemon/${name}-icon.png`);
     }
 
-    // Load tileset
+    // Load tilesets
     this.load.image('overworld-tiles', 'assets/tilesets/overworld.png');
+    this.load.spritesheet('tileset', 'assets/tilesets/tileset.png', {
+      frameWidth: 16,
+      frameHeight: 16,
+    });
 
     // Load player character atlas
     this.load.atlas('player-walk', 'assets/sprites/player/player-walk.png', 'assets/sprites/player/player-walk.json');

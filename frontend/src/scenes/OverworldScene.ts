@@ -8,6 +8,7 @@ import { InputManager } from '@systems/InputManager';
 import { Direction } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/EncounterSystem';
+import { GameClock } from '@systems/GameClock';
 import { TransitionManager } from '@managers/TransitionManager';
 import { PokemonInstance, SaveData } from '@data/interfaces';
 import { trainerData } from '@data/trainer-data';
@@ -17,7 +18,6 @@ import {
   MapDefinition,
   NpcSpawn,
   Tile,
-  TILE_COLORS,
   SOLID_TILES,
 } from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
@@ -27,6 +27,7 @@ export class OverworldScene extends Phaser.Scene {
   private player!: Player;
   private inputManager!: InputManager;
   private encounterSystem!: EncounterSystem;
+  private gameClock!: GameClock;
   private npcs: NPC[] = [];
   private trainers: Trainer[] = [];
   private mapDef!: MapDefinition;
@@ -85,6 +86,7 @@ export class OverworldScene extends Phaser.Scene {
 
     // Init encounter system
     this.encounterSystem = new EncounterSystem();
+    this.gameClock = new GameClock();
 
     // Register player animations and create player
     AnimationHelper.registerPlayerAnimations(this);
@@ -186,430 +188,20 @@ export class OverworldScene extends Phaser.Scene {
     }
   }
 
-  // ── Map rendering ────────────────────────────────────────
+  // ── Map rendering (tileset-based) ──────────────────────────
   private drawMap(mapW: number, mapH: number): void {
+    // Scale factor: tileset is 16px, game tiles are TILE_SIZE (32px)
+    const scale = TILE_SIZE / 16;
+
     for (let y = 0; y < mapH; y++) {
       for (let x = 0; x < mapW; x++) {
         const tile = this.mapDef.ground[y][x];
-        const color = TILE_COLORS[tile] ?? 0x5a9e3e;
         const px = x * TILE_SIZE + TILE_SIZE / 2;
         const py = y * TILE_SIZE + TILE_SIZE / 2;
-        const S = TILE_SIZE;
 
-        // Base tile
-        this.add.rectangle(px, py, S, S, color);
-
-        // ── Enhanced tile detail ──
-        // Seeded variation per tile for consistency
-        const seed = (x * 7 + y * 13) % 17;
-
-        switch (tile) {
-          // ── GRASS ──
-          case Tile.GRASS: {
-            // Subtle shade variation
-            if (seed < 5) {
-              this.add.rectangle(px - 4, py - 2, 3, 3, 0x6db04e);
-            }
-            if (seed > 10) {
-              this.add.rectangle(px + 3, py + 4, 2, 2, 0x4d8e2e);
-            }
-            break;
-          }
-
-          // ── PATH ──
-          case Tile.PATH: {
-            // Pebble/texture dots
-            if (seed < 4) {
-              this.add.rectangle(px - 5, py - 3, 2, 2, 0xb89848).setAlpha(0.6);
-            }
-            if (seed > 8) {
-              this.add.rectangle(px + 4, py + 2, 2, 1, 0xd4b46a).setAlpha(0.5);
-            }
-            // Subtle border darkening on edges
-            if (y > 0 && this.mapDef.ground[y - 1][x] !== Tile.PATH) {
-              this.add.rectangle(px, py - S / 2 + 1, S, 2, 0xb09040).setAlpha(0.3);
-            }
-            break;
-          }
-
-          // ── TALL GRASS ──
-          case Tile.TALL_GRASS: {
-            // Multiple grass blades
-            this.add.rectangle(px - 6, py - 3, 2, 10, 0x4a8b32);
-            this.add.rectangle(px + 6, py - 2, 2, 10, 0x4a8b32);
-            this.add.rectangle(px, py - 5, 2, 10, 0x4a8b32);
-            this.add.rectangle(px - 3, py - 4, 2, 8, 0x55a038);
-            this.add.rectangle(px + 3, py - 3, 2, 9, 0x55a038);
-            // Flower accent on some
-            if (seed % 7 === 0) {
-              this.add.circle(px + 2, py - 6, 2, 0xf0e040);
-            }
-            break;
-          }
-
-          // ── TREE ──
-          case Tile.TREE: {
-            // Shadow under tree
-            this.add.ellipse(px, py + 6, 20, 8, 0x1a3a10).setAlpha(0.3);
-            // Trunk
-            this.add.rectangle(px, py + 4, 6, 12, 0x6b4226);
-            this.add.rectangle(px, py + 4, 4, 12, 0x7b5236);
-            // Canopy (overlapping circles)
-            this.add.circle(px, py - 6, 10, 0x2d6a1e);
-            this.add.circle(px - 5, py - 3, 7, 0x357a24);
-            this.add.circle(px + 5, py - 3, 7, 0x357a24);
-            this.add.circle(px, py - 8, 6, 0x3d8a2e);
-            break;
-          }
-
-          // ── WATER ──
-          case Tile.WATER: {
-            // Wave highlights
-            const waveOffset = (seed % 3) * 4;
-            this.add.rectangle(px - 6 + waveOffset, py - 3, 8, 2, 0x5a9edf).setAlpha(0.4);
-            this.add.rectangle(px + 2 - waveOffset, py + 3, 6, 2, 0x5a9edf).setAlpha(0.3);
-            // Sparkle
-            if (seed % 5 === 0) {
-              this.add.rectangle(px + 4, py - 5, 2, 2, 0x8acfff).setAlpha(0.6);
-            }
-            break;
-          }
-
-          // ── HOUSE WALL ──
-          case Tile.HOUSE_WALL: {
-            // Foundation line at bottom
-            this.add.rectangle(px, py + S / 2 - 1, S, 2, 0xb0a080);
-            // Brick pattern
-            if (seed % 3 === 0) {
-              this.add.rectangle(px - 4, py - 4, 8, 1, 0xc0b490).setAlpha(0.4);
-              this.add.rectangle(px + 4, py + 2, 8, 1, 0xc0b490).setAlpha(0.4);
-            }
-            break;
-          }
-
-          // ── HOUSE ROOF ──
-          case Tile.HOUSE_ROOF: {
-            // Shingle lines
-            this.add.rectangle(px, py - 4, S - 2, 1, 0x903030).setAlpha(0.5);
-            this.add.rectangle(px, py + 2, S - 2, 1, 0x903030).setAlpha(0.5);
-            this.add.rectangle(px, py + 8, S - 2, 1, 0x903030).setAlpha(0.5);
-            break;
-          }
-
-          // ── HOUSE DOOR ──
-          case Tile.HOUSE_DOOR: {
-            // Door frame
-            this.add.rectangle(px, py, S - 8, S - 4, 0x8b5a30);
-            // Door panel
-            this.add.rectangle(px, py - 2, S - 14, S - 10, 0x7a4a22);
-            // Doorknob
-            this.add.circle(px + 4, py, 2, 0xd4a820);
-            // Step
-            this.add.rectangle(px, py + S / 2 - 2, S - 4, 3, 0xa09070);
-            break;
-          }
-
-          // ── FLOWER ──
-          case Tile.FLOWER: {
-            // Grass base already from color
-            // Stem
-            this.add.rectangle(px, py + 2, 1, 6, 0x3d7a28);
-            // Petals
-            const flowerColor = seed % 3 === 0 ? 0xf06060 : seed % 3 === 1 ? 0xf0e040 : 0x6060f0;
-            this.add.circle(px - 2, py - 3, 3, flowerColor);
-            this.add.circle(px + 2, py - 3, 3, flowerColor);
-            this.add.circle(px, py - 5, 3, flowerColor);
-            // Center
-            this.add.circle(px, py - 3, 2, 0xf0e840);
-            break;
-          }
-
-          // ── SIGN ──
-          case Tile.SIGN: {
-            // Post
-            this.add.rectangle(px, py + 6, 3, 10, 0x6b4226);
-            // Board
-            this.add.rectangle(px, py - 4, 18, 12, 0xa08040);
-            this.add.rectangle(px, py - 4, 16, 10, 0xb89848);
-            break;
-          }
-
-          // ── FENCE ──
-          case Tile.FENCE: {
-            // Posts
-            this.add.rectangle(px - 8, py, 4, S, 0x7b5a3a);
-            this.add.rectangle(px + 8, py, 4, S, 0x7b5a3a);
-            // Rails
-            this.add.rectangle(px, py - 4, S, 3, 0x8b6a4a);
-            this.add.rectangle(px, py + 4, S, 3, 0x8b6a4a);
-            break;
-          }
-
-          // ── LAB WALL ──
-          case Tile.LAB_WALL: {
-            this.add.rectangle(px, py + S / 2 - 1, S, 2, 0xa0a0a0);
-            if (seed % 4 === 0) {
-              this.add.rectangle(px, py, 8, 1, 0xb8b8b8).setAlpha(0.3);
-            }
-            break;
-          }
-
-          // ── LAB ROOF ──
-          case Tile.LAB_ROOF: {
-            this.add.rectangle(px, py - 3, S - 2, 1, 0x606090).setAlpha(0.5);
-            this.add.rectangle(px, py + 4, S - 2, 1, 0x606090).setAlpha(0.5);
-            break;
-          }
-
-          // ── LAB DOOR ──
-          case Tile.LAB_DOOR: {
-            this.add.rectangle(px, py, S - 8, S - 4, 0x7a6a5a);
-            this.add.rectangle(px, py - 2, S - 14, S - 10, 0x6a5a4a);
-            this.add.circle(px + 4, py, 2, 0xc0a020);
-            this.add.rectangle(px, py + S / 2 - 2, S - 4, 3, 0x908070);
-            break;
-          }
-
-          // ── LEDGE ──
-          case Tile.LEDGE: {
-            this.add.rectangle(px, py + S / 2 - 3, S, 4, 0x3a7a2a);
-            this.add.rectangle(px, py + S / 2 - 1, S, 2, 0x2a5a1a);
-            break;
-          }
-
-          // ── POKECENTER ──
-          case Tile.CENTER_ROOF: {
-            this.add.rectangle(px, py - 3, S - 2, 1, 0xc03030).setAlpha(0.4);
-            // Cross
-            this.add.rectangle(px, py, 8, 3, 0xffffff);
-            this.add.rectangle(px, py, 3, 8, 0xffffff);
-            break;
-          }
-          case Tile.CENTER_WALL: {
-            this.add.rectangle(px, py + S / 2 - 1, S, 2, 0xd09090);
-            break;
-          }
-          case Tile.CENTER_DOOR: {
-            this.add.rectangle(px, py, S - 8, S - 4, 0xe09070);
-            this.add.rectangle(px, py + S / 2 - 2, S - 4, 3, 0xc08060);
-            // Sliding door lines
-            this.add.rectangle(px, py - 2, 1, S - 8, 0xb07050);
-            break;
-          }
-
-          // ── MART ──
-          case Tile.MART_ROOF: {
-            this.add.rectangle(px, py - 3, S - 2, 1, 0x3070b0).setAlpha(0.4);
-            this.add.text(px, py, 'M', { fontSize: '10px', color: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
-            break;
-          }
-          case Tile.MART_WALL: {
-            this.add.rectangle(px, py + S / 2 - 1, S, 2, 0x90b0d0);
-            break;
-          }
-          case Tile.MART_DOOR: {
-            this.add.rectangle(px, py, S - 8, S - 4, 0x7090b0);
-            this.add.rectangle(px, py + S / 2 - 2, S - 4, 3, 0x6090b0);
-            this.add.rectangle(px, py - 2, 1, S - 8, 0x5080a0);
-            break;
-          }
-
-          // ── GYM ──
-          case Tile.GYM_ROOF: {
-            this.add.rectangle(px, py - 3, S - 2, 1, 0x707070).setAlpha(0.4);
-            this.add.text(px, py, '★', { fontSize: '10px', color: '#ffcc00' }).setOrigin(0.5);
-            break;
-          }
-          case Tile.GYM_WALL: {
-            this.add.rectangle(px, py + S / 2 - 1, S, 2, 0xc0a070);
-            break;
-          }
-          case Tile.GYM_DOOR: {
-            this.add.rectangle(px, py, S - 8, S - 4, 0x908060);
-            this.add.rectangle(px, py + S / 2 - 2, S - 4, 3, 0x807050);
-            this.add.circle(px + 4, py, 2, 0xd4a820);
-            break;
-          }
-
-          // ── DENSE TREE ──
-          case Tile.DENSE_TREE: {
-            this.add.circle(px, py - 4, 12, 0x0d380a);
-            this.add.circle(px - 4, py - 1, 8, 0x154010);
-            this.add.circle(px + 4, py - 1, 8, 0x154010);
-            this.add.circle(px, py - 7, 7, 0x1a4810);
-            break;
-          }
-
-          // ── INTERIOR: FLOOR ──
-          case Tile.FLOOR: {
-            // Wood plank lines
-            if (x % 2 === 0) {
-              this.add.rectangle(px, py - 4, S, 1, 0xc0a880).setAlpha(0.3);
-              this.add.rectangle(px, py + 6, S, 1, 0xc0a880).setAlpha(0.3);
-            } else {
-              this.add.rectangle(px, py, S, 1, 0xc0a880).setAlpha(0.3);
-              this.add.rectangle(px, py + 10, S, 1, 0xc0a880).setAlpha(0.3);
-            }
-            break;
-          }
-
-          // ── INTERIOR: WALL ──
-          case Tile.INDOOR_WALL: {
-            // Baseboard
-            this.add.rectangle(px, py + S / 2 - 2, S, 4, 0xb0986a);
-            // Wall texture
-            if (seed % 5 === 0) {
-              this.add.rectangle(px, py - 2, 1, 8, 0xd8ccb8).setAlpha(0.3);
-            }
-            break;
-          }
-
-          // ── INTERIOR: COUNTER ──
-          case Tile.COUNTER: {
-            // Counter top
-            this.add.rectangle(px, py - 4, S, 6, 0xa07a20);
-            // Front panel
-            this.add.rectangle(px, py + 4, S, S - 8, 0x7a5a14);
-            break;
-          }
-
-          // ── INTERIOR: TABLE ──
-          case Tile.TABLE: {
-            // Table surface
-            this.add.rectangle(px, py - 2, S - 4, S - 8, 0xb08c50);
-            // Legs visible at bottom
-            this.add.rectangle(px - 8, py + 8, 3, 6, 0x7a5a30);
-            this.add.rectangle(px + 8, py + 8, 3, 6, 0x7a5a30);
-            break;
-          }
-
-          // ── INTERIOR: BOOKSHELF ──
-          case Tile.BOOKSHELF: {
-            // Shelf back
-            this.add.rectangle(px, py, S - 4, S - 2, 0x7a5230);
-            // Books (colored rectangles)
-            this.add.rectangle(px - 6, py - 6, 4, 8, 0xe04040);
-            this.add.rectangle(px - 2, py - 6, 4, 8, 0x4040e0);
-            this.add.rectangle(px + 2, py - 6, 4, 8, 0x40a040);
-            this.add.rectangle(px + 6, py - 6, 4, 8, 0xe0a040);
-            // Bottom shelf
-            this.add.rectangle(px - 4, py + 4, 4, 8, 0xa04040);
-            this.add.rectangle(px + 0, py + 4, 4, 8, 0x4080a0);
-            this.add.rectangle(px + 4, py + 4, 4, 8, 0xa0a040);
-            break;
-          }
-
-          // ── INTERIOR: RUG ──
-          case Tile.RUG: {
-            // Rug border
-            this.add.rectangle(px, py, S - 2, S - 2, 0xa03030);
-            // Pattern
-            this.add.rectangle(px, py, S - 8, S - 8, 0xc04040);
-            this.add.rectangle(px, py, S - 14, S - 14, 0xa03030);
-            break;
-          }
-
-          // ── INTERIOR: MAT (exit warp) ──
-          case Tile.MAT: {
-            // Brown mat
-            this.add.rectangle(px, py, S - 4, S - 6, 0x90a860);
-            this.add.rectangle(px, py, S - 8, S - 10, 0xa0b870);
-            break;
-          }
-
-          // ── INTERIOR: PC ──
-          case Tile.PC_TILE: {
-            // Monitor
-            this.add.rectangle(px, py - 4, 14, 12, 0x303030);
-            this.add.rectangle(px, py - 4, 10, 8, 0x4080c0);
-            // Stand
-            this.add.rectangle(px, py + 4, 4, 6, 0x404040);
-            // Keyboard
-            this.add.rectangle(px, py + 8, 12, 3, 0x505050);
-            break;
-          }
-
-          // ── INTERIOR: HEAL MACHINE ──
-          case Tile.HEAL_MACHINE: {
-            // Machine base
-            this.add.rectangle(px, py + 2, 18, 20, 0xf08080);
-            // Screen
-            this.add.rectangle(px, py - 4, 10, 6, 0x40e040);
-            // Ball tray
-            this.add.circle(px - 4, py + 4, 3, 0xf0f0f0);
-            this.add.circle(px + 4, py + 4, 3, 0xf0f0f0);
-            break;
-          }
-
-          // ── INTERIOR: WINDOW ──
-          case Tile.WINDOW: {
-            // Wall base
-            this.add.rectangle(px, py, S, S, 0xe8dcc8);
-            // Window frame
-            this.add.rectangle(px, py - 2, 14, 12, 0x6b4226);
-            // Glass
-            this.add.rectangle(px, py - 2, 12, 10, 0x90c8e0);
-            // Cross pane
-            this.add.rectangle(px, py - 2, 12, 1, 0x6b4226);
-            this.add.rectangle(px, py - 2, 1, 10, 0x6b4226);
-            break;
-          }
-
-          // ── INTERIOR: CHAIR ──
-          case Tile.CHAIR: {
-            // Floor underneath
-            this.add.rectangle(px, py, S, S, TILE_COLORS[Tile.FLOOR]);
-            // Chair seat
-            this.add.rectangle(px, py + 2, 12, 8, 0x8b6914);
-            // Chair back
-            this.add.rectangle(px, py - 6, 12, 4, 0x9b7924);
-            break;
-          }
-
-          // ── INTERIOR: POKEBALL ITEM ──
-          case Tile.POKEBALL_ITEM: {
-            // Floor underneath
-            this.add.rectangle(px, py, S, S, TILE_COLORS[Tile.FLOOR]);
-            // Pokéball - top half red
-            this.add.circle(px, py - 2, 6, 0xe04040);
-            // Bottom half white (overlap)
-            this.add.rectangle(px, py + 1, 12, 6, 0xf0f0f0);
-            // Center line
-            this.add.rectangle(px, py - 2, 12, 2, 0x303030);
-            // Center button
-            this.add.circle(px, py - 2, 3, 0xf0f0f0);
-            this.add.circle(px, py - 2, 2, 0x303030);
-            break;
-          }
-
-          // ── INTERIOR: GYM FLOOR ──
-          case Tile.GYM_FLOOR: {
-            // Rocky texture
-            if (seed % 3 === 0) {
-              this.add.rectangle(px - 3, py + 2, 4, 3, 0xb8a888).setAlpha(0.4);
-            }
-            if (seed % 4 === 0) {
-              this.add.rectangle(px + 5, py - 3, 3, 3, 0xb0a080).setAlpha(0.3);
-            }
-            // Battle lines on floor
-            if (x % 4 === 0) {
-              this.add.rectangle(px, py, 1, S, 0xd0c0a0).setAlpha(0.15);
-            }
-            break;
-          }
-
-          // ── INTERIOR: GYM STATUE ──
-          case Tile.GYM_STATUE: {
-            // Floor underneath
-            this.add.rectangle(px, py, S, S, TILE_COLORS[Tile.GYM_FLOOR]);
-            // Pedestal
-            this.add.rectangle(px, py + 4, 16, 8, 0x808080);
-            // Statue
-            this.add.rectangle(px, py - 4, 10, 14, 0xa0a0a0);
-            this.add.rectangle(px, py - 8, 6, 6, 0xb0b0b0);
-            break;
-          }
-        }
+        // Use the tileset spritesheet: frame index = tile type constant
+        const sprite = this.add.image(px, py, 'tileset', tile);
+        sprite.setScale(scale);
       }
     }
   }
@@ -679,8 +271,9 @@ export class OverworldScene extends Phaser.Scene {
     // Warps
     for (const warp of this.mapDef.warps) {
       if (warp.tileX === tx && warp.tileY === ty) {
-        // Block leaving town without a starter
-        if (gm.getParty().length === 0) {
+        // Block leaving town without a starter — but always allow building entry
+        const targetDef = mapRegistry[warp.targetMap];
+        if (gm.getParty().length === 0 && !targetDef?.isInterior) {
           this.scene.pause();
           this.scene.launch('DialogueScene', {
             dialogue: ['You should go see Prof. Oak first!'],
@@ -909,6 +502,46 @@ export class OverworldScene extends Phaser.Scene {
         return;
       }
     }
+
+    // ── Fishing: check if facing a water tile with a rod ──
+    if (targetY >= 0 && targetY < this.mapDef.height && targetX >= 0 && targetX < this.mapDef.width) {
+      const tile = this.mapDef.ground[targetY][targetX];
+      if (tile === Tile.WATER) {
+        this.tryFishing();
+        return;
+      }
+    }
+  }
+
+  /** Attempt to fish at the water tile the player is facing. */
+  private tryFishing(): void {
+    const gm = GameManager.getInstance();
+    // Determine best rod the player has
+    let rod: 'old' | 'good' | 'super' | null = null;
+    if (gm.getItemCount('super-rod') > 0) rod = 'super';
+    else if (gm.getItemCount('good-rod') > 0) rod = 'good';
+    else if (gm.getItemCount('old-rod') > 0) rod = 'old';
+
+    if (!rod) {
+      this.scene.pause();
+      this.scene.launch('DialogueScene', { dialogue: ['The water is calm...'] });
+      this.scene.get('DialogueScene').events.once('shutdown', () => this.scene.resume());
+      return;
+    }
+
+    this.scene.pause();
+    this.scene.launch('DialogueScene', { dialogue: ['...', '...!'] });
+    this.scene.get('DialogueScene').events.once('shutdown', () => {
+      const pokemon = EncounterSystem.fishEncounter(this.mapKey, rod!);
+      if (pokemon) {
+        gm.markSeen(pokemon.dataId);
+        this.scene.resume();
+        this.triggerWildEncounter(pokemon);
+      } else {
+        this.scene.launch('DialogueScene', { dialogue: ['Not even a nibble...'] });
+        this.scene.get('DialogueScene').events.once('shutdown', () => this.scene.resume());
+      }
+    });
   }
 
   /** Heal all Pokémon in the party to full HP and PP. */
@@ -953,6 +586,10 @@ export class OverworldScene extends Phaser.Scene {
   update(): void {
     if (this.transitioning) return;
     if (this.player.isMoving()) return;
+
+    // Update day/night tint
+    const tint = this.gameClock.getCurrentTint();
+    this.cameras.main.setBackgroundColor(tint);
 
     const input = this.inputManager.getState();
 

@@ -1,6 +1,9 @@
 - Overworld Tileset: "200+ Tileset - Legend of Pocket Monsters" by Chad Wolfe (Chloe Wolfe)
   License: CC-BY 3.0 | https://opengameart.org/content/200-tileset-legend-of-pocket-monsters
 
+- Map Tileset (tileset.png): Custom-generated 16×16 pixel art tileset (39 tile types)
+  Created for this project, inspired by GBA-era Pokemon FireRed/LeafGreen art style
+
 - Character Sprites: "Tiny Characters Set" by Fleurman
   License: CC0 | https://opengameart.org/content/tiny-characters-set
   Based on: "RPG Character Sprites" by GrafxKid (CC0) | https://opengameart.org/content/rpg-character-sprites
