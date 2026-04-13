@@ -15,8 +15,10 @@ export const voltaraGym: MapDefinition = {
   battleBg: 'bg-gym-electric',
   npcs: [],
   trainers: [
-    { id: 'voltara-gym-trainer', trainerId: 'youngster-3', tileX: 7, tileY: 10,
+    { id: 'voltara-gym-engineer-1', trainerId: 'engineer-1', tileX: 7, tileY: 10,
       textureKey: 'generic-trainer', facing: 'left', lineOfSight: 3 },
+    { id: 'voltara-gym-engineer-2', trainerId: 'engineer-2', tileX: 3, tileY: 6,
+      textureKey: 'generic-trainer', facing: 'right', lineOfSight: 3 },
     { id: 'voltara-gym-leader', trainerId: 'gym-blitz', tileX: 4, tileY: 2,
       textureKey: 'generic-trainer', facing: 'down', lineOfSight: 6 },
   ],

@@ -69,7 +69,35 @@ export const route2: MapDefinition = {
       dialogue: ['CRYSTAL CAVERN →', 'Caution: Strong Pokémon dwell within!'],
     },
   ],
-  trainers: [],
+  trainers: [
+    {
+      id: 'route2-youngster-4',
+      trainerId: 'youngster-4',
+      tileX: 14,
+      tileY: 10,
+      textureKey: 'generic-trainer',
+      facing: 'left',
+      lineOfSight: 4,
+    },
+    {
+      id: 'route2-lass-4',
+      trainerId: 'lass-4',
+      tileX: 5,
+      tileY: 18,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      lineOfSight: 3,
+    },
+    {
+      id: 'route2-camper-1',
+      trainerId: 'camper-1',
+      tileX: 10,
+      tileY: 24,
+      textureKey: 'generic-trainer',
+      facing: 'up',
+      lineOfSight: 4,
+    },
+  ],
   warps: [
     // South exit → Viridian City
     { tileX: 8, tileY: 29, targetMap: 'viridian-city', targetSpawnId: 'from-route-2' },

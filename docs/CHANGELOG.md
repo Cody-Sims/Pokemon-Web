@@ -5,6 +5,25 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Added
+- **25 new NPC trainers** across all routes and gyms, with story-fitting dialogue:
+  - **Route 1**: Added Lass Janice and Youngster Ben (previously defined but unspawned)
+  - **Route 2**: Added Youngster Tim, Lass Mira, and Camper Ethan — hint at Crystal Cavern and Synthesis activity
+  - **Viridian Forest**: Added Bug Catcher Leo (references Synthesis sensor device) and Lass Violet
+  - **Crystal Cavern**: Added Hiker Garrett (warns about ley line disturbance) and Camper Felix
+  - **Pewter Gym**: Added Camper Liam as junior gym trainer
+  - **Route 3**: Added Swimmer Lydia (notices reef changes), Fisherman Barney, and Sailor Craig (reports mystery boats)
+  - **Coral Gym**: Added Swimmer Nami as second gym trainer
+  - **Route 4**: Added Hiker Mason, Youngster Drake, and Synthesis Grunt (guards ridge with story dialogue)
+  - **Ember Mines**: Added additional Synthesis Grunt before Dr. Vex
+  - **Route 5**: Added Camper Rosa, Youngster Miles, and Synthesis Grunt (collecting Aether from old-growth forest)
+  
+### Changed
+- **Ironvale Gym**: Replaced reused Hiker with unique Black Belt Koji and Foundry Worker Gil (steel/forge themed)
+- **Verdantia Gym**: Replaced reused Lass with unique Beauty Lily and Picnicker Daisy (nature themed)
+- **Voltara Gym**: Replaced reused Youngster with unique Engineers Watts and Tesla (electric/tech themed)
+- Total trainer spawns increased from 25 to 48 across the game
+
 ### Fixed
 - **Player hidden under tall grass**: Player was at depth 0 (same as ground), so foreground overlays like tall grass (depth 2) completely covered them. Set player depth to 1 — body visible with grass overlaying feet, matching classic Pokémon.
 

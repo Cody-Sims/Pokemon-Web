@@ -91,6 +91,33 @@ export const route4: MapDefinition = {
       facing: 'left',
       lineOfSight: 4,
     },
+    {
+      id: 'route4-hiker-6',
+      trainerId: 'hiker-6',
+      tileX: 10,
+      tileY: 22,
+      textureKey: 'generic-trainer',
+      facing: 'up',
+      lineOfSight: 3,
+    },
+    {
+      id: 'route4-youngster-5',
+      trainerId: 'youngster-5',
+      tileX: 5,
+      tileY: 8,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      lineOfSight: 4,
+    },
+    {
+      id: 'route4-grunt-4',
+      trainerId: 'synthesis-grunt-4',
+      tileX: 12,
+      tileY: 18,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      lineOfSight: 4,
+    },
   ],
   warps: [
     // North exit → Ironvale City

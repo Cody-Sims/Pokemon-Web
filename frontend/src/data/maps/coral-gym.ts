@@ -40,6 +40,15 @@ export const coralGym: MapDefinition = {
       lineOfSight: 3,
     },
     {
+      id: 'coral-gym-trainer-2',
+      trainerId: 'swimmer-3',
+      tileX: 7,
+      tileY: 6,
+      textureKey: 'generic-trainer',
+      facing: 'left',
+      lineOfSight: 3,
+    },
+    {
       id: 'coral-gym-leader',
       trainerId: 'gym-coral',
       tileX: 4,

@@ -92,6 +92,24 @@ export const route1: MapDefinition = {
       facing: 'left',
       lineOfSight: 4,
     },
+    {
+      id: 'route1-lass',
+      trainerId: 'lass-1',
+      tileX: 5,
+      tileY: 12,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      lineOfSight: 4,
+    },
+    {
+      id: 'route1-youngster-2',
+      trainerId: 'youngster-2',
+      tileX: 10,
+      tileY: 28,
+      textureKey: 'generic-trainer',
+      facing: 'left',
+      lineOfSight: 3,
+    },
   ],
   warps: [
     // South exit → Pallet Town

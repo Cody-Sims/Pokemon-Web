@@ -114,6 +114,33 @@ export const route3: MapDefinition = {
       facing: 'left',
       lineOfSight: 3,
     },
+    {
+      id: 'route3-swimmer-2',
+      trainerId: 'swimmer-2',
+      tileX: 15,
+      tileY: 18,
+      textureKey: 'generic-trainer',
+      facing: 'left',
+      lineOfSight: 3,
+    },
+    {
+      id: 'route3-fisherman-1',
+      trainerId: 'fisherman-1',
+      tileX: 4,
+      tileY: 22,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      lineOfSight: 3,
+    },
+    {
+      id: 'route3-sailor-1',
+      trainerId: 'sailor-1',
+      tileX: 10,
+      tileY: 25,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      lineOfSight: 4,
+    },
   ],
   warps: [
     // North exit → Pewter City

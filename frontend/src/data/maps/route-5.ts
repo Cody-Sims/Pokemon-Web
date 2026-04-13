@@ -111,6 +111,33 @@ export const route5: MapDefinition = {
       facing: 'down',
       lineOfSight: 3,
     },
+    {
+      id: 'route5-camper-4',
+      trainerId: 'camper-4',
+      tileX: 4,
+      tileY: 16,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      lineOfSight: 4,
+    },
+    {
+      id: 'route5-youngster-6',
+      trainerId: 'youngster-6',
+      tileX: 17,
+      tileY: 24,
+      textureKey: 'generic-trainer',
+      facing: 'left',
+      lineOfSight: 3,
+    },
+    {
+      id: 'route5-grunt-6',
+      trainerId: 'synthesis-grunt-6',
+      tileX: 12,
+      tileY: 8,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      lineOfSight: 4,
+    },
   ],
   warps: [
     // North exit → Ironvale City

@@ -106,6 +106,15 @@ export const emberMines: MapDefinition = {
       facing: 'down',
       lineOfSight: 5,
     },
+    {
+      id: 'mines-grunt-3',
+      trainerId: 'synthesis-grunt-5',
+      tileX: 8,
+      tileY: 12,
+      textureKey: 'generic-trainer',
+      facing: 'up',
+      lineOfSight: 4,
+    },
   ],
   warps: [
     // South exit → Route 4

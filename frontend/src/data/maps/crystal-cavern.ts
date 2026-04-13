@@ -114,6 +114,24 @@ export const crystalCavern: MapDefinition = {
       facing: 'up',
       lineOfSight: 4,
     },
+    {
+      id: 'cavern-hiker-5',
+      trainerId: 'hiker-5',
+      tileX: 15,
+      tileY: 10,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      lineOfSight: 3,
+    },
+    {
+      id: 'cavern-camper-2',
+      trainerId: 'camper-2',
+      tileX: 4,
+      tileY: 18,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      lineOfSight: 4,
+    },
   ],
   warps: [
     // South exit → Route 2

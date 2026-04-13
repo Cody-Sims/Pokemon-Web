@@ -588,4 +588,356 @@ export const trainerData: Record<string, TrainerData> = {
     },
     rewardMoney: 1400,
   },
+
+  // ─── Route 2: Trainers near Crystal Cavern entrance ───
+  'youngster-4': {
+    id: 'youngster-4', name: 'Youngster Tim', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 32, level: 9, moves: ['leer', 'tackle', 'poison-sting'] },
+      { pokemonId: 27, level: 9, moves: ['scratch', 'sand-attack'] },
+    ],
+    dialogue: {
+      before: ['I\'ve been training near the cavern entrance!', 'Wanna see how tough I am?'],
+      after: ['The cave Pokémon are even tougher than me...'],
+    },
+    rewardMoney: 90,
+  },
+  'lass-4': {
+    id: 'lass-4', name: 'Lass Mira', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 29, level: 10, moves: ['scratch', 'growl', 'poison-sting'] },
+      { pokemonId: 39, level: 10, moves: ['sing', 'pound', 'defense-curl'] },
+    ],
+    dialogue: {
+      before: ['I heard strange noises from the cavern last night...', 'It made my Pokémon nervous. Let\'s battle to calm them down!'],
+      after: ['Maybe the cavern noises are nothing... but I\'m staying out here.'],
+    },
+    rewardMoney: 100,
+  },
+  'camper-1': {
+    id: 'camper-1', name: 'Camper Ethan', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 21, level: 9, moves: ['peck', 'leer', 'fury-attack'] },
+      { pokemonId: 19, level: 10, moves: ['tackle', 'quick-attack', 'tail-whip'] },
+      { pokemonId: 56, level: 9, moves: ['scratch', 'leer', 'karate-chop'] },
+    ],
+    dialogue: {
+      before: ['I\'m camping out here watching the cave entrance.', 'Some guys in white lab coats went in earlier...', 'Anyway, let\'s battle!'],
+      after: ['Hmm, those lab coat people still haven\'t come out...'],
+    },
+    rewardMoney: 100,
+  },
+
+  // ─── Viridian Forest: Additional trainers ───
+  'bug-catcher-5': {
+    id: 'bug-catcher-5', name: 'Bug Catcher Leo', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 13, level: 8, moves: ['poison-sting', 'string-shot'] },
+      { pokemonId: 14, level: 8, moves: ['harden'] },
+      { pokemonId: 10, level: 8, moves: ['tackle', 'string-shot'] },
+    ],
+    dialogue: {
+      before: ['I found a weird metal device in the bushes...', 'But who cares about that! Let\'s battle!'],
+      after: ['Do you think someone left that device on purpose?'],
+    },
+    rewardMoney: 80,
+  },
+  'lass-5': {
+    id: 'lass-5', name: 'Lass Violet', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 25, level: 9, moves: ['thunder-shock', 'growl', 'quick-attack'] },
+      { pokemonId: 43, level: 8, moves: ['absorb', 'growth'] },
+    ],
+    dialogue: {
+      before: ['I love the forest! The Pokémon here are so cute!', 'Oh, you want to battle? Sure!'],
+      after: ['You\'re really strong for someone just starting out!'],
+    },
+    rewardMoney: 90,
+  },
+
+  // ─── Crystal Cavern: Additional trainers ───
+  'hiker-5': {
+    id: 'hiker-5', name: 'Hiker Garrett', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 66, level: 11, moves: ['karate-chop', 'leer', 'low-kick'] },
+      { pokemonId: 74, level: 12, moves: ['tackle', 'rock-throw', 'defense-curl'] },
+    ],
+    dialogue: {
+      before: ['The crystals down here are glowing brighter than usual...', 'Something\'s disturbing the ley line!'],
+      after: ['Be careful deeper in — I heard machinery running.'],
+    },
+    rewardMoney: 240,
+  },
+  'camper-2': {
+    id: 'camper-2', name: 'Camper Felix', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 27, level: 11, moves: ['scratch', 'sand-attack'] },
+      { pokemonId: 41, level: 12, moves: ['leech-life', 'supersonic', 'bite'] },
+      { pokemonId: 46, level: 11, moves: ['scratch', 'stun-spore', 'leech-life'] },
+    ],
+    dialogue: {
+      before: ['I came in here exploring and got lost!', 'At least I can battle to pass the time!'],
+      after: ['Which way is the exit again?'],
+    },
+    rewardMoney: 220,
+  },
+
+  // ─── Pewter Gym: Junior trainer ───
+  'camper-3': {
+    id: 'camper-3', name: 'Camper Liam', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 74, level: 10, moves: ['tackle', 'defense-curl'] },
+      { pokemonId: 27, level: 11, moves: ['scratch', 'sand-attack'] },
+    ],
+    dialogue: {
+      before: ['Brock taught me everything I know!', 'You\'ll have to get through me first!'],
+      after: ['Brock is way tougher than me — good luck!'],
+    },
+    rewardMoney: 110,
+  },
+
+  // ─── Route 3: Tide Pool Path — additional coastal trainers ───
+  'swimmer-2': {
+    id: 'swimmer-2', name: 'Swimmer Lydia', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 72, level: 14, moves: ['poison-sting', 'supersonic', 'wrap'] },
+      { pokemonId: 116, level: 14, moves: ['water-gun', 'smokescreen', 'bubble'] },
+    ],
+    dialogue: {
+      before: ['Have you noticed the water tastes different lately?', 'The Pokémon in the reef are acting strange too.', 'Oh well — battle me!'],
+      after: ['Something in the ocean isn\'t right... talk to Coral about it.'],
+    },
+    rewardMoney: 280,
+  },
+  'fisherman-1': {
+    id: 'fisherman-1', name: 'Fisherman Barney', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 129, level: 12 },
+      { pokemonId: 129, level: 13 },
+      { pokemonId: 118, level: 14, moves: ['peck', 'tail-whip', 'water-gun'] },
+    ],
+    dialogue: {
+      before: ['I\'ve been fishing here for thirty years!', 'My Magikarp are legendary!'],
+      after: ['Okay, Magikarp aren\'t great battlers... but they\'re great eating! ...Kidding.'],
+    },
+    rewardMoney: 240,
+  },
+  'sailor-1': {
+    id: 'sailor-1', name: 'Sailor Craig', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 66, level: 14, moves: ['karate-chop', 'leer', 'low-kick'] },
+      { pokemonId: 72, level: 14, moves: ['poison-sting', 'supersonic', 'acid'] },
+    ],
+    dialogue: {
+      before: ['I sail these waters every day.', 'Lately I\'ve seen boats with no lights heading to the eastern islands.', 'Anyway — let\'s throw down!'],
+      after: ['You fight like the sea — wild and unstoppable!', 'Watch out for those mystery boats, kid.'],
+    },
+    rewardMoney: 280,
+  },
+
+  // ─── Coral Gym: Additional swimmer trainer ───
+  'swimmer-3': {
+    id: 'swimmer-3', name: 'Swimmer Nami', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 90, level: 17, moves: ['tackle', 'withdraw', 'clamp'] },
+      { pokemonId: 118, level: 17, moves: ['peck', 'water-gun', 'horn-attack'] },
+      { pokemonId: 120, level: 18, moves: ['water-gun', 'harden', 'tackle'] },
+    ],
+    dialogue: {
+      before: ['Coral trained me personally!', 'The ocean gives us strength!'],
+      after: ['The tide turns... Coral won\'t go down so easily though!'],
+    },
+    rewardMoney: 360,
+  },
+
+  // ─── Route 4: Basalt Ridge — hikers and Synthesis presence ───
+  'hiker-6': {
+    id: 'hiker-6', name: 'Hiker Mason', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 66, level: 17, moves: ['karate-chop', 'low-kick', 'leer'] },
+      { pokemonId: 75, level: 18, moves: ['rock-throw', 'tackle', 'defense-curl', 'self-destruct'] },
+    ],
+    dialogue: {
+      before: ['The ridge path is dangerous — rockslides everywhere!', 'If you can beat me, you can handle it!'],
+      after: ['Careful ahead — I saw people in white coats setting up equipment.'],
+    },
+    rewardMoney: 360,
+  },
+  'youngster-5': {
+    id: 'youngster-5', name: 'Youngster Drake', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 28, level: 16, moves: ['slash', 'sand-attack', 'poison-sting'] },
+      { pokemonId: 22, level: 17, moves: ['peck', 'fury-attack', 'leer', 'mirror-move'] },
+    ],
+    dialogue: {
+      before: ['I\'m gonna be the strongest trainer on this mountain!', 'No one passes without battling me!'],
+      after: ['Okay, maybe second strongest...'],
+    },
+    rewardMoney: 340,
+  },
+  'synthesis-grunt-4': {
+    id: 'synthesis-grunt-4', name: 'Synthesis Grunt', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 88, level: 17, moves: ['pound', 'poison-gas', 'sludge'] },
+      { pokemonId: 41, level: 17, moves: ['leech-life', 'supersonic', 'bite'] },
+      { pokemonId: 109, level: 18, moves: ['tackle', 'smog', 'smokescreen'] },
+    ],
+    dialogue: {
+      before: [
+        'Synthesis Grunt: This ridge is under Collective surveillance!',
+        'Synthesis Grunt: The Aether readings here are off the charts!',
+        'Synthesis Grunt: You shouldn\'t have come this way!',
+      ],
+      after: [
+        'Synthesis Grunt: Fine... but the operation in the mines will continue!',
+        'Synthesis Grunt: You\'re too late to stop what\'s already in motion!',
+      ],
+    },
+    rewardMoney: 360,
+  },
+
+  // ─── Ember Mines: Additional grunt ───
+  'synthesis-grunt-5': {
+    id: 'synthesis-grunt-5', name: 'Synthesis Grunt', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 42, level: 21, moves: ['wing-attack', 'bite', 'confuse-ray', 'supersonic'] },
+      { pokemonId: 89, level: 22, moves: ['sludge', 'body-slam', 'harden', 'pound'] },
+    ],
+    dialogue: {
+      before: [
+        'Synthesis Grunt: Dr. Vex said to expect company.',
+        'Synthesis Grunt: You won\'t reach the extraction chamber!',
+      ],
+      after: [
+        'Synthesis Grunt: This is just one facility... we have others.',
+      ],
+    },
+    rewardMoney: 440,
+  },
+
+  // ─── Ironvale Gym: Steel-themed trainers ───
+  'blackbelt-1': {
+    id: 'blackbelt-1', name: 'Black Belt Koji', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 67, level: 23, moves: ['karate-chop', 'seismic-toss', 'low-kick', 'leer'] },
+      { pokemonId: 75, level: 24, moves: ['rock-throw', 'self-destruct', 'defense-curl', 'dig'] },
+    ],
+    dialogue: {
+      before: ['Steel is forged through fire and pressure!', 'I train my Fighting Pokémon the same way!', 'Show me your resolve!'],
+      after: ['Your spirit burns brighter than the forge!', 'Ferris will test you further.'],
+    },
+    rewardMoney: 480,
+  },
+  'worker-1': {
+    id: 'worker-1', name: 'Foundry Worker Gil', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 81, level: 22, moves: ['thunder-shock', 'sonic-boom', 'tackle'] },
+      { pokemonId: 82, level: 23, moves: ['thunder-shock', 'sonic-boom', 'supersonic'] },
+    ],
+    dialogue: {
+      before: ['I work the forge six days a week!', 'My Magnemite are tougher than any machine!'],
+      after: ['Back to the anvil for me...'],
+    },
+    rewardMoney: 460,
+  },
+
+  // ─── Route 5: Verdant Path — nature trainers and Synthesis scout ───
+  'camper-4': {
+    id: 'camper-4', name: 'Camper Rosa', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 25, level: 24, moves: ['thunderbolt', 'quick-attack', 'double-team'] },
+      { pokemonId: 44, level: 23, moves: ['acid', 'sleep-powder', 'razor-leaf'] },
+      { pokemonId: 17, level: 24, moves: ['wing-attack', 'quick-attack', 'gust'] },
+    ],
+    dialogue: {
+      before: ['The forest here is so peaceful...', 'I saw someone setting traps for Pokémon earlier though.', 'It made me angry! Let me blow off steam with a battle!'],
+      after: ['Marina mentioned the traps too — she\'s investigating deeper in.'],
+    },
+    rewardMoney: 480,
+  },
+  'youngster-6': {
+    id: 'youngster-6', name: 'Youngster Miles', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 20, level: 23, moves: ['hyper-fang', 'quick-attack', 'bite'] },
+      { pokemonId: 22, level: 24, moves: ['fury-attack', 'peck', 'mirror-move', 'leer'] },
+    ],
+    dialogue: {
+      before: ['I ran all the way from Pewter City to train here!', 'These forest Pokémon are amazing!'],
+      after: ['Wow, you\'re way ahead of me. How many badges do you have?'],
+    },
+    rewardMoney: 480,
+  },
+  'synthesis-grunt-6': {
+    id: 'synthesis-grunt-6', name: 'Synthesis Grunt', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 24, level: 24, moves: ['poison-sting', 'bite', 'glare', 'acid'] },
+      { pokemonId: 110, level: 24, moves: ['sludge', 'smokescreen', 'tackle', 'self-destruct'] },
+      { pokemonId: 42, level: 25, moves: ['wing-attack', 'bite', 'confuse-ray'] },
+    ],
+    dialogue: {
+      before: [
+        'Synthesis Grunt: We\'re collecting samples from the old-growth forest.',
+        'Synthesis Grunt: The Aether concentration in these roots is extraordinary!',
+        'Synthesis Grunt: You again?! I won\'t let you interfere!',
+      ],
+      after: [
+        'Synthesis Grunt: The lab beneath Verdantia is already operational...',
+        'Synthesis Grunt: You can\'t shut it all down!',
+      ],
+    },
+    rewardMoney: 500,
+  },
+
+  // ─── Verdantia Gym: Nature-themed trainers ───
+  'beauty-1': {
+    id: 'beauty-1', name: 'Beauty Lily', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 45, level: 27, moves: ['petal-dance', 'sleep-powder', 'acid', 'mega-drain'] },
+      { pokemonId: 47, level: 27, moves: ['spore', 'slash', 'mega-drain', 'growth'] },
+    ],
+    dialogue: {
+      before: ['The flowers in this gym bloom with Aether energy!', 'Their beauty hides their power — just like my Pokémon!'],
+      after: ['Like petals in the wind... Ivy will be a bigger challenge.'],
+    },
+    rewardMoney: 540,
+  },
+  'picnicker-1': {
+    id: 'picnicker-1', name: 'Picnicker Daisy', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 114, level: 28, moves: ['vine-whip', 'bind', 'sleep-powder', 'growth'] },
+      { pokemonId: 2, level: 27, moves: ['razor-leaf', 'vine-whip', 'sleep-powder', 'growth'] },
+    ],
+    dialogue: {
+      before: ['Ivy taught me that plants communicate through their roots!', 'My Grass Pokémon and I share that connection!'],
+      after: ['Your bond with your Pokémon is something special.'],
+    },
+    rewardMoney: 560,
+  },
+
+  // ─── Voltara Gym: Electric-themed trainers ───
+  'engineer-1': {
+    id: 'engineer-1', name: 'Engineer Watts', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 100, level: 31, moves: ['thunderbolt', 'swift', 'screech', 'self-destruct'] },
+      { pokemonId: 82, level: 32, moves: ['thunderbolt', 'sonic-boom', 'supersonic', 'tri-attack'] },
+    ],
+    dialogue: {
+      before: ['I designed half the circuits in this gym!', 'My Pokémon ARE the other half!'],
+      after: ['Short circuit! Blitz will fry you though — literally!'],
+    },
+    rewardMoney: 640,
+  },
+  'engineer-2': {
+    id: 'engineer-2', name: 'Engineer Tesla', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 101, level: 32, moves: ['thunderbolt', 'swift', 'explosion', 'screech'] },
+      { pokemonId: 26, level: 31, moves: ['thunderbolt', 'quick-attack', 'double-team', 'thunder-wave'] },
+      { pokemonId: 125, level: 32, moves: ['thunder-punch', 'thunderbolt', 'swift', 'screech'] },
+    ],
+    dialogue: {
+      before: ['Blitz recruited me from Voltara Tech to design the gym\'s power grid.', 'The Aether ley line here generates three times normal voltage!', 'Let me show you what that means in battle!'],
+      after: ['You withstood the full voltage!', 'Blitz is gonna love fighting you.'],
+    },
+    rewardMoney: 640,
+  },
 };

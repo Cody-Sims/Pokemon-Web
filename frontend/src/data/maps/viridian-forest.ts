@@ -138,6 +138,24 @@ export const viridianForest: MapDefinition = {
       facing: 'right',
       lineOfSight: 3,
     },
+    {
+      id: 'forest-bugcatcher-5',
+      trainerId: 'bug-catcher-5',
+      tileX: 18,
+      tileY: 22,
+      textureKey: 'generic-trainer',
+      facing: 'left',
+      lineOfSight: 3,
+    },
+    {
+      id: 'forest-lass-5',
+      trainerId: 'lass-5',
+      tileX: 12,
+      tileY: 34,
+      textureKey: 'generic-trainer',
+      facing: 'up',
+      lineOfSight: 4,
+    },
   ],
   warps: [
     // South exit → Route 2

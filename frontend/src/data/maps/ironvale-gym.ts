@@ -15,8 +15,10 @@ export const ironvaleGym: MapDefinition = {
   battleBg: 'bg-gym-steel',
   npcs: [],
   trainers: [
-    { id: 'ironvale-gym-trainer', trainerId: 'hiker-4', tileX: 3, tileY: 10,
+    { id: 'ironvale-gym-blackbelt', trainerId: 'blackbelt-1', tileX: 3, tileY: 10,
       textureKey: 'generic-trainer', facing: 'right', lineOfSight: 3 },
+    { id: 'ironvale-gym-worker', trainerId: 'worker-1', tileX: 7, tileY: 7,
+      textureKey: 'generic-trainer', facing: 'left', lineOfSight: 3 },
     { id: 'ironvale-gym-leader', trainerId: 'gym-ferris', tileX: 4, tileY: 2,
       textureKey: 'generic-trainer', facing: 'down', lineOfSight: 6 },
   ],

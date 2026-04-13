@@ -49,6 +49,15 @@ export const pewterGym: MapDefinition = {
   ],
   trainers: [
     {
+      id: 'pewter-gym-camper',
+      trainerId: 'camper-3',
+      tileX: 4,
+      tileY: 8,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      lineOfSight: 3,
+    },
+    {
       id: 'pewter-gym-brock-inside',
       trainerId: 'gym-brock',
       tileX: 7,
