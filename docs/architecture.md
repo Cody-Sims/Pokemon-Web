@@ -303,6 +303,17 @@ EventManager.emit('BATTLE_START', { type: 'wild', pokemonId: 'pikachu', level: 5
 EventManager.on('BATTLE_END', (result) => { /* resume overworld */ });
 ```
 
+### Mobile / Touch Controls
+The game supports mobile devices via a virtual touch overlay managed by three collaborating modules:
+
+- **`TouchControls`** (`src/ui/TouchControls.ts`): Renders a virtual **D-pad** (bottom-left) and **A/B action buttons** (bottom-right) as Phaser `Circle` game objects in a `Container` pinned to the camera (`setScrollFactor(0)`, depth 1000). The D-pad sets `activeDirection` on `pointerdown` and clears it on `pointerup`/`pointerout`. The A button sets a `confirmPressed` flag; B sets `cancelPressed`. Both are consumed via `consumeConfirm()` / `consumeCancel()` (poll-and-clear pattern).
+- **`InputManager`** (`src/systems/InputManager.ts`): Instantiates `TouchControls` when `navigator.maxTouchPoints > 0`. Its `getState()` method merges keyboard and touch input into a unified `InputState { direction, confirm, cancel, menu }` — keyboard is checked first, touch fills in the gaps.
+- **`MenuController`** (`src/ui/MenuController.ts`): Handles menu navigation via keyboard events. It does **not** currently read touch input directly — menus rely on the A/B buttons being wired through `InputManager` or through Phaser `pointerdown` listeners on individual menu items.
+
+**Visibility control:** `TouchControls` exposes `setDpadVisible(bool)` and `setVisible(bool)` so scenes can hide the D-pad during menus or hide the entire overlay during battles. The overlay auto re-layouts on `scale.resize`.
+
+**Detection:** `TouchControls.isTouchDevice()` checks `navigator.maxTouchPoints > 0`. On desktop browsers this returns `false` and no touch UI is created.
+
 ### Data-Driven Design
 Pokémon stats, moves, items, encounter tables, and trainer rosters are defined as static TypeScript objects in `src/data/`. No game logic lives in data files. This makes balancing easy and lets Copilot autocomplete data entries.
 

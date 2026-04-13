@@ -13,9 +13,10 @@ All notable changes to the Pokemon Web project.
 
 ### Added
 - **Comprehensive storyline bible** (`docs/storyline.md`): Full narrative document with 4-act structure, detailed character profiles (Kael, Marina, Rook, Aldric, Dr. Vex, Zara Lux), 8 Gym Leaders, Elite Four, 12 side quests with rewards, NPC interaction tables for every town, post-game content (Shattered Isles, legendaries, Father's Trail quest), and dialogue tone guide.
+- **Phase 4.5 asset plan** in `docs/plan.md`: 42 new tile types (IDs 68–109) across 10 biome sets (Coastal, Volcanic, Mine, Industrial, Forest, Electric, Ghost/Ruin, Dragon, Collective HQ, League); 24 battle backgrounds; 19 NPC sprites; 20 music tracks — all mapped to specific phases and locations.
 
 ### Changed
-- **Updated development plan** (`docs/plan.md`): Expanded storyline summary with character list and side quest references; updated Phase 3.6 (6 Kael encounters + 4 Marina encounters), Phase 3.7 (12 side quests); expanded Phase 5 with new towns (Verdantia Village, Voltara City), boss battles, and NPC quests; rewrote Phase 8 with full Act 3/4/post-game breakdown.
+- **Updated development plan** (`docs/plan.md`): Added new Phase 4.5 (Art Assets & Tileset Expansion) with complete tile, background, sprite, and music inventories; expanded storyline summary with character list and side quest references; updated Phase 3.6 (6 Kael encounters + 4 Marina encounters), Phase 3.7 (12 side quests); expanded Phase 5 with per-map tile and asset requirements; rewrote Phase 8 with full Act 3/4/post-game breakdown and asset lists.
 
 ## [2026-04-12]
 ### Fixed
