@@ -12,7 +12,8 @@ All notable changes to the Pokemon Web project.
 - **Mobile DOM controls below canvas**: On portrait mobile, the game canvas now anchors to the top of the screen and a dedicated touch-controls bar appears in the previously-black space below. Includes a floating virtual joystick (left zone) and A/B action buttons (right side).
 - **Adaptive layout**: Controls automatically switch between the below-canvas DOM bar (portrait, >100 px of space) and the existing in-canvas overlay (landscape or desktop). Responds to orientation changes and window resize.
 
-### Changed
+### Fixed
+- **NPC/Trainer facing sprites**: NPCs and trainers now display the correct sprite frame matching their `facing` direction on spawn and when turning. Previously all NPCs showed the default frame regardless of facing direction, so trainers with line-of-sight checks appeared to look the wrong way.
 - **Mobile canvas centering**: Switched from `CENTER_BOTH` to `CENTER_HORIZONTALLY` on touch devices so the canvas sits at the top of the viewport, maximizing the area available for controls.
 
 ### Fixed

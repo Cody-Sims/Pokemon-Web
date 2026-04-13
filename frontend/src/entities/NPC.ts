@@ -23,12 +23,24 @@ export class NPC extends Phaser.GameObjects.Sprite {
     this.npcId = npcId;
     this.dialogue = dialogue;
     this.facing = facing;
+    this.setDirectionFrame(facing);
   }
 
   /** Turn to face a direction (e.g., face the player during dialogue). */
   faceDirection(dir: Direction): void {
     this.facing = dir;
-    // TODO: Update animation frame based on direction
+    this.setDirectionFrame(dir);
+  }
+
+  /** Set the sprite frame matching a cardinal direction. */
+  private setDirectionFrame(dir: Direction): void {
+    const frame = `walk-${dir}-0`;
+    if (this.scene.textures.exists(this.texture.key)) {
+      const tex = this.scene.textures.get(this.texture.key);
+      if (tex.has(frame)) {
+        this.setFrame(frame);
+      }
+    }
   }
 
   /** Get the opposite direction for face-to-face interaction. */
