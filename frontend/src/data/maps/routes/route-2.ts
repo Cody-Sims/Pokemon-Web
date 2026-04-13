@@ -8,14 +8,14 @@ const route2Ground = parseMap([
   'T.GGGGG..PP..GGGGG.T', // 2  dense grass both sides
   'T.GGGGG..PP..GGGGG.T', // 3  contiguous meadow
   'T..GGG...PP...GGG..T', // 4  tapers toward path
-  // ═══ CRYSTAL CAVERN: proper cave entrance ═══
-  'T........PP....^^^^T', // 5  cliff face wall begins
-  'T....PPPPPP...^^^^^T', // 6  path branches east to cave
-  'T....PP..~~..^^,,,,T', // 7  rocks lead to cave floor
-  'T....PP..~~.^^^,,,,T', // 8  cave entrance mouth
-  'T....PP..~~.^^^,,,,T', // 9  cave entrance mouth
-  'T....PP.....^^,,,,;T', // 10 deep cave corner
-  'T....PPPPPPPP.^^^..T', // 11 path reconnects, cliff ends
+  // ═══ CRYSTAL CAVERN: cliff wall with cave mouth ═══
+  'T........PP..^^^^^^T', // 5  solid cliff wall forms east
+  'T....PPPPPP..^^^^^^T', // 6  path forks east to cliff
+  'T....PP.....^^^,,,,T', // 7  cliff opens to cave floor
+  'T....PP.....^^,,,,,T', // 8  wide cave mouth (warp here)
+  'T....PP.....^^,,,,,T', // 9  cave entrance continues
+  'T....PP.....^^^,,,,T', // 10 cliff closes back in
+  'T....PPPPPPPP.^^^^.T', // 11 path reconnects, cliff tapers
   // ═══ MARINA CLEARING: open rival battle area ═══
   'T........PP........T', // 12
   'T..ff....PP....ff..T', // 13 flowers frame the clearing
@@ -34,8 +34,8 @@ const route2Ground = parseMap([
   'T........PP........T', // 25
   'T........PP........T', // 26
   'T........PP........T', // 27
-  'T..FF....PP....FF..T', // 28 Viridian City boundary fence
-  'TTTTTTT.PP.TTTTTTTTT', // 29 south exit to Viridian City
+  'TFFFFFFF.PP.FFFFFFFT', // 28 fence border to Viridian City
+  'TFFFFFFF.PP.FFFFFFFT', // 29 south exit to Viridian City
 ]);
 
 export const route2: MapDefinition = {
