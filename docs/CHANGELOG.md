@@ -5,6 +5,13 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-12]
+### Added
+- **Phase 3.5 — Crystal Cavern dungeon**: New 20×30 cave map (`crystal-cavern.ts`) off Route 2 east side with cave floor/wall/boulder tiles, 3 hiker trainers, 2 item pickups, encounter table (Zubat, Geodude, Paras, Clefairy, Onix, Diglett, Cubone). Route 2 updated with cave entrance warp + cliff tiles + sign NPC.
+- **Phase 3.6 — Rival encounters**: 6 Kael trainer entries (`rival-1`–`rival-6`) with escalating teams Lv 5→65. 2 Marina entries (`marina-1`, `marina-4`). 3 Synthesis grunt entries. Replaces old "Blue" rival.
+- **Phase 3.7 — Quest system**: `QuestManager` singleton + `quest-data.ts` with 5 quest definitions (Lost Delivery, Collector's Challenge, Lost Pokémon, Mine Clearance, Berry Farming). Multi-step progression tracked via `GameManager.flags`.
+- **Phase 3.7 — Quest NPCs**: Pip (Pallet Town), Magnus (Viridian City), Jerome (Pewter City), delivery receivers, lost Geodude in forest. Story NPCs: Rook warning + Synthesis sensor device in Viridian Forest.
+- **Tests**: 12 new quest manager + data integrity tests. Total: 1402 passing.
+
 ### Fixed
 - **Can't enter Oak's Lab**: Lab door 'E' in Pallet Town was at col 12 but warp expected col 11. Fixed lab door row to place E at col 11. Also fixed row 3 (walls+windows) which was 27 chars instead of 25 due to window char insertion error.
 - **Player renders above tall grass**: Added `FOREGROUND_TILES` set for tiles that should render ABOVE the player (depth 2). Tall grass, trees, dense trees, and biome tree variants now draw in front of the player sprite, creating the classic Pokemon "walking through grass" visual.

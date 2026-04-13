@@ -10,9 +10,9 @@ const route2Ground = parseMap([
   'T........PP........T', // 5
   'T....PPPPPPPPPP....T', // 6
   'T....PP............T', // 7
-  'T....PP....GGG.....T', // 8
-  'T....PP....GGG.....T', // 9
-  'T....PP............T', // 10
+  'T....PP....GGG..^,,T', // 8  cave entrance east
+  'T....PP....GGG..^,,T', // 9
+  'T....PP.........^..T', // 10
   'T....PPPPPPPPPP....T', // 11
   'T........PP........T', // 12
   'T..GG....PP....GG..T', // 13
@@ -60,6 +60,14 @@ export const route2: MapDefinition = {
         'Watch out for Bug Catchers in there.',
       ],
     },
+    {
+      id: 'route2-cavern-sign',
+      tileX: 16,
+      tileY: 10,
+      textureKey: 'generic-trainer',
+      facing: 'up',
+      dialogue: ['CRYSTAL CAVERN →', 'Caution: Strong Pokémon dwell within!'],
+    },
   ],
   trainers: [],
   warps: [
@@ -69,10 +77,14 @@ export const route2: MapDefinition = {
     // North exit → Viridian Forest
     { tileX: 8, tileY: 0, targetMap: 'viridian-forest', targetSpawnId: 'from-route-2' },
     { tileX: 9, tileY: 0, targetMap: 'viridian-forest', targetSpawnId: 'from-route-2' },
+    // East cave entrance → Crystal Cavern
+    { tileX: 18, tileY: 8, targetMap: 'crystal-cavern', targetSpawnId: 'from-route-2' },
+    { tileX: 18, tileY: 9, targetMap: 'crystal-cavern', targetSpawnId: 'from-route-2' },
   ],
   spawnPoints: {
     'default':        { x: 9, y: 15, direction: 'up' },
     'from-viridian':  { x: 9, y: 28, direction: 'up' },
     'from-forest':    { x: 9, y: 1,  direction: 'down' },
+    'from-cavern':    { x: 17, y: 9,  direction: 'left' },
   },
 };

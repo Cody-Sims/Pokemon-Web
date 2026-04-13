@@ -114,7 +114,8 @@ pokemon-web/
 │       │   │   ├── viridian-pokemart.ts    # Interior: Viridian PokéMart (parcel quest)
 │       │   │   ├── pewter-pokecenter.ts    # Interior: Pewter PokéCenter (heal)
 │       │   │   ├── pewter-gym.ts           # Interior: Pewter Gym (Brock battle)
-│       │   │   └── pewter-museum.ts        # Interior: Pewter Museum of Science
+│       │   │   ├── pewter-museum.ts        # Interior: Pewter Museum of Science
+│       │   │   └── crystal-cavern.ts       # Dungeon: Crystal Cavern (off Route 2)
 │       │   ├── moves/                 # Per-type move definitions
 │       │   │   ├── index.ts           # Re-exports combined moveData record
 │       │   │   ├── normal.ts          # Normal-type moves (~70)
@@ -152,9 +153,10 @@ pokemon-web/
 │       │   │   └── fairy.ts           # Fairy-type Pokemon (2)
 │       │   ├── type-chart.ts          # 18×18 type effectiveness matrix
 │       │   ├── item-data.ts           # ~20 items (potions, balls, key items)
-│       │   ├── trainer-data.ts        # Trainer rosters, dialogue, rewards
+│       │   ├── trainer-data.ts        # Trainer rosters, dialogue, rewards (rival, gym, grunts)
 │       │   ├── encounter-tables.ts    # Per-route wild Pokémon + level ranges
-│       │   └── evolution-data.ts      # Evolution conditions (level, item, trade)
+│       │   ├── evolution-data.ts      # Evolution conditions (level, item, trade)
+│       │   └── quest-data.ts          # Side quest definitions (steps, flags, rewards)
 │       │
 │       ├── managers/                   # Singleton service classes
 │       │   ├── GameManager.ts         # Central state: party, bag, badges, flags
@@ -162,7 +164,8 @@ pokemon-web/
 │       │   ├── SaveManager.ts         # Serialize/deserialize to localStorage
 │       │   ├── EventManager.ts        # Custom event bus for cross-scene comms
 │       │   ├── DialogueManager.ts     # Dialogue queue management
-│       │   └── TransitionManager.ts   # Screen fade helpers
+│       │   ├── TransitionManager.ts   # Screen fade helpers
+│       │   └── QuestManager.ts        # Quest progress tracking via GameManager flags
 │       │
 │       ├── systems/                    # Reusable gameplay systems
 │       │   ├── GridMovement.ts        # Grid-locked tween movement engine

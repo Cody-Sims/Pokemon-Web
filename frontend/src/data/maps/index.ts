@@ -31,6 +31,8 @@ import { viridianPokemart } from './viridian-pokemart';
 import { pewterPokecenter } from './pewter-pokecenter';
 import { pewterGym } from './pewter-gym';
 import { pewterMuseum } from './pewter-museum';
+// Dungeons
+import { crystalCavern } from './crystal-cavern';
 
 export const mapRegistry: Record<string, MapDefinition> = {
   'pallet-town': palletTown,
@@ -48,4 +50,6 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'pewter-pokecenter': pewterPokecenter,
   'pewter-gym': pewterGym,
   'pewter-museum': pewterMuseum,
+  // Dungeons
+  'crystal-cavern': crystalCavern,
 };

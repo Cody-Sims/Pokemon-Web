@@ -59,6 +59,56 @@ export const viridianForest: MapDefinition = {
       facing: 'down',
       dialogue: ['VIRIDIAN FOREST', 'Watch your step — Bug Pokémon everywhere!'],
     },
+    // ─── Quest NPC: Jerome's Lost Geodude ───
+    {
+      id: 'forest-lost-geodude',
+      tileX: 18,
+      tileY: 22,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      dialogue: [
+        'The Geodude looks confused but happy to see you!',
+        'It seems like it wants to go home.',
+        'You should tell Jerome in Pewter City!',
+      ],
+      requireFlag: 'quest_lostPokemon_started',
+      setsFlag: 'quest_lostPokemon_found',
+      flagDialogue: [
+        {
+          flag: 'quest_lostPokemon_found',
+          dialogue: ['The Geodude is waiting patiently for Jerome to pick it up.'],
+        },
+      ],
+    },
+    // ─── Story NPC: Rook's first forest appearance ───
+    {
+      id: 'forest-rook-warning',
+      tileX: 4,
+      tileY: 14,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      dialogue: [
+        '???: ...',
+        '???: Watch yourself deeper in.',
+        '???: I\'ve seen people in white coats setting up equipment.',
+        '???: Stay sharp, kid.',
+      ],
+      requireFlag: 'receivedStarter',
+    },
+    // ─── Story NPC: Synthesis sensor device ───
+    {
+      id: 'forest-synthesis-device',
+      tileX: 20,
+      tileY: 8,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      dialogue: [
+        'There\'s a strange device implanted in this tree...',
+        'It hums with a faint teal glow.',
+        'It seems to be measuring something in the ground.',
+      ],
+      setsFlag: 'found_synthesis_sensor',
+    },
   ],
   trainers: [
     {

@@ -76,6 +76,64 @@ export const viridianCity: MapDefinition = {
       facing: 'down',
       dialogue: ['Route 2 is just north of here.', 'Viridian Forest is beyond that!'],
     },
+    // ─── Quest NPC: Collector Magnus ───
+    {
+      id: 'viridian-magnus',
+      tileX: 24,
+      tileY: 15,
+      textureKey: 'generic-trainer',
+      facing: 'left',
+      dialogue: [
+        'Magnus: I\'m a Pokémon Collector! I travel the world to see rare species.',
+        'Magnus: Would you show me different types of Pokémon?',
+        'Magnus: I want to see a Water-type, a Fire-type, and a Flying-type.',
+        'Magnus: Show them to me and I\'ll reward you handsomely!',
+      ],
+      setsFlag: 'quest_collector_started',
+      flagDialogue: [
+        {
+          flag: 'quest_collector_complete',
+          dialogue: [
+            'Magnus: What a magnificent collection you\'ve shown me!',
+            'Magnus: You have a real gift for finding Pokémon.',
+            'Magnus: Here — take this. It\'s called Leftovers.',
+            'Magnus: Your Pokémon will love it!',
+          ],
+        },
+        {
+          flag: 'quest_collector_started',
+          dialogue: [
+            'Magnus: Still looking for those Pokémon?',
+            'Magnus: I need to see a Water-type, Fire-type, and Flying-type.',
+            'Magnus: Keep searching!',
+          ],
+        },
+      ],
+    },
+    // ─── Delivery quest receiver ───
+    {
+      id: 'viridian-delivery-npc',
+      tileX: 22,
+      tileY: 20,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      dialogue: ['Just a regular citizen here...'],
+      flagDialogue: [
+        {
+          flag: 'quest_lostDelivery_viridian',
+          dialogue: ['Thanks for the package! Pip is doing good work.'],
+        },
+        {
+          flag: 'quest_lostDelivery_started',
+          dialogue: [
+            'Oh! Is that a package from Pip?',
+            'I\'ve been waiting for this. Thank you!',
+          ],
+        },
+      ],
+      requireFlag: 'quest_lostDelivery_started',
+      setsFlag: 'quest_lostDelivery_viridian',
+    },
   ],
   trainers: [],
   warps: [

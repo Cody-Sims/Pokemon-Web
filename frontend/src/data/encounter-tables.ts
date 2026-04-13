@@ -21,6 +21,15 @@ export const encounterTables: Record<string, EncounterEntry[]> = {
     { pokemonId: 25, levelRange: [3, 5], weight: 5 },   // Pikachu (rare)
     { pokemonId: 16, levelRange: [4, 6], weight: 15 },  // Pidgey
   ],
+  'crystal-cavern': [
+    { pokemonId: 41, levelRange: [8, 12], weight: 30 },  // Zubat
+    { pokemonId: 74, levelRange: [8, 12], weight: 25 },  // Geodude
+    { pokemonId: 46, levelRange: [8, 11], weight: 15 },  // Paras
+    { pokemonId: 35, levelRange: [9, 12], weight: 10 },  // Clefairy (uncommon)
+    { pokemonId: 95, levelRange: [10, 13], weight: 5 },  // Onix (rare)
+    { pokemonId: 50, levelRange: [9, 12], weight: 10 },  // Diglett
+    { pokemonId: 104, levelRange: [9, 11], weight: 5 },  // Cubone (rare)
+  ],
 };
 
 /** Fishing encounter tables: per-route + per-rod tier. */

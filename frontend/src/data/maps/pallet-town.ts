@@ -62,6 +62,41 @@ export const palletTown: MapDefinition = {
       facing: 'down',
       dialogue: ['OAK POKÉMON RESEARCH LAB'],
     },
+    // ─── Quest NPC: Delivery Girl Pip ───
+    {
+      id: 'pallet-pip',
+      tileX: 3,
+      tileY: 14,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      dialogue: [
+        'Pip: Oh! You\'re a trainer? Perfect!',
+        'Pip: I have packages that need delivering to Viridian City and Pewter City.',
+        'Pip: I\'d go myself but... well, wild Pokémon scare me!',
+        'Pip: Could you help? I\'ll make it worth your while!',
+      ],
+      setsFlag: 'quest_lostDelivery_started',
+      flagDialogue: [
+        {
+          flag: 'quest_lostDelivery_complete',
+          dialogue: [
+            'Pip: You delivered everything? Thank you so much!',
+            'Pip: Here — take this as a reward!',
+            'Pip: ...Between you and me, those packages were supplies',
+            'Pip: for people fighting against the Synthesis Collective.',
+          ],
+        },
+        {
+          flag: 'quest_lostDelivery_started',
+          dialogue: [
+            'Pip: Still working on those deliveries?',
+            'Pip: One package goes to the PokéMart in Viridian City,',
+            'Pip: and one goes to the Museum in Pewter City.',
+            'Pip: Come back when you\'ve delivered them both!',
+          ],
+        },
+      ],
+    },
   ],
   trainers: [],
   warps: [

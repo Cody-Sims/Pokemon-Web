@@ -72,6 +72,64 @@ export const pewterCity: MapDefinition = {
         'They have fossils of ancient Pokémon!',
       ],
     },
+    // ─── Quest NPC: Hiker Jerome (Lost Pokémon quest) ───
+    {
+      id: 'pewter-jerome',
+      tileX: 18,
+      tileY: 14,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      dialogue: [
+        'Jerome: Oh no, oh no... my Geodude!',
+        'Jerome: We were hiking near Viridian Forest and it wandered off!',
+        'Jerome: Could you look for it? It\'s a friendly little Geodude.',
+        'Jerome: Please, I\'m too worried to go into the forest myself!',
+      ],
+      setsFlag: 'quest_lostPokemon_started',
+      flagDialogue: [
+        {
+          flag: 'quest_lostPokemon_complete',
+          dialogue: [
+            'Jerome: My Geodude! You found it! Thank you so much!',
+            'Jerome: Here — I want you to have this. It\'s a rare TM.',
+            'Jerome: You\'re a true friend to Pokémon!',
+          ],
+        },
+        {
+          flag: 'quest_lostPokemon_started',
+          dialogue: [
+            'Jerome: Have you found my Geodude yet?',
+            'Jerome: It should be somewhere in Viridian Forest...',
+            'Jerome: Look in the deeper parts of the forest!',
+          ],
+        },
+      ],
+    },
+    // ─── Delivery quest receiver ───
+    {
+      id: 'pewter-delivery-npc',
+      tileX: 8,
+      tileY: 20,
+      textureKey: 'generic-trainer',
+      facing: 'right',
+      dialogue: ['I work at the museum. Fascinating place!'],
+      flagDialogue: [
+        {
+          flag: 'quest_lostDelivery_pewter',
+          dialogue: ['Thank you for the delivery! This will help our research.'],
+        },
+        {
+          flag: 'quest_lostDelivery_started',
+          dialogue: [
+            'A package from Pip? Wonderful!',
+            'These are the supplies we\'ve been waiting for.',
+            'Thank you for bringing them!',
+          ],
+        },
+      ],
+      requireFlag: 'quest_lostDelivery_started',
+      setsFlag: 'quest_lostDelivery_pewter',
+    },
   ],
   trainers: [],
   warps: [
