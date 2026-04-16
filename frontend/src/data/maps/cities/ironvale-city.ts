@@ -94,6 +94,10 @@ export const ironvaleCity: MapDefinition = {
         },
       ],
     },
+    // Move Tutor
+    { id: 'tutor-ironvale', tileX: 8, tileY: 15, textureKey: 'npc-hiker', facing: 'right',
+      dialogue: ['Punch Tutor: I teach the elemental punches and more!', 'Punch Tutor: For a small fee, of course.'],
+      interactionType: 'move-tutor', interactionData: 'tutor-ironvale' },
     // Aldric hologram (story event)
     {
       id: 'ironvale-hologram',

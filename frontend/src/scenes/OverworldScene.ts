@@ -13,7 +13,8 @@ import { GameClock } from '@systems/GameClock';
 import { WeatherRenderer } from '@systems/WeatherRenderer';
 import { TransitionManager } from '@managers/TransitionManager';
 import { PokemonInstance, SaveData } from '@data/interfaces';
-import { trainerData } from '@data/trainer-data';\nimport { pokemonData } from '@data/pokemon';
+import { trainerData } from '@data/trainer-data';
+import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
 import {
   mapRegistry,
@@ -436,6 +437,15 @@ export class OverworldScene extends Phaser.Scene {
     const steps = gm.incrementStepCount();
     if (steps % 128 === 0 && gm.getParty().length > 0) {
       gm.adjustFriendship(0, 1);
+    }
+
+    // Terrain-based footstep SFX
+    const currentTile = this.mapDef.ground[ty]?.[tx];
+    if (currentTile !== undefined) {
+      const footstepKey = this.getFootstepSFX(currentTile);
+      if (footstepKey) {
+        AudioManager.getInstance().playSFX(footstepKey);
+      }
     }
 
     // Disembark surf when stepping onto a non-water tile

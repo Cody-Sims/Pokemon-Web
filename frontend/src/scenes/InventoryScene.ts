@@ -8,6 +8,7 @@ import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { MenuController } from '@ui/MenuController';
 import { COLORS, FONTS, SPACING, mobileFontSize, isMobile } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
+import { tmData } from '@data/tm-data';
 import type { ItemData } from '@data/interfaces';
 
 type ItemCategory = 'medicine' | 'pokeball' | 'battle' | 'key' | 'tm';
@@ -265,7 +266,8 @@ export class InventoryScene extends Phaser.Scene {
 
     const entry = this.filteredItems[idx];
     const isKey = entry.item.category === 'key';
-    const actions = isKey ? ['Cancel'] : ['USE', 'TOSS', 'Cancel'];
+    const isTm = entry.item.category === 'tm';
+    const actions = isKey ? ['Cancel'] : isTm ? ['USE', 'Cancel'] : ['USE', 'TOSS', 'Cancel'];
 
     this.actionPanel = new NinePatchPanel(this, 200, GAME_HEIGHT / 2, 140, actions.length * 34 + 16, {
       fillColor: 0x0a0a18,
@@ -313,6 +315,29 @@ export class InventoryScene extends Phaser.Scene {
   private useItem(idx: number): void {
     const entry = this.filteredItems[idx];
     const eff = entry.item.effect;
+
+    // TM items — launch MoveTutorScene in TM mode
+    if (eff.type === 'teach-move' && eff.moveId) {
+      this.scene.pause();
+      this.scene.launch('MoveTutorScene', { tmMode: true, tmMoveId: eff.moveId });
+      this.scene.get('MoveTutorScene').events.once('shutdown', () => {
+        this.scene.resume();
+      });
+      return;
+    }
+
+    // Also support TM items by category check (fallback for items using tmData)
+    if (entry.item.category === 'tm') {
+      const tm = tmData[entry.item.id];
+      if (tm) {
+        this.scene.pause();
+        this.scene.launch('MoveTutorScene', { tmMode: true, tmMoveId: tm.moveId });
+        this.scene.get('MoveTutorScene').events.once('shutdown', () => {
+          this.scene.resume();
+        });
+        return;
+      }
+    }
 
     if (eff.type === 'heal-hp' || eff.type === 'heal-status') {
       this.openTargetPicker(idx);

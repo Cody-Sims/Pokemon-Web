@@ -19,6 +19,9 @@ export const pokemonLeague: MapDefinition = {
   encounterTableKey: '', isInterior: true, battleBg: 'bg-league',
   displayName: 'Pokémon League',
   npcs: [
+    { id: 'tutor-league', tileX: 7, tileY: 8, textureKey: 'npc-male-4', facing: 'left',
+      dialogue: ['League Tutor: Only the strongest moves are taught here.', 'League Tutor: Are you ready to pay the price?'],
+      interactionType: 'move-tutor', interactionData: 'tutor-league' },
     { id: 'league-guide', tileX: 5, tileY: 8, textureKey: 'npc-male-4', facing: 'up',
       dialogue: ['Welcome to the Pokémon League!',
         'Beyond this hall lie the Elite Four and the Champion.',

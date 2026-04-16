@@ -19,6 +19,7 @@ import { PokedexScene } from '@scenes/PokedexScene';
 import { IntroScene } from '@scenes/IntroScene';
 import { QuestJournalScene } from '@scenes/QuestJournalScene';
 import { QuestTrackerScene } from '@scenes/QuestTrackerScene';
+import { MoveTutorScene } from '@scenes/MoveTutorScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
 const isMobile = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
@@ -60,5 +61,6 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     IntroScene,
     QuestJournalScene,
     QuestTrackerScene,
+    MoveTutorScene,
   ],
 };

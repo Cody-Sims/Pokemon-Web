@@ -5,6 +5,16 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
+### Added — Move Tutor Scene & TM Usage from Inventory
+- **MoveTutorScene** (`frontend/src/scenes/MoveTutorScene.ts`): full interactive scene for Move Tutors with move list (type dots, PP, power, cost), party selection filtered by `canLearnMove()`, move replacement UI for Pokémon with 4 moves, and cost deduction (money or Heart Scales).
+- **5 Move Tutor NPCs** added to city maps: Verdantia Village, Ironvale City, Scalecrest Citadel, Wraithmoor Town, Pokémon League. Each uses `interactionType: 'move-tutor'` with `interactionData` linking to `moveTutorData`.
+- **TM usage from InventoryScene**: selecting USE on a TM item launches `MoveTutorScene` in TM mode — shows eligible party Pokémon, handles move replacement, TMs are reusable (not consumed). TM action menu shows USE/Cancel (no TOSS).
+- **Heart Scale** item added to `item-data.ts` as a key item for Move Tutor payments.
+- **NpcSpawn** interface extended with `interactionData?: string` field and `'move-tutor'` interaction type.
+- **OverworldScene** wired to launch `MoveTutorScene` with dialogue → tutor flow for move-tutor NPCs.
+- Registered `MoveTutorScene` in `game-config.ts` scene array.
+
+## [2026-04-16]
 ### Added — Synthesis Mode UI & Double Battle Scene
 - **Synthesis Bracelet** key item added to `item-data.ts`. Required to activate Synthesis Mode in battle.
 - **SYNTH button** in `BattleUIScene`: appears in the action menu when the player has the Synthesis Bracelet, hasn't used synthesis this battle, and the active Pokémon is eligible. Activates synthesis with a camera flash, displays boost messages, then auto-opens the FIGHT menu.
