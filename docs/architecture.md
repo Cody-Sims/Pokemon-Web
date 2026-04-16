@@ -78,7 +78,9 @@ pokemon-web/
 │       │   ├── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
 │       │   ├── PokedexScene.ts         # Pokédex species browser (seen/caught)
 │       │   ├── QuestJournalScene.ts    # Quest log — Active/Complete tabs, step list, detail panel
-│       │   └── QuestTrackerScene.ts    # HUD overlay — active quest step in top-right corner
+│       │   ├── QuestTrackerScene.ts    # HUD overlay — active quest step in top-right corner
+│       │   ├── TrainerCardScene.ts     # Trainer card display (name, badges, Pokédex, playtime, money)
+│       │   └── VoltorbFlipScene.ts     # Voltorb Flip mini-game (5×5 card-flipping number game)
 │       │
 │       ├── entities/                   # Game object classes
 │       │   ├── Player.ts              # Grid-locked sprite + GridMovement
@@ -188,7 +190,9 @@ pokemon-web/
 │       │   ├── InputManager.ts        # Unified WASD/Arrow/touch → direction
 │       │   ├── AnimationHelper.ts     # Registers shared sprite animations
 │       │   ├── MapPreloader.ts        # Proximity-based Pokémon sprite preloader
-│       │   └── OverworldAbilities.ts  # Field moves (Cut, Surf, Strength, Flash, Fly, Rock Smash)
+│       │   ├── OverworldAbilities.ts  # Field moves (Cut, Surf, Strength, Flash, Fly, Rock Smash)
+│       │   ├── BerryGarden.ts         # Berry planting/watering/harvesting system (GameClock-based growth)
+│       │   └── HiddenItems.ts         # Hidden item locations + Itemfinder scanning
 │       │
 │       ├── ui/                         # Reusable UI components
 │       │   ├── theme.ts               # Shared colors, fonts, spacing, mobile scaling helpers

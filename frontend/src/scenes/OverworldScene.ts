@@ -37,6 +37,8 @@ import { LightingSystem } from '@systems/LightingSystem';
 import { AmbientSFX } from '@systems/AmbientSFX';
 import { CutsceneEngine } from '@systems/CutsceneEngine';
 import { cutsceneData } from '@data/cutscene-data';
+import { AchievementManager } from '@managers/AchievementManager';
+import { AchievementToast } from '@ui/AchievementToast';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
@@ -987,6 +989,7 @@ export class OverworldScene extends Phaser.Scene {
       if (pokemon) {
         gm.markSeen(pokemon.dataId);
         this.scene.resume();
+        AchievementManager.getInstance().unlock('fish-catch');
         this.triggerWildEncounter(pokemon);
       } else {
         this.scene.launch('DialogueScene', { dialogue: ['Not even a nibble...'] });

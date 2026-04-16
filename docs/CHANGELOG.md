@@ -4,8 +4,32 @@ All notable changes to the Pokemon Web project.
 
 ---
 
-## [2026-04-17]
-### Added — Pokémon Personality & Bond System
+## [2026-04-16]
+### Added — Phase 19: World Enrichment & Side Activities
+- **Berry Growing System** (`frontend/src/systems/BerryGarden.ts`): plantable berry plots on maps with `berryPlots` count in `MapDefinition`. Growth stages: empty → planted → growing → ready. Watering speeds growth by 50%. Harvest yields 2-4 berries. Uses `GameClock` time. Berry plot data persists via GameManager serialization.
+- **BERRY_SOIL tile** (ID 115): new walkable/interactable tile type in `shared.ts` with color, overlay base, and OverworldScene interaction handler (plant/water/harvest dialogue flows).
+- **Trainer Card Scene** (`frontend/src/scenes/TrainerCardScene.ts`): displays player name, trainer ID, difficulty mode, 8 badge slots, Pokédex seen/caught counts, playtime, money, and player sprite. Accessible from pause menu as "TRAINER CARD" option.
+- **Hidden Items System** (`frontend/src/systems/HiddenItems.ts`): 16 hidden items placed across routes, forests, caves, and cities. Each has a collection flag. Tile interaction in OverworldScene checks for uncollected hidden items on interaction.
+- **Itemfinder key item**: press F in the overworld to scan a 5-tile radius for hidden items. Shows "! Item nearby!" popup with SFX or "No reaction..." if none found.
+- **Voltorb Flip Mini-game** (`frontend/src/scenes/VoltorbFlipScene.ts`): 5×5 card-flipping number game with Voltorbs (bombs). Row/column hints show sum + Voltorb count. Progressive levels. Coin rewards added to player money. Accessible via Game Corner NPC in Voltara City.
+- **Game Corner NPC** in Voltara City: new `voltara-game-corner` NPC at (18, 11) with `voltorb-flip` interaction type.
+- **New items in item-data.ts**: `rare-candy`, `max-potion`, `pearl`, `nugget`, `iron`, `pp-up`, `max-elixir`, `dusk-stone`, `itemfinder`.
+- Registered `TrainerCardScene` and `VoltorbFlipScene` in `game-config.ts`.
+- Added "TRAINER CARD" menu option to `MenuScene` pause menu (between QUESTS and SAVE).
+- Berry plots and trainer ID persist through GameManager serialize/deserialize.
+
+## [2026-04-17]### Added — Tag-Battle System & Berry Mechanics (Phase 9)
+- **Tag-battle wiring for Ironvale City**: Kael NPC (`ironvale-kael`) now initiates a 2v2 tag battle (player + Kael vs 2 Synthesis Grunts) when interacted with, gated by `found_mines_terminal` flag. Uses `DoubleBattleManager` tag-battle path with ally party from `rival-3` trainer data.
+- **Two new Ironvale Synthesis Grunts** in `trainer-data.ts`: `synthesis-grunt-ironvale-1` (Weezing Lv26 + Golbat Lv25) and `synthesis-grunt-ironvale-2` (Arbok Lv26 + Muk Lv25). Combined enemy party for the tag battle.
+- **`victoryFlag` system**: BattleScene accepts optional `victoryFlag` string; BattleUIScene sets the flag on victory. Used by tag battle to set `ironvale_tag_battle_won`.
+- **Ally party support in BattleScene**: `setupDoubleBattle` now accepts `allyParty` data passed through transition, placing the ally's lead Pokémon in the second player slot.
+- **Three new NPC interaction types** in `NpcSpawn`: `'tag-battle'`, `'show-pokemon'`, `'wild-encounter'`.
+- **"Show Pokémon" interaction**: Collector Magnus in Viridian City now opens PartyScene for Pokémon type-checking against quest requirements (Water, Fire, Flying). Sets corresponding `quest_collector_*` flags on match.
+- **Wild encounter from NPC interaction**: Lost Geodude in Viridian Forest (`forest-lost-geodude`) now triggers a wild battle with Geodude Lv25 after dialogue, in addition to setting `quest_lostPokemon_found`.
+- **Sitrus Berry manual use fixed**: Changed `amount` from 0 to -25 (percentage-based). InventoryScene now interprets negative heal amounts as percentage of max HP.
+- **Berry item effects verified**: All 8 berries (Oran, Sitrus, Cheri, Chesto, Pecha, Rawst, Aspear, Lum) have correct `heal-hp` or `heal-status` effects for manual use from inventory.
+
+## [2026-04-16]### Added — Pokémon Personality & Bond System
 - **Friendship gameplay logic**: `adjustFriendship(pokemonIndex, amount)` in `GameManager` clamps friendship to [0, 255]. Friendship changes: battle win +3, faint -1, heal at PokéCenter +1, every 128 walking steps +1 to lead Pokémon (level-up +2/3/5 already existed via `ExperienceCalculator`).
 - **Friendship battle effects**: 10% chance to survive a KO at 1 HP when friendship ≥ 220 ("hung on with love!"). 10% chance to cure a status condition at end of turn when friendship ≥ 220 ("shook off [status] with sheer determination!").
 - **Nickname system**: After catching a Pokémon, player is prompted "Give a nickname?". YES opens `NicknameScene` with keyboard input (letters/numbers/spaces/hyphens, max 12 chars, DONE/SKIP buttons, blinking cursor). Nickname displays in BattleScene HP bars.
