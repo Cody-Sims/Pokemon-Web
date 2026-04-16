@@ -8,6 +8,12 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-16] (2)
+### Added
+- **Move effect integration tests**: 107 new tests covering all 18 fairy/dark/ghost moves — stat-change effects, flinch, paralysis, burn, confusion, priority, level-damage, data integrity, and status-move validation.
+
+---
+
 ## [2026-04-16]
 ### Added — Wire all 18 cutscenes to triggers + fairy/dark/ghost move expansion
 - **Map-entry cutscene system**: Added `onEnterCutscene` and `onEnterCutsceneRequireFlag` fields to `MapDefinition` interface. OverworldScene `create()` now plays cutscenes on map entry with smart flag-skip logic.
