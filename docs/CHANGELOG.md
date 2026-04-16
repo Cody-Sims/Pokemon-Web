@@ -14,6 +14,13 @@ All notable changes to the Pokemon Web project.
 - Updated all source and test imports for new directory structure
 - Updated `docs/architecture.md` directory tree and file path references
 
+### Changed — BattleUIScene extraction
+- **Extracted `BattleCatchHandler.ts`** (~210 lines): catch sequence, shake animation, success/failure, nickname prompt
+- **Extracted `BattleVictorySequence.ts`** (~260 lines): victory sequence, level-up, move learning/replacement, evolution, trainer rewards
+- Reduced `BattleUIScene.ts` from 1345 to 882 lines using context-interface delegation pattern
+- Removed dead imports (`itemData`, `EventManager`, `BGM`) from `BattleUIScene.ts`
+- Updated barrel `index.ts` with new exports
+
 ### Changed — Documentation consolidation
 - **Rewrote `docs/plan.md`**: Consolidated all completed phases into concise summaries. Merged remaining work from `storyline-implementation-plan.md`, `code-cleanup-plan.md`, and `map-improvements.md` into a single prioritized "Remaining Work" section covering map redesigns, gameplay features, content, UI, technical debt, and stretch goals.
 - **Removed 4 redundant docs**: `storyline-implementation-plan.md` (all 12 phases complete), `code-cleanup-plan.md` (all phases complete), `map-improvements.md` (consolidated into plan.md), `TestingPlan.md` (superseded by TestingArchitecture.md).

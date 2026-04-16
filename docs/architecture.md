@@ -87,6 +87,8 @@ pokemon-web/
 │       │   │   ├── BattleDamageNumbers.ts  # Floating damage numbers
 │       │   │   ├── BattleRewardHandler.ts  # Post-battle rewards
 │       │   │   ├── BattleEndOfTurn.ts      # End-of-turn effect collection
+│       │   │   ├── BattleCatchHandler.ts   # Catch sequence (shake, success/fail, nickname)
+│       │   │   ├── BattleVictorySequence.ts # Victory, level-up, evolution, trainer rewards
 │       │   │   └── index.ts               # Barrel exports
 │       │   ├── menu/
 │       │   │   ├── MenuScene.ts            # Pause menu (Pokémon, Bag, Save, etc.)
