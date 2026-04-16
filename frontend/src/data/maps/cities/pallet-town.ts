@@ -41,6 +41,7 @@ export const palletTown: MapDefinition = {
   height: 30,
   ground: palletGround,
   encounterTableKey: '',  // no wild encounters in town
+  onEnterCutscene: 'game-intro',
   npcs: [
     {
       id: 'pallet-npc-1',

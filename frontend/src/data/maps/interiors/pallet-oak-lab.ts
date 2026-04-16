@@ -103,6 +103,16 @@ export const palletOakLab: MapDefinition = {
       ],
       interactionType: 'pc',
     },
+    {
+      id: 'lab-kael-intro',
+      tileX: 8,
+      tileY: 8,
+      textureKey: 'rival',
+      facing: 'left',
+      requireFlag: '!metKael',
+      triggerCutscene: 'rival-kael-lab',
+      dialogue: ['Kael is eager to battle!'],
+    },
   ],
   trainers: [
     {

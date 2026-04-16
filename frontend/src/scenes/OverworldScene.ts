@@ -310,6 +310,29 @@ export class OverworldScene extends Phaser.Scene {
         onComplete: () => namePopup.destroy(),
       });
     }
+
+    // ── Map-entry cutscene ──
+    if (this.mapDef.onEnterCutscene && cutsceneData[this.mapDef.onEnterCutscene]) {
+      const gm = GameManager.getInstance();
+      let flagOk = true;
+      if (this.mapDef.onEnterCutsceneRequireFlag) {
+        const negate = this.mapDef.onEnterCutsceneRequireFlag.startsWith('!');
+        const flagName = negate ? this.mapDef.onEnterCutsceneRequireFlag.slice(1) : this.mapDef.onEnterCutsceneRequireFlag;
+        const flagVal = gm.getFlag(flagName);
+        flagOk = negate ? !flagVal : !!flagVal;
+      }
+      if (flagOk) {
+        const cutscene = cutsceneData[this.mapDef.onEnterCutscene];
+        const setFlagActions = cutscene.actions.filter(
+          (a): a is Extract<typeof a, { type: 'setFlag' }> => a.type === 'setFlag'
+        );
+        const alreadyPlayed = setFlagActions.length > 0 &&
+          setFlagActions.every(a => gm.getFlag(a.flag));
+        if (!alreadyPlayed) {
+          this.cutsceneEngine.play(cutscene);
+        }
+      }
+    }
   }
 
   // ── Map rendering (tileset-based) ──────────────────────────

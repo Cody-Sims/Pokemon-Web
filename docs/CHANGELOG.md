@@ -5,12 +5,20 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [Unreleased]
-### Changed — Code Architecture Cleanup (Phase 1 & 3a)
-- **OverworldScene.ts** (1270→1105 lines): Wired 5 extracted overworld helper modules (`overworld/OverworldNPCSpawner`, `OverworldFieldAbilities`, `OverworldFishing`, `OverworldHealing`, `OverworldFootsteps`). 8 methods replaced with thin delegating wrappers.
-- **BattleUIScene.ts** (1367→1345 lines): Extracted end-of-turn effect collection into `battle/BattleEndOfTurn.ts`. Added `collectEndOfTurnEffects()` pure function.
-- **trainer-data.ts** (1534→10 lines): Replaced monolithic trainer data with re-exports from `data/trainers/` split files (rival.ts, gym-leaders.ts, elite-four.ts, route-trainers.ts, team-grunts.ts).
-- **New files**: `data/trainers/index.ts`, `scenes/battle/BattleEndOfTurn.ts`.
-- **docs/code-cleanup-plan.md**: Created 7-phase code cleanup and architecture improvement plan.
+
+---
+
+## [2026-04-16]
+### Added — Wire all 18 cutscenes to triggers + fairy/dark/ghost move expansion
+- **Map-entry cutscene system**: Added `onEnterCutscene` and `onEnterCutsceneRequireFlag` fields to `MapDefinition` interface. OverworldScene `create()` now plays cutscenes on map entry with smart flag-skip logic.
+- **NPC triggerCutscene smart-skip**: Enhanced OverworldScene NPC interaction to auto-detect already-played cutscenes by checking if all `setFlag` actions are satisfied, falling through to regular dialogue.
+- **4 NPC-triggered cutscenes**: Wired `rook-reveal` (route-7), `willow-rescue` (abyssal-spire-f4), `aldric-spire-offer` (abyssal-spire-f5), `father-reunion` (shattered-isles-temple) via `triggerCutscene` property.
+- **2 additional NPC-triggered cutscenes**: Wired `ember-mines-discovery` (mines-terminal NPC) and `rival-kael-lab` (new lab-kael-intro NPC in pallet-oak-lab).
+- **4 map-entry cutscenes**: Wired `game-intro` (pallet-town), `willow-kidnapping` (verdantia-village, requires `defeatedIvy`), `champion-reveal` (pokemon-league-champion, requires `aldric_escaped_to_league`), `fathers-journal-discovery` (shattered-isles-shore, requires `quest_fatherTrail_started`).
+- **Fairy moves** (new type file): `moonblast`, `dazzling-gleam`, `play-rough`, `fairy-wind`, `disarming-voice`, `charm` — registered in moves index.
+- **Dark moves** (+6): `dark-pulse`, `crunch`, `sucker-punch`, `nasty-plot`, `pursuit`, `foul-play`.
+- **Ghost moves** (+6): `shadow-ball`, `shadow-claw`, `hex`, `phantom-force`, `will-o-wisp`, `destiny-bond`.
+- **Legendary learnsets**: Updated Solatheon (#152) with proper Psychic/Fairy STAB moves; updated Noctharion (#153) with proper Ghost/Dark STAB moves.
 
 ---
 

@@ -242,6 +242,8 @@ export const pokemonLeagueChampion: MapDefinition = {
   key: 'pokemon-league-champion', width: 14, height: 16, ground: championGround,
   encounterTableKey: '', isInterior: true, battleBg: 'bg-league',
   displayName: 'Champion\'s Chamber',
+  onEnterCutscene: 'champion-reveal',
+  onEnterCutsceneRequireFlag: 'aldric_escaped_to_league',
   npcs: [],
   trainers: [
     { id: 'champion-aldric', trainerId: 'champion-aldric', tileX: 6, tileY: 4,

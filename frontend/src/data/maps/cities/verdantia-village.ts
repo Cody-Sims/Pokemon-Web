@@ -38,6 +38,8 @@ export const verdantiaVillage: MapDefinition = {
   encounterTableKey: '',
   battleBg: 'bg-forest',
   displayName: 'Verdantia Village',
+  onEnterCutscene: 'willow-kidnapping',
+  onEnterCutsceneRequireFlag: 'defeatedIvy',
   npcs: [
     {
       id: 'verdantia-sign',

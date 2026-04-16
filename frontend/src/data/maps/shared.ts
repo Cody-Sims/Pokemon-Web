@@ -499,6 +499,10 @@ export interface MapDefinition {
   weather?: import('@systems/WeatherRenderer').OverworldWeather;
   /** Ambient sound effect type for this map. Defaults to 'none'. */
   ambientSfx?: import('@systems/AmbientSFX').AmbientType;
+  /** Cutscene to play when entering this map. Skipped if the cutscene's setFlag flags are already set. */
+  onEnterCutscene?: string;
+  /** Flag that must be set for the onEnterCutscene to trigger. Supports '!' prefix for negation. */
+  onEnterCutsceneRequireFlag?: string;
 }
 
 // ─── Helper: parse string map into number grid ───

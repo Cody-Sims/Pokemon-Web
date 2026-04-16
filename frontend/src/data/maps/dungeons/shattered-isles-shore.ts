@@ -45,6 +45,8 @@ export const shatteredIslesShore: MapDefinition = {
   encounterTableKey: 'shattered-isles-shore',
   battleBg: 'bg-ruins',
   displayName: 'Shattered Isles — Shore',
+  onEnterCutscene: 'fathers-journal-discovery',
+  onEnterCutsceneRequireFlag: 'quest_fatherTrail_started',
   npcs: [
     // ─── Rook NPC — seeking redemption ───
     {

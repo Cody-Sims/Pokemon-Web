@@ -62,6 +62,13 @@ export const emberMines: MapDefinition = {
         'The numbers are climbing rapidly.',
       ],
       setsFlag: 'found_mines_terminal',
+      triggerCutscene: 'ember-mines-discovery',
+      flagDialogue: [
+        { flag: 'found_mines_terminal', dialogue: [
+          'The terminal shows more data about Project CONVERGENCE...',
+          'The extraction rates are still climbing.',
+        ]},
+      ],
     },
     // Caged Pokémon
     {
