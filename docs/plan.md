@@ -88,7 +88,19 @@ A coastal island chain where ancient ruins dot the landscape and **Aether** flow
 > **WeatherRenderer system** (WeatherRenderer.ts): 6 weather types (rain, sandstorm, snow, fog, sunshine, none) using Phaser particle emitters with programmatic textures. Camera-fixed overlays (depth 90) with alpha-blended tint rects (depth 89) to avoid conflict with GameClock day/night. Per-map weather via `MapDefinition.weather` field. Route 6 (rain), Route 7 (fog), Ember Mines (sandstorm). **NPC Behavior system** (NPCBehavior.ts): 4 behavior types — stationary, look-around (random facing 2–5s), wander (random 1-tile moves within radius 3–8s), pace (fixed direction route 2s). `NPCBehaviorController` with timer-based actions and collision-aware movement. `NpcSpawn.behavior` field. **EmoteBubble system** (EmoteBubble.ts): 6 emote types (exclamation, question, heart, sweat, music, zzz) as styled text with pop-in/fade-out tweens. **LightingSystem** (LightingSystem.ts): RenderTexture-based darkness overlay (depth 85) with radial gradient light circles. Player light follows camera, static lights for torches. `MapDefinition.isDark` and `lightSources` fields. Crystal Cavern and Crystal Cavern Depths marked dark with torch sources. **Not yet implemented**: animated tiles (water shimmer, grass sway, lava glow), environmental SFX layer (ambient sounds, terrain footsteps), window light shafts.
 
 ### Phase 13: Player Movement & Exploration Upgrades ✓
-> **Bicycle system**: B key toggle via InputManager, 3× speed (63ms/tile via `GridMovement.setCycling()`), auto-dismount indoors, mutually exclusive with running. `bicycle` key item in item-data.ts. **Running encounter modifier**: Running increases encounter rate by 1.5× via `rateMultiplier` parameter in `EncounterSystem.checkEncounter()`. **OverworldAbilities** (OverworldAbilities.ts): 6 field abilities (Cut, Surf, Strength, Flash, Fly, Rock Smash) with badge requirements and party move checks. `canUse()`, `getUser()`, `getAvailable()` static methods. New tiles: CUT_TREE (110), CRACKED_ROCK (111), STRENGTH_BOULDER (112). Cut and Rock Smash wired into `tryInteract()` with live tile replacement. **Surfing**: `surfing` state in OverworldScene with collision override for water tiles, auto-disembark on non-water tiles. **Ledge system**: One-way directional jumps via `LEDGE_TILES` direction map. `LEDGE_LEFT` (113) and `LEDGE_RIGHT` (114) tile types. Parabolic hop animation (12px arc, 1.2× walk duration) in GridMovement with `setLedgeCheck()` callback. **Not yet implemented**: Fly fast-travel UI scene, Strength boulder-pushing logic, Flash integration with LightingSystem, cycling sprite/animation.
+> **Bicycle system**: B key toggle via InputManager, 3× speed (63ms/tile via `GridMovement.setCycling()`), auto-dismount indoors, mutually exclusive with running. `bicycle` key item in item-data.ts. **Running encounter modifier**: Running increases encounter rate by 1.5× via `rateMultiplier` parameter in `EncounterSystem.checkEncounter()`. **OverworldAbilities** (OverworldAbilities.ts): 6 field abilities (Cut, Surf, Strength, Flash, Fly, Rock Smash) with badge requirements and party move checks. `canUse()`, `getUser()`, `getAvailable()` static methods. New tiles: CUT_TREE (110), CRACKED_ROCK (111), STRENGTH_BOULDER (112). Cut and Rock Smash wired into `tryInteract()` with live tile replacement. **Surfing**: `surfing` state in OverworldScene with collision override for water tiles, auto-disembark on non-water tiles. **Ledge system**: One-way directional jumps via `LEDGE_TILES` direction map. `LEDGE_LEFT` (113) and `LEDGE_RIGHT` (114) tile types. Parabolic hop animation (12px arc, 1.2× walk duration) in GridMovement with `setLedgeCheck()` callback. **Strength boulder-pushing**: directional push with collision/bounds check, tile swap animation. **Flash integration**: auto-expands player light radius from 96px to 192px in dark caves when party knows Flash. **Not yet implemented**: Fly fast-travel UI scene, cycling sprite/animation.
+
+### Phase 15–16 Remaining UI Integration ✓
+> **Synthesis Mode UI**: SYNTH button in BattleUIScene action menu (conditional on bracelet + eligibility), camera flash on activation, pulsing cyan aura (0x00ffdd) on synthesized Pokémon sprite. Synthesis Bracelet key item added. **Double Battle Scene**: 4-Pokémon layout in BattleScene (2 per side, 3x/1.5x scale), target selection arrows for single-target moves (left/right navigation), `isDouble` flag on TrainerData, tag battle routing from OverworldScene. **Move Tutor/TM Scene**: MoveTutorScene with full flow (move list → cost check → party filter via `canLearnMove()` → teach/replace → cost deduction), TM usage from InventoryScene (reusable, launches MoveTutorScene in TM mode), Heart Scale item, 5 tutor NPCs placed in Verdantia/Ironvale/Scalecrest/Wraithmoor/League.
+
+### Phase 17: Cutscene & Story Presentation System ✓
+> **CutsceneEngine** (CutsceneEngine.ts): Data-driven scripted sequence player with 16 action types (dialogue, moveCameraTo, moveNPC, faceNPC, facePlayer, wait, fadeToBlack, fadeFromBlack, flashScreen, playBGM, playSFX, screenShake, showEmote, setFlag, parallel, movePlayer). `CutsceneSceneAccess` interface for decoupled NPC/player access. Async `play()` method blocks player input until complete. `triggerCutscene` field on NpcSpawn for interaction-triggered cutscenes. 3 sample cutscenes in cutscene-data.ts (rival-intro, willow-lab-intro, route-1-blockade). **Not yet implemented**: 8 key story cutscenes, flashback system.
+
+### Phase 18: Pokémon Personality & Bond System ✓
+> **Friendship system**: `adjustFriendship()` on GameManager, friendship changes on battle victory (+3), level-up (+5), fainting (−1), PokéCenter heal (+1), walking (every 128 steps, +1 to lead). Battle effects at friendship ≥ 220: 10% survive KO with 1 HP, 10% cure status at end of turn. **Nickname system**: NicknameScene with keyboard input (reuses IntroScene pattern), nickname prompt after catch in BattleUIScene, `nickname` field on PokemonInstance, nicknames displayed in BattleScene/PartyScene/SummaryScene. Name Rater NPC in Verdantia Village with `interactionType: 'name-rater'` and PartyScene select mode. **Nature polish**: 25 nature flavor texts in SummaryScene INFO tab.
+
+### Phase 12 Remaining: Animated Tiles & Environmental SFX ✓
+> **Animated tiles**: Water tile tint cycling (3 blue shades every 30 frames), tall grass alpha pulse (0.85–1.0 every 15 frames), lava/magma red-orange tint cycling. Sprite references collected during `drawMap()`. **AmbientSFX system** (AmbientSFX.ts): `AmbientType` union (ocean/forest/cave/city/wind/rain/none), `ambientSfx` field on MapDefinition, infrastructure for future ProceduralAudio integration. **Terrain footstep SFX**: per-tile-type footstep sounds (grass/sand/water/wood/stone/metal), new SFX keys in audio-keys.ts.
 
 ---
 
@@ -107,14 +119,11 @@ A coastal island chain where ancient ruins dot the landscape and **Aether** flow
 ### Phase 12–13 Remaining Work
 
 **Phase 12 — Overworld Atmosphere (Partial):**
-- Animated tiles: water shimmer, tall grass sway, lava glow cycle, Aether crystal pulse
-- Environmental SFX layer: per-map ambient sounds, terrain-based footsteps, volume ducking
 - Window light shafts in interiors, neon glow in Voltara City
+- Aether crystal pulse animation
 
 **Phase 13 — Movement Upgrades (Partial):**
 - Fly fast-travel UI scene (map selection from visited towns)
-- Strength boulder-pushing logic (directional push with collision check)
-- Flash integration with LightingSystem (expand player light radius in dark caves)
 - Cycling sprite/animation (distinct visual for bicycle mode)
 
 ### Post-Game Content (Not Yet Implemented)
@@ -160,24 +169,9 @@ Everything is rendered with Phaser's built-in text. Custom art makes the game fe
 
 ## Phase 15–16 Remaining Work
 
-These items from Phases 15–16 are implemented at the data/logic layer but still need UI integration:
-
-**Synthesis Mode UI Integration:**
-- "SYNTHESIZE" button in BattleUIScene action menu (when conditions met)
-- Synthesis visual aura glow on Pokémon sprite during battle
-- Synthesis Bracelet key item added to item data registry
+**Boss Trainer Synthesis (Not Yet Implemented):**
 - Boss trainers (Vex, Aldric) use Synthesis Mode in their battles
-
-**Double Battle Scene:**
-- BattleScene visual layout for 4 Pokémon (2 per side)
-- Target selection UI for double battles
-- Tag Battle routing in OverworldScene → BattleScene with `isDouble: true`
-- Partner AI move selection for NPC allies
-
-**Move Tutor/TM Scene:**
-- MoveTutorScene (NPC interaction → move selection → teach confirmation)
-- TM use from inventory (select Pokémon → compatibility check → teach)
-- Missing move data entries for TM/tutor-referenced moves
+- Partner AI move selection for NPC allies in double battles
 
 **Battle Frontier / Battle Tower (Post-Game):**
 - Endless streak mode with scaling difficulty
@@ -187,15 +181,9 @@ These items from Phases 15–16 are implemented at the data/logic layer but stil
 
 ---
 
-## Phase 17: Cutscene & Story Presentation System
+## Phase 17 Remaining: Key Story Cutscenes
 
-The game has story beats but no cinematic presentation. This system turns key moments into memorable scenes.
-
-**Cutscene Engine:**
-- Scripted sequence player: camera pan, NPC walk-to, dialogue, sprite animations, screen effects
-- Data-driven cutscene definitions (JSON/TS arrays of actions)
-- Actions: `moveCameraTo`, `moveNPC`, `showDialogue`, `wait`, `fadeToBlack`, `playBGM`, `screenShake`, `showEmote`, `flashScreen`
-- Cutscenes block player input and restore control on completion
+The CutsceneEngine is built — these concrete cutscene scripts need to be authored using the engine:
 
 **Key Cutscenes to Implement:**
 - Game intro: player arrives in Littoral Town by boat, Mom greets them
@@ -214,32 +202,13 @@ The game has story beats but no cinematic presentation. This system turns key mo
 
 ---
 
-## Phase 18: Pokémon Personality & Bond System
+## Phase 18 Remaining: Bond System Stretch Goals
 
-Make each Pokémon feel unique and deepen the trainer-Pokémon connection.
-
-**Nature System Enhancement:**
-- 25 natures affecting stats (already partially in data layer)
-- Nature displayed on Summary screen
-- Nature-influenced dialogue ("Pikachu is jolly and loves to play!")
-
-**Friendship/Affection System:**
-- Friendship grows from: battles, walking, leveling up, using items, visiting PokéCenters
-- Friendship decreases from: fainting, using bitter medicine
-- Friendship thresholds trigger: extra EXP bonus, crit chance boost, "held on with 1 HP" clutch, status self-cure
+**Not Yet Implemented:**
 - Affection dialogue in battle ("Pikachu is looking at you with trusting eyes!")
-- Visible friendship indicator on Summary screen (heart meter)
-
-**Pokémon Camp / Petting Minigame (Stretch):**
-- Accessible from pause menu or specific rest areas
-- Simple interaction: feed berries, play with sprite (tap/click minigame)
-- Boosts friendship rapidly
-- Pokémon reactions (happy bounce, hearts, refusing disliked berries)
-
-**Nickname System:**
-- Prompt to nickname after every catch
-- Name Rater NPC in Verdantia Village to rename later
-- Nicknames shown in battle, party, and summary
+- Visible friendship heart meter on Summary screen
+- Extra EXP bonus and crit chance boost at high friendship
+- Pokémon Camp / Petting Minigame (stretch goal)
 
 ---
 
