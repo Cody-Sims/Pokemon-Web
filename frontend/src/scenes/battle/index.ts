@@ -7,3 +7,7 @@ export { processTrainerRewards, getContinueMessage } from './BattleRewardHandler
 export type { RewardResult } from './BattleRewardHandler';
 export { collectEndOfTurnEffects } from './BattleEndOfTurn';
 export type { EndOfTurnEffects } from './BattleEndOfTurn';
+export { handlePokeBallUse } from './BattleCatchHandler';
+export type { CatchContext } from './BattleCatchHandler';
+export { runVictorySequence } from './BattleVictorySequence';
+export type { VictoryContext } from './BattleVictorySequence';
