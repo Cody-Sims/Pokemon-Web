@@ -138,6 +138,17 @@ export const route5: MapDefinition = {
       facing: 'down',
       lineOfSight: 4,
     },
+    // Zara Lux — reveals herself after player frees trapped Pokémon
+    {
+      id: 'route5-zara',
+      trainerId: 'admin-zara-2',
+      tileX: 14,
+      tileY: 14,
+      textureKey: 'npc-female-8',
+      facing: 'left',
+      lineOfSight: 5,
+      condition: 'helped_marina_traps',
+    },
   ],
   warps: [
     // North exit → Ironvale City

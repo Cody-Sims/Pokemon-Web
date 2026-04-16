@@ -19,6 +19,7 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 175,
+    victoryFlag: 'defeatedKael1',
   },
   // Encounter 2: Route 3 (Tide Pool Path) — before Coral Harbor
   'rival-2': {
@@ -117,6 +118,7 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 2350,
+    victoryFlag: 'defeatedKael5',
   },
   // Encounter 6: Post-game (Aether Sanctum) — friendly rematch
   'rival-6': {
@@ -383,6 +385,8 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 2100,
+    victoryFlag: 'defeatedCoral',
+    badgeReward: 'tide',
   },
 
   // ─── Gym 3: Ferris (Steel-type Gym Leader) ───
@@ -409,6 +413,8 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 2700,
+    victoryFlag: 'defeatedFerris',
+    badgeReward: 'anvil',
   },
 
   // ─── Gym 4: Ivy (Grass-type Gym Leader) ───
@@ -435,6 +441,8 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 3100,
+    victoryFlag: 'defeatedIvy',
+    badgeReward: 'canopy',
   },
 
   // ─── Gym 5: Blitz (Electric-type Gym Leader) ───
@@ -462,6 +470,8 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 3500,
+    victoryFlag: 'defeatedBlitz',
+    badgeReward: 'circuit',
   },
 
   // ─── Dr. Vex Corbin (Admin — Boss encounter 1) ───
@@ -488,6 +498,7 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 1200,
+    victoryFlag: 'defeatedVex1',
   },
 
   // ─── Route 4 trainers ───
@@ -543,6 +554,8 @@ export const trainerData: Record<string, TrainerData> = {
       after: ['Morwen: The spirits approve. Take the Phantom Badge.', 'Morwen: The sleeper beneath the spire will not distinguish between savior and destroyer.', 'Morwen: Be certain of your resolve.'],
     },
     rewardMoney: 4000,
+    victoryFlag: 'defeatedMorwen',
+    badgeReward: 'phantom',
   },
 
   // ─── Gym 7: Drake (Dragon-type Gym Leader) ───
@@ -558,6 +571,8 @@ export const trainerData: Record<string, TrainerData> = {
       after: ['Drake: You have proven your worth. The Scale Badge is yours.', 'Drake: My dragons sense a great disturbance. The final battle approaches.'],
     },
     rewardMoney: 4500,
+    victoryFlag: 'defeatedDrake',
+    badgeReward: 'scale',
   },
 
   // ─── Gym 8: Solara (Fire-type Gym Leader) ───
@@ -574,6 +589,8 @@ export const trainerData: Record<string, TrainerData> = {
       after: ['Solara: The Ember Badge is yours.', 'Solara: End this. For his sake as much as ours.'],
     },
     rewardMoney: 4800,
+    victoryFlag: 'defeatedSolara',
+    badgeReward: 'ember',
   },
 
   // ─── Dr. Vex boss battle #2 ───
@@ -589,6 +606,7 @@ export const trainerData: Record<string, TrainerData> = {
       after: ['Dr. Vex: ...The Aether Lens. So Rook gave it to you.', 'Dr. Vex: It doesn\'t matter. The Director is already at the League.'],
     },
     rewardMoney: 1900,
+    victoryFlag: 'defeatedVex2',
   },
 
   // ─── Route 6 trainers ───
@@ -661,6 +679,7 @@ export const trainerData: Record<string, TrainerData> = {
       after: ['Nerida: You swim against the current and prevail. Impressive.', 'Nerida: The next challenge awaits.'],
     },
     rewardMoney: 5000,
+    victoryFlag: 'defeatedNerida',
   },
 
   // ─── Elite Four #2: Theron (Fighting/Rock) ───
@@ -686,6 +705,7 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 5200,
+    victoryFlag: 'defeatedTheron',
   },
 
   // ─── Elite Four #3: Lysandra (Psychic/Dark) ───
@@ -711,6 +731,7 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 5400,
+    victoryFlag: 'defeatedLysandra',
   },
 
   // ─── Elite Four #4: Ashborne (Fire/Dragon) ───
@@ -738,6 +759,7 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 5600,
+    victoryFlag: 'defeatedAshborne',
   },
 
   // ─── Champion Aldric Maren ───
@@ -767,6 +789,7 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 11000,
+    victoryFlag: 'defeatedChampion',
   },
 
   // ─── Route 1 / Viridian Forest: Original trainers ───
@@ -861,6 +884,8 @@ export const trainerData: Record<string, TrainerData> = {
       ],
     },
     rewardMoney: 1400,
+    victoryFlag: 'defeatedBrock',
+    badgeReward: 'boulder',
   },
 
   // ─── Route 2: Trainers near Crystal Cavern entrance ───
@@ -1296,6 +1321,7 @@ export const trainerData: Record<string, TrainerData> = {
       after: ['My research... years of data...', 'You understand nothing of what we\'ve built.'],
     },
     rewardMoney: 4400,
+    victoryFlag: 'defeatedVex3',
   },
 
   // ─── Canopy Trail: Zara Lux — Encounter 2 ───
@@ -1311,6 +1337,7 @@ export const trainerData: Record<string, TrainerData> = {
       after: ['How can you be so strong already?', 'The Director warned me about trainers like you...'],
     },
     rewardMoney: 3200,
+    victoryFlag: 'defeatedZara2',
   },
 
   // ─── Abyssal Spire F3: Zara Lux — Encounter 3 ───
@@ -1327,6 +1354,7 @@ export const trainerData: Record<string, TrainerData> = {
       after: ['You ARE strong enough. Take this keycard.', 'End it. For all of us.'],
     },
     rewardMoney: 4200,
+    victoryFlag: 'defeatedZara3',
   },
 
   // ─── Abyssal Spire: Synthesis Elite Grunts ───
@@ -1460,5 +1488,47 @@ export const trainerData: Record<string, TrainerData> = {
     ],
     dialogue: { before: ['Synthesis Grunt: You\'re too late to stop us!'], after: ['Synthesis Grunt: Fine... but you can\'t defeat Dr. Vex!'] },
     rewardMoney: 1500,
+  },
+
+  // ─── Synthesis Collective: Verdantia Underground Lab Grunts ───
+  'synth-grunt-verdantia-1': {
+    id: 'synth-grunt-verdantia-1', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
+    party: [
+      { pokemonId: 44, level: 28, moves: ['acid', 'sleep-powder', 'absorb', 'poison-powder'] },
+      { pokemonId: 88, level: 29, moves: ['sludge', 'pound', 'disable', 'minimize'] },
+      { pokemonId: 69, level: 28, moves: ['vine-whip', 'wrap', 'sleep-powder', 'poison-powder'] },
+    ],
+    dialogue: {
+      before: ['Synthesis Grunt: How did you find this lab?!'],
+      after: ['Synthesis Grunt: The Director\'s research must not be stopped...'],
+    },
+    rewardMoney: 1120,
+  },
+  'synth-grunt-verdantia-2': {
+    id: 'synth-grunt-verdantia-2', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
+    party: [
+      { pokemonId: 109, level: 30, moves: ['sludge', 'smokescreen', 'self-destruct', 'tackle'] },
+      { pokemonId: 43, level: 29, moves: ['absorb', 'poison-powder', 'acid', 'sleep-powder'] },
+      { pokemonId: 48, level: 30, moves: ['psybeam', 'poison-powder', 'leech-life', 'stun-spore'] },
+    ],
+    dialogue: {
+      before: ['Synthesis Grunt: This area is restricted! Leave now!'],
+      after: ['Synthesis Grunt: You\'ll regret interfering...'],
+    },
+    rewardMoney: 1200,
+  },
+  'synth-grunt-verdantia-3': {
+    id: 'synth-grunt-verdantia-3', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
+    party: [
+      { pokemonId: 89, level: 32, moves: ['sludge', 'minimize', 'pound', 'toxic'] },
+      { pokemonId: 70, level: 30, moves: ['razor-leaf', 'wrap', 'poison-powder', 'sleep-powder'] },
+      { pokemonId: 110, level: 31, moves: ['sludge', 'smokescreen', 'toxic', 'self-destruct'] },
+    ],
+    dialogue: {
+      before: ['Synthesis Grunt: The roots of this place hold unimaginable power!'],
+      after: ['Synthesis Grunt: Impossible... our strongest couldn\'t stop you...'],
+    },
+    rewardMoney: 1280,
+    victoryFlag: 'cleared_verdantia_lab',
   },
 };

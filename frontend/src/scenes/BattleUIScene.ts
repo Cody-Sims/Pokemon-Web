@@ -1039,10 +1039,14 @@ export class BattleUIScene extends Phaser.Scene {
       const tData = trainerData[b.trainerId];
       if (tData) {
         gm.addMoney(tData.rewardMoney);
+        // Grant victory flag from trainer data
+        if (tData.victoryFlag) {
+          gm.setFlag(tData.victoryFlag);
+          EventManager.getInstance().emit('flag-set', tData.victoryFlag);
+        }
         // Grant badge for gym leaders
-        if (b.trainerId === 'gym-brock') {
-          gm.addBadge('boulder');
-          gm.setFlag('defeatedBrock');
+        if (tData.badgeReward) {
+          gm.addBadge(tData.badgeReward);
         }
       }
     }
@@ -1320,8 +1324,9 @@ export class BattleUIScene extends Phaser.Scene {
       if (tData) {
         messages.push(`You defeated ${tData.name}!`);
         messages.push(`Got ¥${tData.rewardMoney} for winning!`);
-        if (b.trainerId === 'gym-brock') {
-          messages.push('You received the Boulder Badge!');
+        if (tData.badgeReward) {
+          const badgeName = tData.badgeReward.charAt(0).toUpperCase() + tData.badgeReward.slice(1);
+          messages.push(`You received the ${badgeName} Badge!`);
         }
         if (tData.dialogue.after.length > 0) {
           messages.push(...tData.dialogue.after);

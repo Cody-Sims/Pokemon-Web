@@ -48,6 +48,12 @@ export const abyssalSpireF5: MapDefinition = {
         'Aldric vanished through a hidden passage!',
       ],
       setsFlag: 'aldric_escaped_to_league',
+      flagDialogue: [
+        { flag: 'aldric_escaped_to_league', dialogue: [
+          'The altar hums with residual Aether energy...',
+          'Aldric is gone. The path to the Pokémon League lies ahead.',
+        ], setFlag: 'cleared_abyssal_spire' },
+      ],
     },
   ],
   trainers: [],

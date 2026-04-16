@@ -131,7 +131,7 @@ export const ironvaleCity: MapDefinition = {
       ],
       flagDialogue: [
         {
-          flag: 'ironvale_tag_battle_won',
+          flag: 'defeatedKael3',
           dialogue: [
             'Kael: Ha! They didn\'t stand a chance against the two of us!',
             'Kael: ...Something about what they\'re doing to Pokémon really bugs me.',
@@ -142,7 +142,31 @@ export const ironvaleCity: MapDefinition = {
       requireFlag: 'found_mines_terminal',
       setsFlag: 'met_kael_ironvale',
       interactionType: 'tag-battle',
-      interactionData: 'rival-3|synthesis-grunt-ironvale-1|synthesis-grunt-ironvale-2|ironvale_tag_battle_won',
+      interactionData: 'rival-3|synthesis-grunt-ironvale-1|synthesis-grunt-ironvale-2|defeatedKael3',
+    },
+    // ─── Blacksmith's Apprentice (forge area) ───
+    {
+      id: 'ironvale-apprentice',
+      tileX: 8,
+      tileY: 21,
+      textureKey: 'npc-male-6',
+      facing: 'right',
+      dialogue: [
+        'Apprentice: I work at Ferris\'s forge!',
+        'Apprentice: He\'s teaching me to craft held items for Pokémon.',
+        'Apprentice: After you beat the Gym, come back!',
+        'Apprentice: I might be able to reforge your items into something stronger.',
+      ],
+      flagDialogue: [
+        {
+          flag: 'defeatedFerris',
+          dialogue: [
+            'Apprentice: You beat Ferris? Amazing!',
+            'Apprentice: I can now reforge your held items.',
+            'Apprentice: Bring me a Metal Coat and I\'ll upgrade it!',
+          ],
+        },
+      ],
     },
   ],
   trainers: [],

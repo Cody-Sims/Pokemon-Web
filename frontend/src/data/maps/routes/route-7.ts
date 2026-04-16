@@ -51,7 +51,13 @@ export const route7: MapDefinition = {
         'Rook: Take this — the Aether Lens. It reveals hidden ley-line passages.',
         'Rook: You\'ll need it in their base.',
       ],
-      requireFlag: 'saw_aldric_hologram', setsFlag: 'rook_identity_revealed' },
+      flagDialogue: [
+        { flag: 'rook_revealed', dialogue: [
+          'Rook: The Aether Lens will reveal hidden passages in the Spire.',
+          'Rook: Be careful in there.',
+        ], setFlag: 'hasAetherLens' },
+      ],
+      requireFlag: 'defeatedVex2', setsFlag: 'rook_revealed' },
   ],
   trainers: [
     { id: 'route7-grunt-6', trainerId: 'synthesis-grunt-3', tileX: 6, tileY: 7, textureKey: 'npc-grunt', facing: 'right', lineOfSight: 4 },

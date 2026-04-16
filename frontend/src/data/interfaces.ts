@@ -48,6 +48,10 @@ export interface TrainerData {
   dialogue: { before: string[]; after: string[] };
   rewardMoney: number;
   isDouble?: boolean;
+  /** Flag to set when this trainer is defeated. */
+  victoryFlag?: string;
+  /** Badge to award when this trainer is defeated (gym leaders). */
+  badgeReward?: string;
 }
 
 export interface EncounterEntry {
