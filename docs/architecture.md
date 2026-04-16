@@ -59,44 +59,52 @@ pokemon-web/
 │       ├── config/
 │       │   └── game-config.ts          # Phaser.Types.Core.GameConfig object
 │       │
-│       ├── scenes/                     # One file per Phaser Scene
-│       │   ├── BootScene.ts            # Loads minimal assets for loading bar
-│       │   ├── PreloadScene.ts         # Loads all assets; shows progress bar
-│       │   ├── TitleScene.ts           # Main menu (New Game / Continue / Options)
-│       │   ├── OverworldScene.ts       # Top-down exploration, player movement (delegates to overworld/)
-│       │   ├── overworld/              # Extracted OverworldScene helpers
-│       │   │   ├── OverworldNPCSpawner.ts    # NPC & trainer spawning
-│       │   │   ├── OverworldInteraction.ts   # NPC interaction dispatch + tile interactions
+│       ├── scenes/                     # Phaser Scenes organized by domain
+│       │   ├── boot/
+│       │   │   ├── BootScene.ts            # Loads minimal assets for loading bar
+│       │   │   └── PreloadScene.ts         # Loads all assets; shows progress bar
+│       │   ├── title/
+│       │   │   ├── TitleScene.ts           # Main menu (New Game / Continue / Options)
+│       │   │   └── IntroScene.ts           # Professor intro, character naming, new game setup
+│       │   ├── overworld/
+│       │   │   ├── OverworldScene.ts       # Top-down exploration, player movement (delegates to helpers)
+│       │   │   ├── DialogueScene.ts        # Typewriter text overlay for NPC dialogue
+│       │   │   ├── TransitionScene.ts      # Fade transitions between scenes
+│       │   │   ├── OverworldNPCSpawner.ts  # NPC & trainer spawning
+│       │   │   ├── OverworldInteraction.ts # NPC interaction dispatch + tile interactions
 │       │   │   ├── OverworldFieldAbilities.ts # Field abilities (boulder push, tile redraw)
-│       │   │   ├── OverworldFishing.ts       # Fishing rod logic
-│       │   │   ├── OverworldHealing.ts       # Party heal helper
-│       │   │   ├── OverworldFootsteps.ts     # Footstep SFX by tile type
-│       │   │   └── index.ts                  # Barrel exports
-│       │   ├── BattleScene.ts          # Turn-based battle — sprites, HP/EXP bars
-│       │   ├── BattleUIScene.ts        # Battle overlay — action menu, move menu, messages (delegates to battle/)
-│       │   ├── DialogueScene.ts        # Typewriter text overlay for NPC dialogue
-│       │   ├── MenuScene.ts            # Pause menu (Pokémon, Bag, Save, etc.)
-│       │   ├── InventoryScene.ts       # Bag / item management
-│       │   ├── PartyScene.ts           # Party view — HP, types, status per slot; select mode for NPC flows
-│       │   ├── SummaryScene.ts         # 3-tab Pokémon detail (INFO/STATS/MOVES), nature flavor text
-│       │   ├── TransitionScene.ts      # Fade transitions between scenes
-│       │   ├── StarterSelectScene.ts   # Starter Pokémon selection overlay
-│       │   ├── NicknameScene.ts        # Pokémon nickname input overlay (catch, Name Rater)
-│       │   ├── IntroScene.ts           # Professor intro, character naming, new game setup
-│       │   ├── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
-│       │   ├── PokedexScene.ts         # Pokédex species browser (seen/caught)
-│       │   ├── QuestJournalScene.ts    # Quest log — Active/Complete tabs, step list, detail panel
-│       │   ├── QuestTrackerScene.ts    # HUD overlay — active quest step in top-right corner
-│       │   ├── TrainerCardScene.ts     # Trainer card display (name, badges, Pokédex, playtime, money)
-│       │   ├── VoltorbFlipScene.ts     # Voltorb Flip mini-game (5×5 card-flipping number game)
-│       │   └── AchievementScene.ts    # Achievement gallery with category tabs and progress counter
-│       │   ├── battle/                 # Extracted BattleUIScene helpers
-│       │   │   ├── BattleTurnRunner.ts      # Turn execution pipeline
-│       │   │   ├── BattleMessageQueue.ts     # Message queue management
-│       │   │   ├── BattleDamageNumbers.ts    # Floating damage numbers
-│       │   │   ├── BattleRewardHandler.ts    # Post-battle rewards
-│       │   │   ├── BattleEndOfTurn.ts        # End-of-turn effect collection
-│       │   │   └── index.ts                  # Barrel exports
+│       │   │   ├── OverworldFishing.ts     # Fishing rod logic
+│       │   │   ├── OverworldHealing.ts     # Party heal helper
+│       │   │   ├── OverworldFootsteps.ts   # Footstep SFX by tile type
+│       │   │   └── index.ts               # Barrel exports
+│       │   ├── battle/
+│       │   │   ├── BattleScene.ts          # Turn-based battle — sprites, HP/EXP bars
+│       │   │   ├── BattleUIScene.ts        # Battle overlay — action menu, move menu, messages
+│       │   │   ├── BattleTurnRunner.ts     # Turn execution pipeline
+│       │   │   ├── BattleMessageQueue.ts   # Message queue management
+│       │   │   ├── BattleDamageNumbers.ts  # Floating damage numbers
+│       │   │   ├── BattleRewardHandler.ts  # Post-battle rewards
+│       │   │   ├── BattleEndOfTurn.ts      # End-of-turn effect collection
+│       │   │   └── index.ts               # Barrel exports
+│       │   ├── menu/
+│       │   │   ├── MenuScene.ts            # Pause menu (Pokémon, Bag, Save, etc.)
+│       │   │   ├── InventoryScene.ts       # Bag / item management
+│       │   │   ├── PartyScene.ts           # Party view — HP, types, status per slot
+│       │   │   ├── SummaryScene.ts         # 3-tab Pokémon detail (INFO/STATS/MOVES)
+│       │   │   ├── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
+│       │   │   ├── PokedexScene.ts         # Pokédex species browser (seen/caught)
+│       │   │   ├── QuestJournalScene.ts    # Quest log — Active/Complete tabs
+│       │   │   ├── QuestTrackerScene.ts    # HUD overlay — active quest step
+│       │   │   ├── TrainerCardScene.ts     # Trainer card display
+│       │   │   └── AchievementScene.ts     # Achievement gallery with category tabs
+│       │   ├── pokemon/
+│       │   │   ├── StarterSelectScene.ts   # Starter Pokémon selection overlay
+│       │   │   ├── NicknameScene.ts        # Pokémon nickname input overlay
+│       │   │   ├── MoveTutorScene.ts       # Move tutor UI and logic
+│       │   │   └── PCScene.ts              # PC box UI and Pokémon management
+│       │   └── minigame/
+│       │       ├── ShopScene.ts            # Shop UI and purchase logic
+│       │       └── VoltorbFlipScene.ts     # Voltorb Flip mini-game
 │       │
 │       ├── entities/                   # Game object classes
 │       │   ├── Player.ts              # Grid-locked sprite + GridMovement
@@ -106,20 +114,25 @@ pokemon-web/
 │       │   └── InteractableObject.ts # Signs, PCs, item balls, doors
 │       │
 │       ├── battle/                     # Battle subsystem
-│       │   ├── BattleManager.ts       # Orchestrates turns, win/loss, party (single battles)
-│       │   ├── DoubleBattleManager.ts # 2v2 double/tag battle manager (4 active slots, spread targeting)
-│       │   ├── BattleStateMachine.ts  # FSM: INTRO → PLAYER_TURN → EXECUTE_TURN → CHECK_FAINT → …
-│       │   ├── DamageCalculator.ts    # Pokémon damage formula (STAB, type, crit, weather, abilities, items)
-│       │   ├── MoveExecutor.ts        # Applies move effects (damage, status, PP)
-│       │   ├── StatusEffectHandler.ts # Burn/paralysis/poison/sleep/freeze logic
-│       │   ├── SynthesisHandler.ts    # Synthesis Mode activation/revert (game's Mega Evolution equivalent)
-│       │   ├── AbilityHandler.ts      # Ability hooks: switch-in, after-damage, end-of-turn, immunity
-│       │   ├── HeldItemHandler.ts     # Held item hooks: end-of-turn, after-damage, status cure, HP threshold
-│       │   ├── WeatherManager.ts      # Weather conditions (sun/rain/sandstorm/hail) with damage modifiers
-│       │   ├── AIController.ts        # Enemy move selection heuristics
-│       │   ├── ExperienceCalculator.ts # EXP yield, level-up, stat recalc, natures, evolution checks
-│       │   ├── CatchCalculator.ts     # Poké Ball catch-rate formula
-│       │   └── MoveAnimationPlayer.ts # Data-driven move animations (particles, projectiles, effects)
+│       │   ├── core/
+│       │   │   ├── BattleManager.ts       # Orchestrates turns, win/loss, party (single battles)
+│       │   │   ├── DoubleBattleManager.ts # 2v2 double/tag battle manager
+│       │   │   ├── BattleStateMachine.ts  # FSM: INTRO → PLAYER_TURN → EXECUTE_TURN → …
+│       │   │   └── AIController.ts        # Enemy move selection heuristics
+│       │   ├── calculation/
+│       │   │   ├── DamageCalculator.ts    # Pokémon damage formula (STAB, type, crit, weather)
+│       │   │   ├── ExperienceCalculator.ts # EXP yield, level-up, stat recalc, natures
+│       │   │   └── CatchCalculator.ts     # Poké Ball catch-rate formula
+│       │   ├── effects/
+│       │   │   ├── StatusEffectHandler.ts # Burn/paralysis/poison/sleep/freeze logic
+│       │   │   ├── AbilityHandler.ts      # Ability hooks: switch-in, after-damage, end-of-turn
+│       │   │   ├── HeldItemHandler.ts     # Held item hooks: end-of-turn, after-damage
+│       │   │   ├── WeatherManager.ts      # Weather conditions with damage modifiers
+│       │   │   └── SynthesisHandler.ts    # Synthesis Mode activation/revert
+│       │   ├── execution/
+│       │   │   ├── MoveExecutor.ts        # Applies move effects (damage, status, PP)
+│       │   │   └── MoveAnimationPlayer.ts # Data-driven move animations
+│       │   └── index.ts                   # Barrel re-exports
 │       │
 │       ├── data/                       # Pure data (no game logic)
 │       │   ├── interfaces.ts          # All TypeScript interfaces
@@ -207,34 +220,44 @@ pokemon-web/
 │       │   └── AchievementManager.ts  # Achievement unlock tracking with serialization
 │       │
 │       ├── systems/                    # Reusable gameplay systems
-│       │   ├── GridMovement.ts        # Grid-locked tween movement engine
-│       │   ├── NPCBehavior.ts         # NPC idle behaviors (look-around, wander, pace)
-│       │   ├── EmoteBubble.ts         # Emote popup system (!, ?, ♥, etc.)
-│       │   ├── EncounterSystem.ts     # Step counter → random encounter + fishing
-│       │   ├── GameClock.ts           # Accelerated day/night cycle (10× speed)
-│       │   ├── WeatherRenderer.ts     # Overworld weather effects (rain/sand/snow/fog/sunshine)
-│       │   ├── AmbientSFX.ts          # Per-map ambient sound type tracking (ocean/forest/cave/city/wind/rain)
-│       │   ├── LightingSystem.ts      # Cave darkness overlay with RenderTexture light circles
-│       │   ├── CutsceneEngine.ts      # Data-driven scripted sequence player (dialogue, camera, NPC movement, effects)
-│       │   ├── InputManager.ts        # Unified WASD/Arrow/touch → direction
-│       │   ├── AnimationHelper.ts     # Registers shared sprite animations
-│       │   ├── MapPreloader.ts        # Proximity-based Pokémon sprite preloader
-│       │   ├── OverworldAbilities.ts  # Field moves (Cut, Surf, Strength, Flash, Fly, Rock Smash)
-│       │   ├── BerryGarden.ts         # Berry planting/watering/harvesting system (GameClock-based growth)
-│       │   └── HiddenItems.ts         # Hidden item locations + Itemfinder scanning
+│       │   ├── audio/
+│       │   │   ├── ProceduralAudio.ts     # Procedural audio generation
+│       │   │   ├── CryGenerator.ts        # Pokémon cry synthesis
+│       │   │   └── AmbientSFX.ts          # Per-map ambient sound tracking
+│       │   ├── overworld/
+│       │   │   ├── GridMovement.ts        # Grid-locked tween movement engine
+│       │   │   ├── NPCBehavior.ts         # NPC idle behaviors (look-around, wander, pace)
+│       │   │   ├── EncounterSystem.ts     # Step counter → random encounter + fishing
+│       │   │   ├── OverworldAbilities.ts  # Field moves (Cut, Surf, Strength, Flash, Fly)
+│       │   │   ├── BerryGarden.ts         # Berry planting/watering/harvesting system
+│       │   │   └── HiddenItems.ts         # Hidden item locations + Itemfinder scanning
+│       │   ├── rendering/
+│       │   │   ├── WeatherRenderer.ts     # Overworld weather effects
+│       │   │   ├── LightingSystem.ts      # Cave darkness overlay with light circles
+│       │   │   ├── AnimationHelper.ts     # Registers shared sprite animations
+│       │   │   └── EmoteBubble.ts         # Emote popup system (!, ?, ♥, etc.)
+│       │   ├── engine/
+│       │   │   ├── InputManager.ts        # Unified WASD/Arrow/touch → direction
+│       │   │   ├── GameClock.ts           # Accelerated day/night cycle
+│       │   │   ├── MapPreloader.ts        # Proximity-based Pokémon sprite preloader
+│       │   │   └── CutsceneEngine.ts      # Data-driven scripted sequence player
+│       │   └── index.ts                   # Barrel re-exports
 │       │
 │       ├── ui/                         # Reusable UI components
 │       │   ├── theme.ts               # Shared colors, fonts, spacing, mobile scaling helpers
-│       │   ├── NinePatchPanel.ts      # Nine-patch style panel (rounded, shadowed)
-│       │   ├── MenuController.ts      # Unified menu input (1D/2D grid, kb+mouse)
-│       │   ├── TouchControls.ts       # Virtual joystick + A/B buttons for mobile
-│       │   ├── VirtualJoystick.ts     # Floating joystick that appears at touch location
-│       │   ├── HealthBar.ts           # Animated HP bar widget
-│       │   ├── TextBox.ts            # Typewriter text display
-│       │   ├── MenuList.ts           # Selectable vertical menu (legacy)
-│       │   ├── ConfirmBox.ts         # Yes/No prompt
-│       │   ├── BattleHUD.ts          # Composite: name + level + HP + EXP
-│       │   └── AchievementToast.ts   # Slide-in gold banner for achievement unlocks
+│       │   ├── controls/
+│       │   │   ├── TouchControls.ts       # Virtual joystick + A/B buttons for mobile
+│       │   │   ├── VirtualJoystick.ts     # Floating joystick at touch location
+│       │   │   └── MenuController.ts      # Unified menu input (1D/2D grid, kb+mouse)
+│       │   ├── widgets/
+│       │   │   ├── NinePatchPanel.ts      # Nine-patch style panel (rounded, shadowed)
+│       │   │   ├── HealthBar.ts           # Animated HP bar widget
+│       │   │   ├── TextBox.ts             # Typewriter text display
+│       │   │   ├── MenuList.ts            # Selectable vertical menu (legacy)
+│       │   │   ├── ConfirmBox.ts          # Yes/No prompt
+│       │   │   ├── BattleHUD.ts           # Composite: name + level + HP + EXP
+│       │   │   └── AchievementToast.ts    # Slide-in gold banner for achievement unlocks
+│       │   └── index.ts                   # Barrel re-exports
 │       │
 │       └── utils/                      # Pure utility functions
 │           ├── constants.ts           # TILE_SIZE, WALK_SPEED, MAX_PARTY_SIZE…
@@ -368,10 +391,10 @@ EventManager.on('BATTLE_END', (result) => { /* resume overworld */ });
 ### Mobile / Touch Controls
 The game supports mobile devices via a virtual touch overlay managed by three collaborating modules:
 
-- **`VirtualJoystick`** (`src/ui/VirtualJoystick.ts`): A floating joystick that appears at the user's touch location. Tracks finger drag to calculate 4-directional movement (up/down/left/right) based on angle from origin, with a 15px dead zone. Supports multi-touch via touch identifier tracking and mouse fallback for desktop testing. The joystick base and thumb are Phaser `Circle` objects in a `Container` at depth 999.
-- **`TouchControls`** (`src/ui/TouchControls.ts`): Manages the `VirtualJoystick` and **A/B action buttons** (bottom-right, 72px radius). The joystick is enabled during overworld gameplay and disabled during menus. Action buttons use a poll-and-clear pattern via `consumeConfirm()` / `consumeCancel()`. The joystick's exclude-hit-test callback prevents it from activating when tapping the A/B buttons.
-- **`InputManager`** (`src/systems/InputManager.ts`): Instantiates `TouchControls` when `navigator.maxTouchPoints > 0`. Its `getState()` method merges keyboard and touch input into a unified `InputState { direction, confirm, cancel, menu }` — keyboard is checked first, touch fills in the gaps.
-- **`MenuController`** (`src/ui/MenuController.ts`): Handles menu navigation via keyboard events. Menus rely on Phaser `pointerdown` listeners on individual menu items for touch input.
+- **`VirtualJoystick`** (`src/ui/controls/VirtualJoystick.ts`): A floating joystick that appears at the user's touch location. Tracks finger drag to calculate 4-directional movement (up/down/left/right) based on angle from origin, with a 15px dead zone. Supports multi-touch via touch identifier tracking and mouse fallback for desktop testing. The joystick base and thumb are Phaser `Circle` objects in a `Container` at depth 999.
+- **`TouchControls`** (`src/ui/controls/TouchControls.ts`): Manages the `VirtualJoystick` and **A/B action buttons** (bottom-right, 72px radius). The joystick is enabled during overworld gameplay and disabled during menus. Action buttons use a poll-and-clear pattern via `consumeConfirm()` / `consumeCancel()`. The joystick's exclude-hit-test callback prevents it from activating when tapping the A/B buttons.
+- **`InputManager`** (`src/systems/engine/InputManager.ts`): Instantiates `TouchControls` when `navigator.maxTouchPoints > 0`. Its `getState()` method merges keyboard and touch input into a unified `InputState { direction, confirm, cancel, menu }` — keyboard is checked first, touch fills in the gaps.
+- **`MenuController`** (`src/ui/controls/MenuController.ts`): Handles menu navigation via keyboard events. Menus rely on Phaser `pointerdown` listeners on individual menu items for touch input.
 
 **Mobile UI scaling:** `theme.ts` exports `MOBILE_SCALE` (1.35× on touch devices), `mobileFontSize()`, and `isMobile()`. All key menus (title, pause, battle, dialogue, inventory) apply this scaling to font sizes and touch target padding. Scenes show tappable close/exit buttons on mobile instead of keyboard-only hints.
 

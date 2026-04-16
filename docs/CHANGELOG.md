@@ -5,7 +5,16 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [Unreleased]
-### Changed — Architecture cleanup phase 2
+### Changed — Architecture cleanup phases 2–7
+- **Reorganized `scenes/`** into 7 domain subdirectories: `boot/`, `title/`, `overworld/`, `battle/`, `menu/`, `pokemon/`, `minigame/` (25 files moved)
+- **Organized `battle/`** into 4 subdirectories: `core/`, `calculation/`, `effects/`, `execution/` (14 files moved, barrel index.ts added)
+- **Organized `systems/`** into 4 subdirectories: `audio/`, `overworld/`, `rendering/`, `engine/` (17 files moved, barrel index.ts added)
+- **Organized `ui/`** into 2 subdirectories + root: `controls/`, `widgets/` (10 files moved, barrel index.ts added)
+- **Reorganized test directories** to mirror source structure: `tests/unit/{battle,data,systems,scenes,managers,utils}/`, `tests/integration/{battle,managers,systems}/` (41 files moved)
+- Updated all source and test imports for new directory structure
+- Updated `docs/architecture.md` directory tree and file path references
+
+### Changed — Architecture cleanup phase 2 (prior)
 - **OverworldScene tryInteract extraction** (1128→818 lines): Moved ~310-line `tryInteract()` method into `scenes/overworld/OverworldInteraction.ts` with `InteractionContext` callback interface. Scene retains a thin delegating wrapper.
 - **Split `data/maps/shared.ts`** (629→6 lines): Decomposed monolithic shared file into 4 focused modules:
   - `tiles.ts` — Tile enum/constants and LEDGE_TILES (~170 lines)
