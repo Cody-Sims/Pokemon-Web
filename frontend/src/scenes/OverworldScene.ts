@@ -13,7 +13,7 @@ import { GameClock } from '@systems/GameClock';
 import { WeatherRenderer } from '@systems/WeatherRenderer';
 import { TransitionManager } from '@managers/TransitionManager';
 import { PokemonInstance, SaveData } from '@data/interfaces';
-import { trainerData } from '@data/trainer-data';
+import { trainerData } from '@data/trainer-data';\nimport { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
 import {
   mapRegistry,
@@ -33,6 +33,9 @@ import { QuestManager } from '@managers/QuestManager';
 import { NPCBehaviorController } from '@systems/NPCBehavior';
 import { OverworldAbilities } from '@systems/OverworldAbilities';
 import { LightingSystem } from '@systems/LightingSystem';
+import { AmbientSFX } from '@systems/AmbientSFX';
+import { CutsceneEngine } from '@systems/CutsceneEngine';
+import { cutsceneData } from '@data/cutscene-data';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
@@ -50,10 +53,16 @@ export class OverworldScene extends Phaser.Scene {
   private lastFlipX = false;
   private transitioning = false;
   private lightingSystem!: LightingSystem;
+  private cutsceneEngine!: CutsceneEngine;
   /** Frames to skip confirm input after resuming (prevents re-trigger). */
   private resumeCooldown = 0;
   private isCycling = false;
   private surfing = false;
+  private waterTileSprites: Phaser.GameObjects.Image[] = [];
+  private tallGrassTileSprites: Phaser.GameObjects.Image[] = [];
+  private lavaTileSprites: Phaser.GameObjects.Image[] = [];
+  private tileAnimFrame = 0;
+  private ambientSFX!: AmbientSFX;
 
   constructor() {
     super({ key: 'OverworldScene' });
@@ -77,6 +86,10 @@ export class OverworldScene extends Phaser.Scene {
     this.npcBehaviors = [];
     this.lastAnimKey = '';
     this.lastFlipX = false;
+    this.waterTileSprites = [];
+    this.tallGrassTileSprites = [];
+    this.lavaTileSprites = [];
+    this.tileAnimFrame = 0;
   }
 
   create(): void {
@@ -224,6 +237,11 @@ export class OverworldScene extends Phaser.Scene {
 
     // Lighting system (cave darkness)
     this.lightingSystem = new LightingSystem(this);
+
+    // Cutscene engine
+    this.cutsceneEngine = new CutsceneEngine(this);
+    this.cutsceneEngine.setSceneAccess({ npcs: this.npcs, player: this.player });
+
     if (this.mapDef.isDark) {
       this.lightingSystem.enableDarkness();
       if (this.mapDef.lightSources) {
@@ -236,7 +254,16 @@ export class OverworldScene extends Phaser.Scene {
           });
         }
       }
+      // Flash HM: expand visibility in dark caves
+      if (OverworldAbilities.canUse('flash')) {
+        this.lightingSystem.setPlayerLightRadius(192);
+        this.showFieldAbilityPopup('Used FLASH!');
+      }
     }
+
+    // Ambient SFX
+    this.ambientSFX = new AmbientSFX(this);
+    this.ambientSFX.setAmbient(this.mapDef.ambientSfx ?? 'none');
 
     // HUD label
     const { width } = this.cameras.main;
@@ -300,6 +327,15 @@ export class OverworldScene extends Phaser.Scene {
           if (tile === Tile.TALL_GRASS) {
             sprite.setAlpha(0.7);
           }
+        }
+
+        // Collect references for animated tile effects
+        if (tile === Tile.WATER || tile === Tile.TIDE_POOL) {
+          this.waterTileSprites.push(sprite);
+        } else if (tile === Tile.TALL_GRASS) {
+          this.tallGrassTileSprites.push(sprite);
+        } else if (tile === Tile.MAGMA_CRACK || tile === Tile.EMBER_VENT || tile === Tile.LAVA_ROCK) {
+          this.lavaTileSprites.push(sprite);
         }
       }
     }
@@ -395,6 +431,12 @@ export class OverworldScene extends Phaser.Scene {
     gm.setPlayerPosition({
       x: tx, y: ty, direction: this.player.getFacing(),
     });
+
+    // Walking friendship: every 128 steps, +1 friendship to lead Pokémon
+    const steps = gm.incrementStepCount();
+    if (steps % 128 === 0 && gm.getParty().length > 0) {
+      gm.adjustFriendship(0, 1);
+    }
 
     // Disembark surf when stepping onto a non-water tile
     if (this.surfing && this.mapDef.ground[ty]?.[tx] !== Tile.WATER) {
@@ -530,6 +572,8 @@ export class OverworldScene extends Phaser.Scene {
               trainerSpriteKey: tData.spriteKey,
               trainerName: tData.name,
               battleBg: this.mapDef.battleBg,
+              isDouble: tData.isDouble ?? false,
+              enemyParty,
             },
             returnData: { mapKey: this.mapKey, spawnId: '__resume' },
             style: 'stripes',
@@ -669,6 +713,36 @@ export class OverworldScene extends Phaser.Scene {
           return;
         }
 
+        if (spawnDef?.interactionType === 'name-rater') {
+          this.scene.pause();
+          this.scene.launch('DialogueScene', { dialogue });
+          this.scene.get('DialogueScene').events.once('shutdown', () => {
+            // Launch party selection, then naming input for the chosen Pokémon
+            this.scene.launch('PartyScene', { selectMode: true });
+            this.scene.get('PartyScene').events.once('pokemon-selected', (index: number) => {
+              this.scene.stop('PartyScene');
+              const party = gm.getParty();
+              const selected = party[index];
+              if (!selected) { this.scene.resume(); return; }
+              const speciesName = pokemonData[selected.dataId]?.name ?? '???';
+              this.launchNicknameInput(selected, speciesName, () => {
+                this.scene.resume();
+              });
+            });
+            this.scene.get('PartyScene').events.once('shutdown', () => {
+              // If PartyScene shut down without selection, just resume
+              this.scene.resume();
+            });
+          });
+          return;
+        }
+
+        // Cutscene trigger (overrides regular dialogue)
+        if (spawnDef?.triggerCutscene && cutsceneData[spawnDef.triggerCutscene]) {
+          this.cutsceneEngine.play(cutsceneData[spawnDef.triggerCutscene]);
+          return;
+        }
+
         // Regular dialogue
         this.scene.pause();
         this.scene.launch('DialogueScene', { dialogue });
@@ -696,6 +770,12 @@ export class OverworldScene extends Phaser.Scene {
         this.mapDef.ground[targetY][targetX] = Tile.GRASS;
         this.redrawTile(targetX, targetY);
         this.showFieldAbilityPopup('SMASH!');
+        return;
+      }
+
+      // Strength: push boulder
+      if (tile === Tile.STRENGTH_BOULDER && OverworldAbilities.canUse('strength')) {
+        this.pushBoulder(targetX, targetY, facing);
         return;
       }
 
@@ -777,6 +857,90 @@ export class OverworldScene extends Phaser.Scene {
     });
   }
 
+  /** Push a Strength boulder one tile in the player's facing direction. */
+  private pushBoulder(bx: number, by: number, dir: Direction): void {
+    let destX = bx;
+    let destY = by;
+    switch (dir) {
+      case 'up':    destY--; break;
+      case 'down':  destY++; break;
+      case 'left':  destX--; break;
+      case 'right': destX++; break;
+    }
+
+    // Check bounds and walkability of destination
+    if (destX < 0 || destY < 0 || destX >= this.mapDef.width || destY >= this.mapDef.height) return;
+    if (SOLID_TILES.has(this.mapDef.ground[destY][destX])) return;
+
+    // Update map data
+    this.mapDef.ground[by][bx] = Tile.GRASS;
+    this.mapDef.ground[destY][destX] = Tile.STRENGTH_BOULDER;
+
+    // Animate the boulder sprite sliding
+    const srcPx = bx * TILE_SIZE + TILE_SIZE / 2;
+    const srcPy = by * TILE_SIZE + TILE_SIZE / 2;
+    const destPx = destX * TILE_SIZE + TILE_SIZE / 2;
+    const destPy = destY * TILE_SIZE + TILE_SIZE / 2;
+
+    // Find the boulder image at the source position
+    const boulderSprite = this.children.list.find(obj =>
+      obj instanceof Phaser.GameObjects.Image &&
+      Math.abs(obj.x - srcPx) < 1 && Math.abs(obj.y - srcPy) < 1 &&
+      obj.depth <= 2,
+    ) as Phaser.GameObjects.Image | undefined;
+
+    if (boulderSprite) {
+      this.tweens.add({
+        targets: boulderSprite,
+        x: destPx,
+        y: destPy,
+        duration: 200,
+        ease: 'Linear',
+        onComplete: () => {
+          this.redrawTile(bx, by);
+          this.redrawTile(destX, destY);
+        },
+      });
+    } else {
+      this.redrawTile(bx, by);
+      this.redrawTile(destX, destY);
+    }
+
+    this.showFieldAbilityPopup('Used STRENGTH!');
+  }
+
+  /** Get the appropriate footstep SFX key for a given tile type. */
+  private getFootstepSFX(tile: number): string | null {
+    switch (tile) {
+      case Tile.GRASS:
+      case Tile.TALL_GRASS:
+      case Tile.DARK_GRASS:
+      case Tile.LIGHT_GRASS:
+      case Tile.FLOWER:
+        return SFX.FOOTSTEP_GRASS;
+      case Tile.SAND:
+      case Tile.WET_SAND:
+      case Tile.ASH_GROUND:
+        return SFX.FOOTSTEP_SAND;
+      case Tile.WATER:
+      case Tile.TIDE_POOL:
+        return SFX.WATER_SPLASH;
+      case Tile.DOCK_PLANK:
+      case Tile.MINE_TRACK:
+        return SFX.FOOTSTEP_WOOD;
+      case Tile.METAL_FLOOR:
+      case Tile.WIRE_FLOOR:
+        return SFX.FOOTSTEP_METAL;
+      case Tile.PATH:
+      case Tile.CAVE_FLOOR:
+      case Tile.ROCK_FLOOR:
+      case Tile.LAVA_ROCK:
+        return SFX.FOOTSTEP_STONE;
+      default:
+        return null;
+    }
+  }
+
   /** Attempt to fish at the water tile the player is facing. */
   private tryFishing(): void {
     const gm = GameManager.getInstance();
@@ -811,7 +975,9 @@ export class OverworldScene extends Phaser.Scene {
   /** Heal all Pokémon in the party to full HP and PP. */
   private healParty(): void {
     const gm = GameManager.getInstance();
-    for (const pokemon of gm.getParty()) {
+    const party = gm.getParty();
+    for (let i = 0; i < party.length; i++) {
+      const pokemon = party[i];
       pokemon.currentHp = pokemon.stats.hp;
       pokemon.status = null;
       pokemon.statusTurns = undefined;
@@ -819,6 +985,8 @@ export class OverworldScene extends Phaser.Scene {
         const md = moveData[move.moveId];
         move.currentPp = md?.pp ?? move.currentPp;
       }
+      // +1 friendship for healing at PokéCenter
+      gm.adjustFriendship(i, 1);
     }
     // Show healing flash and play heal jingle
     this.cameras.main.flash(300, 255, 255, 255);
@@ -833,6 +1001,14 @@ export class OverworldScene extends Phaser.Scene {
     this.scene.get('StarterSelectScene').events.once('shutdown', () => {
       this.respawnNPCs();
       this.scene.resume();
+    });
+  }
+
+  /** Launch a nickname input overlay for a Pokémon. Calls callback when done. */
+  private launchNicknameInput(pokemon: PokemonInstance, speciesName: string, callback: () => void): void {
+    this.scene.launch('NicknameScene', { pokemon, speciesName });
+    this.scene.get('NicknameScene').events.once('shutdown', () => {
+      callback();
     });
   }
 
@@ -851,12 +1027,31 @@ export class OverworldScene extends Phaser.Scene {
   // ── Main loop ─────────────────────────────────────────────
   update(): void {
     if (this.transitioning) return;
+    if (this.cutsceneEngine.isRunning()) return;
 
     // Update NPC idle behaviors every frame (even while player moves)
     const delta = this.game.loop.delta;
     for (const controller of this.npcBehaviors) {
       controller.update(delta);
     }
+
+    // Animated tile effects (run every frame, even while player moves)
+    this.tileAnimFrame++;
+    if (this.tileAnimFrame % 30 === 0) {
+      const waterTints = [0x3090e0, 0x40a0f0, 0x2080d0];
+      const lavaTints = [0xe06020, 0xf07030, 0xd05010];
+      const idx = Math.floor(this.tileAnimFrame / 30) % 3;
+      for (const s of this.waterTileSprites) s.setTint(waterTints[idx]);
+      for (const s of this.lavaTileSprites) s.setTint(lavaTints[idx]);
+    }
+    if (this.tileAnimFrame % 15 === 0) {
+      for (const s of this.tallGrassTileSprites) {
+        s.setAlpha(0.85 + Math.random() * 0.15);
+      }
+    }
+
+    // Update ambient SFX
+    if (this.ambientSFX) this.ambientSFX.update();
 
     if (this.player.isMoving()) return;
 

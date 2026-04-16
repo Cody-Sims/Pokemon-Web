@@ -162,7 +162,8 @@ pokemon-web/
 │       │   ├── trainer-data.ts        # Trainer rosters, dialogue, rewards (rival, gym, grunts)
 │       │   ├── encounter-tables.ts    # Per-route wild Pokémon + level ranges
 │       │   ├── evolution-data.ts      # Evolution conditions (level, item, trade)
-│       │   └── quest-data.ts          # Side quest definitions (steps, flags, rewards)
+│       │   ├── quest-data.ts          # Side quest definitions (steps, flags, rewards)
+│       │   └── cutscene-data.ts       # Cutscene definitions (scripted sequences for story events)
 │       │
 │       ├── managers/                   # Singleton service classes
 │       │   ├── GameManager.ts         # Central state: party, bag, badges, flags
@@ -181,6 +182,7 @@ pokemon-web/
 │       │   ├── GameClock.ts           # Accelerated day/night cycle (10× speed)
 │       │   ├── WeatherRenderer.ts     # Overworld weather effects (rain/sand/snow/fog/sunshine)
 │       │   ├── LightingSystem.ts      # Cave darkness overlay with RenderTexture light circles
+│       │   ├── CutsceneEngine.ts      # Data-driven scripted sequence player (dialogue, camera, NPC movement, effects)
 │       │   ├── InputManager.ts        # Unified WASD/Arrow/touch → direction
 │       │   ├── AnimationHelper.ts     # Registers shared sprite animations
 │       │   ├── MapPreloader.ts        # Proximity-based Pokémon sprite preloader

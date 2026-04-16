@@ -5,6 +5,14 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
+### Added — Cutscene Engine
+- **CutsceneEngine** (`frontend/src/systems/CutsceneEngine.ts`): Data-driven scripted sequence player supporting 16 action types — dialogue, camera pan, NPC/player movement, face direction, wait, fade to/from black, screen flash, BGM/SFX, screen shake, emote bubbles, flag setting, and parallel action execution.
+- **CutsceneAction union type** and **CutsceneDefinition** interface for type-safe cutscene authoring.
+- **Cutscene data file** (`frontend/src/data/cutscene-data.ts`): Sample cutscenes — `rival-intro`, `willow-lab-intro`, `route-1-blockade`.
+- **NpcSpawn.triggerCutscene** field: NPCs can trigger cutscenes on interaction instead of normal dialogue.
+- **OverworldScene integration**: CutsceneEngine initialized in `create()`, input processing skipped during cutscene playback, `tryInteract()` checks for cutscene triggers.
+
+## [2026-04-16]
 ### Added — Ledge System
 - **One-way ledge mechanics**: LEDGE tiles (down), LEDGE_LEFT, LEDGE_RIGHT with directional collision checks. Player can only step onto ledges from the matching direction.
 - **Hop animation**: Parabolic arc tween (12px height) when jumping over a ledge, 1.2x walk duration.

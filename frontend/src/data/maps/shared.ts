@@ -437,9 +437,13 @@ export interface NpcSpawn {
   /** On interaction, set this flag to true. */
   setsFlag?: string;
   /** Special interaction type instead of plain dialogue. */
-  interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select';
+  interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select' | 'name-rater' | 'move-tutor';
+  /** Extra data for the interaction (e.g. tutorId for move-tutor). */
+  interactionData?: string;
   /** Idle behavior config (look-around, wander, pace). */
   behavior?: NPCBehaviorConfig;
+  /** If set, play this cutscene (by key) when the player interacts instead of normal dialogue. */
+  triggerCutscene?: string;
 }
 
 export interface TrainerSpawn {
@@ -489,6 +493,8 @@ export interface MapDefinition {
   lightSources?: Array<{ tileX: number; tileY: number; radius?: number; color?: number }>;
   /** Overworld weather effect to render on this map. Defaults to 'none'. */
   weather?: import('@systems/WeatherRenderer').OverworldWeather;
+  /** Ambient sound effect type for this map. Defaults to 'none'. */
+  ambientSfx?: import('@systems/AmbientSFX').AmbientType;
 }
 
 // ─── Helper: parse string map into number grid ───
