@@ -66,6 +66,7 @@ export class PreloadScene extends Phaser.Scene {
       'npc-bug-catcher', 'npc-ace-trainer', 'npc-ace-trainer-f',
       'npc-grunt', 'npc-marina', 'npc-psychic',
       'npc-gym-brock', 'npc-gym-blitz', 'npc-gym-ferris', 'npc-admin-vex',
+      'npc-oak',
     ];
     for (const key of npcSprites) {
       this.load.atlas(key, `assets/sprites/npcs/${key}.png`, `assets/sprites/npcs/${key}.json`);

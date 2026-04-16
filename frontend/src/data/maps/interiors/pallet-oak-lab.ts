@@ -29,7 +29,7 @@ export const palletOakLab: MapDefinition = {
       id: 'lab-oak',
       tileX: 6,
       tileY: 3,
-      textureKey: 'npc-professor',
+      textureKey: 'npc-oak',
       facing: 'down',
       dialogue: [
         'Prof. Oak: Ah, there you are!',
@@ -43,7 +43,7 @@ export const palletOakLab: MapDefinition = {
       id: 'lab-oak-after',
       tileX: 6,
       tileY: 3,
-      textureKey: 'npc-professor',
+      textureKey: 'npc-oak',
       facing: 'down',
       dialogue: [
         'Prof. Oak: Your Pokémon is looking great!',

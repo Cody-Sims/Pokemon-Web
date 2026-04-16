@@ -237,6 +237,10 @@ export class OverworldScene extends Phaser.Scene {
           // Foreground overlays render ABOVE the player (tall grass, trees)
           // Ground overlays render BELOW the player (doors, flowers, mats, etc.)
           sprite.setDepth(FOREGROUND_TILES.has(tile) ? 2 : 0.5);
+          // Tall grass should be semi-transparent so entities are partially visible
+          if (tile === Tile.TALL_GRASS) {
+            sprite.setAlpha(0.7);
+          }
         }
       }
     }
@@ -706,5 +710,27 @@ export class OverworldScene extends Phaser.Scene {
     // Walk
     this.playAnim(`player-walk-${input.direction}`, false);
     this.player.move(input.direction);
+  }
+
+  /**
+   * Crop the bottom portion of entities standing on tall grass tiles
+   * so they appear partially hidden in the grass (classic Pokémon effect).
+   */
+  private updateGrassCrop(): void {
+    const entities: Phaser.GameObjects.Sprite[] = [this.player, ...this.npcs];
+    for (const entity of entities) {
+      if (!entity.active) continue;
+      const tx = Math.floor(entity.x / TILE_SIZE);
+      const ty = Math.floor(entity.y / TILE_SIZE);
+      const tile = this.mapDef.ground[ty]?.[tx];
+      if (tile === Tile.TALL_GRASS) {
+        // Hide bottom ~35% of sprite to simulate wading through grass
+        const frame = entity.frame;
+        const cropH = Math.floor(frame.height * 0.65);
+        entity.setCrop(0, 0, frame.width, cropH);
+      } else {
+        entity.setCrop();
+      }
+    }
   }
 }
