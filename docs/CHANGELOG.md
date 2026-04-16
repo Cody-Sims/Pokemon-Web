@@ -5,6 +5,17 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
+### Added — Phase 2 (Storyline): Abyssal Spire Dungeon (5 Floors)
+- **Abyssal Spire F1** (`frontend/src/data/maps/dungeons/abyssal-spire-f1.ts`): "The Breach" — 20×20 ancient temple entrance with ruin/Synthesis hybrid tileset, mist, Rook partner NPC, 2 Synthesis Elite trainers. Warps to route-8 and F2.
+- **Abyssal Spire F2** (`frontend/src/data/maps/dungeons/abyssal-spire-f2.ts`): "Lab Wing" — 20×20 full Synthesis lab with containment pods, terminals, wire floors, 2 elite grunts, Dr. Vex boss battle (encounter 3). Lore terminals reveal Project Chimera.
+- **Abyssal Spire F3** (`frontend/src/data/maps/dungeons/abyssal-spire-f3.ts`): "Command Center" — 18×18 ops room with terminal clusters and electric panels. Zara Lux NPC with branching flagDialogue (defect vs battle path). Admin Zara encounter 3.
+- **Abyssal Spire F4** (`frontend/src/data/maps/dungeons/abyssal-spire-f4.ts`): "Inner Sanctum" — 15×16 ancient temple with cracked floors, ruin pillars, aether crystals, and parasitic lab equipment. Professor Willow rescue NPC (sets `rescued_willow` flag). Lore interactables.
+- **Abyssal Spire F5** (`frontend/src/data/maps/dungeons/abyssal-spire-f5.ts`): "The Altar" — 15×14 circular chamber with aether conduit ring and crystals. Aldric confrontation (cutscene only, sets `aldric_escaped_to_league` flag, escapes to Champion's chamber).
+- **8 new trainers** in `trainer-data.ts`: Admin Vex encounter 3 (Lv 41-44), Admin Zara encounters 2 (Lv 32-35) and 3 (Lv 40-43), 4 Synthesis Elite Grunts (Lv 38-42).
+- **Abyssal Spire encounter table** in `encounter-tables.ts`: Haunter, Golbat, Kadabra, Grimer, Magnemite, Gastly (Lv 34-42).
+- **Map registry**: all 5 floors registered in `maps/index.ts`.
+
+## [2026-04-16]
 ### Added — Phase 20: Achievement & Completion Tracking
 - **AchievementManager** (`frontend/src/managers/AchievementManager.ts`): singleton manager tracking unlocked achievements with serialize/deserialize, unlock callback, and auto-completionist detection.
 - **Achievement data** (`frontend/src/data/achievement-data.ts`): 50 achievements across 5 categories (Story, Collection, Battle, Exploration, Challenge).
