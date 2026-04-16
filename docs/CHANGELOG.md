@@ -14,6 +14,11 @@ All notable changes to the Pokemon Web project.
 - Updated all source and test imports for new directory structure
 - Updated `docs/architecture.md` directory tree and file path references
 
+### Changed — Documentation consolidation
+- **Rewrote `docs/plan.md`**: Consolidated all completed phases into concise summaries. Merged remaining work from `storyline-implementation-plan.md`, `code-cleanup-plan.md`, and `map-improvements.md` into a single prioritized "Remaining Work" section covering map redesigns, gameplay features, content, UI, technical debt, and stretch goals.
+- **Removed 4 redundant docs**: `storyline-implementation-plan.md` (all 12 phases complete), `code-cleanup-plan.md` (all phases complete), `map-improvements.md` (consolidated into plan.md), `TestingPlan.md` (superseded by TestingArchitecture.md).
+- Retained docs: `plan.md`, `architecture.md`, `storyline.md` (reference bible), `TestingArchitecture.md`, `CHANGELOG.md`.
+
 ### Changed — Architecture cleanup phase 2 (prior)
 - **OverworldScene tryInteract extraction** (1128→818 lines): Moved ~310-line `tryInteract()` method into `scenes/overworld/OverworldInteraction.ts` with `InteractionContext` callback interface. Scene retains a thin delegating wrapper.
 - **Split `data/maps/shared.ts`** (629→6 lines): Decomposed monolithic shared file into 4 focused modules:

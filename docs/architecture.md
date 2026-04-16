@@ -25,6 +25,8 @@ pokemon-web/
 ├── docs/                               # Documentation (canonical location)
 │   ├── architecture.md                 # This file
 │   ├── plan.md                         # Development plan & phases
+│   ├── storyline.md                    # Storyline bible (characters, arcs, quests)
+│   ├── TestingArchitecture.md          # 5-layer test suite architecture
 │   └── CHANGELOG.md                    # Completed work log
 │
 ├── frontend/                           # All client-side code lives here
