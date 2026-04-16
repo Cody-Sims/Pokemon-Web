@@ -69,42 +69,53 @@ A coastal island chain where ancient ruins dot the landscape and **Aether** flow
 ### Gameplay Polish ✓
 > Trainer walk-toward-player on LoS trigger with wall-blocked line of sight. Trainer sprites in battle (enemy trainer + player character behind Pokémon). Player depth fix (renders between ground and tall grass). Quit-to-title button in pause menu. Delete Save option on title screen.
 
-### Phase 9: Story & Quest Wiring (In Progress)
-> **Rival Encounters Placed**: Kael rival-1 in Oak's Lab (post-starter), Kael rival-2 on Route 3, Kael tag-battle NPC in Ironvale City, Kael rival-5 on Victory Road. Marina encounter on Route 2. **Missing Quest Definitions Added**: Captain Stern's Engine, The Chef's Special, Power Restoration, The Restless Spirit, The Dragon's Lament, Volcanic Survey, The Father's Trail (7 new quest definitions in quest-data.ts, total 12). **Dr. Ash NPC** placed in Cinderfall Town (Volcanic Survey quest giver). **Remaining work**: Kael encounter 4 needs Route 8 (Stormbreak Pass) map. Kael encounter 6 + Marina encounter 4 need post-game areas. Quest step trigger automation (observer pattern for flag→step mapping). Quest log/journal UI.
+### Phase 9: Story & Quest Wiring ✓
+> **Rival Encounters Placed**: Kael rival-1 in Oak's Lab (post-starter), Kael rival-2 on Route 3, Kael tag-battle NPC in Ironvale City, Kael rival-4 on Route 8 (Stormbreak Pass), Kael rival-5 on Victory Road, Kael rival-6 in Aether Sanctum (post-game). Marina encounter on Route 2, Marina encounter-4 in Crystal Cavern Depths (post-game). **Quest Definitions Complete**: 12 quests with full step automation — triggerFlags/triggerEvents for Volcanic Survey (5 vents), Power Restoration (3 conduits), Restless Spirit (3 fragments), Dragon's Lament (herb+mineral), Captain Stern's Engine (3 grunt defeats), Chef's Special (5 berries). **Quest UI**: QuestJournalScene (Active/Complete tabs, scrollable list, step detail with checkmarks), QuestTrackerScene HUD overlay (auto-updating active quest step in top-right corner). **New Maps**: Route 8 (Stormbreak Pass, 20×30, connects Cinderfall→Victory Road), Aether Sanctum (post-game dungeon, 20×25), Crystal Cavern Depths (post-game, 20×30). **Generic House Interiors**: Reusable 8×8 template with factory function, 10 per-city houses with flavor dialogue. **Quest Interaction NPCs**: Conduit repair (Voltara), memory fragments (Wraithmoor), volcanic vents (Victory Road), herb/mineral pickups (Verdantia/Ember Mines), engine part grunts (Route 3/Coral Harbor). **Map Connection Chain**: Cinderfall → Route 8 → Victory Road → Aether Sanctum, Crystal Cavern ↔ Crystal Cavern Depths.
+
+### Phase 10: First Impressions & New Game Experience ✓
+> IntroScene with multi-slide Professor Willow presentation, typewriter text, animated fade transitions. Character naming screen with keyboard input, preset quick-picks, blinking cursor. Confirmation slide before overworld transition. Running Shoes from Mom (flag-gated NPC dialogue with `setFlag` support).
+
+### Phase 11: Battle Animation & Visual Effects System ✓
+> MoveAnimationPlayer system with 6 animation styles (contact, projectile, beam, area, self, shake). 18 type-based particle color palettes. 16 specific move animation overrides. Screen flash and screen shake effects. All animations play before damage is applied in BattleUIScene.
+
+### Phase 15: Sound & Music Expansion ✓
+> **Procedural Cry Generator** (CryGenerator.ts): Runtime Web Audio API synthesis of 151 unique chip-tune cries using multi-pulse envelopes, frequency sweeps, and vibrato. Hand-tuned starter families, algorithmic generation for all others. **Expanded Audio**: 13 new BGM keys (rival/legendary/villain battle, 5 town variants, cave, evolution, credits, victory road, villain lair) + 14 new SFX keys (stat raise/lower, synthesis activate, footsteps, badge get, heal jingle, etc.). **Context-Sensitive Music**: Distinct BGM per town theme (coastal, industrial, spooky, mountain, cave). AudioManager enhancements: `playFanfare()`, low-HP warning beep, `pauseBGM()`/`resumeBGM()`, `playSFXWithRate()`. **ProceduralAudio** placeholder generator for missing audio assets.
+
+### Phase 16: Advanced Battle Features (Partial) ✓
+> **Synthesis Mode** (SynthesisHandler.ts + synthesis-data.ts): Game's unique "Mega Evolution" equivalent. 19 eligible Pokémon with +100 BST thematic boosts, optional type/ability overrides. One activation per battle, reverts on faint/battle-end. **Double Battle Manager** (DoubleBattleManager.ts): Full 2v2 system with 4 active slots, priority+speed turn ordering, spread move targeting (0.75× reduction), tag battle support with NPC ally parties. BattleState expanded with EXECUTE_TURN and REPLACE states. **Move Tutor & TM System** (tm-data.ts): 50 reusable TMs across all types (8 gym rewards), 5 Move Tutor NPCs, `canLearnMove()` compatibility function, Heart Scale item. **Not yet implemented**: Battle Frontier/Tower, move tutor scene UI, synthesis visual effects in BattleScene.
+
+### Phase 12: Overworld Atmosphere & World Feel ✓
+> **WeatherRenderer system** (WeatherRenderer.ts): 6 weather types (rain, sandstorm, snow, fog, sunshine, none) using Phaser particle emitters with programmatic textures. Camera-fixed overlays (depth 90) with alpha-blended tint rects (depth 89) to avoid conflict with GameClock day/night. Per-map weather via `MapDefinition.weather` field. Route 6 (rain), Route 7 (fog), Ember Mines (sandstorm). **NPC Behavior system** (NPCBehavior.ts): 4 behavior types — stationary, look-around (random facing 2–5s), wander (random 1-tile moves within radius 3–8s), pace (fixed direction route 2s). `NPCBehaviorController` with timer-based actions and collision-aware movement. `NpcSpawn.behavior` field. **EmoteBubble system** (EmoteBubble.ts): 6 emote types (exclamation, question, heart, sweat, music, zzz) as styled text with pop-in/fade-out tweens. **LightingSystem** (LightingSystem.ts): RenderTexture-based darkness overlay (depth 85) with radial gradient light circles. Player light follows camera, static lights for torches. `MapDefinition.isDark` and `lightSources` fields. Crystal Cavern and Crystal Cavern Depths marked dark with torch sources. **Not yet implemented**: animated tiles (water shimmer, grass sway, lava glow), environmental SFX layer (ambient sounds, terrain footsteps), window light shafts.
+
+### Phase 13: Player Movement & Exploration Upgrades ✓
+> **Bicycle system**: B key toggle via InputManager, 3× speed (63ms/tile via `GridMovement.setCycling()`), auto-dismount indoors, mutually exclusive with running. `bicycle` key item in item-data.ts. **Running encounter modifier**: Running increases encounter rate by 1.5× via `rateMultiplier` parameter in `EncounterSystem.checkEncounter()`. **OverworldAbilities** (OverworldAbilities.ts): 6 field abilities (Cut, Surf, Strength, Flash, Fly, Rock Smash) with badge requirements and party move checks. `canUse()`, `getUser()`, `getAvailable()` static methods. New tiles: CUT_TREE (110), CRACKED_ROCK (111), STRENGTH_BOULDER (112). Cut and Rock Smash wired into `tryInteract()` with live tile replacement. **Surfing**: `surfing` state in OverworldScene with collision override for water tiles, auto-disembark on non-water tiles. **Ledge system**: One-way directional jumps via `LEDGE_TILES` direction map. `LEDGE_LEFT` (113) and `LEDGE_RIGHT` (114) tile types. Parabolic hop animation (12px arc, 1.2× walk duration) in GridMovement with `setLedgeCheck()` callback. **Not yet implemented**: Fly fast-travel UI scene, Strength boulder-pushing logic, Flash integration with LightingSystem, cycling sprite/animation.
 
 ---
 
 ## Remaining Phases
 
-### Phase 9 Completion — Story & Quest Wiring (Immediate Next)
+### Phase 9 Remaining — Tag-Battle & Berry Mechanics
 
-**Rival System:**
-- Route 8 (Stormbreak Pass) map + Kael encounter 4 placement
-- Post-game Aether Sanctum map + Kael encounter 6
-- Crystal Cavern depths expansion + Marina encounter 4
-- Tag-battle system for Ironvale Kael/player vs. Synthesis Admins co-op
+**Tag-Battle System:**
+- Tag-battle system for Ironvale Kael/player vs. Synthesis Admins co-op (uses DoubleBattleManager)
 
-**Quest Step Automation:**
-- Observer pattern: game events (defeated trainer, picked item, entered area) → auto-complete quest steps
+**Berry Mechanics:**
+- Berry planting mechanic at route locations (berry growing tied to GameClock)
 - Collector's Challenge: "show Pokémon" interaction with Magnus (detect party type)
-- Mine Clearance: link Ember Mines grunt defeats to quest step flags
-- Berry Farming: berry planting mechanic at route locations
 - Lost Pokémon: Geodude encounter trigger in Viridian Forest
-- Stern's Engine: place 3 grunt encounters guarding engine parts on Route 3 / Coral Harbor
-- Power Restoration: place 3 conduit interaction points in Voltara City
-- Restless Spirit: place 3 memory fragment objects in Wraithmoor Town
-- Dragon's Lament: place herb/mineral pickup objects in Verdantia and Ember Mines
-- Volcanic Survey: place 5 vent interaction points near Cinderfall/Victory Road
 
-**Quest UI:**
-- Quest Journal scene (accessible from pause menu)
-- Active quest tracker (HUD overlay showing current step)
-- Quest completion notifications
+### Phase 12–13 Remaining Work
 
-**House Interiors:**
-- Generic reusable house interior (8×8) for residential buildings
-- Add warps from city house doors to generic interiors
-- Per-town NPC dialogue in houses for flavor and lore
+**Phase 12 — Overworld Atmosphere (Partial):**
+- Animated tiles: water shimmer, tall grass sway, lava glow cycle, Aether crystal pulse
+- Environmental SFX layer: per-map ambient sounds, terrain-based footsteps, volume ducking
+- Window light shafts in interiors, neon glow in Voltara City
+
+**Phase 13 — Movement Upgrades (Partial):**
+- Fly fast-travel UI scene (map selection from visited towns)
+- Strength boulder-pushing logic (directional push with collision check)
+- Flash integration with LightingSystem (expand player light radius in dark caves)
+- Cycling sprite/animation (distinct visual for bicycle mode)
 
 ### Post-Game Content (Not Yet Implemented)
 
@@ -116,148 +127,6 @@ A coastal island chain where ancient ruins dot the landscape and **Aether** flow
 - **Endgame dungeon**: Deep Crystal Cavern expansion.
 - **Remaining Elite Four**: Theron (Fighting/Rock), Lysandra (Psychic/Dark), Ashborne (Fire/Dragon).
 - **Randomizer mode** (stretch): Seed-based shuffle of encounters/teams/starters.
-
----
-
-## Phase 10: First Impressions & New Game Experience
-
-The current new game flow goes directly from title menu → overworld with no story setup, no character naming, and no professor intro. This phase transforms the opening into a memorable, polished experience.
-
-**Professor Intro Scene (IntroScene.ts):**
-- Classic "Welcome to the world of Pokémon!" multi-slide presentation by Professor Willow
-- Animated Willow sprite slides in, Pokémon sprite appears alongside narration
-- Typewriter text with SFX, player advances with confirm button
-- Transition into character naming
-
-**Character Naming & Customization:**
-- Text input screen for player name (keyboard + on-screen keyboard for mobile)
-- Character gender/appearance selection (boy/girl sprite variant with preview)
-- Rival naming option (default: Kael)
-- Name saved to GameManager, shown in dialogue, menus, and save file
-
-**Animated Title Screen:**
-- Pixel-art logo image (replaces plain text)
-- Parallax scrolling background with Pokémon silhouettes
-- Starter Pokémon idle animations on title
-- Press Start flashing prompt before showing menu options
-
-**Starter Selection Polish:**
-- Professor Willow appears on-screen presenting the starters
-- Pokémon cry SFX on hover/select
-- Stat preview panel (base stats, ability, starting moves)
-- "Are you sure?" confirmation before finalizing
-- Animated card reveal (slide-in or flip effect)
-
----
-
-## Phase 11: Battle Animation & Visual Effects System
-
-Battles currently have no move-specific animations, making the combat feel static despite deep mechanics. This is the single highest-impact polish area.
-
-**Move Animation Framework:**
-- `MoveAnimationPlayer` system: data-driven animation definitions per move
-- Animation types: projectile (flies from attacker → target), contact (attacker lunges), area (fills screen), beam (continuous line), self (buff glow on user)
-- Each move maps to an animation key; fallback to category-based default (physical lunge, special flash, status sparkle)
-- Animations defined as data in `move-animations.ts`, not hardcoded per move
-
-**Type-Based Particle Effects:**
-- Fire: orange/red particles with flickering embers
-- Water: blue splash droplets
-- Electric: yellow lightning bolt sprites + screen flash
-- Grass: green leaf swirl
-- Ice: white/cyan frost shards
-- Psychic: purple concentric rings
-- Poison: green bubbling drip
-- Ground: brown rock chunks rising from below
-- Fighting: impact shockwave burst
-- Ghost: dark wispy tendrils
-- Dragon: purple energy breath
-- Normal: white hit spark (default)
-
-**Battle Scene Polish:**
-- Pokémon emerge-from-ball animation (white silhouette → color)
-- Faint animation improvement (slide down + fade, not just disappear)
-- Damage number popups (floating text showing HP lost)
-- Critical hit screen shake
-- Super-effective screen flash + enlarged text
-- Weather visual overlays (rain droplet particles, sandstorm dust, hail ice chunks, sun lens flare)
-
-**Pokéball Throw Animation:**
-- Visible ball sprite with arc trajectory
-- Ball opens with white flash on contact
-- Shake wobble animation with suspenseful timing
-- Click-sparkle on successful capture
-- Break-free red flash on failure
-
----
-
-## Phase 12: Overworld Atmosphere & World Feel
-
-The overworld is currently static tiles with no ambient life. This phase adds environmental storytelling through weather, animated tiles, NPC behaviors, and lighting.
-
-**Overworld Weather System:**
-- Rain: particle emitter with blue droplets, darker tint, splash particles on ground
-- Sandstorm: horizontal dust particles with reduced visibility tint
-- Snow/Hail: white particle drift with accumulation tint
-- Fog: semi-transparent overlay that reduces camera draw distance
-- Sunshine: warm golden tint with occasional lens flare particles
-- Weather tied to map definitions (`MapDefinition.weather`) and story events
-
-**Animated Tiles:**
-- Water tiles: 3-frame wave shimmer animation (cycling tileset frames)
-- Tall grass: gentle sway when player is nearby
-- Flowers: subtle color pulse
-- Lava/magma tiles: flowing red-orange glow cycle
-- Aether crystals: pulsing cyan glow in Crystal Cavern
-
-**NPC Behaviors:**
-- Idle animations: NPCs occasionally turn to face random directions
-- Wander paths: some NPCs walk a short patrol route (2–4 tiles)
-- Reaction sprites: `!` and `?` and `♥` bubble emotes above NPCs
-- NPCs that notice the player and turn to face them when nearby
-
-**Lighting & Ambiance:**
-- Cave/dungeon darkness overlay with player light radius
-- Torch/lamp tiles that cast warm glow circles
-- Indoor window light shafts during day
-- Neon glow effects in Voltara City (electric theme)
-- Aether glow in Crystal Cavern and Synthesis areas
-
-**Environmental SFX Layer:**
-- Per-map ambient sound loops (ocean waves, forest birds, cave drips, city bustle, wind)
-- Volume ducking when BGM plays
-- Footstep SFX that changes by terrain (grass rustle, stone tap, sand crunch, wood plank)
-
----
-
-## Phase 13: Player Movement & Exploration Upgrades
-
-The player currently only walks. Adding movement variety and overworld abilities transforms exploration.
-
-**Running Shoes:**
-- Obtained from Mom after first badge (or NPC gift on Route 2)
-- Hold B/shift to run at 2× speed
-- Running animation (faster walk cycle or separate run frames)
-- Running through tall grass increases encounter rate
-
-**Bicycle:**
-- Obtained from Bike Shop NPC in Ironvale City (or quest reward)
-- 3× movement speed, distinct cycling sprite/animation
-- Cannot ride indoors or on certain terrain (sand, ledges)
-- Dismount animation
-
-**Overworld HM/TM Abilities (No HM Slaves):**
-- Cut: Interact with small trees to clear them (requires badge + party Pokémon that knows Cut)
-- Surf: Walk onto water tiles if party has Surf user — player sprite swaps to surfing
-- Strength: Push boulder puzzles in caves/dungeons
-- Flash: Expand light radius in dark caves
-- Fly: Fast travel to any visited PokéCenter from pause menu
-- Rock Smash: Break cracked rocks in routes/caves for hidden items
-
-**Ledge System Enhancement:**
-- One-way jump animation (player hops down with brief airborne frame)
-- Ledge SFX on jump
-- Proper collision so player can't walk up ledges
 
 ---
 
@@ -289,71 +158,32 @@ Everything is rendered with Phaser's built-in text. Custom art makes the game fe
 
 ---
 
-## Phase 15: Sound & Music Expansion
+## Phase 15–16 Remaining Work
 
-The game has 8 BGM tracks and 17 SFX. A full Pokémon experience needs richly layered audio.
+These items from Phases 15–16 are implemented at the data/logic layer but still need UI integration:
 
-**Pokémon Cries:**
-- Per-species sound effect (synthesized chip-tune cries, not copyrighted originals)
-- Play on: encounter start, Pokédex view, evolution, sending out in battle, fainting
-- 151 unique cries (can use pitch/speed variants of base waveforms to reduce asset count)
+**Synthesis Mode UI Integration:**
+- "SYNTHESIZE" button in BattleUIScene action menu (when conditions met)
+- Synthesis visual aura glow on Pokémon sprite during battle
+- Synthesis Bracelet key item added to item data registry
+- Boss trainers (Vex, Aldric) use Synthesis Mode in their battles
 
-**Expanded BGM:**
-- Per-town themes (at least 5 distinct town BGMs beyond pallet-town)
-- Gym Leader battle theme (distinct from trainer battle)
-- Rival battle theme
-- Legendary encounter theme
-- Evolution fanfare (short jingle)
-- Collective hideout/villain theme
-- Victory Road tension theme
-- Credits/ending theme
+**Double Battle Scene:**
+- BattleScene visual layout for 4 Pokémon (2 per side)
+- Target selection UI for double battles
+- Tag Battle routing in OverworldScene → BattleScene with `isDouble: true`
+- Partner AI move selection for NPC allies
 
-**Context-Sensitive Music:**
-- Low-HP warning beep that layers over battle BGM
-- Gym Leader "last Pokémon" dramatic BGM variant
-- Night-time softer variants of town themes
-- Seamless transition when entering buildings (BGM continues, no restart)
-
-**Expanded SFX:**
-- Menu navigation clicks/chimes
-- Item pickup jingle
-- Badge acquisition fanfare
-- Level-up chime
-- Pokémon Center healing jingle (the classic 6-note ditty)
-- Door open/close
-- Stat raise/lower sound
-- Weather ambient loops
-
----
-
-## Phase 16: Advanced Battle Features
-
-Deepen the battle system with features that add strategic depth and spectacle.
-
-**Mega Evolution / Synthetic Boost (Unique Mechanic):**
-- "Synthesis Mode" — unique to this game's lore. Once per battle, player can Synthesize a compatible Pokémon
-- Temporary stat boost + visual aura glow + type enhancement
-- Available after Act 2 story event provides Synthesis Bracelet
-- Limited roster of compatible Pokémon (story-tied)
-- Boss trainers also use Synthesis Mode (Vex, Aldric)
-
-**Double Battles:**
-- 2v2 battle format for tag battles (Kael co-op at Ironvale) and Collective admin fights
-- Target selection UI: pick which opponent to hit
-- Spread moves hit both opponents
-- Partner AI for NPC ally in tag battles
+**Move Tutor/TM Scene:**
+- MoveTutorScene (NPC interaction → move selection → teach confirmation)
+- TM use from inventory (select Pokémon → compatibility check → teach)
+- Missing move data entries for TM/tutor-referenced moves
 
 **Battle Frontier / Battle Tower (Post-Game):**
 - Endless streak mode with scaling difficulty
 - Rental Pokémon option (pick from random pool)
 - Battle points currency for exclusive items/TMs
 - Leaderboard (local high scores)
-
-**Move Tutor & TM System:**
-- TM items consumable (or reusable, configurable)
-- Move Tutor NPCs in select cities teaching rare moves
-- Heart Scale currency for Move Reminder (re-learn forgotten moves)
-- Move Deleter NPC
 
 ---
 
