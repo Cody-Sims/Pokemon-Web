@@ -5,6 +5,46 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
+### Added — Overworld Weather System
+- **WeatherRenderer system** (`frontend/src/systems/WeatherRenderer.ts`): Renders visual weather effects on the overworld using Phaser particle emitters and camera-fixed overlays. Supports 6 weather types: rain (diagonal blue droplets), sandstorm (horizontal dust), snow (drifting flakes), fog (pulsing white overlay), sunshine (warm tint + lens flare), and none.
+- **MapDefinition `weather` field**: Optional `weather?: OverworldWeather` field on `MapDefinition` interface for per-map weather configuration.
+- **OverworldScene integration**: WeatherRenderer created during `create()` and updated each frame. Weather automatically set from map definition.
+- **Map weather assignments**: Route 6 (rain), Route 7 (fog), Ember Mines (sandstorm).
+
+## [2026-04-16]
+### Added — Overworld Abilities System
+- **OverworldAbilities.ts**: New system for field moves (Cut, Surf, Strength, Flash, Fly, Rock Smash) with badge requirements and party move checks.
+- **New tile types**: CUT_TREE (110), CRACKED_ROCK (111), STRENGTH_BOULDER (112) added to Tile enum, SOLID_TILES, OVERLAY_BASE, and FOREGROUND_TILES.
+- **Cut and Rock Smash interactions**: Tile-based interactions in OverworldScene.tryInteract() that remove obstacles and show popup text.
+- **Surf support**: Surfing state in OverworldScene with modified collision check to allow water tile traversal; auto-disembark on non-water tiles.
+- **Helper methods**: redrawTile() for live tile replacement, showFieldAbilityPopup() for ability-use feedback.
+
+## [2026-04-16]
+### Added — NPC Behaviors & Emote System
+- **NPCBehavior system** (`frontend/src/systems/NPCBehavior.ts`): Four behavior types — `stationary`, `look-around` (random facing every 2-5s), `wander` (random 1-tile moves within radius every 3-8s), `pace` (follows fixed direction route every 2s). `NPCBehaviorController` class manages per-NPC timers and movement with collision checking.
+- **EmoteBubble system** (`frontend/src/systems/EmoteBubble.ts`): Six emote types (`exclamation`, `question`, `heart`, `sweat`, `music`, `zzz`) rendered as styled text above sprites. Pop-in tween (scale 0→1) with auto-fade and destroy.
+- **NpcSpawn `behavior` field**: Added optional `behavior?: NPCBehaviorConfig` to `NpcSpawn` interface in `shared.ts`.
+- **OverworldScene wiring**: Behavior controllers created during `spawnNPCs()`, updated every frame via `update()`, cleaned up in `respawnNPCs()`.
+- **Sample NPC behaviors**: Pallet Town `pallet-npc-1` (look-around), Route 1 `route1-npc-2` (wander, radius 2), Viridian City `viridian-npc-1` (pace left-left-right-right).
+
+## [2026-04-16]
+### Added — Phase 9 Completion: Story & Quest Wiring
+- **Route 8 — Stormbreak Pass**: New 20×30 route connecting Cinderfall Town to Victory Road. Mountain pass terrain with cliffs, tall grass, 3 trainers (2 Ace Trainers, 1 Synthesis Grunt), and Kael rival encounter 4 placement. Full encounter table (Lv 36–44 Graveler, Marowak, Golbat, Rhydon, Nidoking/queen, Electabuzz).
+- **Aether Sanctum**: Post-game 20×25 dungeon accessed from Victory Road. Synthesis-themed tile layout with containment pods and Aether conduits. 3 grunts + Kael encounter 6 (Lv 62–65 rematch). High-level encounter table (Lv 55–65 including Porygon, Snorlax, Dragonite rare spawns). Rook NPC with post-champion dialogue.
+- **Crystal Cavern Depths**: Post-game 20×30 deeper level of Crystal Cavern. Connected via new north passage warps. Marina encounter 4 placement (Lv 55–58). Encounter table with Lv 50–60 Pokémon (Aerodactyl, Lapras, Dragonair rare). Item pickups (Max Revive, Rare Candy).
+- **Generic House Interior system**: Reusable 8×8 house interior template (`createGenericHouse()` factory) with TV, bed, bookshelf, chair, plant, and table tiles. 10 pre-built house interiors (one per city) with city-specific flavor dialogue NPCs. Warps added to Voltara, Wraithmoor, Scalecrest, and Cinderfall cities.
+- **Quest HUD Tracker (QuestTrackerScene.ts)**: Overlay scene showing active quest name and current step in the top-right corner. Auto-updates on flag-set and quest-completed events. Launched automatically from OverworldScene.
+- **QuestJournalScene + QuestTrackerScene registration**: Both scenes now properly registered in game-config.ts (QuestJournalScene was missing from Phaser scene list).
+- **Quest step trigger automation**: Added `triggerFlag` to Volcanic Survey vents (5 steps), Dragon's Lament herb/mineral, and Chef's Special berries. Added `triggerEvent` to Captain Stern engine parts (trainer-defeated events). All auto-complete via QuestManager's existing observer pattern.
+- **Quest interaction NPCs**: Conduit repair points (3) in Voltara City for Power Restoration quest. Memory fragment pickups (3) in Wraithmoor Town for Restless Spirit quest. Volcanic vent recording points (5) in Victory Road for Volcanic Survey quest. Herb pickup in Verdantia Village and mineral pickup in Ember Mines for Dragon's Lament quest.
+- **Captain Stern engine grunt trainers**: 3 new trainer entries (stern-grunt-1/2/3, Lv 14–15) placed on Route 3 and Coral Harbor docks/beach.
+- **Route 8 Ace Trainers**: 2 new trainer entries (ace-trainer-4 Rex, ace-trainer-5 Luna, Lv 37–39) for Stormbreak Pass.
+- **Map connection chain update**: Cinderfall → Route 8 → Victory Road → Aether Sanctum. Crystal Cavern ↔ Crystal Cavern Depths. All warps and spawn points bidirectional.
+
+### Fixed
+- **CUT_TREE/CRACKED_ROCK/STRENGTH_BOULDER tile colors**: Added missing `TILE_COLORS` entries for field ability target tiles (IDs 110–112), fixing map-data test failures.
+- **shadow-ball move reference**: Replaced invalid `shadow-ball` move on ace-trainer-5 with `night-shade` (valid Ghost move), fixing data-integrity test.
+
 ### Added — Phase 15: Sound & Music Expansion
 - **Procedural Pokémon Cry Generator (CryGenerator.ts)**: Runtime synthesis of 151 unique chip-tune cries using Web Audio API. Each Pokémon's cry is deterministic (seeded by dex number + base stat total) with multi-pulse envelopes, frequency sweeps, and vibrato. Hand-tuned parameters for starter families, algorithmic generation for all others.
 - **Expanded audio keys**: 13 new BGM keys (rival/legendary/villain battle themes, 5 town variants, cave, evolution, credits, victory road, villain lair) and 14 new SFX keys (stat raise/lower, status inflict, synthesis activate, item obtain, badge get, heal jingle, save, Pokédex register, 4 footstep types, water splash).

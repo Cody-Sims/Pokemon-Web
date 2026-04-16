@@ -10,6 +10,7 @@ import { Direction } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/EncounterSystem';
 import { GameClock } from '@systems/GameClock';
+import { WeatherRenderer } from '@systems/WeatherRenderer';
 import { TransitionManager } from '@managers/TransitionManager';
 import { PokemonInstance, SaveData } from '@data/interfaces';
 import { trainerData } from '@data/trainer-data';
@@ -28,22 +29,29 @@ import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
 import { MapPreloader } from '@systems/MapPreloader';
 import { EventManager } from '@managers/EventManager';
 import { QuestManager } from '@managers/QuestManager';
+import { NPCBehaviorController } from '@systems/NPCBehavior';
+import { OverworldAbilities } from '@systems/OverworldAbilities';
+import { LightingSystem } from '@systems/LightingSystem';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
   private inputManager!: InputManager;
   private encounterSystem!: EncounterSystem;
   private gameClock!: GameClock;
+  private weatherRenderer!: WeatherRenderer;
   private npcs: NPC[] = [];
   private trainers: Trainer[] = [];
+  private npcBehaviors: NPCBehaviorController[] = [];
   private mapDef!: MapDefinition;
   private mapKey = 'pallet-town';
   private spawnId = 'default';
   private lastAnimKey = '';
   private lastFlipX = false;
   private transitioning = false;
+  private lightingSystem!: LightingSystem;
   /** Frames to skip confirm input after resuming (prevents re-trigger). */
   private resumeCooldown = 0;
+  private isCycling = false;
 
   constructor() {
     super({ key: 'OverworldScene' });
@@ -61,8 +69,10 @@ export class OverworldScene extends Phaser.Scene {
       this.spawnId = data?.spawnId ?? 'default';
     }
     this.transitioning = false;
+    this.surfing = false;
     this.npcs = [];
     this.trainers = [];
+    this.npcBehaviors = [];
     this.lastAnimKey = '';
     this.lastFlipX = false;
   }
@@ -71,6 +81,11 @@ export class OverworldScene extends Phaser.Scene {
     const gm = GameManager.getInstance();
 
     QuestManager.getInstance().initAutomation();
+
+    // Launch quest tracker HUD overlay
+    if (!this.scene.isActive('QuestTrackerScene')) {
+      this.scene.launch('QuestTrackerScene');
+    }
 
     // Ensure player has a starter Pokemon (fallback — normally received from Oak)
     if (gm.getParty().length === 0 && gm.getFlag('receivedStarter')) {
@@ -140,7 +155,13 @@ export class OverworldScene extends Phaser.Scene {
     // Set up collision: solid tiles + NPC positions
     this.player.gridMovement.setCollisionCheck((tx, ty) => {
       if (tx < 0 || ty < 0 || ty >= mapH || tx >= mapW) return true;
-      if (SOLID_TILES.has(this.mapDef.ground[ty][tx])) return true;
+      const groundTile = this.mapDef.ground[ty][tx];
+      // Allow water tiles when surfing
+      if (groundTile === Tile.WATER && this.surfing) {
+        // water is passable while surfing — skip solid check
+      } else if (SOLID_TILES.has(groundTile)) {
+        return true;
+      }
       // Block NPC/Trainer tiles
       for (const npc of this.npcs) {
         const npcTX = Math.floor(npc.x / TILE_SIZE);
@@ -169,6 +190,10 @@ export class OverworldScene extends Phaser.Scene {
       this.cameras.main.setBounds(0, 0, mapPixelW, mapPixelH);
     }
 
+    // Weather
+    this.weatherRenderer = new WeatherRenderer(this);
+    this.weatherRenderer.setWeather(this.mapDef.weather ?? 'none');
+
     // Input
     this.inputManager = new InputManager(this);
 
@@ -183,6 +208,22 @@ export class OverworldScene extends Phaser.Scene {
     audio.setScene(this);
     const bgmKey = MAP_BGM[this.mapKey] ?? BGM.PALLET_TOWN;
     audio.playBGM(bgmKey);
+
+    // Lighting system (cave darkness)
+    this.lightingSystem = new LightingSystem(this);
+    if (this.mapDef.isDark) {
+      this.lightingSystem.enableDarkness();
+      if (this.mapDef.lightSources) {
+        for (const ls of this.mapDef.lightSources) {
+          this.lightingSystem.addLightSource({
+            x: ls.tileX * TILE_SIZE + TILE_SIZE / 2,
+            y: ls.tileY * TILE_SIZE + TILE_SIZE / 2,
+            radius: ls.radius ?? 64,
+            color: ls.color,
+          });
+        }
+      }
+    }
 
     // HUD label
     const { width } = this.cameras.main;
@@ -271,11 +312,36 @@ export class OverworldScene extends Phaser.Scene {
       // Store the full spawn definition for special interactions
       (npc as NPC & { spawnDef?: NpcSpawn }).spawnDef = def;
       this.npcs.push(npc);
+
+      // Set up idle behavior if configured
+      if (def.behavior && def.behavior.type !== 'stationary') {
+        const mapW = this.mapDef.width;
+        const mapH = this.mapDef.height;
+        const controller = new NPCBehaviorController(this, npc, def.behavior, (tx, ty) => {
+          if (tx < 0 || ty < 0 || ty >= mapH || tx >= mapW) return true;
+          if (SOLID_TILES.has(this.mapDef.ground[ty][tx])) return true;
+          // Block player tile
+          const pTX = Math.floor(this.player.x / TILE_SIZE);
+          const pTY = Math.floor(this.player.y / TILE_SIZE);
+          if (pTX === tx && pTY === ty) return true;
+          // Block other NPC tiles
+          for (const other of this.npcs) {
+            if (other === npc) continue;
+            const oTX = Math.floor(other.x / TILE_SIZE);
+            const oTY = Math.floor(other.y / TILE_SIZE);
+            if (oTX === tx && oTY === ty) return true;
+          }
+          return false;
+        });
+        this.npcBehaviors.push(controller);
+      }
     }
   }
 
   /** Destroy and re-create NPCs so flag-gated spawns update. */
   private respawnNPCs(): void {
+    for (const b of this.npcBehaviors) b.destroy();
+    this.npcBehaviors = [];
     for (const npc of this.npcs) npc.destroy();
     this.npcs = [];
     this.trainers = [];
@@ -317,6 +383,11 @@ export class OverworldScene extends Phaser.Scene {
       x: tx, y: ty, direction: this.player.getFacing(),
     });
 
+    // Disembark surf when stepping onto a non-water tile
+    if (this.surfing && this.mapDef.ground[ty]?.[tx] !== Tile.WATER) {
+      this.surfing = false;
+    }
+
     // Warps
     for (const warp of this.mapDef.warps) {
       if (warp.tileX === tx && warp.tileY === ty) {
@@ -350,7 +421,9 @@ export class OverworldScene extends Phaser.Scene {
       this.mapDef.encounterTableKey &&
       this.mapDef.ground[ty]?.[tx] === Tile.TALL_GRASS
     ) {
-      const wild = this.encounterSystem.checkEncounter(this.mapDef.encounterTableKey);
+      // Running increases encounter rate; cycling is normal
+      const encounterMultiplier = this.player.gridMovement.isRunning() ? 1.5 : 1;
+      const wild = this.encounterSystem.checkEncounter(this.mapDef.encounterTableKey, encounterMultiplier);
       if (wild) {
         this.triggerWildEncounter(wild);
       }
@@ -597,6 +670,22 @@ export class OverworldScene extends Phaser.Scene {
     if (targetY >= 0 && targetY < this.mapDef.height && targetX >= 0 && targetX < this.mapDef.width) {
       const tile = this.mapDef.ground[targetY][targetX];
 
+      // Cut tree
+      if (tile === Tile.CUT_TREE && OverworldAbilities.canUse('cut')) {
+        this.mapDef.ground[targetY][targetX] = Tile.GRASS;
+        this.redrawTile(targetX, targetY);
+        this.showFieldAbilityPopup('CUT!');
+        return;
+      }
+
+      // Rock Smash
+      if (tile === Tile.CRACKED_ROCK && OverworldAbilities.canUse('rock-smash')) {
+        this.mapDef.ground[targetY][targetX] = Tile.GRASS;
+        this.redrawTile(targetX, targetY);
+        this.showFieldAbilityPopup('SMASH!');
+        return;
+      }
+
       // Starter Poké Ball on table
       if (tile === Tile.POKEBALL_ITEM) {
         const gm = GameManager.getInstance();
@@ -612,12 +701,67 @@ export class OverworldScene extends Phaser.Scene {
         }
       }
 
+      // Surf: start surfing on water
+      if (tile === Tile.WATER && !this.surfing && OverworldAbilities.canUse('surf')) {
+        this.surfing = true;
+        this.showFieldAbilityPopup('SURF!');
+        return;
+      }
+
       // Fishing: check if facing a water tile with a rod
       if (tile === Tile.WATER) {
         this.tryFishing();
         return;
       }
     }
+  }
+
+  /** Redraw a single tile after a field ability changes it. */
+  private redrawTile(tx: number, ty: number): void {
+    const px = tx * TILE_SIZE + TILE_SIZE / 2;
+    const py = ty * TILE_SIZE + TILE_SIZE / 2;
+    const scale = TILE_SIZE / 16;
+    const newTile = this.mapDef.ground[ty][tx];
+
+    // Remove existing sprites at this position (ground layer only)
+    this.children.list
+      .filter(obj => {
+        if (!(obj instanceof Phaser.GameObjects.Image)) return false;
+        return Math.abs(obj.x - px) < 1 && Math.abs(obj.y - py) < 1 && obj.depth <= 2;
+      })
+      .forEach(obj => obj.destroy());
+
+    // Draw the replacement tile
+    const baseTile = OVERLAY_BASE[newTile];
+    if (baseTile !== undefined) {
+      const base = this.add.image(px, py, 'tileset', baseTile);
+      base.setScale(scale);
+      base.setDepth(0);
+    }
+    const sprite = this.add.image(px, py, 'tileset', newTile);
+    sprite.setScale(scale);
+    sprite.setDepth(baseTile !== undefined ? 0.5 : 0);
+  }
+
+  /** Show a brief text popup for a field ability use. */
+  private showFieldAbilityPopup(text: string): void {
+    const { width } = this.cameras.main;
+    const popup = this.add.text(width / 2, 80, text, {
+      fontSize: '18px',
+      fontStyle: 'bold',
+      color: '#ffffff',
+      backgroundColor: '#00000088',
+      padding: { x: 16, y: 8 },
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(100).setAlpha(0);
+
+    this.tweens.add({
+      targets: popup,
+      alpha: { from: 0, to: 1 },
+      duration: 200,
+      yoyo: true,
+      hold: 800,
+      onComplete: () => popup.destroy(),
+    });
   }
 
   /** Attempt to fish at the water tile the player is facing. */
@@ -694,11 +838,24 @@ export class OverworldScene extends Phaser.Scene {
   // ── Main loop ─────────────────────────────────────────────
   update(): void {
     if (this.transitioning) return;
+
+    // Update NPC idle behaviors every frame (even while player moves)
+    const delta = this.game.loop.delta;
+    for (const controller of this.npcBehaviors) {
+      controller.update(delta);
+    }
+
     if (this.player.isMoving()) return;
+
+    // Update lighting overlay
+    this.lightingSystem.update(this.player.x, this.player.y);
 
     // Update day/night tint
     const tint = this.gameClock.getCurrentTint();
     this.cameras.main.setBackgroundColor(tint);
+
+    // Update weather effects
+    this.weatherRenderer.update();
 
     const input = this.inputManager.getState();
 
@@ -725,14 +882,27 @@ export class OverworldScene extends Phaser.Scene {
       const facing = this.player.getFacing();
       this.playAnim(`player-idle-${facing}`, false);
       this.player.gridMovement.setRunning(false);
+      this.player.gridMovement.setCycling(false);
       return;
+    }
+
+    // Bicycle toggle: B key toggles cycling on/off (requires bicycle item, not indoors)
+    const hasBicycle = GameManager.getInstance().getItemCount('bicycle') > 0;
+    if (input.bicycle && hasBicycle) {
+      this.isCycling = !this.isCycling;
+    }
+    // Auto-dismount indoors
+    if (this.isCycling && this.mapDef.isInterior) {
+      this.isCycling = false;
     }
 
     // Running shoes: hold SHIFT or B button to run (requires flag or always available)
     const shiftDown = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT, false, false).isDown;
     const hasRunningShoes = GameManager.getInstance().getFlag('runningShoes');
-    const shouldRun = hasRunningShoes && shiftDown;
+    // Cycling takes priority over running; they are mutually exclusive
+    const shouldRun = !this.isCycling && hasRunningShoes && shiftDown;
     this.player.gridMovement.setRunning(shouldRun);
+    this.player.gridMovement.setCycling(this.isCycling);
 
     // Walk / Run
     this.playAnim(`player-walk-${input.direction}`, false);

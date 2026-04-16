@@ -37,6 +37,7 @@ const route7Ground = parseMap([
 export const route7: MapDefinition = {
   key: 'route-7', width: 20, height: 30, ground: route7Ground,
   encounterTableKey: 'route-7', battleBg: 'bg-ruins',
+  weather: 'fog',
   npcs: [
     { id: 'route7-sign', tileX: 11, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['ROUTE 7', 'Scalecrest Citadel ↓  Wraithmoor Town ↑'] },

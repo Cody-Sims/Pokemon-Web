@@ -37,6 +37,7 @@ const route6Ground = parseMap([
 export const route6: MapDefinition = {
   key: 'route-6', width: 20, height: 30, ground: route6Ground,
   encounterTableKey: 'route-6', battleBg: 'bg-ruins',
+  weather: 'rain',
   npcs: [{ id: 'route6-sign', tileX: 11, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
     dialogue: ['ROUTE 6', 'Wraithmoor Town ↓  Voltara City ↑'] }],
   trainers: [

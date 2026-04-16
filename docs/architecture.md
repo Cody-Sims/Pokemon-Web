@@ -75,7 +75,9 @@ pokemon-web/
 │       │   ├── StarterSelectScene.ts   # Starter Pokémon selection overlay
 │       │   ├── IntroScene.ts           # Professor intro, character naming, new game setup
 │       │   ├── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
-│       │   └── PokedexScene.ts         # Pokédex species browser (seen/caught)
+│       │   ├── PokedexScene.ts         # Pokédex species browser (seen/caught)
+│       │   ├── QuestJournalScene.ts    # Quest log — Active/Complete tabs, step list, detail panel
+│       │   └── QuestTrackerScene.ts    # HUD overlay — active quest step in top-right corner
 │       │
 │       ├── entities/                   # Game object classes
 │       │   ├── Player.ts              # Grid-locked sprite + GridMovement
@@ -110,15 +112,16 @@ pokemon-web/
 │       │   │   │   ├── coral-harbor.ts, ironvale-city.ts, verdantia-village.ts
 │       │   │   │   ├── voltara-city.ts, wraithmoor-town.ts, scalecrest-citadel.ts
 │       │   │   │   └── cinderfall-town.ts
-│       │   │   ├── routes/            # Route maps (Route 1–7)
-│       │   │   │   └── route-1.ts … route-7.ts
+│       │   │   ├── routes/            # Route maps (Route 1–8)
+│       │   │   │   └── route-1.ts … route-8.ts
 │       │   │   ├── interiors/         # Interior maps (gyms, pokécenters, pokémarts, houses, labs)
 │       │   │   │   ├── pallet-player-house.ts, pallet-rival-house.ts, pallet-oak-lab.ts
 │       │   │   │   ├── *-pokecenter.ts, *-pokemart.ts, *-gym.ts (per city)
 │       │   │   │   ├── pewter-museum.ts
+│       │   │   │   ├── generic-house.ts  # Reusable 8×8 house interior factory (10 per-city houses)
 │       │   │   │   └── pokemon-league.ts
 │       │   │   └── dungeons/          # Dungeon & special area maps
-│       │   │       └── viridian-forest.ts, crystal-cavern.ts, ember-mines.ts, victory-road.ts
+│       │   │       └── viridian-forest.ts, crystal-cavern.ts, crystal-cavern-depths.ts, ember-mines.ts, victory-road.ts, aether-sanctum.ts
 │       │   ├── moves/                 # Per-type move definitions
 │       │   │   ├── index.ts           # Re-exports combined moveData record
 │       │   │   ├── normal.ts          # Normal-type moves (~70)
@@ -174,9 +177,11 @@ pokemon-web/
 │       │   ├── GridMovement.ts        # Grid-locked tween movement engine
 │       │   ├── EncounterSystem.ts     # Step counter → random encounter + fishing
 │       │   ├── GameClock.ts           # Accelerated day/night cycle (10× speed)
+│       │   ├── WeatherRenderer.ts     # Overworld weather effects (rain/sand/snow/fog/sunshine)
 │       │   ├── InputManager.ts        # Unified WASD/Arrow/touch → direction
 │       │   ├── AnimationHelper.ts     # Registers shared sprite animations
-│       │   └── MapPreloader.ts        # Proximity-based Pokémon sprite preloader
+│       │   ├── MapPreloader.ts        # Proximity-based Pokémon sprite preloader
+│       │   └── OverworldAbilities.ts  # Field moves (Cut, Surf, Strength, Flash, Fly, Rock Smash)
 │       │
 │       ├── ui/                         # Reusable UI components
 │       │   ├── theme.ts               # Shared colors, fonts, spacing, mobile scaling helpers

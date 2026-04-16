@@ -1,4 +1,5 @@
 import { Direction } from '@utils/type-helpers';
+import { NPCBehaviorConfig } from '@systems/NPCBehavior';
 
 // ─── Tile type constants ───
 export const Tile = {
@@ -147,6 +148,11 @@ export const Tile = {
   LEAGUE_FLOOR:  107,   // grand marble floor (walkable)
   LEAGUE_WALL:   108,   // ornate marble wall (solid)
   CHAMPION_THRONE:109,  // champion's throne (solid)
+
+  // ── Field ability target tiles ──
+  CUT_TREE:        110,  // small cuttable tree (solid, cuttable)
+  CRACKED_ROCK:    111,  // smashable rock (solid, Rock Smash target)
+  STRENGTH_BOULDER:112,  // pushable boulder (solid, Strength target)
 } as const;
 
 /**
@@ -220,6 +226,10 @@ export const OVERLAY_BASE: Partial<Record<number, number>> = {
   [Tile.AETHER_CRYSTAL]:  Tile.SHATTERED_GROUND,
   [Tile.CHAMPION_THRONE]: Tile.LEAGUE_FLOOR,
   [Tile.BERRY_TREE]:      Tile.LIGHT_GRASS,
+  // Field ability targets overlay on grass
+  [Tile.CUT_TREE]:          Tile.GRASS,
+  [Tile.CRACKED_ROCK]:      Tile.GRASS,
+  [Tile.STRENGTH_BOULDER]:  Tile.GRASS,
 };
 
 /**
@@ -236,6 +246,7 @@ export const FOREGROUND_TILES = new Set<number>([
   Tile.VINE,
   Tile.BERRY_TREE,
   Tile.MIST,
+  Tile.CUT_TREE,
 ]);
 
 // Colors for each tile type
@@ -355,6 +366,10 @@ export const TILE_COLORS: Record<number, number> = {
   [Tile.LEAGUE_FLOOR]:    0xd0c8b8,
   [Tile.LEAGUE_WALL]:     0xb0a890,
   [Tile.CHAMPION_THRONE]: 0xc0a040,
+  // Field ability target tiles
+  [Tile.CUT_TREE]:          0x4a8a30,
+  [Tile.CRACKED_ROCK]:      0x908070,
+  [Tile.STRENGTH_BOULDER]:  0x808068,
 };
 
 // Solid tiles that block movement
@@ -386,6 +401,8 @@ export const SOLID_TILES = new Set<number>([
   Tile.EMBER_VENT, Tile.HOT_SPRING,
   Tile.SYNTHESIS_WALL, Tile.CONTAINMENT_POD, Tile.AETHER_CONDUIT, Tile.TERMINAL,
   Tile.AETHER_CRYSTAL, Tile.LEAGUE_WALL, Tile.CHAMPION_THRONE,
+  // Field ability targets
+  Tile.CUT_TREE, Tile.CRACKED_ROCK, Tile.STRENGTH_BOULDER,
 ]);
 
 // ─── Map definition types ───
@@ -405,6 +422,8 @@ export interface NpcSpawn {
   setsFlag?: string;
   /** Special interaction type instead of plain dialogue. */
   interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select';
+  /** Idle behavior config (look-around, wander, pace). */
+  behavior?: NPCBehaviorConfig;
 }
 
 export interface TrainerSpawn {
@@ -448,6 +467,12 @@ export interface MapDefinition {
   displayName?: string;
   /** Battle background key for encounters on this map. Falls back to procedural if not set. */
   battleBg?: string;
+  /** If true, this map has cave darkness requiring Flash to navigate. */
+  isDark?: boolean;
+  /** Static light source positions (torches, lamps). */
+  lightSources?: Array<{ tileX: number; tileY: number; radius?: number; color?: number }>;
+  /** Overworld weather effect to render on this map. Defaults to 'none'. */
+  weather?: import('@systems/WeatherRenderer').OverworldWeather;
 }
 
 // ─── Helper: parse string map into number grid ───

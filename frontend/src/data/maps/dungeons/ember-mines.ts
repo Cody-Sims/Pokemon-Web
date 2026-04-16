@@ -37,6 +37,7 @@ export const emberMines: MapDefinition = {
   height: 25,
   ground: mineGround,
   encounterTableKey: 'ember-mines',
+  weather: 'sandstorm',
   battleBg: 'bg-mine',
   displayName: 'Ember Mines',
   npcs: [
@@ -75,6 +76,20 @@ export const emberMines: MapDefinition = {
         'You need to stop whoever is doing this!',
       ],
       setsFlag: 'found_caged_pokemon',
+    },
+    // Dragon's Lament quest: mineral pickup
+    {
+      id: 'mines-mineral',
+      tileX: 3,
+      tileY: 8,
+      textureKey: 'generic-trainer',
+      facing: 'down',
+      dialogue: [
+        'A vein of rare mineral glints in the torchlight...',
+        'You extracted the Aether Crystal Mineral!',
+      ],
+      requireFlag: '!dragon-mineral-found',
+      setsFlag: 'dragon-mineral-found',
     },
   ],
   trainers: [
