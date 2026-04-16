@@ -37,6 +37,7 @@ export const abyssalSpireF4: MapDefinition = {
       tileY: 7,
       textureKey: 'generic-trainer',
       facing: 'down',
+      triggerCutscene: 'willow-rescue',
       dialogue: [
         'Professor Willow: You found me!',
         'Willow: Aldric captured me to extract my research on Aether energy.',
@@ -44,6 +45,12 @@ export const abyssalSpireF4: MapDefinition = {
         'Willow: He\'s trying to harness the ancient power source beneath this temple.',
         'Willow: If he succeeds, he\'ll be unstoppable at the Pokemon League.',
         'Willow: Go! Stop him! I\'ll be alright — just go!',
+      ],
+      flagDialogue: [
+        { flag: 'rescued_willow', dialogue: [
+          'Willow: You must stop Aldric on the floor above.',
+          'Willow: Be careful — he\'s absorbed a great deal of Aether energy.',
+        ]},
       ],
       setsFlag: 'rescued_willow',
     },

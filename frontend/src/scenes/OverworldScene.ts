@@ -860,10 +860,18 @@ export class OverworldScene extends Phaser.Scene {
           }
         }
 
-        // Cutscene trigger (overrides regular dialogue)
+        // Cutscene trigger (overrides regular dialogue unless already completed)
         if (spawnDef?.triggerCutscene && cutsceneData[spawnDef.triggerCutscene]) {
-          this.cutsceneEngine.play(cutsceneData[spawnDef.triggerCutscene]);
-          return;
+          const cutscene = cutsceneData[spawnDef.triggerCutscene];
+          const setFlagActions = cutscene.actions.filter(
+            (a): a is Extract<typeof a, { type: 'setFlag' }> => a.type === 'setFlag'
+          );
+          const alreadyPlayed = setFlagActions.length > 0 &&
+            setFlagActions.every(a => gm.getFlag(a.flag));
+          if (!alreadyPlayed) {
+            this.cutsceneEngine.play(cutscene);
+            return;
+          }
         }
 
         // Regular dialogue

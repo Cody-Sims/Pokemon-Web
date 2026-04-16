@@ -18,6 +18,7 @@ import { rockMoves } from './rock';
 import { ghostMoves } from './ghost';
 import { dragonMoves } from './dragon';
 import { darkMoves } from './dark';
+import { fairyMoves } from './fairy';
 
 export const moveData: Record<string, MoveData> = {
   ...normalMoves,
@@ -36,4 +37,5 @@ export const moveData: Record<string, MoveData> = {
   ...ghostMoves,
   ...dragonMoves,
   ...darkMoves,
+  ...fairyMoves,
 };

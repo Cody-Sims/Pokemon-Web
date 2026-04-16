@@ -42,6 +42,7 @@ export const route7: MapDefinition = {
     { id: 'route7-sign', tileX: 11, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['ROUTE 7', 'Scalecrest Citadel ↓  Wraithmoor Town ↑'] },
     { id: 'route7-rook-reveal', tileX: 8, tileY: 15, textureKey: 'npc-male-6', facing: 'down',
+      triggerCutscene: 'rook-reveal',
       dialogue: [
         'Rook: ...It\'s time I told you the truth.',
         'Rook: My name is Rook. I was a Synthesis Collective scientist.',

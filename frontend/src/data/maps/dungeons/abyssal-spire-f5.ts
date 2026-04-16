@@ -35,6 +35,7 @@ export const abyssalSpireF5: MapDefinition = {
       tileY: 7,
       textureKey: 'generic-trainer',
       facing: 'down',
+      triggerCutscene: 'aldric-spire-offer',
       dialogue: [
         'Aldric: So you\'ve reached the Altar. Impressive.',
         'Aldric: Do you feel it? The raw power of the Aether?',
@@ -47,7 +48,6 @@ export const abyssalSpireF5: MapDefinition = {
         'Aldric: I\'ll be waiting in the Champion\'s chamber.',
         'Aldric vanished through a hidden passage!',
       ],
-      setsFlag: 'aldric_escaped_to_league',
       flagDialogue: [
         { flag: 'aldric_escaped_to_league', dialogue: [
           'The altar hums with residual Aether energy...',

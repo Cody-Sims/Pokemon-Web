@@ -62,6 +62,7 @@ export const shatteredIslesTemple: MapDefinition = {
       textureKey: 'npc-professor',
       facing: 'down',
       requireFlag: 'quest_fatherTrail_complete',
+      triggerCutscene: 'father-reunion',
       dialogue: [
         'Father: ...You found me.',
         'Father: I\'ve been guarding this place for a long time.',
@@ -69,6 +70,12 @@ export const shatteredIslesTemple: MapDefinition = {
         'Father: But seeing you here, standing tall as a Champion...',
         'Father: I couldn\'t be more proud.',
         'Father: Rest your Pokémon. You\'ve earned it.',
+      ],
+      flagDialogue: [
+        { flag: 'father_found', dialogue: [
+          'Father: I\'m so glad you\'re safe.',
+          'Father: Rest your Pokémon here whenever you need to.',
+        ]},
       ],
       interactionType: 'heal',
     },

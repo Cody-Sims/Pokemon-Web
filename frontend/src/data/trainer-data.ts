@@ -1,12 +1,14 @@
-import { TrainerData } from './interfaces';
+// Re-export from split trainer files for backwards compatibility.
+// See data/trainers/ for the individual category files.
+export { trainerData } from './trainers';
+export {
+  rivalTrainers,
+  gymLeaderTrainers,
+  eliteFourTrainers,
+  routeTrainers,
+  teamGruntTrainers,
+} from './trainers';
 
-export const trainerData: Record<string, TrainerData> = {
-  // ─── Rival: Kael Ashford ───
-  // Encounter 1: Professor Willow's Lab (starter advantage over player)
-  'rival-1': {
-    id: 'rival-1', name: 'Kael', spriteKey: 'rival',
-    party: [
-      { pokemonId: 4, level: 5, moves: ['scratch', 'growl'] }, // Adapts to starter choice
     ],
     dialogue: {
       before: [
@@ -1528,7 +1530,4 @@ export const trainerData: Record<string, TrainerData> = {
       before: ['Synthesis Grunt: The roots of this place hold unimaginable power!'],
       after: ['Synthesis Grunt: Impossible... our strongest couldn\'t stop you...'],
     },
-    rewardMoney: 1280,
-    victoryFlag: 'cleared_verdantia_lab',
-  },
-};
+@@SPLIT_MARKER_END@@ */
