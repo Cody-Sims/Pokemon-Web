@@ -4,6 +4,16 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [Unreleased]
+### Changed — Code Architecture Cleanup (Phase 1 & 3a)
+- **OverworldScene.ts** (1257→1094 lines): Wired 5 extracted overworld helper modules (`overworld/OverworldNPCSpawner`, `OverworldFieldAbilities`, `OverworldFishing`, `OverworldHealing`, `OverworldFootsteps`). 8 methods replaced with thin delegating wrappers.
+- **BattleUIScene.ts** (1433→1345 lines): Extracted end-of-turn effect collection into `battle/BattleEndOfTurn.ts`. Added `collectEndOfTurnEffects()` pure function.
+- **trainer-data.ts** (1505→10 lines): Replaced monolithic trainer data with re-exports from `data/trainers/` split files (rival.ts, gym-leaders.ts, elite-four.ts, route-trainers.ts, team-grunts.ts).
+- **New files**: `data/trainers/index.ts`, `scenes/battle/BattleEndOfTurn.ts`.
+- **docs/code-cleanup-plan.md**: Created 7-phase code cleanup and architecture improvement plan.
+
+---
+
 ## [2026-04-17]
 ### Added — Post-game quest triggers, legendary Pokémon, flag-gated warps, story cutscenes
 - **WarpDefinition `requireFlag`**: Extended `WarpDefinition` interface with optional `requireFlag` field (supports `!`-negation). Updated `OverworldScene` warp logic to check flag gates before warping; shows "The way ahead is blocked..." dialogue when gate is closed.

@@ -63,9 +63,16 @@ pokemon-web/
 │       │   ├── BootScene.ts            # Loads minimal assets for loading bar
 │       │   ├── PreloadScene.ts         # Loads all assets; shows progress bar
 │       │   ├── TitleScene.ts           # Main menu (New Game / Continue / Options)
-│       │   ├── OverworldScene.ts       # Top-down exploration, player movement
+│       │   ├── OverworldScene.ts       # Top-down exploration, player movement (delegates to overworld/)
+│       │   ├── overworld/              # Extracted OverworldScene helpers
+│       │   │   ├── OverworldNPCSpawner.ts    # NPC & trainer spawning
+│       │   │   ├── OverworldFieldAbilities.ts # Field abilities (boulder push, tile redraw)
+│       │   │   ├── OverworldFishing.ts       # Fishing rod logic
+│       │   │   ├── OverworldHealing.ts       # Party heal helper
+│       │   │   ├── OverworldFootsteps.ts     # Footstep SFX by tile type
+│       │   │   └── index.ts                  # Barrel exports
 │       │   ├── BattleScene.ts          # Turn-based battle — sprites, HP/EXP bars
-│       │   ├── BattleUIScene.ts        # Battle overlay — action menu, move menu, messages
+│       │   ├── BattleUIScene.ts        # Battle overlay — action menu, move menu, messages (delegates to battle/)
 │       │   ├── DialogueScene.ts        # Typewriter text overlay for NPC dialogue
 │       │   ├── MenuScene.ts            # Pause menu (Pokémon, Bag, Save, etc.)
 │       │   ├── InventoryScene.ts       # Bag / item management
@@ -82,6 +89,13 @@ pokemon-web/
 │       │   ├── TrainerCardScene.ts     # Trainer card display (name, badges, Pokédex, playtime, money)
 │       │   ├── VoltorbFlipScene.ts     # Voltorb Flip mini-game (5×5 card-flipping number game)
 │       │   └── AchievementScene.ts    # Achievement gallery with category tabs and progress counter
+│       │   ├── battle/                 # Extracted BattleUIScene helpers
+│       │   │   ├── BattleTurnRunner.ts      # Turn execution pipeline
+│       │   │   ├── BattleMessageQueue.ts     # Message queue management
+│       │   │   ├── BattleDamageNumbers.ts    # Floating damage numbers
+│       │   │   ├── BattleRewardHandler.ts    # Post-battle rewards
+│       │   │   ├── BattleEndOfTurn.ts        # End-of-turn effect collection
+│       │   │   └── index.ts                  # Barrel exports
 │       │
 │       ├── entities/                   # Game object classes
 │       │   ├── Player.ts              # Grid-locked sprite + GridMovement
@@ -163,7 +177,14 @@ pokemon-web/
 │       │   │   └── fairy.ts           # Fairy-type Pokemon (2)
 │       │   ├── type-chart.ts          # 18×18 type effectiveness matrix
 │       │   ├── item-data.ts           # ~20 items (potions, balls, key items)
-│       │   ├── trainer-data.ts        # Trainer rosters, dialogue, rewards (rival, gym, grunts)
+│       │   ├── trainer-data.ts        # Re-exports from trainers/ for backwards compatibility
+│       │   ├── trainers/              # Split trainer definitions by category
+│       │   │   ├── index.ts           # Aggregates all trainer categories into trainerData
+│       │   │   ├── rival.ts           # Rival Kael encounters (6)
+│       │   │   ├── gym-leaders.ts     # 8 gym leader trainers
+│       │   │   ├── elite-four.ts      # Elite Four + Champion
+│       │   │   ├── route-trainers.ts  # Route & area trainers (~40)
+│       │   │   └── team-grunts.ts     # Team Synthesis grunts & admins
 │       │   ├── encounter-tables.ts    # Per-route wild Pokémon + level ranges
 │       │   ├── evolution-data.ts      # Evolution conditions (level, item, trade)
 │       │   ├── quest-data.ts          # Side quest definitions (steps, flags, rewards)
