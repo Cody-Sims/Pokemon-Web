@@ -5,6 +5,16 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [Unreleased]
+### Changed — Architecture cleanup phase 2
+- **OverworldScene tryInteract extraction** (1128→818 lines): Moved ~310-line `tryInteract()` method into `scenes/overworld/OverworldInteraction.ts` with `InteractionContext` callback interface. Scene retains a thin delegating wrapper.
+- **Split `data/maps/shared.ts`** (629→6 lines): Decomposed monolithic shared file into 4 focused modules:
+  - `tiles.ts` — Tile enum/constants and LEDGE_TILES (~170 lines)
+  - `tile-metadata.ts` — OVERLAY_BASE, FOREGROUND_TILES, TILE_COLORS, SOLID_TILES (~260 lines)
+  - `map-interfaces.ts` — NpcSpawn, TrainerSpawn, WarpDefinition, SpawnPoint, MapDefinition (~85 lines)
+  - `map-parser.ts` — CHAR_TO_TILE mapping and parseMap function (~120 lines)
+  - `shared.ts` retained as backwards-compatible re-export stub (6 lines)
+- Updated `data/maps/index.ts` to import directly from split modules.
+- Updated `scenes/overworld/index.ts` barrel exports with OverworldInteraction.
 
 ---
 

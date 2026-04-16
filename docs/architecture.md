@@ -66,6 +66,7 @@ pokemon-web/
 │       │   ├── OverworldScene.ts       # Top-down exploration, player movement (delegates to overworld/)
 │       │   ├── overworld/              # Extracted OverworldScene helpers
 │       │   │   ├── OverworldNPCSpawner.ts    # NPC & trainer spawning
+│       │   │   ├── OverworldInteraction.ts   # NPC interaction dispatch + tile interactions
 │       │   │   ├── OverworldFieldAbilities.ts # Field abilities (boulder push, tile redraw)
 │       │   │   ├── OverworldFishing.ts       # Fishing rod logic
 │       │   │   ├── OverworldHealing.ts       # Party heal helper
@@ -123,8 +124,12 @@ pokemon-web/
 │       ├── data/                       # Pure data (no game logic)
 │       │   ├── interfaces.ts          # All TypeScript interfaces
 │       │   ├── maps/                  # Per-map definitions
-│       │   │   ├── index.ts           # Re-exports mapRegistry + shared types
-│       │   │   ├── shared.ts          # Tile constants (25 overworld + 14 interior), colors, map interfaces, parseMap
+│       │   │   ├── index.ts           # Re-exports mapRegistry + shared types from split modules
+│       │   │   ├── tiles.ts           # Tile enum/constants (115 tile types) and LEDGE_TILES
+│       │   │   ├── tile-metadata.ts   # OVERLAY_BASE, FOREGROUND_TILES, TILE_COLORS, SOLID_TILES
+│       │   │   ├── map-interfaces.ts  # NpcSpawn, TrainerSpawn, WarpDefinition, SpawnPoint, MapDefinition
+│       │   │   ├── map-parser.ts      # CHAR_TO_TILE mapping and parseMap function
+│       │   │   ├── shared.ts          # Backwards-compatible re-exports from split modules
 │       │   │   ├── cities/            # City & town overworld maps
 │       │   │   │   ├── pallet-town.ts, viridian-city.ts, pewter-city.ts
 │       │   │   │   ├── coral-harbor.ts, ironvale-city.ts, verdantia-village.ts

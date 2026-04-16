@@ -1,22 +1,12 @@
 // ─── Map Registry ───
 // Re-exports all shared types/constants and assembles the map registry.
 
-export {
-  Tile,
-  TILE_COLORS,
-  SOLID_TILES,
-  OVERLAY_BASE,
-  FOREGROUND_TILES,
-  LEDGE_TILES,
-  parseMap,
-  type NpcSpawn,
-  type TrainerSpawn,
-  type WarpDefinition,
-  type SpawnPoint,
-  type MapDefinition,
-} from './shared';
+export { Tile, LEDGE_TILES } from './tiles';
+export { TILE_COLORS, SOLID_TILES, OVERLAY_BASE, FOREGROUND_TILES } from './tile-metadata';
+export { parseMap } from './map-parser';
+export type { NpcSpawn, TrainerSpawn, WarpDefinition, SpawnPoint, MapDefinition } from './map-interfaces';
 
-import { MapDefinition } from './shared';
+import type { MapDefinition } from './map-interfaces';
 
 // Cities & Towns
 import { palletTown } from './cities/pallet-town';
