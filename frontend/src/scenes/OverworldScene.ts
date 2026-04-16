@@ -370,6 +370,8 @@ export class OverworldScene extends Phaser.Scene {
 
     if (isDoorEntry) {
       AudioManager.getInstance().playSFX(SFX.DOOR_OPEN);
+    } else if (this.mapDef.isInterior) {
+      AudioManager.getInstance().playSFX(SFX.DOOR_CLOSE);
     }
 
     TransitionManager.getInstance().fadeTransition(this, () => {
@@ -661,8 +663,9 @@ export class OverworldScene extends Phaser.Scene {
         move.currentPp = md?.pp ?? move.currentPp;
       }
     }
-    // Show healing flash
+    // Show healing flash and play heal jingle
     this.cameras.main.flash(300, 255, 255, 255);
+    AudioManager.getInstance().playJingle(SFX.HEAL_JINGLE, true);
   }
 
   /** Launch the starter Pokémon selection UI. */
