@@ -137,6 +137,29 @@ export const viridianCity: MapDefinition = {
       requireFlag: 'quest_lostDelivery_started',
       setsFlag: 'quest_lostDelivery_viridian',
     },
+    // ─── Old Man Edgar (catch tutorial) ───
+    {
+      id: 'viridian-edgar',
+      tileX: 10,
+      tileY: 1,
+      textureKey: 'npc-oldman',
+      facing: 'down',
+      dialogue: [
+        'Old Man Edgar: Ah, a young trainer!',
+        'Edgar: Let me show you how to catch a Pokémon.',
+        'Edgar: First, weaken it in battle. Then throw a Poké Ball!',
+        'Edgar: It\'s easier if the Pokémon\'s HP is low.',
+      ],
+      flagDialogue: [
+        {
+          flag: 'caughtFirstPokemon',
+          dialogue: [
+            'Old Man Edgar: I see you\'ve caught your first Pokémon!',
+            'Edgar: You\'re a natural! Keep at it, young one!',
+          ],
+        },
+      ],
+    },
   ],
   trainers: [],
   warps: [

@@ -130,6 +130,30 @@ export const pewterCity: MapDefinition = {
       requireFlag: 'quest_lostDelivery_started',
       setsFlag: 'quest_lostDelivery_pewter',
     },
+    // ─── Museum Curator (Aether lore) ───
+    {
+      id: 'pewter-curator',
+      tileX: 16,
+      tileY: 26,
+      textureKey: 'npc-male-1',
+      facing: 'left',
+      dialogue: [
+        'Museum Curator: Welcome! I curate the Pewter Museum.',
+        'Curator: We\'ve discovered fossils that suggest Pokémon once channeled pure Aether energy.',
+        'Curator: The ancient texts speak of ley lines beneath the earth...',
+        'Curator: Some believe the Aether still flows through them.',
+      ],
+      flagDialogue: [
+        {
+          flag: 'enteredHallOfFame',
+          dialogue: [
+            'Museum Curator: Champion! What an honor!',
+            'Curator: We\'ve started selling fossil specimens. Interested?',
+            'Curator: Bring a fossil and I\'ll revive it for you!',
+          ],
+        },
+      ],
+    },
   ],
   trainers: [],
   warps: [

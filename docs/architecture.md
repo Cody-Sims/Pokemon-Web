@@ -125,7 +125,7 @@ pokemon-web/
 │       │   │   │   ├── generic-house.ts  # Reusable 8×8 house interior factory (10 per-city houses)
 │       │   │   │   └── pokemon-league.ts
 │       │   │   └── dungeons/          # Dungeon & special area maps
-│       │   │       └── viridian-forest.ts, crystal-cavern.ts, crystal-cavern-depths.ts, ember-mines.ts, victory-road.ts, aether-sanctum.ts, abyssal-spire-f1.ts .. abyssal-spire-f5.ts
+│       │   │       └── viridian-forest.ts, crystal-cavern.ts, crystal-cavern-depths.ts, ember-mines.ts, victory-road.ts, aether-sanctum.ts, abyssal-spire-f1.ts .. abyssal-spire-f5.ts, shattered-isles-shore.ts, shattered-isles-ruins.ts, shattered-isles-temple.ts, verdantia-lab.ts
 │       │   ├── moves/                 # Per-type move definitions
 │       │   │   ├── index.ts           # Re-exports combined moveData record
 │       │   │   ├── normal.ts          # Normal-type moves (~70)

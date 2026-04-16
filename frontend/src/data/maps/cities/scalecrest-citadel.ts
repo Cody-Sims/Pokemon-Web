@@ -46,6 +46,27 @@ export const scalecrestCitadel: MapDefinition = {
         'Wren: If you could find an Aether Salve, it might help.',
         'Wren: The ingredients are in Verdantia and Ember Mines.'],
       setsFlag: 'quest_dragonLament_started' },
+    // ─── Veteran Knox (citadel gate, gives Scope Lens) ───
+    { id: 'scalecrest-knox', tileX: 8, tileY: 23, textureKey: 'npc-ace-trainer', facing: 'right',
+      dialogue: [
+        'Veteran Knox: I\'ve stood guard at this citadel for thirty years.',
+        'Knox: Back in my day, we fought the first Aether surge...',
+        'Knox: Many good trainers were lost that day.',
+        'Knox: Here, take this Scope Lens. It served me well.',
+        'Knox: May it help you see clearly in the battles ahead.',
+      ],
+      setsFlag: 'received_scope_lens',
+      givesItem: 'scope-lens',
+      flagDialogue: [
+        {
+          flag: 'received_scope_lens',
+          dialogue: [
+            'Veteran Knox: The Scope Lens sharpens your focus.',
+            'Knox: Critical hits can turn the tide of any battle!',
+          ],
+        },
+      ],
+    },
   ],
   trainers: [],
   warps: [

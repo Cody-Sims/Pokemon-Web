@@ -26,22 +26,23 @@
 
 ### What's Missing
 
-| Item | Severity | Storyline Reference |
-|------|----------|-------------------|
-| Abyssal Spire (Collective HQ, 5 floors) | CRITICAL | Act 3 climax dungeon |
-| Shattered Isles (3 maps) | HIGH | Post-game area, Father's Trail finale, legendary encounters |
-| Elite Four 2-4 (Theron, Lysandra, Ashborne) | CRITICAL | Act 4 Pokemon League |
-| Champion Aldric league placement | CRITICAL | Act 4 final boss |
-| Zara Lux battle teams (2 encounters) | HIGH | Act 2-3 story battles |
-| Dr. Vex encounter 3 (HQ Lab Wing) | HIGH | Act 3 Abyssal Spire |
-| Rook post-game battle (Lv 70+) | MEDIUM | Post-game optional fight |
-| Legendary Pokemon (Solatheon, Noctharion) | HIGH | Post-game encounters |
-| Pokemon League multi-room structure | CRITICAL | Needs 6 rooms: 4 E4 + Champion + Hall of Fame |
-| Route 7 grunt gauntlet + Vex blockade | HIGH | Act 3 story sequence |
-| Verdantia underground Synthesis lab | MEDIUM | Act 2 mini-dungeon |
-| Story cutscenes (20+ needed) | HIGH | Major story beats across all acts |
-| Marina encounters 3-4 | MEDIUM | Co-op battle, post-game battle |
-| Missing minor NPCs per city | MEDIUM | Mom dialogue, quest givers, lore NPCs |
+| Item | Severity | Storyline Reference | Status |
+|------|----------|-------------------|--------|
+| Abyssal Spire (Collective HQ, 5 floors) | CRITICAL | Act 3 climax dungeon | ✅ DONE |
+| Shattered Isles (3 maps) | HIGH | Post-game area, Father's Trail finale, legendary encounters | ✅ DONE |
+| Elite Four 2-4 (Theron, Lysandra, Ashborne) | CRITICAL | Act 4 Pokemon League | ✅ DONE |
+| Champion Aldric league placement | CRITICAL | Act 4 final boss | ✅ DONE |
+| Zara Lux battle teams (2 encounters) | HIGH | Act 2-3 story battles | ✅ DONE |
+| Dr. Vex encounter 3 (HQ Lab Wing) | HIGH | Act 3 Abyssal Spire | ✅ DONE |
+| Rook post-game battle (Lv 70+) | MEDIUM | Post-game optional fight | ✅ DONE |
+| Legendary Pokemon (Solatheon, Noctharion) | HIGH | Post-game encounters | ⚠️ PARTIAL — Solatheon encounter placed (placeholder #144), Noctharion not placed |
+| Pokemon League multi-room structure | CRITICAL | Needs 6 rooms: 4 E4 + Champion + Hall of Fame | ✅ DONE |
+| Route 7 grunt gauntlet + Vex blockade | HIGH | Act 3 story sequence | ✅ DONE |
+| Verdantia underground Synthesis lab | MEDIUM | Act 2 mini-dungeon | ✅ DONE |
+| Story cutscenes (20+ needed) | HIGH | Major story beats across all acts | ⚠️ PARTIAL — 12 authored, ~10 remaining |
+| Marina encounters 3-4 | MEDIUM | Co-op battle, post-game battle | ⚠️ PARTIAL — Marina-3 partner data exists |
+| Missing minor NPCs per city | MEDIUM | Mom dialogue, quest givers, lore NPCs | ✅ DONE |
+| Flag chain audit | HIGH | Story flag continuity | ✅ DONE — data-driven victoryFlag system |
 
 ---
 

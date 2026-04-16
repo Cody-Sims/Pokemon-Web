@@ -84,6 +84,7 @@ import { viridianForest } from './dungeons/viridian-forest';
 import { crystalCavern } from './dungeons/crystal-cavern';
 import { emberMines } from './dungeons/ember-mines';
 import { victoryRoad } from './dungeons/victory-road';
+import { verdantiaLab } from './dungeons/verdantia-lab';
 import { aetherSanctum } from './dungeons/aether-sanctum';
 import { crystalCavernDepths } from './dungeons/crystal-cavern-depths';
 import { abyssalSpireF1 } from './dungeons/abyssal-spire-f1';
@@ -91,6 +92,9 @@ import { abyssalSpireF2 } from './dungeons/abyssal-spire-f2';
 import { abyssalSpireF3 } from './dungeons/abyssal-spire-f3';
 import { abyssalSpireF4 } from './dungeons/abyssal-spire-f4';
 import { abyssalSpireF5 } from './dungeons/abyssal-spire-f5';
+import { shatteredIslesShore } from './dungeons/shattered-isles-shore';
+import { shatteredIslesRuins } from './dungeons/shattered-isles-ruins';
+import { shatteredIslesTemple } from './dungeons/shattered-isles-temple';
 import { route8 } from './routes/route-8';
 import {
   palletHouse1, viridianHouse1, pewterHouse1, coralHouse1,
@@ -125,6 +129,7 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'coral-gym': coralGym,
   'route-4': route4,
   'ember-mines': emberMines,
+  'verdantia-lab': verdantiaLab,
   'ironvale-city': ironvaleCity,
   'ironvale-pokecenter': ironvalePokecenter,
   'ironvale-pokemart': ironvalePokemart,
@@ -171,6 +176,10 @@ export const mapRegistry: Record<string, MapDefinition> = {
   // Post-game dungeons
   'aether-sanctum': aetherSanctum,
   'crystal-cavern-depths': crystalCavernDepths,
+  // Post-game — Shattered Isles
+  'shattered-isles-shore': shatteredIslesShore,
+  'shattered-isles-ruins': shatteredIslesRuins,
+  'shattered-isles-temple': shatteredIslesTemple,
   // Generic house interiors
   'pallet-town-house-1': palletHouse1,
   'viridian-city-house-1': viridianHouse1,

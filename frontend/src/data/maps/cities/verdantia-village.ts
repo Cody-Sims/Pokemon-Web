@@ -142,9 +142,12 @@ export const verdantiaVillage: MapDefinition = {
     // South exit → Voltara City
     { tileX: 9, tileY: 24, targetMap: 'voltara-city', targetSpawnId: 'from-verdantia' },
     { tileX: 10, tileY: 24, targetMap: 'voltara-city', targetSpawnId: 'from-verdantia' },
+    // Hidden lab entrance (behind Giant Root near gym area)
+    { tileX: 23, tileY: 14, targetMap: 'verdantia-lab', targetSpawnId: 'from-verdantia-village' },
   ],
   spawnPoints: {
     'default':          { x: 10, y: 12, direction: 'up' },
+    'from-verdantia-lab': { x: 22, y: 14, direction: 'left' },
     'from-route-5':     { x: 10, y: 1, direction: 'down' },
     'from-voltara':     { x: 10, y: 23, direction: 'up' },
     'from-pokecenter':  { x: 4, y: 5, direction: 'down' },

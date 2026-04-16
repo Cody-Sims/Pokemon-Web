@@ -15,7 +15,6 @@ import type { BattleScene } from './BattleScene';
 import type { PokemonInstance } from '@data/interfaces';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
-import { trainerData } from '@data/trainer-data';
 import { SFX, BGM } from '@utils/audio-keys';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { EventManager } from '@managers/EventManager';
@@ -24,6 +23,10 @@ import { TouchControls } from '@ui/TouchControls';
 import { SynthesisHandler } from '@battle/SynthesisHandler';
 import { SYNTHESIS_ITEM } from '@data/synthesis-data';
 import { getMoveTarget } from '@battle/DoubleBattleManager';
+import { pickEnemyMove, calculateTurnOrder } from './battle/BattleTurnRunner';
+import { showMessageQueue as showMsgQueue } from './battle/BattleMessageQueue';
+import { showDamagePopup as showDmgPopup } from './battle/BattleDamageNumbers';
+import { processTrainerRewards, getContinueMessage } from './battle/BattleRewardHandler';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message' | 'target-select';
 
@@ -393,23 +396,8 @@ export class BattleUIScene extends Phaser.Scene {
     const playerCharging = this.statusHandler.getChargingMove(player);
     const actualPlayerMoveId = playerCharging ?? playerMoveId;
 
-    // Use effective speed (accounts for stat stages and paralysis)
-    const playerSpeed = this.statusHandler.getEffectiveStat(player, 'speed');
-    const enemySpeed = this.statusHandler.getEffectiveStat(enemy, 'speed');
-
-    // Check move priority
-    const playerMove = moveData[actualPlayerMoveId];
     const enemyMoveId = this.pickEnemyMove(enemy);
-    const enemyMove = moveData[enemyMoveId];
-    const playerPriority = playerMove?.priority ?? 0;
-    const enemyPriority = enemyMove?.priority ?? 0;
-
-    const playerFirst = playerPriority > enemyPriority
-      || (playerPriority === enemyPriority && playerSpeed >= enemySpeed);
-
-    const order: { attacker: PokemonInstance; defender: PokemonInstance; moveId: string; isPlayer: boolean }[] = playerFirst
-      ? [{ attacker: player, defender: enemy, moveId: actualPlayerMoveId, isPlayer: true }, { attacker: enemy, defender: player, moveId: enemyMoveId, isPlayer: false }]
-      : [{ attacker: enemy, defender: player, moveId: enemyMoveId, isPlayer: false }, { attacker: player, defender: enemy, moveId: actualPlayerMoveId, isPlayer: true }];
+    const order = calculateTurnOrder(player, enemy, actualPlayerMoveId, enemyMoveId, this.statusHandler);
 
     this.runTurnStep(order, 0);
   }
@@ -751,9 +739,7 @@ export class BattleUIScene extends Phaser.Scene {
 
   /** Show a queue of messages sequentially with a delay, then run callback. */
   private showMessageQueue(messages: string[], idx: number, callback: () => void): void {
-    if (idx >= messages.length) { callback(); return; }
-    this.msg(messages[idx]);
-    this.time.delayedCall(900, () => this.showMessageQueue(messages, idx + 1, callback));
+    showMsgQueue(this, messages, idx, (text) => this.msg(text), callback);
   }
 
   /** Update the weather indicator text. */
@@ -804,9 +790,7 @@ export class BattleUIScene extends Phaser.Scene {
   }
 
   private pickEnemyMove(enemy: PokemonInstance): string {
-    const avail = enemy.moves.filter(m => m.currentPp > 0);
-    if (avail.length === 0) return 'tackle';
-    return avail[Math.floor(Math.random() * avail.length)].moveId;
+    return pickEnemyMove(enemy);
   }
 
   private msg(text: string): void { this.messageText.setText(text); }
@@ -815,26 +799,7 @@ export class BattleUIScene extends Phaser.Scene {
   private showDamagePopup(damage: number, isPlayer: boolean, effectiveness: number): void {
     const b = this.battle();
     const sprite = isPlayer ? b.playerSprite : b.enemySprite;
-    const x = sprite.x;
-    const y = sprite.y - 30;
-    let color = '#ffffff';
-    if (effectiveness > 1) color = '#ff5555';
-    else if (effectiveness < 1 && effectiveness > 0) color = '#8888aa';
-    else if (effectiveness === 0) color = '#666666';
-
-    const popup = this.add.text(x, y, `-${damage}`, {
-      fontSize: '22px', color, fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000000', strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(100);
-
-    this.tweens.add({
-      targets: popup,
-      y: y - 40,
-      alpha: 0,
-      duration: 900,
-      ease: 'Power2',
-      onComplete: () => popup.destroy(),
-    });
+    showDmgPopup(this, sprite, damage, effectiveness);
   }
 
   // ─── Poké Ball catch sequence ───
@@ -1031,31 +996,6 @@ export class BattleUIScene extends Phaser.Scene {
 
     // Switch to victory BGM
     AudioManager.getInstance().playBGM(BGM.VICTORY);
-
-    // Handle trainer battle rewards
-    if (b.isTrainerBattle && b.trainerId) {
-      gm.defeatTrainer(b.trainerId);
-      EventManager.getInstance().emit('trainer-defeated', b.trainerId);
-      const tData = trainerData[b.trainerId];
-      if (tData) {
-        gm.addMoney(tData.rewardMoney);
-        // Grant victory flag from trainer data
-        if (tData.victoryFlag) {
-          gm.setFlag(tData.victoryFlag);
-          EventManager.getInstance().emit('flag-set', tData.victoryFlag);
-        }
-        // Grant badge for gym leaders
-        if (tData.badgeReward) {
-          gm.addBadge(tData.badgeReward);
-        }
-      }
-    }
-
-    // Set custom victory flag if provided (e.g. tag battle completion)
-    if (b.victoryFlag) {
-      gm.setFlag(b.victoryFlag);
-      EventManager.getInstance().emit('flag-set', b.victoryFlag);
-    }
 
     this.msg(`${name} gained ${expGained} EXP. Points!`);
     this.state = 'animating';
@@ -1320,22 +1260,15 @@ export class BattleUIScene extends Phaser.Scene {
     const messages: string[] = [];
 
     if (b.isTrainerBattle && b.trainerId) {
-      const tData = trainerData[b.trainerId];
-      if (tData) {
-        messages.push(`You defeated ${tData.name}!`);
-        messages.push(`Got ¥${tData.rewardMoney} for winning!`);
-        if (tData.badgeReward) {
-          const badgeName = tData.badgeReward.charAt(0).toUpperCase() + tData.badgeReward.slice(1);
-          messages.push(`You received the ${badgeName} Badge!`);
-        }
-        if (tData.dialogue.after.length > 0) {
-          messages.push(...tData.dialogue.after);
-        }
-      }
+      const { messages: rewardMsgs } = processTrainerRewards(b.trainerId, b.victoryFlag);
+      messages.push(...rewardMsgs);
+    } else if (b.victoryFlag) {
+      GameManager.getInstance().setFlag(b.victoryFlag);
+      EventManager.getInstance().emit('flag-set', b.victoryFlag);
     }
 
+    const continueMsg = getContinueMessage();
     if (messages.length > 0) {
-      const continueMsg = isMobile() ? 'Tap to continue...' : 'Press Enter to continue...';
       this.showMessageQueue(messages, 0, () => {
         this.state = 'message';
         this.msg(continueMsg);
@@ -1343,7 +1276,7 @@ export class BattleUIScene extends Phaser.Scene {
       });
     } else {
       this.state = 'message';
-      this.msg(isMobile() ? 'Tap to continue...' : 'Press Enter to continue...');
+      this.msg(continueMsg);
       this.waitForConfirmThen(() => this.endBattle());
     }
   }

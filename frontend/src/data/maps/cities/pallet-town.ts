@@ -143,6 +143,30 @@ export const palletTown: MapDefinition = {
       facing: 'down',
       dialogue: ['PALLET TOWN PIER', '"Where the sea breeze begins"'],
     },
+    // ─── Mom (heals party) ───
+    {
+      id: 'pallet-mom',
+      tileX: 3,
+      tileY: 7,
+      textureKey: 'npc-mom',
+      facing: 'right',
+      dialogue: [
+        'Mom: Oh sweetie, you look tired!',
+        'Mom: Let me heal your Pokémon for you.',
+        'Your Pokémon were healed!',
+      ],
+      interactionType: 'heal',
+      flagDialogue: [
+        {
+          flag: 'enteredHallOfFame',
+          dialogue: [
+            'Mom: My baby is the Champion! I\'m so proud!',
+            'Mom: Your father would be so proud too.',
+            'Mom: Let me heal your Pokémon, Champion!',
+          ],
+        },
+      ],
+    },
   ],
   trainers: [],
   warps: [

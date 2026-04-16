@@ -4,6 +4,38 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-17]
+### Added — Storyline Implementation Phases 3, 6, 7, 11, 12
+
+#### Phase 3: Shattered Isles (Post-Game Area)
+- **Shattered Isles Shore** (`frontend/src/data/maps/dungeons/shattered-isles-shore.ts`): 25×30 post-game area with shattered ground, aether crystal obstacles, sand edges, water borders. Rook NPC with redemption dialogue (requireFlag `enteredHallOfFame`), trainer spawn for `rook-postgame` (talk-to-battle). Ferry warp from Coral Harbor docks.
+- **Shattered Isles Ruins** (`frontend/src/data/maps/dungeons/shattered-isles-ruins.ts`): 20×25 ruin dungeon with cracked floors, ruin walls/pillars, aether conduits. 5 Father's Trail journal fragment interactables with sequential `setsFlag` (`fathersTrail_clue1` through `fathersTrail_clue5`).
+- **Shattered Isles Temple** (`frontend/src/data/maps/dungeons/shattered-isles-temple.ts`): 18×22 temple with dragon scale floor, ruin pillars, aether crystals. Solatheon legendary encounter (interactionType `wild-encounter`), Father NPC (requireFlag `quest_fathersTrail_complete`).
+- **3 encounter tables**: Shore (Lv 55-65), Ruins (Lv 58-68), Temple (Lv 60-70) — Ghost/Psychic/Dragon emphasis with rare Dragonite, Aerodactyl, Lapras, Snorlax.
+- **Coral Harbor ferry warp**: warp at dock to Shattered Isles Shore + `from-shattered-isles` spawn point.
+
+#### Phase 6: Verdantia Underground Lab
+- **Verdantia Lab** (`frontend/src/data/maps/dungeons/verdantia-lab.ts`): 15×18 hidden Synthesis lab beneath tree roots with giant roots, synthesis floor/walls, containment pods, terminals, vines. 3 interactable terminals with Aether research lore, 3 Synthesis grunt trainer spawns.
+- **3 new grunt trainers** in `trainer-data.ts`: `synth-grunt-verdantia-1/2/3` with Poison/Grass teams Lv 28-32.
+- **Verdantia Village warp** at (23,14) to underground lab entrance + `from-verdantia-lab` spawn point.
+- **Encounter table**: Oddish, Gloom, Grimer, Koffing, Venonat, Bellsprout, Muk (Lv 25-32).
+
+#### Phase 7: NPC Population
+- **Pallet Town**: Mom (npc-mom) at (3,7) with `interactionType: 'heal'` and post-league flagDialogue.
+- **Viridian City**: Old Man Edgar (npc-oldman) with catch tutorial dialogue and `caughtFirstPokemon` flagDialogue.
+- **Pewter City**: Museum Curator (npc-male-1) near museum with Aether lore and post-game fossil dialogue.
+- **Ironvale City**: Blacksmith's Apprentice (npc-male-6) near forge with `defeatedFerris` flagDialogue.
+- **Scalecrest Citadel**: Veteran Knox (npc-ace-trainer) near south gate with `givesItem: 'scope-lens'`.
+- 5 other cities (Coral Harbor, Verdantia, Voltara, Wraithmoor, Cinderfall) already had Phase 7 NPCs from prior work.
+
+#### Phase 12: Flag Chain Audit & Data-Driven Victory Flags
+- **`victoryFlag` and `badgeReward`** optional fields added to `TrainerData` interface in `interfaces.ts`. BattleUIScene now sets trainer defeat flags and badges generically from data instead of hardcoded if-else chains.
+- **21 trainers** updated with `victoryFlag` (8 gym leaders, 2 rival, 3 Vex, 2 Zara, 4 E4, champion, 1 Verdantia grunt). 8 gym leaders also given `badgeReward`.
+- **Ironvale tag battle** flag renamed `ironvale_tag_battle_won` → `defeatedKael3` to match main story chain.
+- **Route 7 Rook NPC** fixed: `requireFlag` → `defeatedVex2`, `setsFlag` → `rook_revealed`, added `hasAetherLens` via flagDialogue.
+- **Abyssal Spire F5** altar NPC now sets `cleared_abyssal_spire` via flagDialogue.
+- **Route 5** Zara trainer placed with `condition: 'helped_marina_traps'`.
+
 ## [2026-04-16]
 ## [2026-04-16]
 ### Fixed — Intro Scene & Fishing

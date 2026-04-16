@@ -128,6 +128,15 @@ export const encounterTables: Record<string, EncounterEntry[]> = {
     { pokemonId: 143, levelRange: [60, 65], weight: 5 },  // Snorlax (very rare)
     { pokemonId: 149, levelRange: [60, 65], weight: 5 },  // Dragonite (very rare)
   ],
+  'verdantia-lab': [
+    { pokemonId: 43, levelRange: [25, 29], weight: 20 },   // Oddish
+    { pokemonId: 44, levelRange: [27, 31], weight: 10 },   // Gloom
+    { pokemonId: 88, levelRange: [25, 29], weight: 20 },   // Grimer
+    { pokemonId: 109, levelRange: [25, 29], weight: 20 },  // Koffing
+    { pokemonId: 48, levelRange: [25, 29], weight: 15 },   // Venonat
+    { pokemonId: 69, levelRange: [25, 29], weight: 10 },   // Bellsprout
+    { pokemonId: 89, levelRange: [29, 32], weight: 5 },    // Muk (rare)
+  ],
   'crystal-cavern-depths': [
     { pokemonId: 42, levelRange: [50, 55], weight: 15 },  // Golbat
     { pokemonId: 75, levelRange: [50, 55], weight: 15 },  // Graveler
@@ -140,6 +149,39 @@ export const encounterTables: Record<string, EncounterEntry[]> = {
     { pokemonId: 131, levelRange: [55, 60], weight: 5 },  // Lapras (rare)
     { pokemonId: 148, levelRange: [55, 60], weight: 5 },  // Dragonair (rare)
     { pokemonId: 104, levelRange: [50, 55], weight: 5 },  // Cubone
+  ],
+  // Post-game — Shattered Isles
+  'shattered-isles-shore': [
+    { pokemonId: 94, levelRange: [55, 60], weight: 15 },   // Gengar
+    { pokemonId: 75, levelRange: [55, 60], weight: 15 },   // Graveler
+    { pokemonId: 105, levelRange: [55, 60], weight: 15 },  // Marowak
+    { pokemonId: 97, levelRange: [55, 60], weight: 15 },   // Hypno
+    { pokemonId: 112, levelRange: [58, 63], weight: 10 },  // Rhydon
+    { pokemonId: 95, levelRange: [55, 60], weight: 10 },   // Onix
+    { pokemonId: 42, levelRange: [55, 60], weight: 10 },   // Golbat
+    { pokemonId: 142, levelRange: [60, 65], weight: 5 },   // Aerodactyl (rare)
+    { pokemonId: 149, levelRange: [60, 65], weight: 5 },   // Dragonite (very rare)
+  ],
+  'shattered-isles-ruins': [
+    { pokemonId: 94, levelRange: [58, 63], weight: 15 },   // Gengar
+    { pokemonId: 65, levelRange: [58, 63], weight: 15 },   // Alakazam
+    { pokemonId: 148, levelRange: [58, 63], weight: 15 },  // Dragonair
+    { pokemonId: 97, levelRange: [58, 63], weight: 15 },   // Hypno
+    { pokemonId: 93, levelRange: [58, 63], weight: 10 },   // Haunter
+    { pokemonId: 36, levelRange: [58, 63], weight: 10 },   // Clefable
+    { pokemonId: 149, levelRange: [62, 68], weight: 10 },  // Dragonite
+    { pokemonId: 131, levelRange: [62, 68], weight: 5 },   // Lapras (rare)
+    { pokemonId: 143, levelRange: [62, 68], weight: 5 },   // Snorlax (rare)
+  ],
+  'shattered-isles-temple': [
+    { pokemonId: 65, levelRange: [60, 65], weight: 20 },   // Alakazam
+    { pokemonId: 149, levelRange: [60, 65], weight: 15 },  // Dragonite
+    { pokemonId: 148, levelRange: [60, 65], weight: 15 },  // Dragonair
+    { pokemonId: 36, levelRange: [60, 65], weight: 15 },   // Clefable
+    { pokemonId: 94, levelRange: [60, 65], weight: 15 },   // Gengar
+    { pokemonId: 131, levelRange: [65, 70], weight: 10 },  // Lapras (rare)
+    { pokemonId: 143, levelRange: [65, 70], weight: 5 },   // Snorlax (very rare)
+    { pokemonId: 142, levelRange: [65, 70], weight: 5 },   // Aerodactyl (very rare)
   ],
 };
 

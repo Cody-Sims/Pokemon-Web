@@ -172,6 +172,8 @@ export const coralHarbor: MapDefinition = {
     { tileX: 4, tileY: 4, targetMap: 'coral-pokecenter', targetSpawnId: 'default' },
     { tileX: 11, tileY: 9, targetMap: 'coral-pokemart', targetSpawnId: 'default' },
     { tileX: 5, tileY: 20, targetMap: 'coral-gym', targetSpawnId: 'default' },
+    // Ferry dock → Shattered Isles
+    { tileX: 22, tileY: 14, targetMap: 'shattered-isles-shore', targetSpawnId: 'from-coral-harbor' },
     // South exit → Route 4
     { tileX: 4, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },
     { tileX: 5, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },
@@ -183,5 +185,6 @@ export const coralHarbor: MapDefinition = {
     'from-pokecenter':   { x: 4, y: 5, direction: 'down' },
     'from-pokemart':     { x: 11, y: 10, direction: 'down' },
     'from-gym':          { x: 5, y: 21, direction: 'down' },
+    'from-shattered-isles': { x: 22, y: 13, direction: 'up' },
   },
 };

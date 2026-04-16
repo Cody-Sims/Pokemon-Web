@@ -117,6 +117,33 @@ A coastal island chain where ancient ruins dot the landscape and **Aether** flow
 ### Phase 20: Achievement & Completion Tracking ✓
 > **AchievementManager** (singleton): 50 achievements across 5 categories (story/collection/battle/exploration/challenge). Serialized in SaveManager. **AchievementToast**: Gold banner slide-in notification, auto-dismiss 3s. **AchievementScene**: Grid gallery with category tabs, progress counter, keyboard+pointer nav. Added to pause menu. **GameStats**: 12 tracked statistics (battles won/lost, catches, steps, money, evolved, crits, highest damage) in GameManager with `incrementStat()`/`getStat()`. **Hall of Fame**: `HallOfFameEntry` data structure persisted on champion victory. **Achievement triggers**: Wired into BattleUIScene (victories, catches, evolution, badges) and OverworldScene (steps, surf, bicycle, fishing).
 
+### Storyline Phase 1 — Pokémon League Completion ✓
+> Restructured Pokémon League into 6 rooms: Lobby, 4 E4 chambers (Nerida, Theron, Lysandra, Ashborne), Champion Chamber. All E4 trainer data complete (Lv 48–55 teams) with smart AI. Champion Aldric with full team. Hall of Fame flag (`enteredHallOfFame`).
+
+### Storyline Phase 2 — Abyssal Spire (5 Floors) ✓
+> Full 5-floor Collective HQ dungeon. F1: The Breach (Rook partner, 2 elite grunts), F2: Lab Wing (Dr. Vex boss #3, lore terminals), F3: Command Center (Zara confrontation), F4: Inner Sanctum (Willow rescue), F5: The Altar (Aldric escape). 8 new trainers (Vex-3, Zara-2/3, 4 Synthesis Elites). Encounter table (Lv 34–42).
+
+### Storyline Phase 3 — Shattered Isles (Post-Game) ✓
+> 3 post-game dungeon maps: Shore (25×30, Rook NPC + postgame battle, ferry from Coral Harbor), Ruins (20×25, 5 Father's Trail journal fragments with sequential flags), Temple (18×22, Solatheon legendary encounter, Father NPC). 3 encounter tables (Lv 55–70, Ghost/Psychic/Dragon emphasis). Coral Harbor ferry warp added.
+
+### Storyline Phase 4–5 — Cutscenes & Route 7 (Partial) ✓
+> 7 story cutscenes in cutscene-data.ts. Route 7 grunt gauntlet + Vex blockade. Rook postgame trainer data (Lv 70–74). Marina partner data (Lv 30–32). 3 Route 7 Synthesis elite grunts (Lv 33–36).
+
+### Storyline Phase 6 — Verdantia Underground Lab ✓
+> Verdantia Lab mini-dungeon (15×18) beneath tree roots. Giant root corridors, synthesis lab chambers, containment pods/terminals. 3 interactable terminals with Aether research lore. 3 Synthesis grunt trainers (Poison/Grass Lv 28–32). Encounter table (Oddish/Grimer/Koffing/Venonat Lv 25–32). Warp from Verdantia Village.
+
+### Storyline Phase 7 — NPC Population ✓
+> City NPCs added: Mom healer (Pallet), Old Man Edgar catch tutorial (Viridian), Museum Curator (Pewter), Blacksmith Apprentice (Ironvale), Veteran Knox with Scope Lens (Scalecrest). Move Tutor, Ghost Girl, Hot Spring Attendant, Elder Moss, Engineer Sparks already present from prior phases. All 10 cities verified populated.
+
+### Storyline Phase 8 — Battle Encounters (Partial) ✓
+> Mom healer in player house. Route 7 elite grunt gauntlet. 5 story cutscenes (Morwen Prophecy, Solara Confession, Ashborne Warning, Aldric Spire Offer, Post-Champion Victory).
+
+### Storyline Phase 11 — Encounter Tables ✓
+> Encounter tables added for all new areas: Shattered Isles Shore/Ruins/Temple, Verdantia Lab. Existing tables verified for routes, caverns, Abyssal Spire.
+
+### Storyline Phase 12 — Flag Chain Audit ✓
+> Data-driven `victoryFlag`/`badgeReward` fields on TrainerData interface (replaced hardcoded BattleUIScene if-else). 21 trainers updated with `victoryFlag` (8 gym leaders, 2 rival, 3 Vex, 2 Zara, 4 E4, Champion, 1 grunt). 8 gym leaders given `badgeReward`. Ironvale tag battle flag fixed → `defeatedKael3`. Route 7 Rook NPC flags corrected (`rook_revealed`, `hasAetherLens`). Abyssal Spire F5 altar sets `cleared_abyssal_spire`. Route 5 Zara trainer placed.
+
 ---
 
 ## Remaining Phases
@@ -131,15 +158,15 @@ A coastal island chain where ancient ruins dot the landscape and **Aether** flow
 - Fly fast-travel UI scene (map selection from visited towns)
 - Cycling sprite/animation (distinct visual for bicycle mode)
 
-### Post-Game Content (Not Yet Implemented)
+### Storyline Remaining Work
 
-- **Abyssal Spire** (Collective HQ): 5-floor climactic dungeon — Rook double battle, Vex final boss, Zara defection choice, Willow rescue, Aldric confrontation.
-- **Shattered Isles**: Ruined archipelago, Lv 55–70 wild Pokémon, Rook rematch (Lv 70+).
-- **Legendary quests**: Solatheon (Shattered Isles temple), Noctharion (Crystal Cavern depths).
-- **The Father's Trail**: 5-location quest following father's journal → reunion + Master Ball.
+- **Solatheon legendary data**: Custom Pokémon data entry (currently uses Articuno #144 placeholder).
+- **Noctharion legendary**: encounter in Crystal Cavern Depths not yet placed.
+- **Post-game quest auto-trigger**: `quest_fathersTrail_started` needs to fire after `enteredHallOfFame`.
+- **WarpDefinition requireFlag**: Verdantia Lab warp should be gated behind `defeatedIvy` flag (interface extension needed).
+- **Voltara NPC fixes**: `voltara-bolt` missing `interactionType: 'move-tutor'`, `voltara-sparks` uses non-existent texture.
+- **Remaining cutscenes**: ~10 additional story cutscenes needed for full narrative coverage.
 - **Rematches**: All 8 Gym Leaders (Lv 60+), Elite Four (Lv 70+), Kael as Champion challenger (Lv 60–65).
-- **Endgame dungeon**: Deep Crystal Cavern expansion.
-- **Remaining Elite Four**: Theron (Fighting/Rock), Lysandra (Psychic/Dark), Ashborne (Fire/Dragon).
 - **Randomizer mode** (stretch): Seed-based shuffle of encounters/teams/starters.
 
 ---
