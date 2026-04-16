@@ -437,7 +437,7 @@ export interface NpcSpawn {
   /** On interaction, set this flag to true. */
   setsFlag?: string;
   /** Special interaction type instead of plain dialogue. */
-  interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select' | 'name-rater' | 'move-tutor';
+  interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select' | 'name-rater' | 'move-tutor' | 'tag-battle' | 'show-pokemon' | 'wild-encounter';
   /** Extra data for the interaction (e.g. tutorId for move-tutor). */
   interactionData?: string;
   /** Idle behavior config (look-around, wander, pace). */

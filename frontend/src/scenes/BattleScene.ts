@@ -38,6 +38,7 @@ export class BattleScene extends Phaser.Scene {
 
   // Double battle support
   public isDouble = false;
+  public victoryFlag = '';
   public playerSprites: Phaser.GameObjects.Image[] = [];
   public enemySprites: Phaser.GameObjects.Image[] = [];
   public playerPokemonSlots: (PokemonInstance | null)[] = [];
@@ -96,6 +97,7 @@ export class BattleScene extends Phaser.Scene {
     this.isTrainerBattle = (data?.isTrainer as boolean) ?? false;
     this.trainerId = (data?.trainerId as string) ?? '';
     this.isDouble = (data?.isDouble as boolean) ?? false;
+    this.victoryFlag = (data?.victoryFlag as string) ?? '';
 
     // Initialize starter if party is empty
     if (gm.getParty().length === 0) {
@@ -239,7 +241,13 @@ export class BattleScene extends Phaser.Scene {
     if (this.isDouble && data?.enemyParty) {
       const enemyParty = data.enemyParty as PokemonInstance[];
       const gm2 = GameManager.getInstance();
-      this.setupDoubleBattle(gm2.getParty(), enemyParty);
+      const allyParty = data.allyParty as PokemonInstance[] | undefined;
+      if (allyParty && allyParty.length > 0) {
+        const lead = gm2.getParty().find(p => p.currentHp > 0) ?? gm2.getParty()[0];
+        this.setupDoubleBattle([lead, allyParty[0]], enemyParty);
+      } else {
+        this.setupDoubleBattle(gm2.getParty(), enemyParty);
+      }
     }
 
     // Launch battle UI overlay

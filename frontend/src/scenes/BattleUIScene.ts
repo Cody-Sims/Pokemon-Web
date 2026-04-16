@@ -1047,6 +1047,12 @@ export class BattleUIScene extends Phaser.Scene {
       }
     }
 
+    // Set custom victory flag if provided (e.g. tag battle completion)
+    if (b.victoryFlag) {
+      gm.setFlag(b.victoryFlag);
+      EventManager.getInstance().emit('flag-set', b.victoryFlag);
+    }
+
     this.msg(`${name} gained ${expGained} EXP. Points!`);
     this.state = 'animating';
 

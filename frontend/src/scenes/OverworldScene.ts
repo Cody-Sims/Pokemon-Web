@@ -762,6 +762,86 @@ export class OverworldScene extends Phaser.Scene {
           return;
         }
 
+        // ── Tag-battle handler ──
+        if (spawnDef?.interactionType === 'tag-battle' && spawnDef.interactionData) {
+          const [allyId, enemy1Id, enemy2Id, wonFlag] = spawnDef.interactionData.split('|');
+          if (wonFlag && gm.getFlag(wonFlag)) {
+            // Already completed – show regular dialogue
+          } else {
+            const allyData = trainerData[allyId];
+            const e1Data = trainerData[enemy1Id];
+            const e2Data = trainerData[enemy2Id];
+            if (allyData && e1Data && e2Data) {
+              const allyParty = allyData.party.map(p => EncounterSystem.createWildPokemon(p.pokemonId, p.level));
+              const enemyParty1 = e1Data.party.map(p => EncounterSystem.createWildPokemon(p.pokemonId, p.level));
+              const enemyParty2 = e2Data.party.map(p => EncounterSystem.createWildPokemon(p.pokemonId, p.level));
+              this.scene.pause();
+              this.scene.launch('DialogueScene', { dialogue });
+              this.scene.get('DialogueScene').events.once('shutdown', () => {
+                this.scene.start('TransitionScene', {
+                  target: 'BattleScene',
+                  data: {
+                    isDouble: true,
+                    allyParty,
+                    enemyParty: [...enemyParty1, ...enemyParty2],
+                    trainerId: enemy1Id,
+                    victoryFlag: wonFlag ?? '',
+                  },
+                });
+              });
+              return;
+            }
+          }
+        }
+
+        // ── Show-pokemon handler (Collector's Challenge) ──
+        if (spawnDef?.interactionType === 'show-pokemon' && spawnDef.interactionData) {
+          const requirements = spawnDef.interactionData.split('|').map(r => {
+            const [type, flag] = r.split(':');
+            return { type, flag };
+          });
+          const nextReq = requirements.find(r => !gm.getFlag(r.flag));
+          if (nextReq) {
+            this.scene.pause();
+            this.scene.launch('DialogueScene', { dialogue });
+            this.scene.get('DialogueScene').events.once('shutdown', () => {
+              this.scene.launch('PartyScene', { selectMode: true });
+              this.scene.get('PartyScene').events.once('pokemon-selected', (index: number) => {
+                this.scene.stop('PartyScene');
+                const party = gm.getParty();
+                const selected = party[index];
+                if (!selected) { this.scene.resume(); return; }
+                const pData = pokemonData[selected.dataId];
+                if (pData && pData.types.some((t: string) => t === nextReq.type)) {
+                  gm.setFlag(nextReq.flag);
+                  EventManager.getInstance().emit('flag-set', nextReq.flag);
+                  this.scene.launch('DialogueScene', { dialogue: [`Magnificent! A fine ${nextReq.type}-type indeed!`] });
+                  this.scene.get('DialogueScene').events.once('shutdown', () => this.scene.resume());
+                } else {
+                  this.scene.launch('DialogueScene', { dialogue: [`Hmm, that's not the ${nextReq.type}-type I'm looking for.`] });
+                  this.scene.get('DialogueScene').events.once('shutdown', () => this.scene.resume());
+                }
+              });
+              this.scene.get('PartyScene').events.once('shutdown', () => this.scene.resume());
+            });
+            return;
+          }
+        }
+
+        // ── Wild-encounter handler (Lost Pokémon trigger) ──
+        if (spawnDef?.interactionType === 'wild-encounter' && spawnDef.interactionData) {
+          const [speciesId, lvl] = spawnDef.interactionData.split('-').map(Number);
+          if (speciesId && lvl) {
+            this.scene.pause();
+            this.scene.launch('DialogueScene', { dialogue });
+            this.scene.get('DialogueScene').events.once('shutdown', () => {
+              const wild = EncounterSystem.createWildPokemon(speciesId, lvl);
+              this.triggerWildEncounter(wild);
+            });
+            return;
+          }
+        }
+
         // Cutscene trigger (overrides regular dialogue)
         if (spawnDef?.triggerCutscene && cutsceneData[spawnDef.triggerCutscene]) {
           this.cutsceneEngine.play(cutsceneData[spawnDef.triggerCutscene]);

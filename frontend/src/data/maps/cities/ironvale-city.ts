@@ -141,6 +141,8 @@ export const ironvaleCity: MapDefinition = {
       ],
       requireFlag: 'found_mines_terminal',
       setsFlag: 'met_kael_ironvale',
+      interactionType: 'tag-battle',
+      interactionData: 'rival-3|synthesis-grunt-ironvale-1|synthesis-grunt-ironvale-2|ironvale_tag_battle_won',
     },
   ],
   trainers: [],

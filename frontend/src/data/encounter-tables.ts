@@ -108,6 +108,14 @@ export const encounterTables: Record<string, EncounterEntry[]> = {
     { pokemonId: 31, levelRange: [38, 43], weight: 10 },  // Nidoqueen
     { pokemonId: 125, levelRange: [40, 44], weight: 5 },  // Electabuzz (rare)
   ],
+  'abyssal-spire': [
+    { pokemonId: 93, levelRange: [36, 42], weight: 20 },  // Haunter
+    { pokemonId: 42, levelRange: [38, 42], weight: 15 },  // Golbat
+    { pokemonId: 64, levelRange: [36, 40], weight: 15 },  // Kadabra
+    { pokemonId: 88, levelRange: [36, 40], weight: 15 },  // Grimer
+    { pokemonId: 81, levelRange: [36, 40], weight: 15 },  // Magnemite
+    { pokemonId: 92, levelRange: [34, 38], weight: 20 },  // Gastly
+  ],
   'aether-sanctum': [
     { pokemonId: 93, levelRange: [55, 60], weight: 15 },  // Haunter
     { pokemonId: 110, levelRange: [55, 60], weight: 15 }, // Weezing

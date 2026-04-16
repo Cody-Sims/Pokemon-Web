@@ -91,6 +91,8 @@ export const viridianCity: MapDefinition = {
         'Magnus: Show them to me and I\'ll reward you handsomely!',
       ],
       setsFlag: 'quest_collector_started',
+      interactionType: 'show-pokemon',
+      interactionData: 'water:quest_collector_water|fire:quest_collector_fire|flying:quest_collector_flying',
       flagDialogue: [
         {
           flag: 'quest_collector_complete',

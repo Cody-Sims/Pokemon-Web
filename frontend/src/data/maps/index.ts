@@ -70,7 +70,14 @@ import { scalecrestGym } from './interiors/scalecrest-gym';
 import { cinderfallPokecenter } from './interiors/cinderfall-pokecenter';
 import { cinderfallPokemart } from './interiors/cinderfall-pokemart';
 import { cinderfallGym } from './interiors/cinderfall-gym';
-import { pokemonLeague } from './interiors/pokemon-league';
+import {
+  pokemonLeague,
+  pokemonLeagueNerida,
+  pokemonLeagueTheron,
+  pokemonLeagueLysandra,
+  pokemonLeagueAshborne,
+  pokemonLeagueChampion,
+} from './interiors/pokemon-league';
 
 // Dungeons
 import { viridianForest } from './dungeons/viridian-forest';
@@ -79,6 +86,11 @@ import { emberMines } from './dungeons/ember-mines';
 import { victoryRoad } from './dungeons/victory-road';
 import { aetherSanctum } from './dungeons/aether-sanctum';
 import { crystalCavernDepths } from './dungeons/crystal-cavern-depths';
+import { abyssalSpireF1 } from './dungeons/abyssal-spire-f1';
+import { abyssalSpireF2 } from './dungeons/abyssal-spire-f2';
+import { abyssalSpireF3 } from './dungeons/abyssal-spire-f3';
+import { abyssalSpireF4 } from './dungeons/abyssal-spire-f4';
+import { abyssalSpireF5 } from './dungeons/abyssal-spire-f5';
 import { route8 } from './routes/route-8';
 import {
   palletHouse1, viridianHouse1, pewterHouse1, coralHouse1,
@@ -142,9 +154,20 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'cinderfall-pokemart': cinderfallPokemart,
   'cinderfall-gym': cinderfallGym,
   'route-8': route8,
+  // Abyssal Spire (Act 3 climax dungeon)
+  'abyssal-spire-f1': abyssalSpireF1,
+  'abyssal-spire-f2': abyssalSpireF2,
+  'abyssal-spire-f3': abyssalSpireF3,
+  'abyssal-spire-f4': abyssalSpireF4,
+  'abyssal-spire-f5': abyssalSpireF5,
   // Act 4
   'victory-road': victoryRoad,
   'pokemon-league': pokemonLeague,
+  'pokemon-league-nerida': pokemonLeagueNerida,
+  'pokemon-league-theron': pokemonLeagueTheron,
+  'pokemon-league-lysandra': pokemonLeagueLysandra,
+  'pokemon-league-ashborne': pokemonLeagueAshborne,
+  'pokemon-league-champion': pokemonLeagueChampion,
   // Post-game dungeons
   'aether-sanctum': aetherSanctum,
   'crystal-cavern-depths': crystalCavernDepths,

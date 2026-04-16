@@ -145,8 +145,8 @@ export const itemData: Record<string, ItemData> = {
   },
   'sitrus-berry': {
     id: 'sitrus-berry', name: 'Sitrus Berry', category: 'medicine',
-    description: 'Restores 25% HP when HP drops below 50%. Consumed on use.',
-    effect: { type: 'heal-hp', amount: 0 },
+    description: 'Restores 25% of max HP. Consumed on use.',
+    effect: { type: 'heal-hp', amount: -25 },
   },
   'oran-berry': {
     id: 'oran-berry', name: 'Oran Berry', category: 'medicine',

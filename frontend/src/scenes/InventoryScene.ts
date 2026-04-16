@@ -444,7 +444,11 @@ export class InventoryScene extends Phaser.Scene {
         if (target.currentHp >= target.stats.hp) {
           message = `${target.nickname ?? pokemonData[target.dataId]?.name} is already at full HP!`;
         } else {
-          const heal = eff.amount ?? 20;
+          let heal = eff.amount ?? 20;
+          // Negative amount = percentage of max HP (e.g. -25 = 25%)
+          if (heal < 0) {
+            heal = Math.max(1, Math.floor(target.stats.hp * Math.abs(heal) / 100));
+          }
           target.currentHp = Math.min(target.stats.hp, target.currentHp + heal);
           used = true;
           message = `${target.nickname ?? pokemonData[target.dataId]?.name} recovered ${heal} HP!`;

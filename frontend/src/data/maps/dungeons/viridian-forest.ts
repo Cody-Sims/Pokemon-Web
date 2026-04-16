@@ -67,12 +67,13 @@ export const viridianForest: MapDefinition = {
       textureKey: 'generic-trainer',
       facing: 'down',
       dialogue: [
-        'The Geodude looks confused but happy to see you!',
-        'It seems like it wants to go home.',
-        'You should tell Jerome in Pewter City!',
+        'The lost Pokémon appears to be a Geodude!',
+        'It seems startled and ready to fight!',
       ],
       requireFlag: 'quest_lostPokemon_started',
       setsFlag: 'quest_lostPokemon_found',
+      interactionType: 'wild-encounter',
+      interactionData: '74-25',
       flagDialogue: [
         {
           flag: 'quest_lostPokemon_found',
