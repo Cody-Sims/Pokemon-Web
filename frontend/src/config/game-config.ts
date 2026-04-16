@@ -20,6 +20,7 @@ import { IntroScene } from '@scenes/IntroScene';
 import { QuestJournalScene } from '@scenes/QuestJournalScene';
 import { QuestTrackerScene } from '@scenes/QuestTrackerScene';
 import { MoveTutorScene } from '@scenes/MoveTutorScene';
+import { NicknameScene } from '@scenes/NicknameScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
 const isMobile = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
@@ -62,5 +63,6 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     QuestJournalScene,
     QuestTrackerScene,
     MoveTutorScene,
+    NicknameScene,
   ],
 };

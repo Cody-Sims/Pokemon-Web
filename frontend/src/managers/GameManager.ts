@@ -21,6 +21,7 @@ export class GameManager {
   private boxNames: string[] = Array.from({ length: 12 }, (_, i) => `Box ${i + 1}`);
   private difficulty: DifficultyMode = 'classic';
   private nuzlockeEncountered: string[] = []; // route keys where first encounter already happened
+  private stepCount = 0;
   private settings: Record<string, string | number | boolean> = {
     textSpeed: 'medium',
     musicVolume: 0.5,
@@ -115,6 +116,22 @@ export class GameManager {
   markCaught(id: number): void { this.pokedex.seen.add(id); this.pokedex.caught.add(id); }
   getPokedex(): { seen: number[]; caught: number[] } {
     return { seen: [...this.pokedex.seen], caught: [...this.pokedex.caught] };
+  }
+
+  // Friendship
+  /** Adjust friendship for a party Pokémon by index. Clamps to [0, 255]. */
+  adjustFriendship(pokemonIndex: number, amount: number): void {
+    const p = this.party[pokemonIndex];
+    if (p) {
+      p.friendship = Math.max(0, Math.min(255, p.friendship + amount));
+    }
+  }
+
+  // Step counter (for friendship walking bonus)
+  getStepCount(): number { return this.stepCount; }
+  incrementStepCount(): number {
+    this.stepCount++;
+    return this.stepCount;
   }
 
   // Position & Map

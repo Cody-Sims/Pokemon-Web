@@ -4,6 +4,16 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-17]
+### Added — Pokémon Personality & Bond System
+- **Friendship gameplay logic**: `adjustFriendship(pokemonIndex, amount)` in `GameManager` clamps friendship to [0, 255]. Friendship changes: battle win +3, faint -1, heal at PokéCenter +1, every 128 walking steps +1 to lead Pokémon (level-up +2/3/5 already existed via `ExperienceCalculator`).
+- **Friendship battle effects**: 10% chance to survive a KO at 1 HP when friendship ≥ 220 ("hung on with love!"). 10% chance to cure a status condition at end of turn when friendship ≥ 220 ("shook off [status] with sheer determination!").
+- **Nickname system**: After catching a Pokémon, player is prompted "Give a nickname?". YES opens `NicknameScene` with keyboard input (letters/numbers/spaces/hyphens, max 12 chars, DONE/SKIP buttons, blinking cursor). Nickname displays in BattleScene HP bars.
+- **Name Rater NPC**: Added to Verdantia Village. Interaction launches PartyScene in select mode, then NicknameScene to rename the chosen Pokémon.
+- **PartyScene select mode**: New `selectMode` flag allows launching PartyScene for single Pokémon selection, emitting `pokemon-selected` event instead of showing the context menu.
+- **Nature characteristic flavor text**: SummaryScene INFO tab now shows an italic personality description for each of the 25 natures (e.g., Hardy → "Takes plenty of siestas", Adamant → "Proud of its power").
+- Registered `NicknameScene` in `game-config.ts`, added `'name-rater'` to `NpcSpawn.interactionType` union.
+
 ## [2026-04-16]
 ### Added — Animated Tiles, Environmental SFX, Flash HM, Strength Boulders
 - **Animated tile effects** in `OverworldScene.update()`: water tiles shimmer (3 blue tint cycles every 500ms), tall grass has subtle alpha pulse, lava/magma tiles cycle red-orange tints.

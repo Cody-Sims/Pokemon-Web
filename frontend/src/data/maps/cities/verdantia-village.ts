@@ -115,6 +115,20 @@ export const verdantiaVillage: MapDefinition = {
     { id: 'verdantia-herb', tileX: 18, tileY: 8, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['A rare medicinal herb grows here...', 'You gathered the Aether Herb for the salve!'],
       requireFlag: '!dragon-herb-found', setsFlag: 'dragon-herb-found' },
+    // Name Rater
+    {
+      id: 'name-rater',
+      tileX: 7,
+      tileY: 12,
+      textureKey: 'npc-oldman',
+      facing: 'right',
+      dialogue: [
+        'I am the Name Rater!',
+        'I can judge the names of your Pokémon.',
+        'Would you like me to rename one?',
+      ],
+      interactionType: 'name-rater',
+    },
   ],
   trainers: [],
   warps: [

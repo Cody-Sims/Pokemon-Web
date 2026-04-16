@@ -616,7 +616,18 @@ export class BattleUIScene extends Phaser.Scene {
 
           // Check defender faint
           if (defender.currentHp <= 0) {
+            // Friendship survival: 10% chance to hold on at 1 HP (player's pokemon only, friendship >= 220)
+            if (!isPlayer && defender.friendship >= 220 && Math.random() < 0.1) {
+              defender.currentHp = 1;
+              b.updateHpBars();
+              const survName = defender.nickname ?? pokemonData[defender.dataId]?.name ?? '???';
+              this.msg(`${survName} held on so you wouldn't feel sad!`);
+              this.time.delayedCall(1200, () => this.runTurnStep(order, idx + 1));
+              return;
+            }
             const defName = pokemonData[defender.dataId]?.name ?? '???';
+            // Apply friendship loss if player's pokemon fainted
+            if (!isPlayer) this.applyFaintFriendshipLoss(defender);
             this.time.delayedCall(800, () => {
               AudioManager.getInstance().playSFX(SFX.FAINT);
               AudioManager.getInstance().playCry(defender.dataId);
@@ -638,6 +649,8 @@ export class BattleUIScene extends Phaser.Scene {
           // Check attacker faint from recoil / self-destruct
           if (attacker.currentHp <= 0) {
             const atkName = pokemonData[attacker.dataId]?.name ?? '???';
+            // Apply friendship loss if player's pokemon fainted
+            if (isPlayer) this.applyFaintFriendshipLoss(attacker);
             this.time.delayedCall(800, () => {
               AudioManager.getInstance().playSFX(SFX.FAINT);
               AudioManager.getInstance().playCry(attacker.dataId);
@@ -701,6 +714,15 @@ export class BattleUIScene extends Phaser.Scene {
     const { pokemon, opponent, isPlayer } = pokemonToCheck[idx];
     const allMessages: string[] = [];
 
+    // Friendship status cure: 10% chance for player's pokemon with friendship >= 220
+    if (isPlayer && pokemon.status && pokemon.friendship >= 220 && Math.random() < 0.1) {
+      const statusName = pokemon.status === 'paralysis' ? 'paralysis' : pokemon.status === 'burn' ? 'its burn' : pokemon.status === 'poison' || pokemon.status === 'bad-poison' ? 'the poison' : pokemon.status;
+      const pokeName = pokemon.nickname ?? pokemonData[pokemon.dataId]?.name ?? '???';
+      pokemon.status = null;
+      pokemon.statusTurns = undefined;
+      allMessages.push(`${pokeName} shook off ${statusName} with sheer determination!`);
+    }
+
     // Status effect end-of-turn (burn, poison, etc.)
     const eotResult = this.statusHandler.applyEndOfTurn(pokemon, opponent);
     allMessages.push(...eotResult.messages);
@@ -757,6 +779,7 @@ export class BattleUIScene extends Phaser.Scene {
     }
     if (b.playerPokemon.currentHp <= 0) {
       const defName = pokemonData[b.playerPokemon.dataId]?.name ?? '???';
+      this.applyFaintFriendshipLoss(b.playerPokemon);
       b.faintSprite(b.playerSprite);
       this.msg(`${defName} fainted!`);
       this.time.delayedCall(1500, () => {
@@ -1324,6 +1347,66 @@ export class BattleUIScene extends Phaser.Scene {
     } else {
       audio.stopLowHpWarning();
     }
+  }
+
+  /** Apply friendship loss when a player's Pokémon faints (-1). */
+  private applyFaintFriendshipLoss(pokemon: PokemonInstance): void {
+    const gm = GameManager.getInstance();
+    const idx = gm.getParty().indexOf(pokemon);
+    if (idx >= 0) {
+      gm.adjustFriendship(idx, -1);
+    }
+  }
+
+  /** Prompt the player to nickname a newly caught Pokémon. */
+  private promptNickname(pokemon: PokemonInstance, speciesName: string, callback: () => void): void {
+    this.msg(`Would you like to give a nickname to ${speciesName}?`);
+    this.state = 'animating';
+
+    // Show YES / NO options
+    const yesText = this.add.text(GAME_WIDTH / 2 - 60, GAME_HEIGHT - 60, 'YES', {
+      ...FONTS.menuItem, fontSize: '18px', color: COLORS.textHighlight,
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(200);
+    const noText = this.add.text(GAME_WIDTH / 2 + 60, GAME_HEIGHT - 60, 'NO', {
+      ...FONTS.menuItem, fontSize: '18px', color: COLORS.textWhite,
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(200);
+
+    let cursor = 0;
+    const updateCursor = () => {
+      yesText.setColor(cursor === 0 ? COLORS.textHighlight : COLORS.textWhite);
+      noText.setColor(cursor === 1 ? COLORS.textHighlight : COLORS.textWhite);
+    };
+
+    const cleanup = () => {
+      yesText.destroy();
+      noText.destroy();
+      this.input.keyboard!.off('keydown-LEFT', onLeft);
+      this.input.keyboard!.off('keydown-RIGHT', onRight);
+      this.input.keyboard!.off('keydown-ENTER', onConfirm);
+      this.input.keyboard!.off('keydown-SPACE', onConfirm);
+    };
+
+    const onLeft = () => { cursor = 0; updateCursor(); };
+    const onRight = () => { cursor = 1; updateCursor(); };
+    const onConfirm = () => {
+      cleanup();
+      if (cursor === 0) {
+        // YES — launch nickname input
+        this.scene.launch('NicknameScene', { pokemon, speciesName });
+        this.scene.get('NicknameScene').events.once('shutdown', () => {
+          callback();
+        });
+      } else {
+        callback();
+      }
+    };
+
+    yesText.on('pointerdown', () => { cursor = 0; onConfirm(); });
+    noText.on('pointerdown', () => { cursor = 1; onConfirm(); });
+    this.input.keyboard!.on('keydown-LEFT', onLeft);
+    this.input.keyboard!.on('keydown-RIGHT', onRight);
+    this.input.keyboard!.on('keydown-ENTER', onConfirm);
+    this.input.keyboard!.on('keydown-SPACE', onConfirm);
   }
 
   private endBattle(): void {

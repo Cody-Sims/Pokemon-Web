@@ -141,6 +141,29 @@ export class SummaryScene extends Phaser.Scene {
       y += lineH;
     });
 
+    // Nature characteristic flavor text
+    const NATURE_FLAVORS: Record<string, string> = {
+      hardy: 'Likes to eat anything.', lonely: 'Is somewhat stubborn.',
+      brave: 'Likes to fight.', adamant: 'Has a sturdy body.',
+      naughty: 'Is somewhat vain.', bold: 'Has a strong will.',
+      docile: 'Is a little scatterbrained.', relaxed: 'Likes to relax.',
+      impish: 'Is highly curious.', lax: 'Loves to eat.',
+      timid: 'Is quick to flee.', hasty: 'Is somewhat impatient.',
+      serious: 'Values its solitude.', jolly: 'Is always happy.',
+      naive: 'Is a little naive.', modest: 'Is thorough and cautious.',
+      mild: 'Has a calm nature.', quiet: 'Likes to relax.',
+      bashful: 'Is easily embarrassed.', rash: 'Is headstrong.',
+      calm: 'Very gentle.', gentle: 'Is easily moved to tears.',
+      sassy: 'Has a bold personality.', careful: 'Is very careful.',
+      quirky: 'Is highly curious.',
+    };
+    const flavor = NATURE_FLAVORS[p.nature];
+    if (flavor) {
+      const flavorText = this.add.text(x, y, `"${flavor}"`, { fontSize: '13px', color: '#88aa88', fontStyle: 'italic' });
+      this.contentGroup.add(flavorText);
+      y += lineH;
+    }
+
     // EXP info
     y += 10;
     const currentLevelExp = ExperienceCalculator.expForLevel(p.level);

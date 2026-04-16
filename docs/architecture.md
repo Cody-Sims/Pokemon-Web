@@ -69,10 +69,11 @@ pokemon-web/
 │       │   ├── DialogueScene.ts        # Typewriter text overlay for NPC dialogue
 │       │   ├── MenuScene.ts            # Pause menu (Pokémon, Bag, Save, etc.)
 │       │   ├── InventoryScene.ts       # Bag / item management
-│       │   ├── PartyScene.ts           # Party view — HP, types, status per slot
-│       │   ├── SummaryScene.ts         # 3-tab Pokémon detail (INFO/STATS/MOVES)
+│       │   ├── PartyScene.ts           # Party view — HP, types, status per slot; select mode for NPC flows
+│       │   ├── SummaryScene.ts         # 3-tab Pokémon detail (INFO/STATS/MOVES), nature flavor text
 │       │   ├── TransitionScene.ts      # Fade transitions between scenes
 │       │   ├── StarterSelectScene.ts   # Starter Pokémon selection overlay
+│       │   ├── NicknameScene.ts        # Pokémon nickname input overlay (catch, Name Rater)
 │       │   ├── IntroScene.ts           # Professor intro, character naming, new game setup
 │       │   ├── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
 │       │   ├── PokedexScene.ts         # Pokédex species browser (seen/caught)

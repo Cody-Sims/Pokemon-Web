@@ -15,9 +15,14 @@ export class PartyScene extends Phaser.Scene {
   private contextMenu?: { panel: NinePatchPanel; texts: Phaser.GameObjects.Text[]; controller: MenuController };
   private swapMode = false;
   private swapSourceIdx = -1;
+  private selectMode = false;
 
   constructor() {
     super({ key: 'PartyScene' });
+  }
+
+  init(data?: { selectMode?: boolean }): void {
+    this.selectMode = data?.selectMode ?? false;
   }
 
   create(): void {
@@ -116,7 +121,7 @@ export class PartyScene extends Phaser.Scene {
 
     this.updateCursor();
 
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 52, 'Select a Pokémon to view options', FONTS.caption).setOrigin(0.5);
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 52, this.selectMode ? 'Choose a Pokémon' : 'Select a Pokémon to view options', FONTS.caption).setOrigin(0.5);
     drawButton(this, GAME_WIDTH / 2, GAME_HEIGHT - 30, 'Close (ESC)', () => this.closeScene(), 140, 30);
   }
 
@@ -132,6 +137,12 @@ export class PartyScene extends Phaser.Scene {
   private onSlotConfirm(index: number): void {
     const party = GameManager.getInstance().getParty();
     if (index >= party.length) return;
+
+    // In select mode, emit the selection and close
+    if (this.selectMode) {
+      this.events.emit('pokemon-selected', index);
+      return;
+    }
 
     if (this.swapMode) {
       // Complete the swap
