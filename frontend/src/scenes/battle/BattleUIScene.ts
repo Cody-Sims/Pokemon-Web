@@ -23,11 +23,11 @@ import { TouchControls } from '@ui/TouchControls';
 import { SynthesisHandler } from '@battle/SynthesisHandler';
 import { SYNTHESIS_ITEM } from '@data/synthesis-data';
 import { getMoveTarget } from '@battle/DoubleBattleManager';
-import { pickEnemyMove, calculateTurnOrder } from './battle/BattleTurnRunner';
-import { showMessageQueue as showMsgQueue } from './battle/BattleMessageQueue';
-import { showDamagePopup as showDmgPopup } from './battle/BattleDamageNumbers';
-import { processTrainerRewards, getContinueMessage } from './battle/BattleRewardHandler';
-import { collectEndOfTurnEffects } from './battle/BattleEndOfTurn';
+import { pickEnemyMove, calculateTurnOrder } from './BattleTurnRunner';
+import { showMessageQueue as showMsgQueue } from './BattleMessageQueue';
+import { showDamagePopup as showDmgPopup } from './BattleDamageNumbers';
+import { processTrainerRewards, getContinueMessage } from './BattleRewardHandler';
+import { collectEndOfTurnEffects } from './BattleEndOfTurn';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message' | 'target-select';
 

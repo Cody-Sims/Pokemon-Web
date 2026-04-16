@@ -42,16 +42,16 @@ import { AchievementToast } from '@ui/AchievementToast';
 import {
   spawnNPCs as spawnNPCsHelper,
   spawnTrainers as spawnTrainersHelper,
-} from './overworld/OverworldNPCSpawner';
+} from './OverworldNPCSpawner';
 import {
   redrawTile as redrawTileHelper,
   showFieldAbilityPopup as showPopup,
   pushBoulder as pushBoulderHelper,
-} from './overworld/OverworldFieldAbilities';
-import { getBestRod, attemptFish } from './overworld/OverworldFishing';
-import { healParty as healPartyHelper } from './overworld/OverworldHealing';
-import { getFootstepSFX as getFootstepSFXHelper } from './overworld/OverworldFootsteps';
-import { tryInteract as tryInteractHelper, InteractionContext } from './overworld/OverworldInteraction';
+} from './OverworldFieldAbilities';
+import { getBestRod, attemptFish } from './OverworldFishing';
+import { healParty as healPartyHelper } from './OverworldHealing';
+import { getFootstepSFX as getFootstepSFXHelper } from './OverworldFootsteps';
+import { tryInteract as tryInteractHelper, InteractionContext } from './OverworldInteraction';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;

@@ -1,4 +1,4 @@
-export { BattleUIScene } from '../BattleUIScene';
+export { BattleUIScene } from './BattleUIScene';
 export { pickEnemyMove, calculateTurnOrder } from './BattleTurnRunner';
 export type { TurnOrder } from './BattleTurnRunner';
 export { showMessageQueue } from './BattleMessageQueue';

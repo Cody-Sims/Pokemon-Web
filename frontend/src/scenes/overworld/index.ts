@@ -1,4 +1,4 @@
-export { OverworldScene } from '../OverworldScene';
+export { OverworldScene } from './OverworldScene';
 export { spawnNPCs, spawnTrainers } from './OverworldNPCSpawner';
 export type { SpawnedNPCs } from './OverworldNPCSpawner';
 export { redrawTile, showFieldAbilityPopup, pushBoulder } from './OverworldFieldAbilities';
