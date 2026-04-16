@@ -458,6 +458,19 @@ export class OverworldScene extends Phaser.Scene {
     // Warps
     for (const warp of this.mapDef.warps) {
       if (warp.tileX === tx && warp.tileY === ty) {
+        // Check flag gate
+        if (warp.requireFlag) {
+          const negated = warp.requireFlag.startsWith('!');
+          const flagName = negated ? warp.requireFlag.slice(1) : warp.requireFlag;
+          const flagValue = gm.getFlag(flagName);
+          if (negated ? flagValue : !flagValue) {
+            this.scene.pause();
+            this.scene.launch('DialogueScene', {
+              dialogue: ['The way ahead is blocked...'],
+            });
+            return;
+          }
+        }
         // Block leaving town without a starter — but always allow building entry
         const targetDef = mapRegistry[warp.targetMap];
         if (gm.getParty().length === 0 && !targetDef?.isInterior) {

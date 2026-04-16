@@ -54,7 +54,7 @@ export const shatteredIslesRuins: MapDefinition = {
         '"The Aether ley lines are unstable. I can feel them pulsing beneath the ground."',
         '"I must find the source before the Collective does."',
       ],
-      setsFlag: 'fathersTrail_clue1',
+      setsFlag: 'fatherTrail_clue1',
     },
     {
       id: 'fathers-trail-clue-2',
@@ -68,7 +68,7 @@ export const shatteredIslesRuins: MapDefinition = {
         '"They built their temple at the convergence point — where all ley lines meet."',
         '"I\'m getting closer. The crystal formations are growing denser."',
       ],
-      setsFlag: 'fathersTrail_clue2',
+      setsFlag: 'fatherTrail_clue2',
     },
     {
       id: 'fathers-trail-clue-3',
@@ -82,7 +82,7 @@ export const shatteredIslesRuins: MapDefinition = {
         '"The stronger ones guard the inner ruins fiercely."',
         '"Something ancient sleeps at the heart of the temple. I can sense it."',
       ],
-      setsFlag: 'fathersTrail_clue3',
+      setsFlag: 'fatherTrail_clue3',
     },
     {
       id: 'fathers-trail-clue-4',
@@ -96,7 +96,7 @@ export const shatteredIslesRuins: MapDefinition = {
         '"It responds to the badges — symbols of a trainer\'s proven strength."',
         '"Perhaps the ancients designed it this way. Only the worthy may enter."',
       ],
-      setsFlag: 'fathersTrail_clue4',
+      setsFlag: 'fatherTrail_clue4',
     },
     {
       id: 'fathers-trail-clue-5',
@@ -111,7 +111,7 @@ export const shatteredIslesRuins: MapDefinition = {
         '"I\'ve chosen to stay and protect the convergence point."',
         '"If you\'re reading this... I\'m proud of how far you\'ve come."',
       ],
-      setsFlag: 'fathersTrail_clue5',
+      setsFlag: 'fatherTrail_clue5',
     },
   ],
   trainers: [],

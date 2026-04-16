@@ -109,6 +109,7 @@ export const voltaraCity: MapDefinition = {
         'Bolt: Bring me colored shards from dungeons',
         'Bolt: and I\'ll teach your Pokémon a new trick.',
       ],
+      interactionType: 'move-tutor', interactionData: 'tutor-voltara',
     },
     // Story: Blitz discovers Collective is tapping the grid
     {

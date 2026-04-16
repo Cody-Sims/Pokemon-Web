@@ -54,6 +54,15 @@ export const crystalCavernDepths: MapDefinition = {
     { id: 'depths-item-2', tileX: 16, tileY: 20, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['You found a Rare Candy!'],
       requireFlag: '!crystalDepthsItem2', setsFlag: 'crystalDepthsItem2' },
+    // ─── Noctharion encounter in the deepest chamber ───
+    { id: 'noctharion-depths', tileX: 10, tileY: 22, textureKey: 'generic-trainer', facing: 'down',
+      requireFlag: '!noctharion_caught',
+      dialogue: [
+        'A chilling darkness coalesces before you...',
+        'The shadow given form stares with hollow eyes!',
+      ],
+      interactionType: 'wild-encounter',
+      interactionData: '153' },
   ],
   trainers: [
     { id: 'depths-hiker-1', trainerId: 'hiker-5', tileX: 14, tileY: 11, textureKey: 'npc-hiker', facing: 'left', lineOfSight: 3 },

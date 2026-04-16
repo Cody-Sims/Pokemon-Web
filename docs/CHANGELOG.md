@@ -5,12 +5,25 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-17]
+### Added — Post-game quest triggers, legendary Pokémon, flag-gated warps, story cutscenes
+- **WarpDefinition `requireFlag`**: Extended `WarpDefinition` interface with optional `requireFlag` field (supports `!`-negation). Updated `OverworldScene` warp logic to check flag gates before warping; shows "The way ahead is blocked..." dialogue when gate is closed.
+- **Verdantia Lab warp gate**: Added `requireFlag: 'defeatedIvy'` to Verdantia Village → Verdantia Lab warp.
+- **Coral Harbor ferry gate**: Added `requireFlag: 'quest_sternEngine_complete'` to Coral Harbor → Shattered Isles ferry warp.
+- **Father's Trail auto-trigger**: Post-champion-victory cutscene now sets `quest_fatherTrail_started` flag and hints at the journal quest.
+- **Solatheon** (#152): Custom legendary Pokémon (Psychic/Fairy, BST 650) added to `psychic.ts`. Shattered Isles temple encounter updated from Articuno #144 placeholder.
+- **Noctharion** (#153): Custom legendary Pokémon (Ghost/Dark, BST 650) added to `ghost.ts`. Encounter NPC placed in Crystal Cavern Depths.
+- **10 story cutscenes**: `game-intro`, `rival-kael-lab`, `ember-mines-discovery`, `willow-kidnapping`, `rook-reveal`, `zara-defection`, `willow-rescue`, `champion-reveal`, `fathers-journal-discovery`, `father-reunion`.
+- **Voltara bolt fix**: Added `interactionType: 'move-tutor'` and `interactionData: 'tutor-voltara'` to voltara-bolt NPC.
+
+### Fixed
+- **Father's Trail naming**: Fixed `fathersTrail_clueN` → `fatherTrail_clueN` (5 flags) in shattered-isles-ruins.ts and `quest_fathersTrail_complete` → `quest_fatherTrail_complete` in shattered-isles-temple.ts to match quest-data.ts.
+
 ### Added — Storyline Implementation Phases 3, 6, 7, 11, 12
 
 #### Phase 3: Shattered Isles (Post-Game Area)
 - **Shattered Isles Shore** (`frontend/src/data/maps/dungeons/shattered-isles-shore.ts`): 25×30 post-game area with shattered ground, aether crystal obstacles, sand edges, water borders. Rook NPC with redemption dialogue (requireFlag `enteredHallOfFame`), trainer spawn for `rook-postgame` (talk-to-battle). Ferry warp from Coral Harbor docks.
-- **Shattered Isles Ruins** (`frontend/src/data/maps/dungeons/shattered-isles-ruins.ts`): 20×25 ruin dungeon with cracked floors, ruin walls/pillars, aether conduits. 5 Father's Trail journal fragment interactables with sequential `setsFlag` (`fathersTrail_clue1` through `fathersTrail_clue5`).
-- **Shattered Isles Temple** (`frontend/src/data/maps/dungeons/shattered-isles-temple.ts`): 18×22 temple with dragon scale floor, ruin pillars, aether crystals. Solatheon legendary encounter (interactionType `wild-encounter`), Father NPC (requireFlag `quest_fathersTrail_complete`).
+- **Shattered Isles Ruins** (`frontend/src/data/maps/dungeons/shattered-isles-ruins.ts`): 20×25 ruin dungeon with cracked floors, ruin walls/pillars, aether conduits. 5 Father's Trail journal fragment interactables with sequential `setsFlag` (`fatherTrail_clue1` through `fatherTrail_clue5`).
+- **Shattered Isles Temple** (`frontend/src/data/maps/dungeons/shattered-isles-temple.ts`): 18×22 temple with dragon scale floor, ruin pillars, aether crystals. Solatheon legendary encounter (interactionType `wild-encounter`), Father NPC (requireFlag `quest_fatherTrail_complete`).
 - **3 encounter tables**: Shore (Lv 55-65), Ruins (Lv 58-68), Temple (Lv 60-70) — Ghost/Psychic/Dragon emphasis with rare Dragonite, Aerodactyl, Lapras, Snorlax.
 - **Coral Harbor ferry warp**: warp at dock to Shattered Isles Shore + `from-shattered-isles` spawn point.
 

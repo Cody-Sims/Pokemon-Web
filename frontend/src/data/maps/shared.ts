@@ -465,6 +465,8 @@ export interface WarpDefinition {
   tileY: number;
   targetMap: string;
   targetSpawnId: string;
+  /** Game flag that must be set (or prefixed with '!' for negated) for this warp to work. */
+  requireFlag?: string;
 }
 
 export interface SpawnPoint {

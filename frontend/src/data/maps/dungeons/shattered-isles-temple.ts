@@ -52,7 +52,7 @@ export const shatteredIslesTemple: MapDefinition = {
         'A legendary Pokémon stirs from its millennia-long slumber!',
       ],
       interactionType: 'wild-encounter',
-      interactionData: '144',
+      interactionData: '152',
     },
     // ─── Father NPC (appears after quest completion) ───
     {
@@ -61,7 +61,7 @@ export const shatteredIslesTemple: MapDefinition = {
       tileY: 4,
       textureKey: 'npc-professor',
       facing: 'down',
-      requireFlag: 'quest_fathersTrail_complete',
+      requireFlag: 'quest_fatherTrail_complete',
       dialogue: [
         'Father: ...You found me.',
         'Father: I\'ve been guarding this place for a long time.',

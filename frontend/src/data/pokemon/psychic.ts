@@ -111,4 +111,18 @@ export const psychicPokemon: Record<number, PokemonData> = {
     catchRate: 45, expYield: 270,
     spriteKeys: { front: 'mew-front', back: 'mew-back', icon: 'mew-icon' },
   },
+  152: {
+    id: 152, name: 'Solatheon', types: ['psychic', 'fairy'],
+    baseStats: { hp: 100, attack: 80, defense: 100, spAttack: 140, spDefense: 130, speed: 100 },
+    abilities: ['levitate'],
+    learnset: [
+      { level: 1, moveId: 'confusion' }, { level: 30, moveId: 'psybeam' },
+      { level: 40, moveId: 'psychic' }, { level: 50, moveId: 'amnesia' },
+      { level: 60, moveId: 'psywave' }, { level: 70, moveId: 'recover' },
+      { level: 80, moveId: 'light-screen' }, { level: 90, moveId: 'hyper-beam' },
+    ],
+    evolutionChain: [],
+    catchRate: 3, expYield: 340,
+    spriteKeys: { front: 'solatheon-front', back: 'solatheon-back', icon: 'solatheon-icon' },
+  },
 };

@@ -41,4 +41,18 @@ export const ghostPokemon: Record<number, PokemonData> = {
     catchRate: 45, expYield: 225,
     spriteKeys: { front: 'gengar-front', back: 'gengar-back', icon: 'gengar-icon' },
   },
+  153: {
+    id: 153, name: 'Noctharion', types: ['ghost', 'dark'],
+    baseStats: { hp: 100, attack: 140, defense: 100, spAttack: 80, spDefense: 100, speed: 130 },
+    abilities: ['pressure'],
+    learnset: [
+      { level: 1, moveId: 'lick' }, { level: 30, moveId: 'night-shade' },
+      { level: 40, moveId: 'bite' }, { level: 50, moveId: 'swords-dance' },
+      { level: 60, moveId: 'confuse-ray' }, { level: 70, moveId: 'slash' },
+      { level: 80, moveId: 'dream-eater' }, { level: 90, moveId: 'hyper-beam' },
+    ],
+    evolutionChain: [],
+    catchRate: 3, expYield: 340,
+    spriteKeys: { front: 'noctharion-front', back: 'noctharion-back', icon: 'noctharion-icon' },
+  },
 };

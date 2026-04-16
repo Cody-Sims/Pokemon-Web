@@ -173,7 +173,7 @@ export const coralHarbor: MapDefinition = {
     { tileX: 11, tileY: 9, targetMap: 'coral-pokemart', targetSpawnId: 'default' },
     { tileX: 5, tileY: 20, targetMap: 'coral-gym', targetSpawnId: 'default' },
     // Ferry dock → Shattered Isles
-    { tileX: 22, tileY: 14, targetMap: 'shattered-isles-shore', targetSpawnId: 'from-coral-harbor' },
+    { tileX: 22, tileY: 14, targetMap: 'shattered-isles-shore', targetSpawnId: 'from-coral-harbor', requireFlag: 'quest_sternEngine_complete' },
     // South exit → Route 4
     { tileX: 4, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },
     { tileX: 5, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },

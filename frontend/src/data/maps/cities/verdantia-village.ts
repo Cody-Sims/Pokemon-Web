@@ -143,7 +143,7 @@ export const verdantiaVillage: MapDefinition = {
     { tileX: 9, tileY: 24, targetMap: 'voltara-city', targetSpawnId: 'from-verdantia' },
     { tileX: 10, tileY: 24, targetMap: 'voltara-city', targetSpawnId: 'from-verdantia' },
     // Hidden lab entrance (behind Giant Root near gym area)
-    { tileX: 23, tileY: 14, targetMap: 'verdantia-lab', targetSpawnId: 'from-verdantia-village' },
+    { tileX: 23, tileY: 14, targetMap: 'verdantia-lab', targetSpawnId: 'from-verdantia-village', requireFlag: 'defeatedIvy' },
   ],
   spawnPoints: {
     'default':          { x: 10, y: 12, direction: 'up' },
