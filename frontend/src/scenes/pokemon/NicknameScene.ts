@@ -3,7 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
-import { TouchControls } from '@ui/TouchControls';
+import { TouchControls } from '@ui/controls/TouchControls';
 import type { PokemonInstance } from '@data/interfaces';
 
 /**

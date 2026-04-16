@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { COLORS, FONTS } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
-import { EncounterSystem } from '@systems/EncounterSystem';
+import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { pokemonData } from '@data/pokemon';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';

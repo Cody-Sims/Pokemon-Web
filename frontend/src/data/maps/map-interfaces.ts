@@ -1,5 +1,5 @@
 import { Direction } from '@utils/type-helpers';
-import { NPCBehaviorConfig } from '@systems/NPCBehavior';
+import { NPCBehaviorConfig } from '@systems/overworld/NPCBehavior';
 
 export interface NpcSpawn {
   id: string;
@@ -74,9 +74,9 @@ export interface MapDefinition {
   /** Static light source positions (torches, lamps). */
   lightSources?: Array<{ tileX: number; tileY: number; radius?: number; color?: number }>;
   /** Overworld weather effect to render on this map. Defaults to 'none'. */
-  weather?: import('@systems/WeatherRenderer').OverworldWeather;
+  weather?: import('@systems/rendering/WeatherRenderer').OverworldWeather;
   /** Ambient sound effect type for this map. Defaults to 'none'. */
-  ambientSfx?: import('@systems/AmbientSFX').AmbientType;
+  ambientSfx?: import('@systems/audio/AmbientSFX').AmbientType;
   /** Cutscene to play when entering this map. Skipped if the cutscene's setFlag flags are already set. */
   onEnterCutscene?: string;
   /** Flag that must be set for the onEnterCutscene to trigger. Supports '!' prefix for negation. */

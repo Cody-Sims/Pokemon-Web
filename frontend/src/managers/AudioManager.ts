@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { CryGenerator } from '@systems/CryGenerator';
+import { CryGenerator } from '@systems/audio/CryGenerator';
 
 /** Singleton that wraps Phaser SoundManager for BGM crossfade and SFX.
  *  Handles browser autoplay policies gracefully. */

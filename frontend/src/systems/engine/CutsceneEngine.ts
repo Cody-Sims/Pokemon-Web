@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
 import { TILE_SIZE, WALK_DURATION } from '@utils/constants';
-import { EmoteBubble, EmoteType } from '@systems/EmoteBubble';
+import { EmoteBubble, EmoteType } from '@systems/rendering/EmoteBubble';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 

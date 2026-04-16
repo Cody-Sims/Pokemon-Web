@@ -1,5 +1,5 @@
 import { GameManager } from '@managers/GameManager';
-import { GameClock } from '@systems/GameClock';
+import { GameClock } from '@systems/engine/GameClock';
 
 export interface BerryPlot {
   berryId: string;

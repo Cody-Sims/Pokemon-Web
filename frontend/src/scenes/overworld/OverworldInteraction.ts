@@ -2,8 +2,8 @@ import { NPC } from '@entities/NPC';
 import { Trainer } from '@entities/Trainer';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
-import { EncounterSystem } from '@systems/EncounterSystem';
-import { OverworldAbilities } from '@systems/OverworldAbilities';
+import { EncounterSystem } from '@systems/overworld/EncounterSystem';
+import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { Tile } from '@data/maps';
 import type { MapDefinition, NpcSpawn } from '@data/maps';
 import { trainerData } from '@data/trainer-data';
@@ -12,7 +12,7 @@ import { cutsceneData } from '@data/cutscene-data';
 import { TILE_SIZE } from '@utils/constants';
 import type { Direction } from '@utils/type-helpers';
 import type { PokemonInstance } from '@data/interfaces';
-import type { CutsceneDefinition } from '@systems/CutsceneEngine';
+import type { CutsceneDefinition } from '@systems/engine/CutsceneEngine';
 
 export interface InteractionContext {
   scene: Phaser.Scene;

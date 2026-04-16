@@ -3,7 +3,7 @@ import { SaveManager } from '@managers/SaveManager';
 import { AudioManager } from '@managers/AudioManager';
 import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
 import { BGM, SFX } from '@utils/audio-keys';
-import { ConfirmBox } from '@ui/ConfirmBox';
+import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { DifficultyMode, DIFFICULTY_CONFIGS } from '@data/difficulty';
 
 export class TitleScene extends Phaser.Scene {

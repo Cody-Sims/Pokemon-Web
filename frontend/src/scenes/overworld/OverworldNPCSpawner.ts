@@ -1,7 +1,7 @@
 import { NPC } from '@entities/NPC';
 import { Trainer } from '@entities/Trainer';
 import { GameManager } from '@managers/GameManager';
-import { NPCBehaviorController } from '@systems/NPCBehavior';
+import { NPCBehaviorController } from '@systems/overworld/NPCBehavior';
 import { trainerData } from '@data/trainer-data';
 import { SOLID_TILES } from '@data/maps';
 import type { MapDefinition, NpcSpawn } from '@data/maps';

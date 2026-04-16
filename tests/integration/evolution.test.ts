@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ExperienceCalculator } from '../../frontend/src/battle/calculation/ExperienceCalculator';
-import { EncounterSystem } from '../../frontend/src/systems/EncounterSystem';
+import { EncounterSystem } from '../../frontend/src/systems/overworld/EncounterSystem';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
 import { evolutionData } from '../../frontend/src/data/evolution-data';
 import { pokemonData } from '../../frontend/src/data/pokemon';

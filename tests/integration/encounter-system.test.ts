@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { EncounterSystem } from '../../frontend/src/systems/EncounterSystem';
+import { EncounterSystem } from '../../frontend/src/systems/overworld/EncounterSystem';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
 import { pokemonData } from '../../frontend/src/data/pokemon';
 import { encounterTables } from '../../frontend/src/data/encounter-tables';

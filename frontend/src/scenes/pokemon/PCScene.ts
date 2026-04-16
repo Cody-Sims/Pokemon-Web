@@ -3,7 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT, MAX_PARTY_SIZE } from '@utils/constants';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
-import { NinePatchPanel } from '@ui/NinePatchPanel';
+import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { COLORS, FONTS, TYPE_COLORS, mobileFontSize, isMobile } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { PokemonInstance } from '@data/interfaces';

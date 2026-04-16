@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MenuController, MenuControllerConfig } from '../../frontend/src/ui/MenuController';
+import { MenuController, MenuControllerConfig } from '../../frontend/src/ui/controls/MenuController';
 
 // ─── Enhanced Phaser mock with keyboard event simulation ───
 

@@ -4,8 +4,8 @@ import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
 import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawHpBar, drawButton } from '@ui/theme';
-import { NinePatchPanel } from '@ui/NinePatchPanel';
-import { MenuController } from '@ui/MenuController';
+import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
+import { MenuController } from '@ui/controls/MenuController';
 import { SFX } from '@utils/audio-keys';
 
 export class PartyScene extends Phaser.Scene {

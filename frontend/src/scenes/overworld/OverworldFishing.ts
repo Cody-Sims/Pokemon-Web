@@ -1,5 +1,5 @@
 import { GameManager } from '@managers/GameManager';
-import { EncounterSystem } from '@systems/EncounterSystem';
+import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { AchievementManager } from '@managers/AchievementManager';
 import type { PokemonInstance } from '@data/interfaces';
 

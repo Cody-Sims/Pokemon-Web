@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GridMovement } from '@systems/GridMovement';
+import { GridMovement } from '@systems/overworld/GridMovement';
 import { Direction } from '@utils/type-helpers';
 import { TILE_SIZE } from '@utils/constants';
 

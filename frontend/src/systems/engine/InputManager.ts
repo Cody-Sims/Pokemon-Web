@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
-import { TouchControls } from '@ui/TouchControls';
+import { TouchControls } from '@ui/controls/TouchControls';
 
 export interface InputState {
   direction: Direction | null;

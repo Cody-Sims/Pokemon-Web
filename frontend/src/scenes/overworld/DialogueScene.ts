@@ -2,10 +2,10 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
-import { NinePatchPanel } from '@ui/NinePatchPanel';
+import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
-import { TouchControls } from '@ui/TouchControls';
+import { TouchControls } from '@ui/controls/TouchControls';
 
 /** Text speed options: delay (ms) per character. 0 = instant. */
 const TEXT_SPEEDS: Record<string, number> = {

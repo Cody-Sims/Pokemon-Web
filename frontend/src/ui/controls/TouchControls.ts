@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
-import { VirtualJoystick } from '@ui/VirtualJoystick';
+import { VirtualJoystick } from '@ui/controls/VirtualJoystick';
 
 /** Max time (ms) between touchstart and touchend to count as a tap. */
 const TAP_TIME_THRESHOLD = 300;

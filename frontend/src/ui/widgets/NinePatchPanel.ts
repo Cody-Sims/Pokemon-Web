@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { COLORS } from './theme';
+import { COLORS } from '../theme';
 
 /**
  * Nine-patch style panel using Phaser Graphics.

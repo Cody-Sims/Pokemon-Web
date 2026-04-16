@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BGM, SFX } from '../utils/audio-keys';
+import { BGM, SFX } from '../../utils/audio-keys';
 
 interface BGMMood {
   chords: number[][];
