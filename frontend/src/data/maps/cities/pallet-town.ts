@@ -122,6 +122,7 @@ export const palletTown: MapDefinition = {
         'Wade: Find any body of water and you can fish for Pokémon!',
       ],
       setsFlag: 'received_old_rod',
+      givesItem: 'old-rod',
       flagDialogue: [
         {
           flag: 'received_old_rod',

@@ -155,7 +155,8 @@ export class CutsceneEngine {
     const player = this.sceneAccess.player;
     const dir = action.direction;
     const animDir = dir === 'right' ? 'left' : dir;
-    player.play(`player-idle-${animDir}`);
+    const prefix = GameManager.getInstance().getPlayerGender() === 'girl' ? 'player-girl-' : 'player-';
+    player.play(`${prefix}idle-${animDir}`);
     player.setFlipX(dir === 'right');
     return Promise.resolve();
   }

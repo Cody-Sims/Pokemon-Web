@@ -157,11 +157,11 @@ export class OverworldScene extends Phaser.Scene {
       spawnDir = spawn.direction;
     }
 
-    this.player = new Player(this, spawnX, spawnY);
+    this.player = new Player(this, spawnX, spawnY, gm.getPlayerGender() === 'girl' ? 'player-walk-female' : 'player-walk');
     this.player.setScale(2);
     this.player.setDepth(1); // Between ground (0) and foreground overlays like tall grass (2)
     const animDir = spawnDir === 'right' ? 'left' : spawnDir;
-    this.player.play(`player-idle-${animDir}`);
+    this.player.play(`${this.animPrefix()}idle-${animDir}`);
     if (spawnDir === 'right') this.player.setFlipX(true);
 
     gm.setPlayerPosition({ x: spawnX, y: spawnY, direction: spawnDir });
@@ -670,6 +670,11 @@ export class OverworldScene extends Phaser.Scene {
         if (spawnDef?.setsFlag && !gm.getFlag(spawnDef.setsFlag)) {
           gm.setFlag(spawnDef.setsFlag);
           EventManager.getInstance().emit('flag-set', spawnDef.setsFlag);
+
+          // Give item if configured (only once, gated by the flag)
+          if (spawnDef.givesItem) {
+            gm.addItem(spawnDef.givesItem);
+          }
         }
 
         // Special: Oak parcel delivery triggers multiple flags
@@ -1119,6 +1124,11 @@ export class OverworldScene extends Phaser.Scene {
   }
 
   // ── Animation helper ──────────────────────────────────────
+  /** Get animation key prefix based on player gender ('player-' or 'player-girl-'). */
+  private animPrefix(): string {
+    return GameManager.getInstance().getPlayerGender() === 'girl' ? 'player-girl-' : 'player-';
+  }
+
   private playAnim(key: string, flipX: boolean): void {
     if (this.lastAnimKey !== key) {
       this.player.play(key);
@@ -1194,7 +1204,7 @@ export class OverworldScene extends Phaser.Scene {
 
     if (!input.direction) {
       const facing = this.player.getFacing();
-      this.playAnim(`player-idle-${facing}`, false);
+      this.playAnim(`${this.animPrefix()}idle-${facing}`, false);
       this.player.gridMovement.setRunning(false);
       this.player.gridMovement.setCycling(false);
       return;
@@ -1219,7 +1229,7 @@ export class OverworldScene extends Phaser.Scene {
     this.player.gridMovement.setCycling(this.isCycling);
 
     // Walk / Run
-    this.playAnim(`player-walk-${input.direction}`, false);
+    this.playAnim(`${this.animPrefix()}walk-${input.direction}`, false);
     this.player.move(input.direction);
   }
 

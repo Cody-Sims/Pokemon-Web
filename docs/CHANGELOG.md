@@ -5,6 +5,14 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
+## [2026-04-16]
+### Fixed — Intro Scene & Fishing
+- **Gender selection**: IntroScene appearance screen now displays actual player sprite previews (male from `player-walk` atlas, female from `player-walk-female` atlas) instead of generic ♂/♀ symbols. Selected gender affects the overworld player sprite and all walk/idle animations.
+- **Female player sprite**: Loaded `npc-lass` atlas as `player-walk-female` in PreloadScene; registered separate `player-girl-walk-*` and `player-girl-idle-*` animations in AnimationHelper; OverworldScene and CutsceneEngine now use gender-aware animation prefix.
+- **Intro Pokemon sprite**: Fixed Pokemon not displaying during intro slides — `pikachu-front` sprite is now preloaded in PreloadScene so it's available when IntroScene references it.
+- **Old Rod not given**: Fisherman Wade NPC now actually gives the `old-rod` item to the player's bag via new `givesItem` field on NpcSpawn interface, handled in OverworldScene NPC interaction code. Previously only set the `received_old_rod` flag without adding the item.
+- **Pallet Town fishing**: Added `pallet-town` entry to `fishingTables` (Magikarp Lv 3-8 on Old Rod) so fishing works in the area where the Old Rod is obtained.
+
 ### Added — Phases 7+8: NPC Population & Missing Battle Encounters
 - **3 new trainers** in `trainer-data.ts`: Rook post-game rematch (Lv 70-74), Marina encounter 3 partner (Lv 30-32), 3 Synthesis Elite grunts for Route 7 gauntlet (Lv 33-36).
 - **Mom healer** in `pallet-player-house.ts`: added `interactionType: 'heal'` and progressive flagDialogue for `defeatedBrock` and `enteredHallOfFame` milestones.

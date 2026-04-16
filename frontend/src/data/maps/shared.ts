@@ -436,6 +436,8 @@ export interface NpcSpawn {
   flagDialogue?: { flag: string; dialogue: string[]; setFlag?: string }[];
   /** On interaction, set this flag to true. */
   setsFlag?: string;
+  /** On first interaction, give this item to the player (requires setsFlag to gate). */
+  givesItem?: string;
   /** Special interaction type instead of plain dialogue. */
   interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select' | 'name-rater' | 'move-tutor' | 'tag-battle' | 'show-pokemon' | 'wild-encounter';
   /** Extra data for the interaction (e.g. tutorId for move-tutor). */

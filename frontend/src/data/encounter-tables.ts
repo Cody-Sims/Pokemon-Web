@@ -147,6 +147,19 @@ export const encounterTables: Record<string, EncounterEntry[]> = {
 export type RodTier = 'old' | 'good' | 'super';
 
 export const fishingTables: Record<string, Partial<Record<RodTier, EncounterEntry[]>>> = {
+  'pallet-town': {
+    old:   [{ pokemonId: 129, levelRange: [3, 8], weight: 100 }],  // Magikarp
+    good:  [
+      { pokemonId: 129, levelRange: [8, 12], weight: 60 },   // Magikarp
+      { pokemonId: 118, levelRange: [8, 12], weight: 40 },   // Goldeen
+    ],
+    super: [
+      { pokemonId: 118, levelRange: [15, 25], weight: 40 },  // Goldeen
+      { pokemonId: 119, levelRange: [20, 30], weight: 20 },  // Seaking
+      { pokemonId: 130, levelRange: [20, 30], weight: 10 },  // Gyarados (rare)
+      { pokemonId: 60,  levelRange: [15, 25], weight: 30 },  // Poliwag
+    ],
+  },
   'route-1': {
     old:   [{ pokemonId: 129, levelRange: [5, 10], weight: 100 }],  // Magikarp
     good:  [

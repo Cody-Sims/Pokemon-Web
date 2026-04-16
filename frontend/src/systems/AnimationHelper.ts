@@ -23,5 +23,27 @@ export class AnimationHelper {
         frameRate: 1,
       });
     }
+
+    // Female player animations (using player-walk-female atlas)
+    if (scene.textures.exists('player-walk-female')) {
+      for (const dir of directions) {
+        scene.anims.create({
+          key: `player-girl-walk-${dir}`,
+          frames: scene.anims.generateFrameNames('player-walk-female', {
+            prefix: `walk-${dir}-`,
+            start: 0,
+            end: 2,
+          }),
+          frameRate: 6,
+          repeat: -1,
+        });
+
+        scene.anims.create({
+          key: `player-girl-idle-${dir}`,
+          frames: [{ key: 'player-walk-female', frame: `walk-${dir}-0` }],
+          frameRate: 1,
+        });
+      }
+    }
   }
 }

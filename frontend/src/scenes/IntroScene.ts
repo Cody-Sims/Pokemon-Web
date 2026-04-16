@@ -157,10 +157,10 @@ export class IntroScene extends Phaser.Scene {
         // Update pokemon visibility
         if (slide.showPokemon) {
           if (!this.pokemonSprite) {
-            // Show Nidoran as the intro pokemon (id 32)
-            const spriteKey = this.textures.exists('nidoran-m-front') ? 'nidoran-m-front' : 'pikachu-front';
+            // Show Pikachu as the intro pokemon (preloaded in PreloadScene)
+            const spriteKey = this.textures.exists('pikachu-front') ? 'pikachu-front' : 'pikachu-icon';
             this.pokemonSprite = this.add.image(width / 2, height * 0.35, spriteKey)
-              .setScale(3)
+              .setScale(this.textures.exists('pikachu-front') ? 3 : 6)
               .setAlpha(0);
             this.slideContainer.add(this.pokemonSprite);
           }
@@ -362,17 +362,13 @@ export class IntroScene extends Phaser.Scene {
     const girlX = width * 0.7;
     const optionY = height * 0.42;
 
-    // Simple colored rectangles as character previews
+    // Character preview backgrounds
     const boyPreviewBg = this.add.rectangle(boyX, optionY, 80, 80, 0x333366).setStrokeStyle(3, 0xffcc00);
     const girlPreviewBg = this.add.rectangle(girlX, optionY, 80, 80, 0x333366).setStrokeStyle(3, 0x666688);
 
-    // Gender symbol placeholders
-    this.add.text(boyX, optionY, '♂', {
-      fontSize: '40px', color: '#6688ff',
-    }).setOrigin(0.5);
-    this.add.text(girlX, optionY, '♀', {
-      fontSize: '40px', color: '#ff6688',
-    }).setOrigin(0.5);
+    // Actual player sprite previews
+    const boySprite = this.add.image(boyX, optionY, 'player-walk', 'walk-down-0').setScale(4);
+    const girlSprite = this.add.image(girlX, optionY, 'player-walk-female', 'walk-down-0').setScale(4);
 
     const boyText = this.add.text(boyX, optionY + 60, 'Boy', {
       ...FONTS.menuItem, fontSize: mobileFontSize(18),
@@ -389,12 +385,20 @@ export class IntroScene extends Phaser.Scene {
       girlPreviewBg.setStrokeStyle(3, isBoy ? 0x666688 : 0xffcc00);
       boyText.setColor(isBoy ? COLORS.textHighlight : COLORS.textGray);
       girlText.setColor(isBoy ? COLORS.textGray : COLORS.textHighlight);
+      boySprite.setAlpha(isBoy ? 1 : 0.5);
+      girlSprite.setAlpha(isBoy ? 0.5 : 1);
     };
+    updateSelection();
 
     // Click handlers
     boyPreviewBg.setInteractive({ useHandCursor: true });
     girlPreviewBg.setInteractive({ useHandCursor: true });
+    boySprite.setInteractive({ useHandCursor: true });
+    girlSprite.setInteractive({ useHandCursor: true });
     boyPreviewBg.on('pointerdown', () => { this.selectedAppearance = 0; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
+    girlPreviewBg.on('pointerdown', () => { this.selectedAppearance = 0; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
+    boySprite.on('pointerdown', () => { this.selectedAppearance = 0; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
+    girlSprite.on('pointerdown', () => { this.selectedAppearance = 1; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
     girlPreviewBg.on('pointerdown', () => { this.selectedAppearance = 1; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
 
     // DONE button

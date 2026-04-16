@@ -49,8 +49,12 @@ export class PreloadScene extends Phaser.Scene {
       frameHeight: 16,
     });
 
-    // Load player character atlas
+    // Load player character atlases (male + female)
     this.load.atlas('player-walk', 'assets/sprites/player/player-walk.png', 'assets/sprites/player/player-walk.json');
+    this.load.atlas('player-walk-female', 'assets/sprites/npcs/npc-lass.png', 'assets/sprites/npcs/npc-lass.json');
+
+    // Load a Pokemon front sprite for the intro scene
+    this.load.image('pikachu-front', 'assets/sprites/pokemon/pikachu-front.png');
 
     // Load NPC sprites
     this.load.atlas('rival', 'assets/sprites/npcs/rival.png', 'assets/sprites/npcs/rival.json');
