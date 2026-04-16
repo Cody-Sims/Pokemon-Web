@@ -102,19 +102,24 @@ A coastal island chain where ancient ruins dot the landscape and **Aether** flow
 ### Phase 12 Remaining: Animated Tiles & Environmental SFX ✓
 > **Animated tiles**: Water tile tint cycling (3 blue shades every 30 frames), tall grass alpha pulse (0.85–1.0 every 15 frames), lava/magma red-orange tint cycling. Sprite references collected during `drawMap()`. **AmbientSFX system** (AmbientSFX.ts): `AmbientType` union (ocean/forest/cave/city/wind/rain/none), `ambientSfx` field on MapDefinition, infrastructure for future ProceduralAudio integration. **Terrain footstep SFX**: per-tile-type footstep sounds (grass/sand/water/wood/stone/metal), new SFX keys in audio-keys.ts.
 
+### Phase 9 Remaining: Tag-Battle & Berry Mechanics ✓
+> **Tag-battle system**: Ironvale Kael/player vs 2 Synthesis Grunts co-op via DoubleBattleManager. `tag-battle` interaction type on NPC spawns, `victoryFlag` support in BattleScene/BattleUIScene. **Show-Pokémon interaction**: `show-pokemon` interaction type with PartyScene select mode for Collector's Challenge quest (Magnus NPC in Viridian City). **Wild encounter trigger**: `wild-encounter` interaction type for Lost Pokémon quest (Geodude in Viridian Forest). **Berry fixes**: Sitrus Berry percentage-based healing in InventoryScene.
+
+### Phase 17 Remaining: Key Story Cutscenes ✓
+> 8 story cutscenes authored in cutscene-data.ts: game-intro, willow-lab-intro, rival-kael-lab, ember-mines-discovery, willow-kidnapping, rook-reveal, champion-reveal, credits-roll. **Flashback system**: `setSepia` action type in CutsceneEngine with full-screen sepia overlay (0xd4a574, alpha 0.3). `fathers-journal-1` flashback cutscene. Mom NPC in pallet-player-house wired with `triggerCutscene: 'game-intro'`.
+
+### Phase 18 Remaining: Bond System Stretch Goals ✓
+> **Affection dialogue**: 20% chance friendship-based messages on battle start (≥150), crit hit praise (≥200), survival/status cure messages. **Heart meter**: 5-heart visual (♥/♡) on SummaryScene INFO tab replacing raw friendship number. **EXP bonus**: +10% at friendship ≥200, +20% at ≥250 with "Boosted by friendship!" message. **Crit boost**: +1 crit stage at friendship ≥220 via DamageCalculator.
+
+### Phase 19: World Enrichment & Side Activities ✓
+> **Berry Growing System** (BerryGarden.ts): Plant/water/harvest cycle with GameClock timestamps. BERRY_SOIL tile (ID 115), `berryPlots` on MapDefinition. **Trainer Card Scene** (TrainerCardScene.ts): Full stat display (name, badges, Pokédex, playtime, money, difficulty, trainer ID) in NinePatchPanel. Added to pause menu. **Hidden Items System** (HiddenItems.ts): 16 hidden items across maps, Itemfinder key item with F-key scanning (5-tile radius), flag-gated collection. Missing items added (rare-candy, pearl, nugget, pp-up, max-elixir, iron, dusk-stone). **Voltorb Flip** (VoltorbFlipScene.ts): 5×5 card game with progressive levels, row/column hints, coin rewards. Game Corner NPC in Voltara City.
+
+### Phase 20: Achievement & Completion Tracking ✓
+> **AchievementManager** (singleton): 50 achievements across 5 categories (story/collection/battle/exploration/challenge). Serialized in SaveManager. **AchievementToast**: Gold banner slide-in notification, auto-dismiss 3s. **AchievementScene**: Grid gallery with category tabs, progress counter, keyboard+pointer nav. Added to pause menu. **GameStats**: 12 tracked statistics (battles won/lost, catches, steps, money, evolved, crits, highest damage) in GameManager with `incrementStat()`/`getStat()`. **Hall of Fame**: `HallOfFameEntry` data structure persisted on champion victory. **Achievement triggers**: Wired into BattleUIScene (victories, catches, evolution, badges) and OverworldScene (steps, surf, bicycle, fishing).
+
 ---
 
 ## Remaining Phases
-
-### Phase 9 Remaining — Tag-Battle & Berry Mechanics
-
-**Tag-Battle System:**
-- Tag-battle system for Ironvale Kael/player vs. Synthesis Admins co-op (uses DoubleBattleManager)
-
-**Berry Mechanics:**
-- Berry planting mechanic at route locations (berry growing tied to GameClock)
-- Collector's Challenge: "show Pokémon" interaction with Magnus (detect party type)
-- Lost Pokémon: Geodude encounter trigger in Viridian Forest
 
 ### Phase 12–13 Remaining Work
 
@@ -181,89 +186,24 @@ Everything is rendered with Phaser's built-in text. Custom art makes the game fe
 
 ---
 
-## Phase 17 Remaining: Key Story Cutscenes
-
-The CutsceneEngine is built — these concrete cutscene scripts need to be authored using the engine:
-
-**Key Cutscenes to Implement:**
-- Game intro: player arrives in Littoral Town by boat, Mom greets them
-- Professor Willow's lab: Willow introduces the Pokédex quest
-- Kael rival encounter 1: post-starter challenge in the lab
-- Ember Mines discovery: Vex operating the Aether rig (camera pan across the machine)
-- Willow kidnapping: Synthesis grunts grab Willow while player watches helplessly
-- Rook identity reveal: dramatic unmasking on Route 7
-- Champion reveal: Aldric removes his disguise in the Champion chamber
-- Credits roll: montage of locations visited with character art
-
-**Flashback System:**
-- Father's journal entries trigger playable flashback sequences
-- Sepia/desaturated tint during flashbacks
-- Young-father NPC sprite exploring the same locations
-
----
-
-## Phase 18 Remaining: Bond System Stretch Goals
+## Phase 19 Remaining: Side Activities
 
 **Not Yet Implemented:**
-- Affection dialogue in battle ("Pikachu is looking at you with trusting eyes!")
-- Visible friendship heart meter on Summary screen
-- Extra EXP bonus and crit chance boost at high friendship
-- Pokémon Camp / Petting Minigame (stretch goal)
-
----
-
-## Phase 19: World Enrichment & Side Activities
-
-Activities beyond battling that make the world feel alive and worth exploring.
-
-**Berry Growing System:**
-- Plant berries at designated soil patches on routes
-- Berries grow over real game-time (tied to GameClock)
-- Water/tend berries to speed growth
-- Harvest berries for held items, healing, and cooking
-
-**Trainer Card / Profile:**
-- Viewable from pause menu
-- Shows: player sprite, name, badges, Pokédex completion %, playtime, money, difficulty
-- Secret ID for shiny determination (behind the scenes)
-
-**Photo Mode (Unique Feature):**
-- Pause in overworld → camera pans freely, player places Pokémon from party into the scene
-- Screenshot capture → saves to browser download
-- Fun poses and expression variants for Pokémon sprites
-
-**Mini-games:**
-- Voltorb Flip (gambling in Game Corner)
-- Slot machine (cosmetic prizes only)
+- Photo Mode (pause → free camera → place Pokémon → screenshot)
 - Bug-catching contest (timed encounter with scoring)
-
-**Hidden Items & Secrets:**
-- Invisible items on certain tiles (Itemfinder/Dowsing Machine detects them)
-- Secret base entrance in Crystal Cavern (player-customizable room, stretch goal)
-- Easter eggs: references, hidden NPCs, unusual encounters (e.g., Mew under a specific truck tile)
+- Slot machine (cosmetic prizes)
+- Secret base entrance in Crystal Cavern (stretch)
+- Easter eggs and hidden NPC encounters
 
 ---
 
-## Phase 20: Achievement & Completion Tracking
+## Phase 20 Remaining: Completion Tracking
 
-Gives completionists and replayability-focused players long-term goals.
-
-**Achievement System:**
-- `AchievementManager` tracking 50+ achievements
-- Categories: Story (beat each gym, beat champion), Collection (catch 50/100/151), Battle (win 100 battles, land a crit, survive with 1 HP), Exploration (visit all towns, find all hidden items), Challenge (beat Nuzlocke, beat champion under 10 hours)
-- Toast notification on unlock (slides in from top with icon + title)
-- Achievement gallery scene accessible from pause menu
-
-**Statistics Tracker:**
-- Total battles (wild/trainer), total catches, total steps, money earned/spent
-- Most-used Pokémon, highest damage dealt, longest win streak
-- Pokédex completion percentage by type
-- Displayed on Trainer Card and in Stats sub-menu
-
-**Hall of Fame:**
-- After beating the Champion, team is recorded in Hall of Fame
-- Hall of Fame viewable from title screen
-- Shows team sprites, levels, natures, date cleared
+**Not Yet Implemented:**
+- Statistics sub-menu scene (view detailed stats)
+- Hall of Fame scene on title screen
+- Wire remaining achievement triggers (all gym badges, champion, sweep-trainer, underdog-win, etc.)
+- Pokémon Camp / Petting Minigame (stretch goal)
 
 ---
 
