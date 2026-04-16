@@ -5,6 +5,18 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
+### Added — Phase 20: Achievement & Completion Tracking
+- **AchievementManager** (`frontend/src/managers/AchievementManager.ts`): singleton manager tracking unlocked achievements with serialize/deserialize, unlock callback, and auto-completionist detection.
+- **Achievement data** (`frontend/src/data/achievement-data.ts`): 50 achievements across 5 categories (Story, Collection, Battle, Exploration, Challenge).
+- **AchievementToast** (`frontend/src/ui/AchievementToast.ts`): slide-in gold banner notification on achievement unlock with auto-dismiss after 3s.
+- **AchievementScene** (`frontend/src/scenes/AchievementScene.ts`): grid gallery of all achievements with category tabs, progress counter, description panel, and keyboard/pointer navigation. Registered in `game-config.ts`.
+- **GameStats tracking** in `GameManager`: `totalBattlesWon`, `totalBattlesLost`, `wildBattles`, `trainerBattles`, `totalCatches`, `totalSteps`, `moneyEarned`, `moneySpent`, `pokemonEvolved`, `criticalHits`, `highestDamage` with `incrementStat()`/`getStat()` methods.
+- **Hall of Fame** in `GameManager`: `HallOfFameEntry` interface and `hallOfFame` array with `addHallOfFameEntry()` method for champion completions.
+- **Save/load integration**: achievements, stats, and hall of fame persisted via `SaveManager` and `SaveData` interface (backwards-compatible with defaults).
+- **Achievement triggers** wired in `BattleUIScene` (battle wins, catches, evolution, badges, rival), `OverworldScene` (steps, surf, bicycle, fishing, starter selection).
+- **ACHIEVEMENTS menu option** added to `MenuScene` pause menu between QUESTS and TRAINER CARD.
+
+## [2026-04-16]
 ### Added — Phase 19: World Enrichment & Side Activities
 - **Berry Growing System** (`frontend/src/systems/BerryGarden.ts`): plantable berry plots on maps with `berryPlots` count in `MapDefinition`. Growth stages: empty → planted → growing → ready. Watering speeds growth by 50%. Harvest yields 2-4 berries. Uses `GameClock` time. Berry plot data persists via GameManager serialization.
 - **BERRY_SOIL tile** (ID 115): new walkable/interactable tile type in `shared.ts` with color, overlay base, and OverworldScene interaction handler (plant/water/harvest dialogue flows).

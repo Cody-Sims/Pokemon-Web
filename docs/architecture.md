@@ -80,7 +80,8 @@ pokemon-web/
 │       │   ├── QuestJournalScene.ts    # Quest log — Active/Complete tabs, step list, detail panel
 │       │   ├── QuestTrackerScene.ts    # HUD overlay — active quest step in top-right corner
 │       │   ├── TrainerCardScene.ts     # Trainer card display (name, badges, Pokédex, playtime, money)
-│       │   └── VoltorbFlipScene.ts     # Voltorb Flip mini-game (5×5 card-flipping number game)
+│       │   ├── VoltorbFlipScene.ts     # Voltorb Flip mini-game (5×5 card-flipping number game)
+│       │   └── AchievementScene.ts    # Achievement gallery with category tabs and progress counter
 │       │
 │       ├── entities/                   # Game object classes
 │       │   ├── Player.ts              # Grid-locked sprite + GridMovement
@@ -166,7 +167,8 @@ pokemon-web/
 │       │   ├── encounter-tables.ts    # Per-route wild Pokémon + level ranges
 │       │   ├── evolution-data.ts      # Evolution conditions (level, item, trade)
 │       │   ├── quest-data.ts          # Side quest definitions (steps, flags, rewards)
-│       │   └── cutscene-data.ts       # Cutscene definitions (scripted sequences for story events)
+│       │   ├── cutscene-data.ts       # Cutscene definitions (scripted sequences for story events)
+│       │   └── achievement-data.ts    # 50 achievement definitions across 5 categories
 │       │
 │       ├── managers/                   # Singleton service classes
 │       │   ├── GameManager.ts         # Central state: party, bag, badges, flags
@@ -175,7 +177,8 @@ pokemon-web/
 │       │   ├── EventManager.ts        # Custom event bus for cross-scene comms
 │       │   ├── DialogueManager.ts     # Dialogue queue management
 │       │   ├── TransitionManager.ts   # Screen fade helpers
-│       │   └── QuestManager.ts        # Quest progress tracking via GameManager flags
+│       │   ├── QuestManager.ts        # Quest progress tracking via GameManager flags
+│       │   └── AchievementManager.ts  # Achievement unlock tracking with serialization
 │       │
 │       ├── systems/                    # Reusable gameplay systems
 │       │   ├── GridMovement.ts        # Grid-locked tween movement engine
@@ -204,7 +207,8 @@ pokemon-web/
 │       │   ├── TextBox.ts            # Typewriter text display
 │       │   ├── MenuList.ts           # Selectable vertical menu (legacy)
 │       │   ├── ConfirmBox.ts         # Yes/No prompt
-│       │   └── BattleHUD.ts          # Composite: name + level + HP + EXP
+│       │   ├── BattleHUD.ts          # Composite: name + level + HP + EXP
+│       │   └── AchievementToast.ts   # Slide-in gold banner for achievement unlocks
 │       │
 │       └── utils/                      # Pure utility functions
 │           ├── constants.ts           # TILE_SIZE, WALK_SPEED, MAX_PARTY_SIZE…
