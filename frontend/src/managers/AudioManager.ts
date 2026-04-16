@@ -17,6 +17,9 @@ export class AudioManager {
   private priorBGMKey = '';
   private lowHpTimer?: Phaser.Time.TimerEvent;
   private lowHpActive = false;
+  private previousBGMKey = '';
+  private bgmPaused = false;
+  private loHpIntervalId?: ReturnType<typeof setInterval>;
 
   private constructor() {}
 
@@ -73,6 +76,7 @@ export class AudioManager {
 
     if (this.currentBGM) {
       const oldBGM = this.currentBGM;
+      this.previousBGMKey = this.currentBGMKey;
       this.currentBGMKey = key;
       this.scene.tweens.add({
         targets: oldBGM,
@@ -85,6 +89,7 @@ export class AudioManager {
         },
       });
     } else {
+      this.previousBGMKey = this.currentBGMKey;
       this.currentBGMKey = key;
       this.startBGM(key);
     }
@@ -108,6 +113,7 @@ export class AudioManager {
       this.currentBGM = undefined;
       this.currentBGMKey = '';
     }
+    this.bgmPaused = false;
     // Also stop any jingle
     if (this.jingleSound) {
       this.jingleSound.stop();
@@ -141,6 +147,18 @@ export class AudioManager {
     if (!this.scene || this.muted || !this.unlocked) return;
     if (!this.hasAudio(key)) return;
     this.scene.sound.play(key, { volume: this.sfxVolume });
+  }
+
+  /** Play SFX with a custom playback rate for pitch-shifted variations. */
+  playSFXWithRate(key: string, rate: number): void {
+    if (!this.scene || this.muted || !this.unlocked) return;
+    if (!this.hasAudio(key)) return;
+    const sfx = this.scene.sound.add(key, { volume: this.sfxVolume });
+    if ('setRate' in sfx) {
+      (sfx as Phaser.Sound.WebAudioSound).setRate(rate);
+    }
+    sfx.play();
+    sfx.once('complete', () => sfx.destroy());
   }
 
   /** Play a Pokémon cry for the given dex number. */
@@ -195,6 +213,114 @@ export class AudioManager {
     });
   }
 
+  /** Fade out current BGM, play a short jingle, then restore previous BGM.
+   *  Async version of playJingle — resolves when the fanfare finishes. */
+  async playFanfare(key: string, duration = 3000): Promise<void> {
+    if (!this.scene || this.muted || !this.unlocked) return;
+    if (!this.hasAudio(key)) return;
+
+    const restoreKey = this.currentBGMKey;
+    const hadBGM = !!this.currentBGM;
+
+    // Fade out current BGM
+    if (this.currentBGM) {
+      await new Promise<void>((resolve) => {
+        const bgm = this.currentBGM!;
+        this.scene!.tweens.add({
+          targets: bgm,
+          volume: 0,
+          duration: 300,
+          onComplete: () => {
+            bgm.stop();
+            bgm.destroy();
+            if (this.currentBGM === bgm) {
+              this.currentBGM = undefined;
+            }
+            resolve();
+          },
+        });
+      });
+    }
+
+    // Play the fanfare (non-looping)
+    await new Promise<void>((resolve) => {
+      const fanfare = this.scene!.sound.add(key, {
+        loop: false,
+        volume: this.bgmVolume,
+      });
+      fanfare.play();
+
+      const timeout = this.scene!.time.delayedCall(duration, () => {
+        if (fanfare.isPlaying) fanfare.stop();
+        fanfare.destroy();
+        resolve();
+      });
+
+      fanfare.once('complete', () => {
+        timeout.remove();
+        fanfare.destroy();
+        resolve();
+      });
+    });
+
+    // Restore previous BGM
+    if (hadBGM && restoreKey) {
+      this.currentBGMKey = '';
+      this.playBGM(restoreKey);
+    }
+  }
+
+  /** Start a repeating low-HP warning beep (oscillator) layered over BGM. */
+  playLoHpWarning(): void {
+    if (this.loHpIntervalId != null) return;
+    if (!this.scene || this.muted) return;
+
+    const ctx = (this.scene.sound as Phaser.Sound.WebAudioSoundManager)?.context;
+    if (!ctx) return;
+
+    const beep = () => {
+      if (this.muted) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = 440;
+      gain.gain.value = 0.15;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.2);
+    };
+
+    beep();
+    this.loHpIntervalId = setInterval(beep, 1500);
+  }
+
+  /** Stop the oscillator-based low-HP warning beep. */
+  stopLoHpWarning(): void {
+    if (this.loHpIntervalId != null) {
+      clearInterval(this.loHpIntervalId);
+      this.loHpIntervalId = undefined;
+    }
+  }
+
+  /** Pause the current BGM without destroying it. */
+  pauseBGM(): void {
+    if (!this.currentBGM || this.bgmPaused) return;
+    if ('pause' in this.currentBGM) {
+      (this.currentBGM as Phaser.Sound.WebAudioSound).pause();
+    }
+    this.bgmPaused = true;
+  }
+
+  /** Resume previously paused BGM. */
+  resumeBGM(): void {
+    if (!this.currentBGM || !this.bgmPaused) return;
+    if ('resume' in this.currentBGM) {
+      (this.currentBGM as Phaser.Sound.WebAudioSound).resume();
+    }
+    this.bgmPaused = false;
+  }
+
   /** Start the low-HP warning beep loop. Plays the LOW_HP SFX every 1 second. */
   startLowHpWarning(): void {
     if (this.lowHpActive || this.muted || !this.scene) return;
@@ -222,6 +348,9 @@ export class AudioManager {
   /** Get the key of the currently playing BGM (empty string if none). */
   getCurrentBGMKey(): string { return this.currentBGMKey; }
 
+  /** Get the key of the previously playing BGM. */
+  getPreviousBGMKey(): string { return this.previousBGMKey; }
+
   setBGMVolume(vol: number): void {
     this.bgmVolume = Math.max(0, Math.min(1, vol));
     if (this.currentBGM && 'volume' in this.currentBGM) {
@@ -237,6 +366,7 @@ export class AudioManager {
     if (muted) {
       this.stopBGM();
       this.stopLowHpWarning();
+      this.stopLoHpWarning();
     }
   }
   isMuted(): boolean { return this.muted; }

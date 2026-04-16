@@ -173,6 +173,7 @@ export class BattleScene extends Phaser.Scene {
       ease: 'Power2',
       onComplete: () => {
         this.time.delayedCall(150, () => this.enemySprite.clearTint());
+        AudioManager.getInstance().playCry(this.enemyPokemon.dataId);
       },
     });
 
@@ -186,6 +187,7 @@ export class BattleScene extends Phaser.Scene {
       ease: 'Power2',
       onComplete: () => {
         this.time.delayedCall(150, () => this.playerSprite.clearTint());
+        AudioManager.getInstance().playCry(this.playerPokemon.dataId);
       },
     });
 
@@ -207,8 +209,16 @@ export class BattleScene extends Phaser.Scene {
     // ── Audio: play battle BGM ──
     const audio = AudioManager.getInstance();
     audio.setScene(this);
-    const isTrainer = (data as Record<string, unknown>)?.isTrainer === true;
-    audio.playBGM(isTrainer ? BGM.BATTLE_TRAINER : BGM.BATTLE_WILD);
+    audio.stopLowHpWarning();
+    let battleBgm = BGM.BATTLE_WILD;
+    if (this.isTrainerBattle) {
+      if (data?.isGymLeader) battleBgm = BGM.GYM_LEADER_BATTLE;
+      else if (data?.isRival) battleBgm = BGM.RIVAL_BATTLE;
+      else if (data?.isLegendary) battleBgm = BGM.LEGENDARY;
+      else if (data?.isVillain) battleBgm = BGM.VILLAIN;
+      else battleBgm = BGM.BATTLE_TRAINER;
+    }
+    audio.playBGM(battleBgm);
 
     // Launch battle UI overlay
     this.scene.launch('BattleUIScene');

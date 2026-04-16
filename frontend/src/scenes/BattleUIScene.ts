@@ -170,7 +170,10 @@ export class BattleUIScene extends Phaser.Scene {
           this.scene.wake();
         });
         break;
-      case 'RUN': this.endBattle(); break;
+      case 'RUN':
+        AudioManager.getInstance().playSFX(SFX.RUN_SUCCESS);
+        this.time.delayedCall(300, () => this.endBattle());
+        break;
     }
   }
 
@@ -381,6 +384,7 @@ export class BattleUIScene extends Phaser.Scene {
     {
       const result = MoveExecutor.execute(attacker, defender, moveId, this.statusHandler, this.weatherManager);
       b.updateHpBars();
+      this.checkLowHpWarning();
 
       // Weather move: update display
       if (result.weatherSet) {
@@ -450,6 +454,18 @@ export class BattleUIScene extends Phaser.Scene {
         allEffectMsgs.push(...atkStatusBerry.messages);
       }
 
+      // Play stat change SFX based on effect messages
+      for (const msg of allEffectMsgs) {
+        if (msg.includes('rose') || msg.includes('raised')) {
+          AudioManager.getInstance().playSFX(SFX.STAT_UP);
+          break;
+        }
+        if (msg.includes('fell') || msg.includes('lowered')) {
+          AudioManager.getInstance().playSFX(SFX.STAT_DOWN);
+          break;
+        }
+      }
+
       // Handle recoil updating attacker HP bar
       if (result.recoilDamage && result.recoilDamage > 0) {
         b.updateHpBars();
@@ -475,6 +491,7 @@ export class BattleUIScene extends Phaser.Scene {
             const defName = pokemonData[defender.dataId]?.name ?? '???';
             this.time.delayedCall(800, () => {
               AudioManager.getInstance().playSFX(SFX.FAINT);
+              AudioManager.getInstance().playCry(defender.dataId);
               b.faintSprite(isPlayer ? b.enemySprite : b.playerSprite);
               this.msg(`${defName} fainted!`);
               this.time.delayedCall(1500, () => {
@@ -495,6 +512,7 @@ export class BattleUIScene extends Phaser.Scene {
             const atkName = pokemonData[attacker.dataId]?.name ?? '???';
             this.time.delayedCall(800, () => {
               AudioManager.getInstance().playSFX(SFX.FAINT);
+              AudioManager.getInstance().playCry(attacker.dataId);
               b.faintSprite(isPlayer ? b.playerSprite : b.enemySprite);
               this.msg(`${atkName} fainted!`);
               this.time.delayedCall(1500, () => {
@@ -1044,6 +1062,7 @@ export class BattleUIScene extends Phaser.Scene {
 
     const oldName = oldData?.name ?? '???';
     this.msg(`What? ${oldName} is evolving!`);
+    AudioManager.getInstance().playJingle(BGM.EVOLUTION, true);
     this.state = 'animating';
 
     // Evolution flash animation
@@ -1158,7 +1177,20 @@ export class BattleUIScene extends Phaser.Scene {
     }
   }
 
+  /** Check if player's Pokémon HP is critically low and toggle the warning beep. */
+  private checkLowHpWarning(): void {
+    const b = this.battle();
+    const pct = b.playerPokemon.currentHp / b.playerPokemon.stats.hp;
+    const audio = AudioManager.getInstance();
+    if (pct > 0 && pct <= 0.2) {
+      audio.startLowHpWarning();
+    } else {
+      audio.stopLowHpWarning();
+    }
+  }
+
   private endBattle(): void {
+    AudioManager.getInstance().stopLowHpWarning();
     this.battle().battleManager.cleanup();
     const b = this.battle();
     const returnScene = b.returnScene;

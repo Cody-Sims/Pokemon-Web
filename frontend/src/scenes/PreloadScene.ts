@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { pokemonData } from '@data/pokemon';
 import { BGM, SFX } from '@utils/audio-keys';
+import { AudioManager } from '@managers/AudioManager';
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -84,6 +85,11 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Initialize cry generator with audio context
+    const audio = AudioManager.getInstance();
+    audio.setScene(this);
+    audio.initCryGenerator();
+
     this.scene.start('TitleScene');
   }
 }
