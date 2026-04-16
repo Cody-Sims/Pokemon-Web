@@ -85,11 +85,13 @@ pokemon-web/
 │       │   └── InteractableObject.ts # Signs, PCs, item balls, doors
 │       │
 │       ├── battle/                     # Battle subsystem
-│       │   ├── BattleManager.ts       # Orchestrates turns, win/loss, party
-│       │   ├── BattleStateMachine.ts  # FSM: INTRO → PLAYER_TURN → CHECK_FAINT → …
+│       │   ├── BattleManager.ts       # Orchestrates turns, win/loss, party (single battles)
+│       │   ├── DoubleBattleManager.ts # 2v2 double/tag battle manager (4 active slots, spread targeting)
+│       │   ├── BattleStateMachine.ts  # FSM: INTRO → PLAYER_TURN → EXECUTE_TURN → CHECK_FAINT → …
 │       │   ├── DamageCalculator.ts    # Pokémon damage formula (STAB, type, crit, weather, abilities, items)
 │       │   ├── MoveExecutor.ts        # Applies move effects (damage, status, PP)
 │       │   ├── StatusEffectHandler.ts # Burn/paralysis/poison/sleep/freeze logic
+│       │   ├── SynthesisHandler.ts    # Synthesis Mode activation/revert (game's Mega Evolution equivalent)
 │       │   ├── AbilityHandler.ts      # Ability hooks: switch-in, after-damage, end-of-turn, immunity
 │       │   ├── HeldItemHandler.ts     # Held item hooks: end-of-turn, after-damage, status cure, HP threshold
 │       │   ├── WeatherManager.ts      # Weather conditions (sun/rain/sandstorm/hail) with damage modifiers

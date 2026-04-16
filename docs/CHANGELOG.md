@@ -5,7 +5,19 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
-### Added
+### Added — Phase 15: Sound & Music Expansion
+- **Procedural Pokémon Cry Generator (CryGenerator.ts)**: Runtime synthesis of 151 unique chip-tune cries using Web Audio API. Each Pokémon's cry is deterministic (seeded by dex number + base stat total) with multi-pulse envelopes, frequency sweeps, and vibrato. Hand-tuned parameters for starter families, algorithmic generation for all others.
+- **Expanded audio keys**: 13 new BGM keys (rival/legendary/villain battle themes, 5 town variants, cave, evolution, credits, victory road, villain lair) and 14 new SFX keys (stat raise/lower, status inflict, synthesis activate, item obtain, badge get, heal jingle, save, Pokédex register, 4 footstep types, water splash).
+- **Context-sensitive music**: Distinct BGM per town theme (coastal, industrial, spooky, mountain, cave). Updated MAP_BGM mapping for all 30+ maps.
+- **AudioManager enhancements**: `playFanfare()` (fade BGM → play jingle → restore), `playLoHpWarning()`/`stopLoHpWarning()` (layered beep over BGM), `pauseBGM()`/`resumeBGM()`, `playSFXWithRate()` for pitch-shifted variants, `previousBGMKey` tracking.
+- **Procedural audio placeholders (ProceduralAudio.ts)**: Runtime generation of placeholder audio buffers for missing BGM/SFX keys, with mood-based BGM (7 moods) and profile-based SFX patterns.
+
+### Added — Phase 16: Advanced Battle Features
+- **Synthesis Mode (SynthesisHandler.ts + synthesis-data.ts)**: The game's unique "Mega Evolution" equivalent. 19 eligible Pokémon with +100 BST thematic boosts, optional type/ability overrides. One activation per battle, reverts on faint/battle-end. Includes starter final evos, gym leader aces, legendaries, and fan favorites (Gengar, Alakazam, Machamp, etc.).
+- **Double Battle system (DoubleBattleManager.ts)**: Full 2v2 battle manager with 4 active slots, priority+speed turn ordering, spread move targeting (0.75× damage reduction), tag battle support with NPC ally parties, multi-trainer enemy configs, and slot-based faint/replacement tracking. BattleState expanded with EXECUTE_TURN and REPLACE states.
+- **Move Tutor & TM system (tm-data.ts)**: 50 reusable TMs across all types (8 gym rewards, route pickups, shop purchases). 5 Move Tutor NPCs in key cities. `canLearnMove()` compatibility function with universal move set, type matching, and per-Pokémon override lists. Heart Scale item for Move Reminder.
+
+### Added — Previous (same day)
 - **Professor Intro Scene (IntroScene.ts)**: Classic "Welcome to the world of Pokémon!" multi-slide professor intro with animated fade transitions between slides, Professor Willow sprite, and Pokémon showcase. Includes typewriter-style text progression, mobile tap support, and smooth transitions.
 - **Character Naming Screen**: After the professor intro, players type their name (max 10 characters) with a blinking cursor, preset quick-picks (Red, Ash, Gold, Ethan), keyboard and tap input, and a DONE button. Defaults to "Red" if left empty. Name saved to GameManager and used throughout the game.
 - **Confirmation Slide**: Final slide confirms the player's name with a farewell message before transitioning to the overworld via white flash + fade.
