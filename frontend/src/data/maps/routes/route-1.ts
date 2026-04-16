@@ -85,6 +85,7 @@ export const route1: MapDefinition = {
         'I\'ve heard Pikachu live on this route...',
         'But they\'re really rare!',
       ],
+      behavior: { type: 'wander', wanderRadius: 2 },
     },
     // ─── Story NPC: Rook's first appearance ───
     {

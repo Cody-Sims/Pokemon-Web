@@ -23,6 +23,7 @@ import {
   SOLID_TILES,
   OVERLAY_BASE,
   FOREGROUND_TILES,
+  LEDGE_TILES,
 } from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
@@ -52,6 +53,7 @@ export class OverworldScene extends Phaser.Scene {
   /** Frames to skip confirm input after resuming (prevents re-trigger). */
   private resumeCooldown = 0;
   private isCycling = false;
+  private surfing = false;
 
   constructor() {
     super({ key: 'OverworldScene' });
@@ -156,6 +158,11 @@ export class OverworldScene extends Phaser.Scene {
     this.player.gridMovement.setCollisionCheck((tx, ty) => {
       if (tx < 0 || ty < 0 || ty >= mapH || tx >= mapW) return true;
       const groundTile = this.mapDef.ground[ty][tx];
+      // One-way ledge: only passable when moving in the matching direction
+      const ledgeDir = LEDGE_TILES[groundTile];
+      if (ledgeDir) {
+        return this.player.gridMovement.getFacing() !== ledgeDir;
+      }
       // Allow water tiles when surfing
       if (groundTile === Tile.WATER && this.surfing) {
         // water is passable while surfing — skip solid check
@@ -169,6 +176,12 @@ export class OverworldScene extends Phaser.Scene {
         if (npcTX === tx && npcTY === ty) return true;
       }
       return false;
+    });
+
+    // Ledge check for hop animation
+    this.player.gridMovement.setLedgeCheck((tx, ty) => {
+      if (tx < 0 || ty < 0 || ty >= mapH || tx >= mapW) return false;
+      return LEDGE_TILES[this.mapDef.ground[ty][tx]] !== undefined;
     });
 
     // On each step complete: check warps, encounters, trainer LoS

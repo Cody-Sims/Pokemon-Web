@@ -52,6 +52,7 @@ export const palletTown: MapDefinition = {
         'Welcome to Pallet Town!',
         'The breeze from the sea is wonderful here.',
       ],
+      behavior: { type: 'look-around' },
     },
     {
       id: 'pallet-npc-2',

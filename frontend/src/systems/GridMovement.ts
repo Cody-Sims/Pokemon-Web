@@ -11,9 +11,11 @@ export class GridMovement {
   private tileY: number;
   private facing: Direction = 'down';
   private running = false;
+  private cycling = false;
 
   private collisionCallback?: (tileX: number, tileY: number) => boolean;
   private moveCompleteCallback?: () => void;
+  private ledgeCallback?: (tileX: number, tileY: number) => boolean;
 
   constructor(
     scene: Phaser.Scene,
@@ -41,6 +43,13 @@ export class GridMovement {
   getFacing(): Direction { return this.facing; }
   isRunning(): boolean { return this.running; }
   setRunning(running: boolean): void { this.running = running; }
+  isCycling(): boolean { return this.cycling; }
+  setCycling(cycling: boolean): void { this.cycling = cycling; }
+
+  /** Set a callback that returns true when a tile is a ledge (for hop animation). */
+  setLedgeCheck(callback: (tileX: number, tileY: number) => boolean): void {
+    this.ledgeCallback = callback;
+  }
 
   /** Attempt to move in a direction. Returns true if movement started. */
   move(direction: Direction): boolean {
@@ -67,18 +76,48 @@ export class GridMovement {
     this.tileX = targetX;
     this.tileY = targetY;
 
-    const duration = this.running ? Math.round(WALK_DURATION * 0.55) : WALK_DURATION;
+    const duration = this.cycling
+      ? Math.round(WALK_DURATION * 0.35)
+      : this.running ? Math.round(WALK_DURATION * 0.55) : WALK_DURATION;
 
-    this.scene.tweens.add({
-      targets: this.sprite,
-      x: targetX * TILE_SIZE + TILE_SIZE / 2,
-      y: targetY * TILE_SIZE + TILE_SIZE / 2,
-      duration,
-      onComplete: () => {
-        this.isMoving = false;
-        this.moveCompleteCallback?.();
-      },
-    });
+    const isLedge = this.ledgeCallback?.(targetX, targetY) ?? false;
+    const targetPxX = targetX * TILE_SIZE + TILE_SIZE / 2;
+    const targetPxY = targetY * TILE_SIZE + TILE_SIZE / 2;
+
+    if (isLedge) {
+      // Hop animation: move horizontally/vertically + arc upward
+      const hopDuration = Math.round(WALK_DURATION * 1.2);
+      const startY = (this.sprite as unknown as { y: number }).y;
+      this.scene.tweens.add({
+        targets: this.sprite,
+        x: targetPxX,
+        y: targetPxY,
+        duration: hopDuration,
+        onUpdate: (tween) => {
+          // Parabolic arc: raise sprite at midpoint
+          const progress = tween.progress;
+          const arcHeight = -12 * Math.sin(progress * Math.PI);
+          const baseY = Phaser.Math.Linear(startY, targetPxY, progress);
+          (this.sprite as unknown as { y: number }).y = baseY + arcHeight;
+        },
+        onComplete: () => {
+          (this.sprite as unknown as { y: number }).y = targetPxY;
+          this.isMoving = false;
+          this.moveCompleteCallback?.();
+        },
+      });
+    } else {
+      this.scene.tweens.add({
+        targets: this.sprite,
+        x: targetPxX,
+        y: targetPxY,
+        duration,
+        onComplete: () => {
+          this.isMoving = false;
+          this.moveCompleteCallback?.();
+        },
+      });
+    }
 
     return true;
   }

@@ -7,6 +7,7 @@ export {
   SOLID_TILES,
   OVERLAY_BASE,
   FOREGROUND_TILES,
+  LEDGE_TILES,
   parseMap,
   type NpcSpawn,
   type TrainerSpawn,
@@ -76,6 +77,14 @@ import { viridianForest } from './dungeons/viridian-forest';
 import { crystalCavern } from './dungeons/crystal-cavern';
 import { emberMines } from './dungeons/ember-mines';
 import { victoryRoad } from './dungeons/victory-road';
+import { aetherSanctum } from './dungeons/aether-sanctum';
+import { crystalCavernDepths } from './dungeons/crystal-cavern-depths';
+import { route8 } from './routes/route-8';
+import {
+  palletHouse1, viridianHouse1, pewterHouse1, coralHouse1,
+  ironvaleHouse1, verdantiaHouse1, voltaraHouse1,
+  wraithmoorHouse1, scalecrestHouse1, cinderfallHouse1,
+} from './interiors/generic-house';
 
 export const mapRegistry: Record<string, MapDefinition> = {
   'pallet-town': palletTown,
@@ -132,7 +141,22 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'cinderfall-pokecenter': cinderfallPokecenter,
   'cinderfall-pokemart': cinderfallPokemart,
   'cinderfall-gym': cinderfallGym,
+  'route-8': route8,
   // Act 4
   'victory-road': victoryRoad,
   'pokemon-league': pokemonLeague,
+  // Post-game dungeons
+  'aether-sanctum': aetherSanctum,
+  'crystal-cavern-depths': crystalCavernDepths,
+  // Generic house interiors
+  'pallet-town-house-1': palletHouse1,
+  'viridian-city-house-1': viridianHouse1,
+  'pewter-city-house-1': pewterHouse1,
+  'coral-harbor-house-1': coralHouse1,
+  'ironvale-city-house-1': ironvaleHouse1,
+  'verdantia-village-house-1': verdantiaHouse1,
+  'voltara-city-house-1': voltaraHouse1,
+  'wraithmoor-town-house-1': wraithmoorHouse1,
+  'scalecrest-citadel-house-1': scalecrestHouse1,
+  'cinderfall-town-house-1': cinderfallHouse1,
 };

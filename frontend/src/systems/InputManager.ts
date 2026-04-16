@@ -7,6 +7,7 @@ export interface InputState {
   confirm: boolean;
   cancel: boolean;
   menu: boolean;
+  bicycle: boolean;
 }
 
 /** Unified input manager: WASD/Arrow keys + touch controls. */
@@ -16,6 +17,7 @@ export class InputManager {
   private confirmKey!: Phaser.Input.Keyboard.Key;
   private spaceKey!: Phaser.Input.Keyboard.Key;
   private cancelKey!: Phaser.Input.Keyboard.Key;
+  private bicycleKey!: Phaser.Input.Keyboard.Key;
   private touchControls?: TouchControls;
 
   constructor(scene: Phaser.Scene) {
@@ -28,7 +30,8 @@ export class InputManager {
       D: kb.addKey(Phaser.Input.Keyboard.KeyCodes.D),
     };
     this.confirmKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-    this.spaceKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.spaceKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
+    this.bicycleKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.B);;
     this.cancelKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
     // Create touch controls on touch-capable devices
@@ -59,6 +62,7 @@ export class InputManager {
       direction,
       confirm: Phaser.Input.Keyboard.JustDown(this.confirmKey) || Phaser.Input.Keyboard.JustDown(this.spaceKey) || touchConfirm,
       cancel: escPressed || touchCancel,
+      bicycle: Phaser.Input.Keyboard.JustDown(this.bicycleKey),
       menu: escPressed || touchCancel,
     };
   }

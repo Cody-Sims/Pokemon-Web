@@ -175,9 +175,12 @@ pokemon-web/
 │       │
 │       ├── systems/                    # Reusable gameplay systems
 │       │   ├── GridMovement.ts        # Grid-locked tween movement engine
+│       │   ├── NPCBehavior.ts         # NPC idle behaviors (look-around, wander, pace)
+│       │   ├── EmoteBubble.ts         # Emote popup system (!, ?, ♥, etc.)
 │       │   ├── EncounterSystem.ts     # Step counter → random encounter + fishing
 │       │   ├── GameClock.ts           # Accelerated day/night cycle (10× speed)
 │       │   ├── WeatherRenderer.ts     # Overworld weather effects (rain/sand/snow/fog/sunshine)
+│       │   ├── LightingSystem.ts      # Cave darkness overlay with RenderTexture light circles
 │       │   ├── InputManager.ts        # Unified WASD/Arrow/touch → direction
 │       │   ├── AnimationHelper.ts     # Registers shared sprite animations
 │       │   ├── MapPreloader.ts        # Proximity-based Pokémon sprite preloader

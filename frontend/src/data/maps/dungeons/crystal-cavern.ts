@@ -49,6 +49,12 @@ export const crystalCavern: MapDefinition = {
   encounterTableKey: 'crystal-cavern',
   displayName: 'Crystal Cavern',
   battleBg: 'bg-cave',
+  isDark: true,
+  lightSources: [
+    { tileX: 10, tileY: 5, radius: 80 },
+    { tileX: 9, tileY: 16, radius: 64 },
+    { tileX: 10, tileY: 28, radius: 72 },
+  ],
   npcs: [
     {
       id: 'cavern-sign',
@@ -144,9 +150,13 @@ export const crystalCavern: MapDefinition = {
     { tileX: 9, tileY: 29, targetMap: 'route-2', targetSpawnId: 'from-cavern' },
     { tileX: 10, tileY: 29, targetMap: 'route-2', targetSpawnId: 'from-cavern' },
     { tileX: 11, tileY: 29, targetMap: 'route-2', targetSpawnId: 'from-cavern' },
+    // North passage → Crystal Cavern Depths (post-game)
+    { tileX: 9, tileY: 0, targetMap: 'crystal-cavern-depths', targetSpawnId: 'from-crystal-cavern' },
+    { tileX: 10, tileY: 0, targetMap: 'crystal-cavern-depths', targetSpawnId: 'from-crystal-cavern' },
   ],
   spawnPoints: {
     'default':      { x: 10, y: 28, direction: 'up' },
     'from-route-2': { x: 10, y: 28, direction: 'up' },
+    'from-depths':  { x: 10, y: 1, direction: 'down' },
   },
 };

@@ -5,6 +5,26 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
+### Added — Ledge System
+- **One-way ledge mechanics**: LEDGE tiles (down), LEDGE_LEFT, LEDGE_RIGHT with directional collision checks. Player can only step onto ledges from the matching direction.
+- **Hop animation**: Parabolic arc tween (12px height) when jumping over a ledge, 1.2x walk duration.
+- **GridMovement ledge callback**: `setLedgeCheck()` enables the hop animation on ledge tiles.
+
+## [2026-04-16]
+### Added — Cave Darkness & Lighting System
+- **LightingSystem** (`frontend/src/systems/LightingSystem.ts`): RenderTexture-based darkness overlay (depth 85) with radial gradient light circles. Player light follows camera, static lights for torches/lamps with off-screen culling.
+- **MapDefinition fields**: `isDark?: boolean` and `lightSources?: Array<{tileX, tileY, radius?, color?}>` for per-map darkness.
+- **Dark caves**: Crystal Cavern and Crystal Cavern Depths marked as `isDark: true` with torch light sources.
+- **Flash-ready**: `setPlayerLightRadius()` method for future Flash HM integration.
+
+## [2026-04-16]
+### Added — Bicycle & Movement Upgrades
+- **Bicycle system**: B key toggles cycling (3x speed, 63ms/tile). Key item `bicycle` in item-data.ts. Auto-dismount indoors. Mutually exclusive with running.
+- **GridMovement cycling**: 3-tier speed: walk (180ms), run (99ms), cycle (63ms).
+- **Encounter rate modifier**: Running increases encounter rate by 1.5x in tall grass.
+- **InputManager**: Added `bicycle` input state with B key binding (JustDown toggle).
+
+## [2026-04-16]
 ### Added — Overworld Weather System
 - **WeatherRenderer system** (`frontend/src/systems/WeatherRenderer.ts`): Renders visual weather effects on the overworld using Phaser particle emitters and camera-fixed overlays. Supports 6 weather types: rain (diagonal blue droplets), sandstorm (horizontal dust), snow (drifting flakes), fog (pulsing white overlay), sunshine (warm tint + lens flare), and none.
 - **MapDefinition `weather` field**: Optional `weather?: OverworldWeather` field on `MapDefinition` interface for per-map weather configuration.

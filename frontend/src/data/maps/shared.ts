@@ -153,7 +153,19 @@ export const Tile = {
   CUT_TREE:        110,  // small cuttable tree (solid, cuttable)
   CRACKED_ROCK:    111,  // smashable rock (solid, Rock Smash target)
   STRENGTH_BOULDER:112,  // pushable boulder (solid, Strength target)
+  LEDGE_LEFT:      113,  // one-way ledge: can only enter from right (moving left)
+  LEDGE_RIGHT:     114,  // one-way ledge: can only enter from left (moving right)
 } as const;
+
+/**
+ * One-way ledge tiles: the direction from which you can step ONTO the tile.
+ * e.g. LEDGE = can only be entered while moving 'down'.
+ */
+export const LEDGE_TILES: Partial<Record<number, Direction>> = {
+  [Tile.LEDGE]:       'down',
+  [Tile.LEDGE_LEFT]:  'left',
+  [Tile.LEDGE_RIGHT]: 'right',
+};
 
 /**
  * Tiles that are "overlay" objects — they should have a base ground tile drawn
@@ -167,6 +179,8 @@ export const OVERLAY_BASE: Partial<Record<number, number>> = {
   [Tile.SIGN]:          Tile.GRASS,
   [Tile.FENCE]:         Tile.GRASS,
   [Tile.LEDGE]:         Tile.GRASS,
+  [Tile.LEDGE_LEFT]:    Tile.GRASS,
+  [Tile.LEDGE_RIGHT]:   Tile.GRASS,
   [Tile.DENSE_TREE]:    Tile.GRASS,
   // Doors overlay on their wall type
   [Tile.HOUSE_DOOR]:    Tile.HOUSE_WALL,
@@ -266,6 +280,8 @@ export const TILE_COLORS: Record<number, number> = {
   [Tile.LAB_ROOF]:   0x7070a0,
   [Tile.LAB_DOOR]:   0x5a4a3a,
   [Tile.LEDGE]:      0x4a8a3a,
+  [Tile.LEDGE_LEFT]: 0x4a8a3a,
+  [Tile.LEDGE_RIGHT]:0x4a8a3a,
   [Tile.CENTER_WALL]: 0xf0a0a0,
   [Tile.CENTER_ROOF]: 0xe04040,
   [Tile.CENTER_DOOR]: 0xd08060,

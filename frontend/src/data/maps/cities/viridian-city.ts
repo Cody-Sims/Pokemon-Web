@@ -59,6 +59,7 @@ export const viridianCity: MapDefinition = {
         'The Gym has been closed for a while.',
         'I wonder when the leader will return...',
       ],
+      behavior: { type: 'pace', paceRoute: ['left', 'left', 'right', 'right'] },
     },
     {
       id: 'viridian-gym-block',

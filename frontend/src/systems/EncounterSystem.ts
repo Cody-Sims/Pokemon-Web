@@ -11,8 +11,9 @@ export class EncounterSystem {
   private stepCount = 0;
   private repelSteps = 0;
 
-  /** Call on each step in an encounter zone. Returns a wild Pokemon if triggered, else null. */
-  checkEncounter(mapKey: string): PokemonInstance | null {
+  /** Call on each step in an encounter zone. Returns a wild Pokemon if triggered, else null.
+   *  @param rateMultiplier Optional multiplier for encounter rate (e.g. 1.5 for running). */
+  checkEncounter(mapKey: string, rateMultiplier = 1): PokemonInstance | null {
     if (this.repelSteps > 0) {
       this.repelSteps--;
       return null;
@@ -20,7 +21,7 @@ export class EncounterSystem {
 
     this.stepCount++;
 
-    if (Math.random() > BASE_ENCOUNTER_RATE) {
+    if (Math.random() > BASE_ENCOUNTER_RATE * rateMultiplier) {
       return null;
     }
 

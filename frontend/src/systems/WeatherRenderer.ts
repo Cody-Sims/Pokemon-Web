@@ -109,7 +109,7 @@ export class WeatherRenderer {
   /** Generate a tiny texture via graphics → generateTexture. */
   private makeTexture(key: string, draw: (g: Phaser.GameObjects.Graphics) => void): string {
     if (this.scene.textures.exists(key)) return key;
-    const g = this.scene.make.graphics({ x: 0, y: 0, add: false });
+    const g = this.scene.make.graphics({}, false);
     draw(g);
     g.generateTexture(key, 8, 8);
     g.destroy();

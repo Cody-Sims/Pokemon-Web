@@ -111,6 +111,11 @@ export const itemData: Record<string, ItemData> = {
     description: 'The best fishing rod. Catches rare water Pokémon.',
     effect: { type: 'key' },
   },
+  'bicycle': {
+    id: 'bicycle', name: 'Bicycle', category: 'key',
+    description: 'A folding bicycle for fast travel.',
+    effect: { type: 'key' },
+  },
 
   // ─── Held Items (battle effect handled by HeldItemHandler) ───
   'leftovers': {
