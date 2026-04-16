@@ -1,4 +1,4 @@
-export type BattleState = 'INTRO' | 'PLAYER_TURN' | 'ENEMY_TURN' | 'EXECUTE_MOVES' | 'CHECK_FAINT' | 'EXP_GAIN' | 'VICTORY' | 'DEFEAT' | 'FLEE' | 'CAPTURE';
+export type BattleState = 'INTRO' | 'PLAYER_TURN' | 'ENEMY_TURN' | 'EXECUTE_MOVES' | 'EXECUTE_TURN' | 'CHECK_FAINT' | 'REPLACE' | 'EXP_GAIN' | 'VICTORY' | 'DEFEAT' | 'FLEE' | 'CAPTURE';
 
 interface StateHandler {
   enter?: () => void;

@@ -210,7 +210,7 @@ export class BattleScene extends Phaser.Scene {
     const audio = AudioManager.getInstance();
     audio.setScene(this);
     audio.stopLowHpWarning();
-    let battleBgm = BGM.BATTLE_WILD;
+    let battleBgm: string = BGM.BATTLE_WILD;
     if (this.isTrainerBattle) {
       if (data?.isGymLeader) battleBgm = BGM.GYM_LEADER_BATTLE;
       else if (data?.isRival) battleBgm = BGM.RIVAL_BATTLE;

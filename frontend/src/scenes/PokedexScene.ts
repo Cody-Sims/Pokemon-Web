@@ -199,6 +199,9 @@ export class PokedexScene extends Phaser.Scene {
     }
     y += 90;
 
+    // Play Pokémon cry when viewing details
+    AudioManager.getInstance().playCry(id);
+
     // Name
     const nameText = this.add.text(GAME_WIDTH - 155, y, data.name, {
       ...FONTS.body, fontStyle: 'bold', fontSize: '17px',
