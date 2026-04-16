@@ -5,6 +5,14 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
+### Added — Phases 7+8: NPC Population & Missing Battle Encounters
+- **3 new trainers** in `trainer-data.ts`: Rook post-game rematch (Lv 70-74), Marina encounter 3 partner (Lv 30-32), 3 Synthesis Elite grunts for Route 7 gauntlet (Lv 33-36).
+- **Mom healer** in `pallet-player-house.ts`: added `interactionType: 'heal'` and progressive flagDialogue for `defeatedBrock` and `enteredHallOfFame` milestones.
+- **Route 7 elite grunt gauntlet**: 3 elite Synthesis grunts with `condition: '!defeatedVex2'` added alongside existing grunts, blocking progression until Dr. Vex is defeated.
+- **5 story cutscenes** in `cutscene-data.ts`: Morwen Prophecy (post-Gym 6), Solara Confession (post-Gym 8), Ashborne Warning (post-E4 #4), Aldric Spire Offer (Abyssal Spire F5), Post-Champion Victory (sets `enteredHallOfFame`).
+- Verified existing NPCs already present: Fisherman Wade & Pip (Pallet Town), Jerome (Pewter City), Captain Stern & Diver Lena (Coral Harbor), Elder Moss & Berry Farmer Hana (Verdantia Village), Ghost Girl & Historian Edith (Wraithmoor Town), Hot Spring Attendant & Dr. Ash (Cinderfall Town).
+
+## [2026-04-16]
 ### Added — Phase 2 (Storyline): Abyssal Spire Dungeon (5 Floors)
 - **Abyssal Spire F1** (`frontend/src/data/maps/dungeons/abyssal-spire-f1.ts`): "The Breach" — 20×20 ancient temple entrance with ruin/Synthesis hybrid tileset, mist, Rook partner NPC, 2 Synthesis Elite trainers. Warps to route-8 and F2.
 - **Abyssal Spire F2** (`frontend/src/data/maps/dungeons/abyssal-spire-f2.ts`): "Lab Wing" — 20×20 full Synthesis lab with containment pods, terminals, wire floors, 2 elite grunts, Dr. Vex boss battle (encounter 3). Lore terminals reveal Project Chimera.

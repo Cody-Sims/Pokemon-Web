@@ -31,7 +31,23 @@ export const palletPlayerHouse: MapDefinition = {
         'Mom: Good morning, sweetie!',
         'Mom: Prof. Oak is in his lab to the south.',
       ],
+      interactionType: 'heal',
       flagDialogue: [
+        {
+          flag: 'enteredHallOfFame',
+          dialogue: [
+            'Mom: Champion! Your father would be so proud...',
+            'Mom: You\'ve done something incredible.',
+            'Mom: But you\'ll always be my baby. Come rest up!',
+          ],
+        },
+        {
+          flag: 'defeatedBrock',
+          dialogue: [
+            'Mom: I heard you beat the Pewter Gym! I\'m so proud!',
+            'Mom: Be careful out there! Come back if you need to rest.',
+          ],
+        },
         {
           flag: 'runningShoes',
           dialogue: [

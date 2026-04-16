@@ -663,6 +663,83 @@ export const trainerData: Record<string, TrainerData> = {
     rewardMoney: 5000,
   },
 
+  // ─── Elite Four #2: Theron (Fighting/Rock) ───
+  'elite-theron': {
+    id: 'elite-theron', name: 'Elite Four Theron', spriteKey: 'npc-male-5',
+    party: [
+      { pokemonId: 68, level: 50, moves: ['karate-chop', 'seismic-toss', 'earthquake', 'rock-slide'] },
+      { pokemonId: 76, level: 49, moves: ['rock-slide', 'earthquake', 'body-slam', 'explosion'] },
+      { pokemonId: 62, level: 50, moves: ['hydro-pump', 'ice-punch', 'hypnosis', 'submission'] },
+      { pokemonId: 95, level: 49, moves: ['earthquake', 'rock-slide', 'body-slam', 'bind'] },
+      { pokemonId: 106, level: 50, moves: ['high-jump-kick', 'mega-kick', 'double-kick', 'meditate'] },
+      { pokemonId: 34, level: 52, moves: ['earthquake', 'horn-attack', 'body-slam', 'thunder'] },
+    ],
+    dialogue: {
+      before: [
+        'Theron: So you\'ve made it this far! Impressive!',
+        'Theron: But raw power is what decides battles here!',
+        'Theron: Let\'s see if your strength is the real deal!',
+      ],
+      after: [
+        'Theron: Ha! You\'ve got guts AND power!',
+        'Theron: Go on — the next one won\'t be so straightforward.',
+      ],
+    },
+    rewardMoney: 5200,
+  },
+
+  // ─── Elite Four #3: Lysandra (Psychic/Dark) ───
+  'elite-lysandra': {
+    id: 'elite-lysandra', name: 'Elite Four Lysandra', spriteKey: 'npc-female-8',
+    party: [
+      { pokemonId: 65, level: 51, moves: ['psychic', 'night-shade', 'recover', 'reflect'] },
+      { pokemonId: 94, level: 51, moves: ['night-shade', 'psychic', 'hypnosis', 'dream-eater'] },
+      { pokemonId: 121, level: 50, moves: ['psychic', 'surf', 'thunderbolt', 'recover'] },
+      { pokemonId: 80, level: 50, moves: ['psychic', 'surf', 'amnesia', 'body-slam'] },
+      { pokemonId: 110, level: 51, moves: ['sludge', 'night-shade', 'thunderbolt', 'toxic'] },
+      { pokemonId: 124, level: 53, moves: ['psychic', 'ice-beam', 'lovely-kiss', 'blizzard'] },
+    ],
+    dialogue: {
+      before: [
+        'Lysandra: The mind is the sharpest blade.',
+        'Lysandra: Tell me... can yours hold its edge?',
+        'Lysandra: Let us see what truths you hide.',
+      ],
+      after: [
+        'Lysandra: Fascinating. Your will is stronger than I anticipated.',
+        'Lysandra: Walk carefully. What awaits above... is not what you expect.',
+      ],
+    },
+    rewardMoney: 5400,
+  },
+
+  // ─── Elite Four #4: Ashborne (Fire/Dragon) ───
+  'elite-ashborne': {
+    id: 'elite-ashborne', name: 'Elite Four Ashborne', spriteKey: 'npc-male-6',
+    party: [
+      { pokemonId: 59, level: 52, moves: ['flamethrower', 'take-down', 'fire-blast', 'agility'] },
+      { pokemonId: 6, level: 52, moves: ['flamethrower', 'dragon-rage', 'slash', 'fire-spin'] },
+      { pokemonId: 78, level: 51, moves: ['fire-blast', 'stomp', 'agility', 'fire-spin'] },
+      { pokemonId: 38, level: 51, moves: ['flamethrower', 'confuse-ray', 'quick-attack', 'fire-spin'] },
+      { pokemonId: 126, level: 52, moves: ['fire-blast', 'thunder-punch', 'psychic', 'confuse-ray'] },
+      { pokemonId: 149, level: 54, moves: ['hyper-beam', 'fire-blast', 'thunder', 'dragon-rage'] },
+    ],
+    dialogue: {
+      before: [
+        'Ashborne: ...',
+        'Ashborne: I\'ve waited for someone like you.',
+        'Ashborne: But I need to warn you...',
+        'Ashborne: Whatever you find up there... don\'t lose yourself.',
+      ],
+      after: [
+        'Ashborne: ...Good. You\'re strong enough.',
+        'Ashborne: The Champion awaits. And the truth with him.',
+        'Ashborne: End this. For everyone\'s sake.',
+      ],
+    },
+    rewardMoney: 5600,
+  },
+
   // ─── Champion Aldric Maren ───
   'champion-aldric': {
     id: 'champion-aldric', name: 'Champion Aldric', spriteKey: 'npc-male-6',
@@ -1304,5 +1381,84 @@ export const trainerData: Record<string, TrainerData> = {
       after: ['Impossible... our elite forces...'],
     },
     rewardMoney: 2400,
+  },
+
+  // ─── Rook Post-Game Battle (Lv 70+) ───
+  'rook-postgame': {
+    id: 'rook-postgame', name: 'Rook', spriteKey: 'npc-rook',
+    party: [
+      { pokemonId: 65, level: 72, moves: ['psychic', 'recover', 'reflect', 'thunder-wave'] },
+      { pokemonId: 94, level: 71, moves: ['night-shade', 'hypnosis', 'dream-eater', 'psychic'] },
+      { pokemonId: 95, level: 70, moves: ['earthquake', 'rock-slide', 'body-slam', 'bind'] },
+      { pokemonId: 59, level: 72, moves: ['flamethrower', 'take-down', 'fire-blast', 'agility'] },
+      { pokemonId: 130, level: 73, moves: ['hydro-pump', 'ice-beam', 'earthquake', 'hyper-beam'] },
+      { pokemonId: 76, level: 74, moves: ['earthquake', 'rock-slide', 'explosion', 'body-slam'] },
+    ],
+    dialogue: {
+      before: [
+        'Rook: The wind doesn\'t ask permission to blow.',
+        'Rook: Neither should you.',
+        'Rook: But I need to know — have you truly grown strong enough?',
+        'Rook: Show me everything you\'ve learned.',
+      ],
+      after: [
+        'Rook: ...Yes. You are the real thing.',
+        'Rook: The Shattered Isles hold one more secret.',
+        'Rook: Your father... he\'s still out there.',
+        'Rook: Find the temple. The answers are waiting.',
+      ],
+    },
+    rewardMoney: 14000,
+  },
+
+  // ─── Marina — Encounter 3 Partner (Canopy Trail co-op) ───
+  'marina-3-partner': {
+    id: 'marina-3-partner', name: 'Marina', spriteKey: 'npc-marina',
+    party: [
+      { pokemonId: 8, level: 32, moves: ['water-gun', 'bite', 'ice-beam', 'withdraw'] },
+      { pokemonId: 44, level: 30, moves: ['absorb', 'sleep-powder', 'poison-powder', 'acid'] },
+      { pokemonId: 36, level: 31, moves: ['body-slam', 'sing', 'double-slap', 'defense-curl'] },
+    ],
+    dialogue: {
+      before: [
+        'Marina: These traps are draining the Pokémon\'s energy!',
+        'Marina: We have to stop them — together!',
+      ],
+      after: [
+        'Marina: The Aether readings are stabilizing.',
+        'Marina: Thank you for helping. I couldn\'t have done this alone.',
+      ],
+    },
+    rewardMoney: 1,
+  },
+
+  // ─── Route 7 Grunt Gauntlet (5 grunts + Vex blockade) ───
+  'synth-elite-r7-1': {
+    id: 'synth-elite-r7-1', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
+    party: [
+      { pokemonId: 89, level: 34, moves: ['sludge', 'body-slam', 'minimize', 'toxic'] },
+      { pokemonId: 82, level: 33, moves: ['thunderbolt', 'sonic-boom', 'thunder-wave', 'swift'] },
+    ],
+    dialogue: { before: ['Synthesis Grunt: No one passes this blockade!'], after: ['Synthesis Grunt: Impossible...'] },
+    rewardMoney: 1360,
+  },
+  'synth-elite-r7-2': {
+    id: 'synth-elite-r7-2', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
+    party: [
+      { pokemonId: 110, level: 35, moves: ['sludge', 'toxic', 'smokescreen', 'self-destruct'] },
+      { pokemonId: 24, level: 34, moves: ['bite', 'wrap', 'acid', 'glare'] },
+    ],
+    dialogue: { before: ['Synthesis Grunt: Stand down, trainer!'], after: ['Synthesis Grunt: The Director will hear about this...'] },
+    rewardMoney: 1400,
+  },
+  'synth-elite-r7-3': {
+    id: 'synth-elite-r7-3', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
+    party: [
+      { pokemonId: 42, level: 36, moves: ['wing-attack', 'bite', 'confuse-ray', 'swift'] },
+      { pokemonId: 73, level: 35, moves: ['surf', 'wrap', 'acid', 'toxic'] },
+      { pokemonId: 93, level: 35, moves: ['night-shade', 'hypnosis', 'lick', 'confuse-ray'] },
+    ],
+    dialogue: { before: ['Synthesis Grunt: You\'re too late to stop us!'], after: ['Synthesis Grunt: Fine... but you can\'t defeat Dr. Vex!'] },
+    rewardMoney: 1500,
   },
 };
