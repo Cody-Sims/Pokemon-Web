@@ -400,7 +400,7 @@ export interface NpcSpawn {
   /** If set, NPC only appears when this flag is true (or false if prefixed with '!'). */
   requireFlag?: string;
   /** Alternative dialogue when a given flag is set. */
-  flagDialogue?: { flag: string; dialogue: string[] }[];
+  flagDialogue?: { flag: string; dialogue: string[]; setFlag?: string }[];
   /** On interaction, set this flag to true. */
   setsFlag?: string;
   /** Special interaction type instead of plain dialogue. */

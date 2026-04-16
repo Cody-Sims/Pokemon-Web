@@ -4,6 +4,7 @@ import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { itemData } from '@data/item-data';
 import { MoveExecutor } from '@battle/MoveExecutor';
+import { playMoveAnimation } from '@battle/MoveAnimationPlayer';
 import { ExperienceCalculator } from '@battle/ExperienceCalculator';
 import { StatusEffectHandler } from '@battle/StatusEffectHandler';
 import { AbilityHandler } from '@battle/AbilityHandler';
@@ -17,6 +18,7 @@ import { GameManager } from '@managers/GameManager';
 import { trainerData } from '@data/trainer-data';
 import { SFX, BGM } from '@utils/audio-keys';
 import { NinePatchPanel } from '@ui/NinePatchPanel';
+import { EventManager } from '@managers/EventManager';
 import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
 import { TouchControls } from '@ui/TouchControls';
 
@@ -358,6 +360,25 @@ export class BattleUIScene extends Phaser.Scene {
     this.msg(`${name} used ${moveName}!`);
 
     this.time.delayedCall(700, () => {
+      // Play move animation before applying damage
+      const attackerSprite = isPlayer ? b.playerSprite : b.enemySprite;
+      const defenderSprite = isPlayer ? b.enemySprite : b.playerSprite;
+      playMoveAnimation(this, moveId, attackerSprite, defenderSprite, isPlayer).then(() => {
+        this.applyMoveResult(order, idx, name, moveName);
+      });
+    });
+  }
+
+  /** Apply move result after animation completes. */
+  private applyMoveResult(
+    order: { attacker: PokemonInstance; defender: PokemonInstance; moveId: string; isPlayer: boolean }[],
+    idx: number,
+    name: string,
+    moveName: string,
+  ): void {
+    const { attacker, defender, moveId, isPlayer } = order[idx];
+    const b = this.battle();
+    {
       const result = MoveExecutor.execute(attacker, defender, moveId, this.statusHandler, this.weatherManager);
       b.updateHpBars();
 
@@ -384,6 +405,8 @@ export class BattleUIScene extends Phaser.Scene {
         else if (result.damage.effectiveness > 1) audio.playSFX(SFX.HIT_SUPER);
         else if (result.damage.effectiveness < 1 && result.damage.effectiveness > 0) audio.playSFX(SFX.HIT_WEAK);
         else audio.playSFX(SFX.HIT_NORMAL);
+        if (result.damage.isCritical) b.critShake();
+        if (result.damage.effectiveness > 1) b.superEffectiveFlash();
         let extra = '';
         if (result.damage.effectiveness > 1) extra = " It's super effective!";
         else if (result.damage.effectiveness < 1 && result.damage.effectiveness > 0) extra = " Not very effective...";
@@ -491,7 +514,7 @@ export class BattleUIScene extends Phaser.Scene {
           this.time.delayedCall(400, () => this.runTurnStep(order, idx + 1));
         });
       });
-    });
+    }
   }
 
   /** Run end-of-turn residual damage (burn, poison, leech seed, trapping) for both Pokemon. */
@@ -834,6 +857,7 @@ export class BattleUIScene extends Phaser.Scene {
     if (b.isTrainerBattle && b.trainerId) {
       const gm = GameManager.getInstance();
       gm.defeatTrainer(b.trainerId);
+      EventManager.getInstance().emit('trainer-defeated', b.trainerId);
       const tData = trainerData[b.trainerId];
       if (tData) {
         gm.addMoney(tData.rewardMoney);

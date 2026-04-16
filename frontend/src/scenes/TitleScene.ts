@@ -2,10 +2,8 @@ import Phaser from 'phaser';
 import { SaveManager } from '@managers/SaveManager';
 import { AudioManager } from '@managers/AudioManager';
 import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
-import { TouchControls } from '@ui/TouchControls';
 import { BGM, SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/ConfirmBox';
-import { GameManager } from '@managers/GameManager';
 import { DifficultyMode, DIFFICULTY_CONFIGS } from '@data/difficulty';
 
 export class TitleScene extends Phaser.Scene {
@@ -26,6 +24,28 @@ export class TitleScene extends Phaser.Scene {
 
     // Background gradient
     this.add.rectangle(width / 2, height / 2, width, height, COLORS.bgDark);
+
+    // ── Floating silhouettes ──
+    const silhouettes = ['◆', '●', '▲', '◆', '●'];
+    silhouettes.forEach((char) => {
+      const sx = Phaser.Math.Between(50, width - 50);
+      const sy = Phaser.Math.Between(height * 0.1, height * 0.9);
+      const sil = this.add.text(sx, sy, char, {
+        fontSize: `${Phaser.Math.Between(20, 40)}px`,
+        color: '#ffffff',
+      }).setOrigin(0.5).setAlpha(0.06);
+
+      this.tweens.add({
+        targets: sil,
+        x: sx + Phaser.Math.Between(-100, 100),
+        y: sy + Phaser.Math.Between(-60, 60),
+        duration: Phaser.Math.Between(6000, 12000),
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    });
+
     // Decorative lines
     for (let i = 0; i < 5; i++) {
       this.add.rectangle(width / 2, height * 0.15 + i * 4, width * 0.6, 2, COLORS.border, 0.3);
@@ -69,34 +89,59 @@ export class TitleScene extends Phaser.Scene {
     // Cursor arrow
     this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, fontSize: menuFontSize, color: COLORS.textHighlight });
 
-    // Version / hint
-    const hintText = TouchControls.isTouchDevice() ? 'Tap to select' : 'Press Enter to select';
-    this.add.text(width / 2, height - 30, hintText, {
+    // Version
+    this.add.text(width / 2, height - 20, 'v1.0', {
       ...FONTS.caption, color: COLORS.textDim,
     }).setOrigin(0.5);
 
     this.updateCursor();
 
-    // Keyboard input
-    this.input.keyboard!.on('keydown-UP', () => {
-      this.cursor = (this.cursor - 1 + this.menuItems.length) % this.menuItems.length;
-      this.updateCursor();
-      audio.playSFX(SFX.CURSOR);
+    // Initially hide menu — reveal on "Press Start" dismissal
+    this.menuItems.forEach(item => { item.setAlpha(0); item.disableInteractive(); });
+    this.cursorIcon.setAlpha(0);
+
+    // ── "Press Start" prompt (shown before menu) ──
+    const pressStart = this.add.text(width / 2, height * 0.58, 'PRESS START', {
+      ...FONTS.menuItem,
+      fontSize: mobileFontSize(20),
+      color: COLORS.textHighlight,
+    }).setOrigin(0.5);
+
+    // Blink animation
+    this.tweens.add({
+      targets: pressStart,
+      alpha: 0.2,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
     });
 
-    this.input.keyboard!.on('keydown-DOWN', () => {
-      this.cursor = (this.cursor + 1) % this.menuItems.length;
-      this.updateCursor();
-      audio.playSFX(SFX.CURSOR);
-    });
+    const revealMenu = () => {
+      // Remove press-start listeners
+      this.input.keyboard!.off('keydown-ENTER', revealMenu);
+      this.input.keyboard!.off('keydown-SPACE', revealMenu);
+      this.input.off('pointerdown', revealMenu);
 
-    this.input.keyboard!.on('keydown-ENTER', () => {
-      this.selectOption();
-    });
+      // Fade out press start
+      this.tweens.add({ targets: pressStart, alpha: 0, duration: 200, onComplete: () => pressStart.destroy() });
 
-    this.input.keyboard!.on('keydown-SPACE', () => {
-      this.selectOption();
-    });
+      // Fade in menu
+      this.menuItems.forEach(item => {
+        this.tweens.add({ targets: item, alpha: 1, duration: 300 });
+        item.setInteractive({ useHandCursor: true });
+      });
+      this.tweens.add({ targets: this.cursorIcon, alpha: 1, duration: 300 });
+
+      // Bind menu navigation
+      this.bindMenuKeys();
+
+      AudioManager.getInstance().playSFX(SFX.CONFIRM);
+    };
+
+    this.input.keyboard!.on('keydown-ENTER', revealMenu);
+    this.input.keyboard!.on('keydown-SPACE', revealMenu);
+    this.input.on('pointerdown', revealMenu);
   }
 
   private updateCursor(): void {
@@ -145,7 +190,7 @@ export class TitleScene extends Phaser.Scene {
     }
   }
 
-  private rebindTitleKeys(): void {
+  private bindMenuKeys(): void {
     const audio = AudioManager.getInstance();
     this.input.keyboard!.on('keydown-UP', () => {
       this.cursor = (this.cursor - 1 + this.menuItems.length) % this.menuItems.length;
@@ -159,6 +204,10 @@ export class TitleScene extends Phaser.Scene {
     });
     this.input.keyboard!.on('keydown-ENTER', () => { this.selectOption(); });
     this.input.keyboard!.on('keydown-SPACE', () => { this.selectOption(); });
+  }
+
+  private rebindTitleKeys(): void {
+    this.bindMenuKeys();
   }
 
   private showDifficultySelect(): void {
@@ -210,10 +259,8 @@ export class TitleScene extends Phaser.Scene {
     updateDiff();
 
     const confirmDiff = () => {
-      const gm = GameManager.getInstance();
-      gm.setDifficulty(modes[diffCursor]);
       cleanup();
-      this.scene.start('OverworldScene');
+      this.scene.start('IntroScene', { difficulty: modes[diffCursor] });
     };
 
     const cancelDiff = () => {

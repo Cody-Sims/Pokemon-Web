@@ -16,6 +16,8 @@ import { SettingsScene } from '@scenes/SettingsScene';
 import { ShopScene } from '@scenes/ShopScene';
 import { PCScene } from '@scenes/PCScene';
 import { PokedexScene } from '@scenes/PokedexScene';
+import { QuestJournalScene } from '@scenes/QuestJournalScene';
+import { IntroScene } from '@scenes/IntroScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
 const isMobile = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
@@ -54,5 +56,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     ShopScene,
     PCScene,
     PokedexScene,
+    QuestJournalScene,
+    IntroScene,
   ],
 };

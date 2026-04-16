@@ -33,11 +33,20 @@ export const palletPlayerHouse: MapDefinition = {
       ],
       flagDialogue: [
         {
-          flag: 'receivedStarter',
+          flag: 'runningShoes',
           dialogue: [
             'Mom: Be careful out there!',
             'Mom: Come home whenever you need a rest!',
           ],
+        },
+        {
+          flag: 'receivedStarter',
+          dialogue: [
+            'Mom: Be careful out there!',
+            'Mom: Oh! Before you go, take these.',
+            'Mom: They\'re RUNNING SHOES! Hold SHIFT to run!',
+          ],
+          setFlag: 'runningShoes',
         },
       ],
     },

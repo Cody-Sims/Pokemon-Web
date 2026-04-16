@@ -4,6 +4,21 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-16]
+### Added
+- **Professor Intro Scene (IntroScene.ts)**: Classic "Welcome to the world of Pokémon!" multi-slide professor intro with animated fade transitions between slides, Professor Willow sprite, and Pokémon showcase. Includes typewriter-style text progression, mobile tap support, and smooth transitions.
+- **Character Naming Screen**: After the professor intro, players type their name (max 10 characters) with a blinking cursor, preset quick-picks (Red, Ash, Gold, Ethan), keyboard and tap input, and a DONE button. Defaults to "Red" if left empty. Name saved to GameManager and used throughout the game.
+- **Confirmation Slide**: Final slide confirms the player's name with a farewell message before transitioning to the overworld via white flash + fade.
+- **Move Animation System (MoveAnimationPlayer.ts)**: Data-driven battle move animations with 6 animation styles (contact, projectile, beam, area, self, shake). 18 type-based default particle color palettes. 16 specific move overrides for signature moves (Earthquake, Hyper Beam, Thunder, Flamethrower, Fire Blast, Ice Beam, Blizzard, Hydro Pump, Surf, Psychic, Shadow Ball, Sludge Bomb, Explosion, Self-Destruct, Dream Eater, Solar Beam, Thunderbolt). Screen flash and screen shake effects for high-impact moves. All animations play before damage is applied in BattleUIScene.
+- **Running Shoes**: GridMovement now supports a running state at ~1.8× walk speed (55% of normal tween duration). Hold SHIFT to run in the overworld. Running requires the `runningShoes` game flag.
+- **Running Shoes Gift**: Mom in Pallet Town player house gives Running Shoes after the player receives their starter Pokémon (flag-gated dialogue with `setFlag` support).
+- **flagDialogue setFlag support**: NPC flag-gated dialogue entries can now optionally set a flag on interaction via the `setFlag` field, enabling item/ability grants through NPC conversations.
+
+### Changed
+- **New Game flow**: Selecting "New Game" on the title screen now launches IntroScene (professor intro → naming → confirmation → overworld) instead of going directly to the overworld.
+- **Battle move execution flow**: BattleUIScene now plays move animations via `playMoveAnimation()` before calling `MoveExecutor.execute()`, adding visual flair to every attack. The execution logic was refactored into a separate `applyMoveResult()` method for clarity.
+- **Development plan expanded (plan.md)**: Added Phases 10–20 covering: First Impressions & New Game Experience, Battle Animation & Visual Effects, Overworld Atmosphere & World Feel, Player Movement & Exploration, UI Art & Custom Pixel Font, Sound & Music Expansion, Advanced Battle Features (Synthesis Mode, Double Battles, Battle Tower), Cutscene System, Pokémon Personality & Bond System, World Enrichment & Side Activities, and Achievement & Completion Tracking.
+
 ## [2026-04-13]
 ### Fixed
 - **Starter Pokémon missing in battle**: Back sprites for the chosen starter were never loaded because StarterSelectScene only preloaded front sprites, and MapPreloader ran before the party had any Pokémon. Now StarterSelectScene loads both front and back sprites for all starters.

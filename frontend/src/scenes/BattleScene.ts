@@ -129,11 +129,13 @@ export class BattleScene extends Phaser.Scene {
       enemyTrainer.setScale(8).setAlpha(0.85).setDepth(0);
       this.tweens.add({ targets: enemyTrainer, x: 620, duration: 600, delay: 200, ease: 'Power2' });
     }
-    // Enemy pokemon sprite (front view) — starts offscreen right, slides in
-    this.enemySprite = this.add.image(GAME_WIDTH + 100, 150, enemyData.spriteKeys.front).setScale(2);
+    // Enemy pokemon sprite (front view) — starts offscreen right, white tinted
+    this.enemySprite = this.add.image(GAME_WIDTH + 100, 150, enemyData.spriteKeys.front)
+      .setScale(2).setTint(0xffffff).setAlpha(0);
 
-    // Player pokemon sprite (back view, larger) — starts offscreen left, slides in
-    this.playerSprite = this.add.image(-100, 370, playerData.spriteKeys.back).setScale(4);
+    // Player pokemon sprite (back view, larger) — starts offscreen left, white tinted
+    this.playerSprite = this.add.image(-100, 370, playerData.spriteKeys.back)
+      .setScale(4).setTint(0xffffff).setAlpha(0);
 
     // ── Enemy info box (top-left) — starts above screen ──
     const enemyInfoBox = this.add.rectangle(170, -60, 300, 60, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
@@ -161,11 +163,31 @@ export class BattleScene extends Phaser.Scene {
     const introDelay = 200;
     const slideDuration = 600;
 
-    // Enemy sprite slides in from right
-    this.tweens.add({ targets: this.enemySprite, x: 550, duration: slideDuration, delay: introDelay, ease: 'Power2' });
+    // Enemy sprite slides in from right + emerge from ball
+    this.tweens.add({
+      targets: this.enemySprite,
+      x: 550,
+      alpha: 1,
+      duration: slideDuration,
+      delay: introDelay,
+      ease: 'Power2',
+      onComplete: () => {
+        this.time.delayedCall(150, () => this.enemySprite.clearTint());
+      },
+    });
 
-    // Player sprite slides in from left
-    this.tweens.add({ targets: this.playerSprite, x: 200, duration: slideDuration, delay: introDelay + 100, ease: 'Power2' });
+    // Player sprite slides in from left + emerge from ball
+    this.tweens.add({
+      targets: this.playerSprite,
+      x: 200,
+      alpha: 1,
+      duration: slideDuration,
+      delay: introDelay + 100,
+      ease: 'Power2',
+      onComplete: () => {
+        this.time.delayedCall(150, () => this.playerSprite.clearTint());
+      },
+    });
 
     // Enemy info slides down from top
     const enemyInfoTargets = [enemyInfoBox, this.enemyNameText, enemyLvlText, this.enemyHpBg, this.enemyHpBar, this.enemyStatusText];
@@ -288,13 +310,44 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
-  /** Faint animation — sprite drops and fades. */
+  /** Screen shake for critical hits. */
+  critShake(): void {
+    this.cameras.main.shake(300, 0.005);
+  }
+
+  /** Screen flash for super-effective hits. */
+  superEffectiveFlash(): void {
+    this.cameras.main.flash(200, 255, 255, 255);
+  }
+
+  /** Pokémon emerges from ball — white silhouette fades to full color. */
+  emergeFromBall(sprite: Phaser.GameObjects.Image, onComplete?: () => void): void {
+    sprite.setAlpha(0).setTint(0xffffff);
+    this.tweens.add({
+      targets: sprite,
+      alpha: 1,
+      duration: 300,
+      onComplete: () => {
+        this.tweens.add({
+          targets: sprite,
+          duration: 400,
+          onStart: () => { sprite.clearTint(); },
+          onComplete: () => { onComplete?.(); },
+        });
+      },
+    });
+  }
+
+  /** Faint animation — sprite shrinks down and fades. */
   faintSprite(sprite: Phaser.GameObjects.Image): void {
     this.tweens.add({
       targets: sprite,
-      y: sprite.y + 40,
+      y: sprite.y + 50,
+      scaleX: sprite.scaleX * 0.3,
+      scaleY: 0,
       alpha: 0,
-      duration: 600,
+      duration: 800,
+      ease: 'Power2',
     });
   }
 

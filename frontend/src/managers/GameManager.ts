@@ -13,6 +13,7 @@ export class GameManager {
   private trainersDefeated: string[] = [];
   private pokedex = { seen: new Set<number>(), caught: new Set<number>() };
   private playerName = 'Red';
+  private playerGender: 'boy' | 'girl' = 'boy';
   private playtime = 0;
   private currentMap = 'pallet-town';
   private playerPosition = { x: 7, y: 10, direction: 'down' as string };
@@ -123,6 +124,8 @@ export class GameManager {
   setPlayerPosition(pos: { x: number; y: number; direction: string }): void { this.playerPosition = pos; }
   getPlayerName(): string { return this.playerName; }
   setPlayerName(name: string): void { this.playerName = name; }
+  getPlayerGender(): 'boy' | 'girl' { return this.playerGender; }
+  setPlayerGender(gender: 'boy' | 'girl'): void { this.playerGender = gender; }
   getPlaytime(): number { return this.playtime; }
   addPlaytime(seconds: number): void { this.playtime += seconds; }
 
@@ -192,6 +195,7 @@ export class GameManager {
       trainersDefeated: this.trainersDefeated,
       pokedex: this.getPokedex(),
       playerName: this.playerName,
+      playerGender: this.playerGender,
       playtime: this.playtime,
       currentMap: this.currentMap,
       playerPosition: this.playerPosition,
@@ -214,6 +218,7 @@ export class GameManager {
     this.pokedex.seen = new Set(data.pokedex.seen);
     this.pokedex.caught = new Set(data.pokedex.caught);
     this.playerName = data.playerName;
+    if (data.playerGender) this.playerGender = data.playerGender;
     this.playtime = data.playtime;
     this.currentMap = data.currentMap;
     this.playerPosition = data.playerPosition;
@@ -251,6 +256,7 @@ export class GameManager {
     this.pokedex.seen = new Set(save.player.pokedex.seen);
     this.pokedex.caught = new Set(save.player.pokedex.caught);
     this.playerName = save.player.name;
+    if ((save.player as any).gender) this.playerGender = (save.player as any).gender as 'boy' | 'girl';
     this.playtime = save.player.playtime;
     this.currentMap = save.player.position.mapKey;
     this.playerPosition = {

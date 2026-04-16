@@ -98,3 +98,9 @@ export interface SaveData {
   trainersDefeated: string[];
   boxes?: PokemonInstance[][];
 }
+
+export interface DoubleBattleResult {
+  type: 'victory' | 'defeat';
+  turnCount: number;
+  expGained: number[];
+}

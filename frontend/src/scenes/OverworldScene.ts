@@ -26,6 +26,8 @@ import {
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
 import { MapPreloader } from '@systems/MapPreloader';
+import { EventManager } from '@managers/EventManager';
+import { QuestManager } from '@managers/QuestManager';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
@@ -68,6 +70,8 @@ export class OverworldScene extends Phaser.Scene {
   create(): void {
     const gm = GameManager.getInstance();
 
+    QuestManager.getInstance().initAutomation();
+
     // Ensure player has a starter Pokemon (fallback — normally received from Oak)
     if (gm.getParty().length === 0 && gm.getFlag('receivedStarter')) {
       const starter = EncounterSystem.createWildPokemon(1, 5);
@@ -83,6 +87,7 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     gm.setCurrentMap(this.mapKey);
+    EventManager.getInstance().emit('map-entered', this.mapKey);
 
     const mapW = this.mapDef.width;
     const mapH = this.mapDef.height;
@@ -508,15 +513,27 @@ export class OverworldScene extends Phaser.Scene {
           }
         }
 
-        // Set flag on interaction if configured
+        // Set flag on interaction if configured (from matched flagDialogue or setsFlag)
+        if (spawnDef?.flagDialogue) {
+          for (const fd of spawnDef.flagDialogue) {
+            if (gm.getFlag(fd.flag) && fd.setFlag && !gm.getFlag(fd.setFlag)) {
+              gm.setFlag(fd.setFlag);
+              EventManager.getInstance().emit('flag-set', fd.setFlag);
+              break;
+            }
+          }
+        }
         if (spawnDef?.setsFlag && !gm.getFlag(spawnDef.setsFlag)) {
           gm.setFlag(spawnDef.setsFlag);
+          EventManager.getInstance().emit('flag-set', spawnDef.setsFlag);
         }
 
         // Special: Oak parcel delivery triggers multiple flags
         if (spawnDef?.id === 'lab-oak-after' && gm.getFlag('hasParcel') && !gm.getFlag('receivedPokedex')) {
           gm.setFlag('deliveredParcel');
           gm.setFlag('receivedPokedex');
+          EventManager.getInstance().emit('flag-set', 'deliveredParcel');
+          EventManager.getInstance().emit('flag-set', 'receivedPokedex');
         }
 
         // Handle special interaction types
@@ -704,10 +721,17 @@ export class OverworldScene extends Phaser.Scene {
     if (!input.direction) {
       const facing = this.player.getFacing();
       this.playAnim(`player-idle-${facing}`, false);
+      this.player.gridMovement.setRunning(false);
       return;
     }
 
-    // Walk
+    // Running shoes: hold SHIFT or B button to run (requires flag or always available)
+    const shiftDown = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT, false, false).isDown;
+    const hasRunningShoes = GameManager.getInstance().getFlag('runningShoes');
+    const shouldRun = hasRunningShoes && shiftDown;
+    this.player.gridMovement.setRunning(shouldRun);
+
+    // Walk / Run
     this.playAnim(`player-walk-${input.direction}`, false);
     this.player.move(input.direction);
   }

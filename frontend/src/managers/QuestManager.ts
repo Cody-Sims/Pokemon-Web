@@ -1,4 +1,5 @@
 import { GameManager } from './GameManager';
+import { EventManager } from './EventManager';
 import { questData, QuestDefinition, QuestStatus } from '@data/quest-data';
 
 /**
@@ -99,5 +100,58 @@ export class QuestManager {
   /** Reset singleton (for testing). */
   static resetInstance(): void {
     QuestManager.instance = undefined as unknown as QuestManager;
+  }
+
+  /** Initialize quest automation — call once on game start. */
+  initAutomation(): void {
+    const em = EventManager.getInstance();
+
+    em.on('flag-set', (flag: unknown) => {
+      this.checkFlagTriggers(flag as string);
+    });
+
+    em.on('map-entered', (mapKey: unknown) => {
+      this.checkEventTriggers(`map-entered:${mapKey}`);
+    });
+
+    em.on('trainer-defeated', (trainerId: unknown) => {
+      this.checkEventTriggers(`trainer-defeated:${trainerId}`);
+    });
+  }
+
+  /** Check all active quests for flag-triggered step completions. */
+  private checkFlagTriggers(flag: string): void {
+    for (const quest of this.getActiveQuests()) {
+      const stepIdx = this.getCurrentStep(quest.id);
+      if (stepIdx >= quest.steps.length) continue;
+
+      const step = quest.steps[stepIdx];
+      if (step.triggerFlag && step.triggerFlag === flag) {
+        this.completeStep(quest.id, stepIdx);
+
+        if (this.getCurrentStep(quest.id) >= quest.steps.length) {
+          this.completeQuest(quest.id);
+          EventManager.getInstance().emit('quest-completed', quest.id);
+        }
+      }
+    }
+  }
+
+  /** Check all active quests for event-triggered step completions. */
+  private checkEventTriggers(eventKey: string): void {
+    for (const quest of this.getActiveQuests()) {
+      const stepIdx = this.getCurrentStep(quest.id);
+      if (stepIdx >= quest.steps.length) continue;
+
+      const step = quest.steps[stepIdx];
+      if (step.triggerEvent && step.triggerEvent === eventKey) {
+        this.completeStep(quest.id, stepIdx);
+
+        if (this.getCurrentStep(quest.id) >= quest.steps.length) {
+          this.completeQuest(quest.id);
+          EventManager.getInstance().emit('quest-completed', quest.id);
+        }
+      }
+    }
   }
 }

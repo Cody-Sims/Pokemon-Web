@@ -12,7 +12,7 @@ export class MenuScene extends Phaser.Scene {
   private cursor = 0;
   private menuItems!: Phaser.GameObjects.Text[];
   private cursorIcon!: Phaser.GameObjects.Text;
-  private menuLabels = ['POKEDEX', 'POKEMON', 'BAG', 'SAVE', 'OPTIONS', 'QUIT', 'EXIT'];
+  private menuLabels = ['POKEDEX', 'POKEMON', 'BAG', 'QUESTS', 'SAVE', 'OPTIONS', 'QUIT', 'EXIT'];
 
   constructor() {
     super({ key: 'MenuScene' });
@@ -101,6 +101,13 @@ export class MenuScene extends Phaser.Scene {
         this.scene.sleep();
         this.scene.launch('InventoryScene');
         this.scene.get('InventoryScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
+        break;
+      case 'QUESTS':
+        this.scene.sleep();
+        this.scene.launch('QuestJournalScene');
+        this.scene.get('QuestJournalScene').events.once('shutdown', () => {
           this.scene.wake();
         });
         break;

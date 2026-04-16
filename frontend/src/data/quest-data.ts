@@ -7,6 +7,10 @@ export interface QuestStep {
   description: string;
   /** Flag that marks this step as complete when set to true. */
   completionFlag: string;
+  /** If set, this step auto-completes when this game flag becomes true. */
+  triggerFlag?: string;
+  /** If set, this step auto-completes when this event is emitted. */
+  triggerEvent?: string;
 }
 
 export interface QuestDefinition {
@@ -33,9 +37,9 @@ export const questData: Record<string, QuestDefinition> = {
     startFlag: 'quest_lostDelivery_started',
     completeFlag: 'quest_lostDelivery_complete',
     steps: [
-      { description: 'Deliver package to Viridian City', completionFlag: 'quest_lostDelivery_viridian' },
-      { description: 'Deliver package to Pewter City', completionFlag: 'quest_lostDelivery_pewter' },
-      { description: 'Return to Pip in Littoral Town', completionFlag: 'quest_lostDelivery_complete' },
+      { description: 'Deliver package to Viridian City', completionFlag: 'quest_lostDelivery_viridian', triggerFlag: 'delivery-viridian' },
+      { description: 'Deliver package to Pewter City', completionFlag: 'quest_lostDelivery_pewter', triggerFlag: 'delivery-pewter' },
+      { description: 'Return to Pip in Littoral Town', completionFlag: 'quest_lostDelivery_complete', triggerFlag: 'delivery-returned' },
     ],
     rewards: [
       { itemId: 'rare-candy', quantity: 1 },
@@ -69,8 +73,8 @@ export const questData: Record<string, QuestDefinition> = {
     startFlag: 'quest_lostPokemon_started',
     completeFlag: 'quest_lostPokemon_complete',
     steps: [
-      { description: 'Find Geodude in Viridian Forest', completionFlag: 'quest_lostPokemon_found' },
-      { description: 'Return to Jerome in Pewter City', completionFlag: 'quest_lostPokemon_complete' },
+      { description: 'Search Viridian Forest for Geodude', completionFlag: 'quest_lostPokemon_found', triggerEvent: 'map-entered:viridian-forest' },
+      { description: 'Return Geodude to Jerome', completionFlag: 'quest_lostPokemon_complete', triggerFlag: 'geodude-returned' },
     ],
     rewards: [],
     rewardMoney: 500,
@@ -83,10 +87,10 @@ export const questData: Record<string, QuestDefinition> = {
     startFlag: 'quest_mineClearance_started',
     completeFlag: 'quest_mineClearance_complete',
     steps: [
-      { description: 'Defeat grunt on Floor 1', completionFlag: 'quest_mineClearance_f1' },
-      { description: 'Defeat grunt on Floor 2', completionFlag: 'quest_mineClearance_f2' },
-      { description: 'Defeat grunt on Floor 3', completionFlag: 'quest_mineClearance_f3' },
-      { description: 'Report back to Miner Gil', completionFlag: 'quest_mineClearance_complete' },
+      { description: 'Enter the abandoned mine', completionFlag: 'quest_mineClearance_entered', triggerEvent: 'map-entered:ember-mines' },
+      { description: 'Defeat grunt on Floor 1', completionFlag: 'quest_mineClearance_f1', triggerFlag: 'mine-grunt-1-defeated' },
+      { description: 'Defeat grunt on Floor 2', completionFlag: 'quest_mineClearance_f2', triggerFlag: 'mine-grunt-2-defeated' },
+      { description: 'Defeat grunt on Floor 3', completionFlag: 'quest_mineClearance_f3', triggerFlag: 'mine-grunt-3-defeated' },
     ],
     rewards: [
       { itemId: 'fire-stone', quantity: 1 },
@@ -160,10 +164,10 @@ export const questData: Record<string, QuestDefinition> = {
     startFlag: 'quest_powerRestore_started',
     completeFlag: 'quest_powerRestore_complete',
     steps: [
-      { description: 'Repair conduit near the Gym', completionFlag: 'quest_powerRestore_gym' },
-      { description: 'Repair conduit near the PokéCenter', completionFlag: 'quest_powerRestore_center' },
-      { description: 'Repair conduit at the north gate', completionFlag: 'quest_powerRestore_north' },
-      { description: 'Report back to Engineer Sparks', completionFlag: 'quest_powerRestore_complete' },
+      { description: 'Repair conduit near the Gym', completionFlag: 'quest_powerRestore_gym', triggerFlag: 'conduit-1-repaired' },
+      { description: 'Repair conduit near the PokéCenter', completionFlag: 'quest_powerRestore_center', triggerFlag: 'conduit-2-repaired' },
+      { description: 'Repair conduit at the north gate', completionFlag: 'quest_powerRestore_north', triggerFlag: 'conduit-3-repaired' },
+      { description: 'Report back to Engineer Sparks', completionFlag: 'quest_powerRestore_complete', triggerFlag: 'power-reported' },
     ],
     rewards: [
       { itemId: 'thunder-stone', quantity: 1 },
@@ -178,10 +182,10 @@ export const questData: Record<string, QuestDefinition> = {
     startFlag: 'quest_restlessSpirit_started',
     completeFlag: 'quest_restlessSpirit_complete',
     steps: [
-      { description: 'Find memory fragment near the graveyard', completionFlag: 'quest_restlessSpirit_frag1' },
-      { description: 'Find memory fragment in the old library', completionFlag: 'quest_restlessSpirit_frag2' },
-      { description: 'Find memory fragment at the ruined shrine', completionFlag: 'quest_restlessSpirit_frag3' },
-      { description: 'Return to the Ghost Girl', completionFlag: 'quest_restlessSpirit_complete' },
+      { description: 'Find memory fragment near the graveyard', completionFlag: 'quest_restlessSpirit_frag1', triggerFlag: 'memory-1-found' },
+      { description: 'Find memory fragment in the old library', completionFlag: 'quest_restlessSpirit_frag2', triggerFlag: 'memory-2-found' },
+      { description: 'Find memory fragment at the ruined shrine', completionFlag: 'quest_restlessSpirit_frag3', triggerFlag: 'memory-3-found' },
+      { description: 'Return to the Ghost Girl', completionFlag: 'quest_restlessSpirit_complete', triggerFlag: 'spirit-reported' },
     ],
     rewards: [
       { itemId: 'spell-tag', quantity: 1 },

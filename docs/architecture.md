@@ -73,6 +73,7 @@ pokemon-web/
 │       │   ├── SummaryScene.ts         # 3-tab Pokémon detail (INFO/STATS/MOVES)
 │       │   ├── TransitionScene.ts      # Fade transitions between scenes
 │       │   ├── StarterSelectScene.ts   # Starter Pokémon selection overlay
+│       │   ├── IntroScene.ts           # Professor intro, character naming, new game setup
 │       │   ├── SettingsScene.ts        # Settings menu (text speed, volume, etc.)
 │       │   └── PokedexScene.ts         # Pokédex species browser (seen/caught)
 │       │
@@ -94,7 +95,8 @@ pokemon-web/
 │       │   ├── WeatherManager.ts      # Weather conditions (sun/rain/sandstorm/hail) with damage modifiers
 │       │   ├── AIController.ts        # Enemy move selection heuristics
 │       │   ├── ExperienceCalculator.ts # EXP yield, level-up, stat recalc, natures, evolution checks
-│       │   └── CatchCalculator.ts     # Poké Ball catch-rate formula
+│       │   ├── CatchCalculator.ts     # Poké Ball catch-rate formula
+│       │   └── MoveAnimationPlayer.ts # Data-driven move animations (particles, projectiles, effects)
 │       │
 │       ├── data/                       # Pure data (no game logic)
 │       │   ├── interfaces.ts          # All TypeScript interfaces

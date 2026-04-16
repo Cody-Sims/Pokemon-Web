@@ -14,6 +14,9 @@ export interface BattleConfig {
   playerParty: PokemonInstance[];
   enemyParty: PokemonInstance[];
   trainerId?: string;
+  isDouble?: boolean;  // If true, use DoubleBattleManager instead
+  allyParty?: PokemonInstance[];  // Partner party for tag battles
+  allyTrainerId?: string;
 }
 
 /** Orchestrates the battle: turn order, win/loss conditions, party management. */

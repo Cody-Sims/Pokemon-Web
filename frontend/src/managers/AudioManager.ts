@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { CryGenerator } from '@systems/CryGenerator';
 
 /** Singleton that wraps Phaser SoundManager for BGM crossfade and SFX.
  *  Handles browser autoplay policies gracefully. */
@@ -12,6 +13,10 @@ export class AudioManager {
   private muted = false;
   private unlocked = false;
   private pendingBGM?: string;
+  private jingleSound?: Phaser.Sound.BaseSound;
+  private priorBGMKey = '';
+  private lowHpTimer?: Phaser.Time.TimerEvent;
+  private lowHpActive = false;
 
   private constructor() {}
 
@@ -103,6 +108,13 @@ export class AudioManager {
       this.currentBGM = undefined;
       this.currentBGMKey = '';
     }
+    // Also stop any jingle
+    if (this.jingleSound) {
+      this.jingleSound.stop();
+      this.jingleSound.destroy();
+      this.jingleSound = undefined;
+      this.priorBGMKey = '';
+    }
   }
 
   /** Fade out BGM over duration, then stop. */
@@ -131,6 +143,82 @@ export class AudioManager {
     this.scene.sound.play(key, { volume: this.sfxVolume });
   }
 
+  /** Play a Pokémon cry for the given dex number. */
+  async playCry(dexNumber: number): Promise<void> {
+    if (this.muted) return;
+    return CryGenerator.getInstance().playCry(dexNumber, this.sfxVolume);
+  }
+
+  /** Initialize the cry generator with the current scene. Call once after first setScene. */
+  initCryGenerator(): void {
+    if (this.scene) {
+      CryGenerator.getInstance().init(this.scene);
+    }
+  }
+
+  /**
+   * Play a short jingle that temporarily replaces the BGM.
+   * When the jingle ends, the previous BGM resumes automatically.
+   * If `resumeAfter` is false, BGM stays stopped after jingle.
+   */
+  playJingle(key: string, resumeAfter = true): void {
+    if (!this.scene || this.muted || !this.unlocked) return;
+    if (!this.hasAudio(key)) return;
+
+    // Remember current BGM so we can resume
+    this.priorBGMKey = resumeAfter ? this.currentBGMKey : '';
+
+    // Fade out current BGM quickly
+    if (this.currentBGM) {
+      const old = this.currentBGM;
+      this.scene.tweens.add({
+        targets: old,
+        volume: 0,
+        duration: 200,
+        onComplete: () => { old.stop(); old.destroy(); },
+      });
+      this.currentBGM = undefined;
+      this.currentBGMKey = '';
+    }
+
+    // Play the jingle (non-looping)
+    this.jingleSound = this.scene.sound.add(key, { loop: false, volume: this.bgmVolume });
+    this.jingleSound.play();
+    this.jingleSound.once('complete', () => {
+      this.jingleSound?.destroy();
+      this.jingleSound = undefined;
+      // Resume prior BGM if requested
+      if (this.priorBGMKey) {
+        this.playBGM(this.priorBGMKey);
+        this.priorBGMKey = '';
+      }
+    });
+  }
+
+  /** Start the low-HP warning beep loop. Plays the LOW_HP SFX every 1 second. */
+  startLowHpWarning(): void {
+    if (this.lowHpActive || this.muted || !this.scene) return;
+    this.lowHpActive = true;
+    // Play immediately, then repeat
+    this.playSFX('sfx-low-hp');
+    this.lowHpTimer = this.scene.time.addEvent({
+      delay: 1500,
+      callback: () => { this.playSFX('sfx-low-hp'); },
+      loop: true,
+    });
+  }
+
+  /** Stop the low-HP warning beep loop. */
+  stopLowHpWarning(): void {
+    if (!this.lowHpActive) return;
+    this.lowHpActive = false;
+    this.lowHpTimer?.remove(false);
+    this.lowHpTimer = undefined;
+  }
+
+  /** Check if low-HP warning is currently active. */
+  isLowHpWarningActive(): boolean { return this.lowHpActive; }
+
   /** Get the key of the currently playing BGM (empty string if none). */
   getCurrentBGMKey(): string { return this.currentBGMKey; }
 
@@ -146,7 +234,10 @@ export class AudioManager {
 
   setMuted(muted: boolean): void {
     this.muted = muted;
-    if (muted) this.stopBGM();
+    if (muted) {
+      this.stopBGM();
+      this.stopLowHpWarning();
+    }
   }
   isMuted(): boolean { return this.muted; }
 }

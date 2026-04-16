@@ -10,6 +10,7 @@ export class GridMovement {
   private tileX: number;
   private tileY: number;
   private facing: Direction = 'down';
+  private running = false;
 
   private collisionCallback?: (tileX: number, tileY: number) => boolean;
   private moveCompleteCallback?: () => void;
@@ -38,6 +39,8 @@ export class GridMovement {
   getTileX(): number { return this.tileX; }
   getTileY(): number { return this.tileY; }
   getFacing(): Direction { return this.facing; }
+  isRunning(): boolean { return this.running; }
+  setRunning(running: boolean): void { this.running = running; }
 
   /** Attempt to move in a direction. Returns true if movement started. */
   move(direction: Direction): boolean {
@@ -64,11 +67,13 @@ export class GridMovement {
     this.tileX = targetX;
     this.tileY = targetY;
 
+    const duration = this.running ? Math.round(WALK_DURATION * 0.55) : WALK_DURATION;
+
     this.scene.tweens.add({
       targets: this.sprite,
       x: targetX * TILE_SIZE + TILE_SIZE / 2,
       y: targetY * TILE_SIZE + TILE_SIZE / 2,
-      duration: WALK_DURATION,
+      duration,
       onComplete: () => {
         this.isMoving = false;
         this.moveCompleteCallback?.();
