@@ -5,6 +5,14 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
+### Added — Animated Tiles, Environmental SFX, Flash HM, Strength Boulders
+- **Animated tile effects** in `OverworldScene.update()`: water tiles shimmer (3 blue tint cycles every 500ms), tall grass has subtle alpha pulse, lava/magma tiles cycle red-orange tints.
+- **AmbientSFX system** (`frontend/src/systems/AmbientSFX.ts`): infrastructure for per-map ambient sound types (`ocean`, `forest`, `cave`, `city`, `wind`, `rain`, `none`). Added `ambientSfx` field to `MapDefinition`. Wired into `OverworldScene.create()`.
+- **Terrain footstep SFX**: `onPlayerStep()` plays different SFX based on tile type (grass, sand, water, wood, metal, stone). Added `FOOTSTEP_METAL` to `audio-keys.ts`.
+- **Flash HM integration**: dark cave maps auto-expand player light radius from 96px to 192px when party has a Flash-knowing Pokémon with sufficient badges. Shows "Used FLASH!" popup.
+- **Strength boulder pushing**: interacting with `STRENGTH_BOULDER` tiles pushes them one tile in facing direction with slide animation. Checks bounds and walkability of destination. Updates map data and redraws tiles.
+
+## [2026-04-16]
 ### Added — Move Tutor Scene & TM Usage from Inventory
 - **MoveTutorScene** (`frontend/src/scenes/MoveTutorScene.ts`): full interactive scene for Move Tutors with move list (type dots, PP, power, cost), party selection filtered by `canLearnMove()`, move replacement UI for Pokémon with 4 moves, and cost deduction (money or Heart Scales).
 - **5 Move Tutor NPCs** added to city maps: Verdantia Village, Ironvale City, Scalecrest Citadel, Wraithmoor Town, Pokémon League. Each uses `interactionType: 'move-tutor'` with `interactionData` linking to `moveTutorData`.

@@ -93,6 +93,7 @@ export const SFX = {
   FOOTSTEP_STONE:   'sfx-footstep-stone',
   FOOTSTEP_WOOD:    'sfx-footstep-wood',
   WATER_SPLASH:     'sfx-water-splash',
+  FOOTSTEP_METAL:   'sfx-footstep-metal',
 } as const;
 
 /** Map key → BGM key mapping. */

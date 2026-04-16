@@ -181,6 +181,7 @@ pokemon-web/
 │       │   ├── EncounterSystem.ts     # Step counter → random encounter + fishing
 │       │   ├── GameClock.ts           # Accelerated day/night cycle (10× speed)
 │       │   ├── WeatherRenderer.ts     # Overworld weather effects (rain/sand/snow/fog/sunshine)
+│       │   ├── AmbientSFX.ts          # Per-map ambient sound type tracking (ocean/forest/cave/city/wind/rain)
 │       │   ├── LightingSystem.ts      # Cave darkness overlay with RenderTexture light circles
 │       │   ├── CutsceneEngine.ts      # Data-driven scripted sequence player (dialogue, camera, NPC movement, effects)
 │       │   ├── InputManager.ts        # Unified WASD/Arrow/touch → direction
