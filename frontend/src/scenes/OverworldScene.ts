@@ -39,6 +39,18 @@ import { CutsceneEngine } from '@systems/CutsceneEngine';
 import { cutsceneData } from '@data/cutscene-data';
 import { AchievementManager } from '@managers/AchievementManager';
 import { AchievementToast } from '@ui/AchievementToast';
+import {
+  spawnNPCs as spawnNPCsHelper,
+  spawnTrainers as spawnTrainersHelper,
+} from './overworld/OverworldNPCSpawner';
+import {
+  redrawTile as redrawTileHelper,
+  showFieldAbilityPopup as showPopup,
+  pushBoulder as pushBoulderHelper,
+} from './overworld/OverworldFieldAbilities';
+import { getBestRod, attemptFish } from './overworld/OverworldFishing';
+import { healParty as healPartyHelper } from './overworld/OverworldHealing';
+import { getFootstepSFX as getFootstepSFXHelper } from './overworld/OverworldFootsteps';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
@@ -346,48 +358,9 @@ export class OverworldScene extends Phaser.Scene {
 
   // ── NPC / Trainer spawning ────────────────────────────────
   private spawnNPCs(): void {
-    const gm = GameManager.getInstance();
-    for (const def of this.mapDef.npcs) {
-      // Check flag requirement
-      if (def.requireFlag) {
-        const negate = def.requireFlag.startsWith('!');
-        const flagName = negate ? def.requireFlag.slice(1) : def.requireFlag;
-        const flagVal = gm.getFlag(flagName);
-        if (negate ? flagVal : !flagVal) continue;
-      }
-      const npc = new NPC(
-        this, def.tileX, def.tileY,
-        def.textureKey, def.id, def.dialogue, def.facing,
-      );
-      npc.setScale(2);
-      npc.setDepth(1);
-      // Store the full spawn definition for special interactions
-      (npc as NPC & { spawnDef?: NpcSpawn }).spawnDef = def;
-      this.npcs.push(npc);
-
-      // Set up idle behavior if configured
-      if (def.behavior && def.behavior.type !== 'stationary') {
-        const mapW = this.mapDef.width;
-        const mapH = this.mapDef.height;
-        const controller = new NPCBehaviorController(this, npc, def.behavior, (tx, ty) => {
-          if (tx < 0 || ty < 0 || ty >= mapH || tx >= mapW) return true;
-          if (SOLID_TILES.has(this.mapDef.ground[ty][tx])) return true;
-          // Block player tile
-          const pTX = Math.floor(this.player.x / TILE_SIZE);
-          const pTY = Math.floor(this.player.y / TILE_SIZE);
-          if (pTX === tx && pTY === ty) return true;
-          // Block other NPC tiles
-          for (const other of this.npcs) {
-            if (other === npc) continue;
-            const oTX = Math.floor(other.x / TILE_SIZE);
-            const oTY = Math.floor(other.y / TILE_SIZE);
-            if (oTX === tx && oTY === ty) return true;
-          }
-          return false;
-        });
-        this.npcBehaviors.push(controller);
-      }
-    }
+    const result = spawnNPCsHelper(this, this.mapDef, this.player, this.npcs);
+    this.npcs.push(...result.npcs);
+    this.npcBehaviors.push(...result.behaviors);
   }
 
   /** Destroy and re-create NPCs so flag-gated spawns update. */
@@ -402,22 +375,9 @@ export class OverworldScene extends Phaser.Scene {
   }
 
   private spawnTrainers(): void {
-    const gm = GameManager.getInstance();
-    for (const def of this.mapDef.trainers) {
-      if (gm.isTrainerDefeated(def.trainerId)) continue;
-      const tData = trainerData[def.trainerId];
-      const trainer = new Trainer(
-        this, def.tileX, def.tileY,
-        def.textureKey, def.id, def.trainerId,
-        tData?.dialogue?.before ?? ['...'],
-        def.facing, def.lineOfSight,
-      );
-      trainer.setScale(2);
-      trainer.setDepth(1);
-      trainer.mapGround = this.mapDef.ground; // enable wall-blocked LoS
-      this.trainers.push(trainer);
-      this.npcs.push(trainer); // also in NPC list for collision
-    }
+    const newTrainers = spawnTrainersHelper(this, this.mapDef);
+    this.trainers.push(...newTrainers);
+    this.npcs.push(...newTrainers);
   }
 
   // ── Per-step hooks ────────────────────────────────────────
@@ -942,145 +902,28 @@ export class OverworldScene extends Phaser.Scene {
 
   /** Redraw a single tile after a field ability changes it. */
   private redrawTile(tx: number, ty: number): void {
-    const px = tx * TILE_SIZE + TILE_SIZE / 2;
-    const py = ty * TILE_SIZE + TILE_SIZE / 2;
-    const scale = TILE_SIZE / 16;
-    const newTile = this.mapDef.ground[ty][tx];
-
-    // Remove existing sprites at this position (ground layer only)
-    this.children.list
-      .filter(obj => {
-        if (!(obj instanceof Phaser.GameObjects.Image)) return false;
-        return Math.abs(obj.x - px) < 1 && Math.abs(obj.y - py) < 1 && obj.depth <= 2;
-      })
-      .forEach(obj => obj.destroy());
-
-    // Draw the replacement tile
-    const baseTile = OVERLAY_BASE[newTile];
-    if (baseTile !== undefined) {
-      const base = this.add.image(px, py, 'tileset', baseTile);
-      base.setScale(scale);
-      base.setDepth(0);
-    }
-    const sprite = this.add.image(px, py, 'tileset', newTile);
-    sprite.setScale(scale);
-    sprite.setDepth(baseTile !== undefined ? 0.5 : 0);
+    redrawTileHelper(this, this.mapDef, tx, ty);
   }
 
   /** Show a brief text popup for a field ability use. */
   private showFieldAbilityPopup(text: string): void {
-    const { width } = this.cameras.main;
-    const popup = this.add.text(width / 2, 80, text, {
-      fontSize: '18px',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      backgroundColor: '#00000088',
-      padding: { x: 16, y: 8 },
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(100).setAlpha(0);
-
-    this.tweens.add({
-      targets: popup,
-      alpha: { from: 0, to: 1 },
-      duration: 200,
-      yoyo: true,
-      hold: 800,
-      onComplete: () => popup.destroy(),
-    });
+    showPopup(this, text);
   }
 
   /** Push a Strength boulder one tile in the player's facing direction. */
   private pushBoulder(bx: number, by: number, dir: Direction): void {
-    let destX = bx;
-    let destY = by;
-    switch (dir) {
-      case 'up':    destY--; break;
-      case 'down':  destY++; break;
-      case 'left':  destX--; break;
-      case 'right': destX++; break;
-    }
-
-    // Check bounds and walkability of destination
-    if (destX < 0 || destY < 0 || destX >= this.mapDef.width || destY >= this.mapDef.height) return;
-    if (SOLID_TILES.has(this.mapDef.ground[destY][destX])) return;
-
-    // Update map data
-    this.mapDef.ground[by][bx] = Tile.GRASS;
-    this.mapDef.ground[destY][destX] = Tile.STRENGTH_BOULDER;
-
-    // Animate the boulder sprite sliding
-    const srcPx = bx * TILE_SIZE + TILE_SIZE / 2;
-    const srcPy = by * TILE_SIZE + TILE_SIZE / 2;
-    const destPx = destX * TILE_SIZE + TILE_SIZE / 2;
-    const destPy = destY * TILE_SIZE + TILE_SIZE / 2;
-
-    // Find the boulder image at the source position
-    const boulderSprite = this.children.list.find(obj =>
-      obj instanceof Phaser.GameObjects.Image &&
-      Math.abs(obj.x - srcPx) < 1 && Math.abs(obj.y - srcPy) < 1 &&
-      obj.depth <= 2,
-    ) as Phaser.GameObjects.Image | undefined;
-
-    if (boulderSprite) {
-      this.tweens.add({
-        targets: boulderSprite,
-        x: destPx,
-        y: destPy,
-        duration: 200,
-        ease: 'Linear',
-        onComplete: () => {
-          this.redrawTile(bx, by);
-          this.redrawTile(destX, destY);
-        },
-      });
-    } else {
-      this.redrawTile(bx, by);
-      this.redrawTile(destX, destY);
-    }
-
+    pushBoulderHelper(this, this.mapDef, bx, by, dir);
     this.showFieldAbilityPopup('Used STRENGTH!');
   }
 
   /** Get the appropriate footstep SFX key for a given tile type. */
   private getFootstepSFX(tile: number): string | null {
-    switch (tile) {
-      case Tile.GRASS:
-      case Tile.TALL_GRASS:
-      case Tile.DARK_GRASS:
-      case Tile.LIGHT_GRASS:
-      case Tile.FLOWER:
-        return SFX.FOOTSTEP_GRASS;
-      case Tile.SAND:
-      case Tile.WET_SAND:
-      case Tile.ASH_GROUND:
-        return SFX.FOOTSTEP_SAND;
-      case Tile.WATER:
-      case Tile.TIDE_POOL:
-        return SFX.WATER_SPLASH;
-      case Tile.DOCK_PLANK:
-      case Tile.MINE_TRACK:
-        return SFX.FOOTSTEP_WOOD;
-      case Tile.METAL_FLOOR:
-      case Tile.WIRE_FLOOR:
-        return SFX.FOOTSTEP_METAL;
-      case Tile.PATH:
-      case Tile.CAVE_FLOOR:
-      case Tile.ROCK_FLOOR:
-      case Tile.LAVA_ROCK:
-        return SFX.FOOTSTEP_STONE;
-      default:
-        return null;
-    }
+    return getFootstepSFXHelper(tile);
   }
 
   /** Attempt to fish at the water tile the player is facing. */
   private tryFishing(): void {
-    const gm = GameManager.getInstance();
-    // Determine best rod the player has
-    let rod: 'old' | 'good' | 'super' | null = null;
-    if (gm.getItemCount('super-rod') > 0) rod = 'super';
-    else if (gm.getItemCount('good-rod') > 0) rod = 'good';
-    else if (gm.getItemCount('old-rod') > 0) rod = 'old';
-
+    const rod = getBestRod();
     if (!rod) {
       this.scene.pause();
       this.scene.launch('DialogueScene', { dialogue: ['The water is calm...'] });
@@ -1091,11 +934,9 @@ export class OverworldScene extends Phaser.Scene {
     this.scene.pause();
     this.scene.launch('DialogueScene', { dialogue: ['...', '...!'] });
     this.scene.get('DialogueScene').events.once('shutdown', () => {
-      const pokemon = EncounterSystem.fishEncounter(this.mapKey, rod!);
+      const pokemon = attemptFish(this.mapKey, rod);
       if (pokemon) {
-        gm.markSeen(pokemon.dataId);
         this.scene.resume();
-        AchievementManager.getInstance().unlock('fish-catch');
         this.triggerWildEncounter(pokemon);
       } else {
         this.scene.launch('DialogueScene', { dialogue: ['Not even a nibble...'] });
@@ -1106,21 +947,7 @@ export class OverworldScene extends Phaser.Scene {
 
   /** Heal all Pokémon in the party to full HP and PP. */
   private healParty(): void {
-    const gm = GameManager.getInstance();
-    const party = gm.getParty();
-    for (let i = 0; i < party.length; i++) {
-      const pokemon = party[i];
-      pokemon.currentHp = pokemon.stats.hp;
-      pokemon.status = null;
-      pokemon.statusTurns = undefined;
-      for (const move of pokemon.moves) {
-        const md = moveData[move.moveId];
-        move.currentPp = md?.pp ?? move.currentPp;
-      }
-      // +1 friendship for healing at PokéCenter
-      gm.adjustFriendship(i, 1);
-    }
-    // Show healing flash and play heal jingle
+    healPartyHelper();
     this.cameras.main.flash(300, 255, 255, 255);
     AudioManager.getInstance().playJingle(SFX.HEAL_JINGLE, true);
   }

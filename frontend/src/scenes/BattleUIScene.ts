@@ -27,6 +27,7 @@ import { pickEnemyMove, calculateTurnOrder } from './battle/BattleTurnRunner';
 import { showMessageQueue as showMsgQueue } from './battle/BattleMessageQueue';
 import { showDamagePopup as showDmgPopup } from './battle/BattleDamageNumbers';
 import { processTrainerRewards, getContinueMessage } from './battle/BattleRewardHandler';
+import { collectEndOfTurnEffects } from './battle/BattleEndOfTurn';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message' | 'target-select';
 
@@ -700,32 +701,9 @@ export class BattleUIScene extends Phaser.Scene {
     }
 
     const { pokemon, opponent, isPlayer } = pokemonToCheck[idx];
-    const allMessages: string[] = [];
-
-    // Friendship status cure: 10% chance for player's pokemon with friendship >= 220
-    if (isPlayer && pokemon.status && pokemon.friendship >= 220 && Math.random() < 0.1) {
-      const statusName = pokemon.status === 'paralysis' ? 'paralysis' : pokemon.status === 'burn' ? 'its burn' : pokemon.status === 'poison' || pokemon.status === 'bad-poison' ? 'the poison' : pokemon.status;
-      const pokeName = pokemon.nickname ?? pokemonData[pokemon.dataId]?.name ?? '???';
-      pokemon.status = null;
-      pokemon.statusTurns = undefined;
-      allMessages.push(`${pokeName} shook off ${statusName} with sheer determination!`);
-    }
-
-    // Status effect end-of-turn (burn, poison, etc.)
-    const eotResult = this.statusHandler.applyEndOfTurn(pokemon, opponent);
-    allMessages.push(...eotResult.messages);
-
-    // Ability end-of-turn (Speed Boost, Poison Heal, etc.)
-    const abilityEot = AbilityHandler.onEndOfTurn(pokemon);
-    allMessages.push(...abilityEot.messages);
-
-    // Held item end-of-turn (Leftovers, Black Sludge, etc.)
-    const itemEot = HeldItemHandler.onEndOfTurn(pokemon);
-    allMessages.push(...itemEot.messages);
-
-    // Weather end-of-turn damage (Sandstorm, Hail)
-    const weatherEot = this.weatherManager.applyEndOfTurn(pokemon);
-    allMessages.push(...weatherEot.messages);
+    const { messages: allMessages } = collectEndOfTurnEffects(
+      pokemon, opponent, isPlayer, this.statusHandler, this.weatherManager,
+    );
 
     if (allMessages.length > 0) {
       b.updateHpBars();
