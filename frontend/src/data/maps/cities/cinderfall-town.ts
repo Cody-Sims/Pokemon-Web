@@ -82,18 +82,22 @@ export const cinderfallTown: MapDefinition = {
   warps: [
     { tileX: 11, tileY: 0, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-cinderfall' },
     { tileX: 12, tileY: 0, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-cinderfall' },
-    { tileX: 11, tileY: 24, targetMap: 'victory-road', targetSpawnId: 'from-cinderfall' },
-    { tileX: 12, tileY: 24, targetMap: 'victory-road', targetSpawnId: 'from-cinderfall' },
+    { tileX: 11, tileY: 24, targetMap: 'route-8', targetSpawnId: 'from-cinderfall' },
+    { tileX: 12, tileY: 24, targetMap: 'route-8', targetSpawnId: 'from-cinderfall' },
     { tileX: 4, tileY: 4, targetMap: 'cinderfall-pokecenter', targetSpawnId: 'default' },
     { tileX: 11, tileY: 9, targetMap: 'cinderfall-pokemart', targetSpawnId: 'default' },
     { tileX: 5, tileY: 18, targetMap: 'cinderfall-gym', targetSpawnId: 'default' },
+    // House interior
+    { tileX: 17, tileY: 4, targetMap: 'cinderfall-town-house-1', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default': { x: 12, y: 12, direction: 'up' },
     'from-scalecrest': { x: 12, y: 1, direction: 'down' },
     'from-victory-road': { x: 12, y: 23, direction: 'up' },
+    'from-route-8': { x: 12, y: 23, direction: 'up' },
     'from-pokecenter': { x: 4, y: 5, direction: 'down' },
     'from-pokemart': { x: 11, y: 10, direction: 'down' },
     'from-gym': { x: 5, y: 19, direction: 'down' },
+    'from-house-1': { x: 17, y: 5, direction: 'down' },
   },
 };

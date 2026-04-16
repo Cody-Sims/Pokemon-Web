@@ -1102,4 +1102,71 @@ export const trainerData: Record<string, TrainerData> = {
     },
     rewardMoney: 640,
   },
+
+  // ─── Stern Engine Quest Grunts ───
+  'stern-grunt-1': {
+    id: 'stern-grunt-1', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
+    party: [
+      { pokemonId: 41, level: 14, moves: ['wing-attack', 'bite', 'supersonic', 'leech-life'] },
+      { pokemonId: 109, level: 15, moves: ['sludge', 'smokescreen', 'tackle', 'poison-gas'] },
+    ],
+    dialogue: {
+      before: ['Hey! This engine part belongs to the Collective now!', 'You want it? You\'ll have to battle me for it!'],
+      after: ['Fine, take the stupid engine part!', 'The Director won\'t care about one piece of junk...'],
+    },
+    rewardMoney: 300,
+  },
+  'stern-grunt-2': {
+    id: 'stern-grunt-2', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
+    party: [
+      { pokemonId: 88, level: 15, moves: ['sludge', 'pound', 'harden', 'disable'] },
+      { pokemonId: 109, level: 15, moves: ['sludge', 'smokescreen', 'tackle', 'self-destruct'] },
+    ],
+    dialogue: {
+      before: ['Another meddler? The Collective doesn\'t tolerate interference!'],
+      after: ['Ugh... Take this part and get lost!'],
+    },
+    rewardMoney: 300,
+  },
+  'stern-grunt-3': {
+    id: 'stern-grunt-3', name: 'Synthesis Grunt', spriteKey: 'npc-grunt',
+    party: [
+      { pokemonId: 23, level: 14, moves: ['bite', 'wrap', 'poison-sting', 'leer'] },
+      { pokemonId: 41, level: 14, moves: ['wing-attack', 'bite', 'supersonic', 'leech-life'] },
+      { pokemonId: 109, level: 15, moves: ['sludge', 'smokescreen', 'tackle', 'self-destruct'] },
+    ],
+    dialogue: {
+      before: ['You again! I\'m not giving up the last part that easily!'],
+      after: ['That\'s... all three parts. The Director will hear about this!'],
+    },
+    rewardMoney: 450,
+  },
+
+  // ─── Route 8 Ace Trainers ───
+  'ace-trainer-4': {
+    id: 'ace-trainer-4', name: 'Ace Trainer Rex', spriteKey: 'npc-ace-trainer',
+    party: [
+      { pokemonId: 59, level: 38, moves: ['flamethrower', 'take-down', 'agility', 'roar'] },
+      { pokemonId: 78, level: 37, moves: ['fire-blast', 'stomp', 'agility', 'fire-spin'] },
+      { pokemonId: 112, level: 39, moves: ['earthquake', 'rock-slide', 'horn-drill', 'fury-attack'] },
+    ],
+    dialogue: {
+      before: ['I\'ve trained on this pass for months!', 'Only the strongest make it past me!'],
+      after: ['Impressive! The League awaits you.'],
+    },
+    rewardMoney: 1560,
+  },
+  'ace-trainer-5': {
+    id: 'ace-trainer-5', name: 'Ace Trainer Luna', spriteKey: 'npc-ace-trainer-f',
+    party: [
+      { pokemonId: 121, level: 38, moves: ['psychic', 'hydro-pump', 'recover', 'swift'] },
+      { pokemonId: 65, level: 37, moves: ['psychic', 'night-shade', 'recover', 'reflect'] },
+      { pokemonId: 103, level: 38, moves: ['psychic', 'solar-beam', 'sleep-powder', 'leech-seed'] },
+    ],
+    dialogue: {
+      before: ['The stars told me a powerful trainer would come today.', 'Let me see if the prophecy is true!'],
+      after: ['The stars never lie. You\'re destined for greatness.'],
+    },
+    rewardMoney: 1520,
+  },
 };

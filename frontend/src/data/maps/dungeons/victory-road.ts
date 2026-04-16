@@ -35,6 +35,22 @@ export const victoryRoad: MapDefinition = {
   npcs: [
     { id: 'victory-sign', tileX: 10, tileY: 23, textureKey: 'generic-trainer', facing: 'up',
       dialogue: ['VICTORY ROAD', 'Only trainers with 8 Badges may pass!'] },
+    // Volcanic Survey quest vents
+    { id: 'vr-vent-1', tileX: 3, tileY: 3, textureKey: 'generic-trainer', facing: 'down',
+      dialogue: ['The volcanic vent hisses with steam...', 'You record the temperature reading!'],
+      requireFlag: '!vent-1-recorded', setsFlag: 'vent-1-recorded' },
+    { id: 'vr-vent-2', tileX: 16, tileY: 7, textureKey: 'generic-trainer', facing: 'down',
+      dialogue: ['Sulfurous gas billows from this vent...', 'Temperature recorded! That\'s hot!'],
+      requireFlag: '!vent-2-recorded', setsFlag: 'vent-2-recorded' },
+    { id: 'vr-vent-3', tileX: 5, tileY: 15, textureKey: 'generic-trainer', facing: 'down',
+      dialogue: ['A deep rumble echoes from this lava tube...', 'Reading captured! The magma is active.'],
+      requireFlag: '!vent-3-recorded', setsFlag: 'vent-3-recorded' },
+    { id: 'vr-vent-4', tileX: 14, tileY: 19, textureKey: 'generic-trainer', facing: 'down',
+      dialogue: ['The caldera rim glows orange here...', 'Data logged! Dr. Ash will love this.'],
+      requireFlag: '!vent-4-recorded', setsFlag: 'vent-4-recorded' },
+    { id: 'vr-vent-5', tileX: 10, tileY: 2, textureKey: 'generic-trainer', facing: 'down',
+      dialogue: ['The summit vent erupts with a geyser of steam!', 'Final reading captured!'],
+      requireFlag: '!vent-5-recorded', setsFlag: 'vent-5-recorded' },
   ],
   trainers: [
     { id: 'vr-rival-kael', trainerId: 'rival-5', tileX: 10, tileY: 21, textureKey: 'rival', facing: 'up', lineOfSight: 4 },
@@ -43,16 +59,20 @@ export const victoryRoad: MapDefinition = {
     { id: 'vr-ace-3', trainerId: 'ace-trainer-3', tileX: 5, tileY: 19, textureKey: 'npc-ace-trainer', facing: 'right', lineOfSight: 4 },
   ],
   warps: [
-    { tileX: 8, tileY: 24, targetMap: 'cinderfall-town', targetSpawnId: 'from-victory-road' },
-    { tileX: 9, tileY: 24, targetMap: 'cinderfall-town', targetSpawnId: 'from-victory-road' },
-    { tileX: 10, tileY: 24, targetMap: 'cinderfall-town', targetSpawnId: 'from-victory-road' },
-    { tileX: 11, tileY: 24, targetMap: 'cinderfall-town', targetSpawnId: 'from-victory-road' },
+    { tileX: 8, tileY: 24, targetMap: 'route-8', targetSpawnId: 'from-victory-road' },
+    { tileX: 9, tileY: 24, targetMap: 'route-8', targetSpawnId: 'from-victory-road' },
+    { tileX: 10, tileY: 24, targetMap: 'route-8', targetSpawnId: 'from-victory-road' },
+    { tileX: 11, tileY: 24, targetMap: 'route-8', targetSpawnId: 'from-victory-road' },
     { tileX: 8, tileY: 0, targetMap: 'pokemon-league', targetSpawnId: 'from-victory-road' },
     { tileX: 9, tileY: 0, targetMap: 'pokemon-league', targetSpawnId: 'from-victory-road' },
+    // Post-game: side passage to Aether Sanctum
+    { tileX: 0, tileY: 10, targetMap: 'aether-sanctum', targetSpawnId: 'from-victory-road' },
   ],
   spawnPoints: {
     'default': { x: 10, y: 23, direction: 'up' },
     'from-cinderfall': { x: 10, y: 23, direction: 'up' },
+    'from-route-8': { x: 10, y: 23, direction: 'up' },
+    'from-sanctum': { x: 9, y: 1, direction: 'down' },
     'from-league': { x: 9, y: 1, direction: 'down' },
   },
 };

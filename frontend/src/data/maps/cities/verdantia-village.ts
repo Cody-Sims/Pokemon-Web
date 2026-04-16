@@ -107,6 +107,10 @@ export const verdantiaVillage: MapDefinition = {
         },
       ],
     },
+    // Dragon's Lament quest: herb pickup
+    { id: 'verdantia-herb', tileX: 18, tileY: 8, textureKey: 'generic-trainer', facing: 'down',
+      dialogue: ['A rare medicinal herb grows here...', 'You gathered the Aether Herb for the salve!'],
+      requireFlag: '!dragon-herb-found', setsFlag: 'dragon-herb-found' },
   ],
   trainers: [],
   warps: [

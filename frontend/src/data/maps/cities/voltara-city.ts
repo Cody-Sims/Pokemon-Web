@@ -127,6 +127,37 @@ export const voltaraCity: MapDefinition = {
       requireFlag: 'saw_aldric_hologram',
       setsFlag: 'blitz_hq_discovery',
     },
+    // Conduit interaction points for Power Restoration quest
+    {
+      id: 'voltara-conduit-1',
+      tileX: 6,
+      tileY: 20,
+      textureKey: 'generic-trainer',
+      facing: 'up',
+      dialogue: ['The conduit crackles with unstable energy...', 'You repair the conduit! It hums steadily now.'],
+      requireFlag: '!conduit-1-repaired',
+      setsFlag: 'conduit-1-repaired',
+    },
+    {
+      id: 'voltara-conduit-2',
+      tileX: 5,
+      tileY: 4,
+      textureKey: 'generic-trainer',
+      facing: 'up',
+      dialogue: ['Sparks fly from the damaged conduit...', 'You reconnect the wiring! Power flows again.'],
+      requireFlag: '!conduit-2-repaired',
+      setsFlag: 'conduit-2-repaired',
+    },
+    {
+      id: 'voltara-conduit-3',
+      tileX: 12,
+      tileY: 28,
+      textureKey: 'generic-trainer',
+      facing: 'up',
+      dialogue: ['The north gate conduit is completely fried...', 'You replace the core component! It powers up.'],
+      requireFlag: '!conduit-3-repaired',
+      setsFlag: 'conduit-3-repaired',
+    },
     // Story: Professor Willow kidnapping
     {
       id: 'voltara-willow-kidnap',
@@ -157,6 +188,8 @@ export const voltaraCity: MapDefinition = {
     // North exit → Route 6
     { tileX: 11, tileY: 29, targetMap: 'route-6', targetSpawnId: 'from-voltara' },
     { tileX: 12, tileY: 29, targetMap: 'route-6', targetSpawnId: 'from-voltara' },
+    // House interior
+    { tileX: 17, tileY: 4, targetMap: 'voltara-city-house-1', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default':          { x: 12, y: 15, direction: 'up' },
@@ -165,5 +198,6 @@ export const voltaraCity: MapDefinition = {
     'from-pokecenter':  { x: 4, y: 5, direction: 'down' },
     'from-pokemart':    { x: 12, y: 10, direction: 'down' },
     'from-gym':         { x: 5, y: 21, direction: 'down' },
+    'from-house-1':     { x: 17, y: 5, direction: 'down' },
   },
 };

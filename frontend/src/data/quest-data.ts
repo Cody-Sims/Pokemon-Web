@@ -126,9 +126,9 @@ export const questData: Record<string, QuestDefinition> = {
     startFlag: 'quest_sternEngine_started',
     completeFlag: 'quest_sternEngine_complete',
     steps: [
-      { description: 'Recover engine part from Route 3 grunt', completionFlag: 'quest_sternEngine_part1' },
-      { description: 'Recover engine part from Coral Harbor docks grunt', completionFlag: 'quest_sternEngine_part2' },
-      { description: 'Recover engine part from Coral Harbor beach grunt', completionFlag: 'quest_sternEngine_part3' },
+      { description: 'Recover engine part from Route 3 grunt', completionFlag: 'quest_sternEngine_part1', triggerEvent: 'trainer-defeated:stern-grunt-1' },
+      { description: 'Recover engine part from Coral Harbor docks grunt', completionFlag: 'quest_sternEngine_part2', triggerEvent: 'trainer-defeated:stern-grunt-2' },
+      { description: 'Recover engine part from Coral Harbor beach grunt', completionFlag: 'quest_sternEngine_part3', triggerEvent: 'trainer-defeated:stern-grunt-3' },
       { description: 'Return parts to Captain Stern', completionFlag: 'quest_sternEngine_complete' },
     ],
     rewards: [
@@ -144,11 +144,11 @@ export const questData: Record<string, QuestDefinition> = {
     startFlag: 'quest_chef_started',
     completeFlag: 'quest_chef_complete',
     steps: [
-      { description: 'Bring an Oran Berry', completionFlag: 'quest_chef_oran' },
-      { description: 'Bring a Pecha Berry', completionFlag: 'quest_chef_pecha' },
-      { description: 'Bring a Rawst Berry', completionFlag: 'quest_chef_rawst' },
-      { description: 'Bring a Cheri Berry', completionFlag: 'quest_chef_cheri' },
-      { description: 'Bring an Aspear Berry', completionFlag: 'quest_chef_aspear' },
+      { description: 'Bring an Oran Berry', completionFlag: 'quest_chef_oran', triggerFlag: 'chef-oran-given' },
+      { description: 'Bring a Pecha Berry', completionFlag: 'quest_chef_pecha', triggerFlag: 'chef-pecha-given' },
+      { description: 'Bring a Rawst Berry', completionFlag: 'quest_chef_rawst', triggerFlag: 'chef-rawst-given' },
+      { description: 'Bring a Cheri Berry', completionFlag: 'quest_chef_cheri', triggerFlag: 'chef-cheri-given' },
+      { description: 'Bring an Aspear Berry', completionFlag: 'quest_chef_aspear', triggerFlag: 'chef-aspear-given' },
       { description: 'Return to Chef Marco', completionFlag: 'quest_chef_complete' },
     ],
     rewards: [
@@ -200,8 +200,8 @@ export const questData: Record<string, QuestDefinition> = {
     startFlag: 'quest_dragonLament_started',
     completeFlag: 'quest_dragonLament_complete',
     steps: [
-      { description: 'Gather herb from Verdantia Village', completionFlag: 'quest_dragonLament_herb' },
-      { description: 'Gather mineral from Ember Mines', completionFlag: 'quest_dragonLament_mineral' },
+      { description: 'Gather herb from Verdantia Village', completionFlag: 'quest_dragonLament_herb', triggerFlag: 'dragon-herb-found' },
+      { description: 'Gather mineral from Ember Mines', completionFlag: 'quest_dragonLament_mineral', triggerFlag: 'dragon-mineral-found' },
       { description: 'Craft Aether Salve and return to Wren', completionFlag: 'quest_dragonLament_complete' },
     ],
     rewards: [
@@ -217,11 +217,11 @@ export const questData: Record<string, QuestDefinition> = {
     startFlag: 'quest_volcanicSurvey_started',
     completeFlag: 'quest_volcanicSurvey_complete',
     steps: [
-      { description: 'Record vent 1 (east ridge)', completionFlag: 'quest_volcanicSurvey_vent1' },
-      { description: 'Record vent 2 (south crater)', completionFlag: 'quest_volcanicSurvey_vent2' },
-      { description: 'Record vent 3 (lava tube)', completionFlag: 'quest_volcanicSurvey_vent3' },
-      { description: 'Record vent 4 (caldera rim)', completionFlag: 'quest_volcanicSurvey_vent4' },
-      { description: 'Record vent 5 (summit)', completionFlag: 'quest_volcanicSurvey_vent5' },
+      { description: 'Record vent 1 (east ridge)', completionFlag: 'quest_volcanicSurvey_vent1', triggerFlag: 'vent-1-recorded' },
+      { description: 'Record vent 2 (south crater)', completionFlag: 'quest_volcanicSurvey_vent2', triggerFlag: 'vent-2-recorded' },
+      { description: 'Record vent 3 (lava tube)', completionFlag: 'quest_volcanicSurvey_vent3', triggerFlag: 'vent-3-recorded' },
+      { description: 'Record vent 4 (caldera rim)', completionFlag: 'quest_volcanicSurvey_vent4', triggerFlag: 'vent-4-recorded' },
+      { description: 'Record vent 5 (summit)', completionFlag: 'quest_volcanicSurvey_vent5', triggerFlag: 'vent-5-recorded' },
       { description: 'Return data to Dr. Ash', completionFlag: 'quest_volcanicSurvey_complete' },
     ],
     rewards: [

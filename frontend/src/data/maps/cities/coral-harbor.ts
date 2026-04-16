@@ -159,7 +159,11 @@ export const coralHarbor: MapDefinition = {
       setsFlag: 'met_zara_disguise',
     },
   ],
-  trainers: [],
+  trainers: [
+    // Stern Engine quest grunts (docks & beach)
+    { id: 'coral-stern-grunt-2', trainerId: 'stern-grunt-2', tileX: 20, tileY: 11, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 3, condition: '!stern-grunt-2' },
+    { id: 'coral-stern-grunt-3', trainerId: 'stern-grunt-3', tileX: 18, tileY: 20, textureKey: 'npc-grunt', facing: 'up', lineOfSight: 3, condition: '!stern-grunt-3' },
+  ],
   warps: [
     // North exit → Route 3
     { tileX: 11, tileY: 0, targetMap: 'route-3', targetSpawnId: 'from-coral' },

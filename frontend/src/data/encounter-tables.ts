@@ -97,6 +97,42 @@ export const encounterTables: Record<string, EncounterEntry[]> = {
     { pokemonId: 126, levelRange: [44, 48], weight: 5 },  // Magmar (rare)
     { pokemonId: 125, levelRange: [44, 48], weight: 5 },  // Electabuzz (rare)
   ],
+  'route-8': [
+    { pokemonId: 75, levelRange: [36, 41], weight: 15 },  // Graveler
+    { pokemonId: 105, levelRange: [36, 41], weight: 15 }, // Marowak
+    { pokemonId: 42, levelRange: [36, 41], weight: 15 },  // Golbat
+    { pokemonId: 24, levelRange: [36, 41], weight: 10 },  // Arbok
+    { pokemonId: 112, levelRange: [38, 43], weight: 10 }, // Rhydon
+    { pokemonId: 110, levelRange: [36, 41], weight: 10 }, // Weezing
+    { pokemonId: 34, levelRange: [38, 43], weight: 10 },  // Nidoking
+    { pokemonId: 31, levelRange: [38, 43], weight: 10 },  // Nidoqueen
+    { pokemonId: 125, levelRange: [40, 44], weight: 5 },  // Electabuzz (rare)
+  ],
+  'aether-sanctum': [
+    { pokemonId: 93, levelRange: [55, 60], weight: 15 },  // Haunter
+    { pokemonId: 110, levelRange: [55, 60], weight: 15 }, // Weezing
+    { pokemonId: 89, levelRange: [55, 60], weight: 15 },  // Muk
+    { pokemonId: 64, levelRange: [55, 60], weight: 10 },  // Kadabra
+    { pokemonId: 82, levelRange: [55, 60], weight: 10 },  // Magneton
+    { pokemonId: 101, levelRange: [55, 60], weight: 10 }, // Electrode
+    { pokemonId: 132, levelRange: [55, 60], weight: 10 }, // Ditto
+    { pokemonId: 137, levelRange: [58, 63], weight: 5 },  // Porygon (rare)
+    { pokemonId: 143, levelRange: [60, 65], weight: 5 },  // Snorlax (very rare)
+    { pokemonId: 149, levelRange: [60, 65], weight: 5 },  // Dragonite (very rare)
+  ],
+  'crystal-cavern-depths': [
+    { pokemonId: 42, levelRange: [50, 55], weight: 15 },  // Golbat
+    { pokemonId: 75, levelRange: [50, 55], weight: 15 },  // Graveler
+    { pokemonId: 105, levelRange: [50, 55], weight: 10 }, // Marowak
+    { pokemonId: 95, levelRange: [52, 57], weight: 10 },  // Onix
+    { pokemonId: 36, levelRange: [50, 55], weight: 10 },  // Clefable
+    { pokemonId: 112, levelRange: [52, 57], weight: 10 }, // Rhydon
+    { pokemonId: 47, levelRange: [50, 55], weight: 10 },  // Parasect
+    { pokemonId: 142, levelRange: [55, 60], weight: 5 },  // Aerodactyl (rare)
+    { pokemonId: 131, levelRange: [55, 60], weight: 5 },  // Lapras (rare)
+    { pokemonId: 148, levelRange: [55, 60], weight: 5 },  // Dragonair (rare)
+    { pokemonId: 104, levelRange: [50, 55], weight: 5 },  // Cubone
+  ],
 };
 
 /** Fishing encounter tables: per-route + per-rod tier. */

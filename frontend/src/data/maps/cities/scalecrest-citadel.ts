@@ -53,6 +53,8 @@ export const scalecrestCitadel: MapDefinition = {
     { tileX: 4, tileY: 4, targetMap: 'scalecrest-pokecenter', targetSpawnId: 'default' },
     { tileX: 11, tileY: 9, targetMap: 'scalecrest-pokemart', targetSpawnId: 'default' },
     { tileX: 5, tileY: 18, targetMap: 'scalecrest-gym', targetSpawnId: 'default' },
+    // House interior
+    { tileX: 17, tileY: 4, targetMap: 'scalecrest-citadel-house-1', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default': { x: 12, y: 12, direction: 'up' },
@@ -61,5 +63,6 @@ export const scalecrestCitadel: MapDefinition = {
     'from-pokecenter': { x: 4, y: 5, direction: 'down' },
     'from-pokemart': { x: 11, y: 10, direction: 'down' },
     'from-gym': { x: 5, y: 19, direction: 'down' },
+    'from-house-1': { x: 17, y: 5, direction: 'down' },
   },
 };

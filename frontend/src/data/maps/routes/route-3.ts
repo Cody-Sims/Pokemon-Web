@@ -150,6 +150,17 @@ export const route3: MapDefinition = {
       facing: 'down',
       lineOfSight: 4,
     },
+    // Stern Engine quest grunts
+    {
+      id: 'route3-stern-grunt-1',
+      trainerId: 'stern-grunt-1',
+      tileX: 14,
+      tileY: 15,
+      textureKey: 'npc-grunt',
+      facing: 'left',
+      lineOfSight: 3,
+      condition: '!stern-grunt-1',
+    },
   ],
   warps: [
     // North exit → Pewter City

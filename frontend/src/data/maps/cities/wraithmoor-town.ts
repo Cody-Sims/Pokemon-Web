@@ -46,6 +46,16 @@ export const wraithmoorTown: MapDefinition = {
         'Edith: But if someone were to break those seals...',
         'Edith: Take this Temple Map. It marks the sacred sites.'],
       setsFlag: 'received_temple_map' },
+    // Memory fragment interaction points for Restless Spirit quest
+    { id: 'wraithmoor-memory-1', tileX: 20, tileY: 4, textureKey: 'generic-trainer', facing: 'down',
+      dialogue: ['A faint glow emanates from the graveyard stones...', 'You found a memory fragment! It pulses with ghostly light.'],
+      requireFlag: '!memory-1-found', setsFlag: 'memory-1-found' },
+    { id: 'wraithmoor-memory-2', tileX: 3, tileY: 14, textureKey: 'generic-trainer', facing: 'down',
+      dialogue: ['An old book on the library shelf glows faintly...', 'You found a memory fragment! Words shimmer on the page.'],
+      requireFlag: '!memory-2-found', setsFlag: 'memory-2-found' },
+    { id: 'wraithmoor-memory-3', tileX: 18, tileY: 20, textureKey: 'generic-trainer', facing: 'down',
+      dialogue: ['The ruined shrine hums with spectral energy...', 'You found a memory fragment! A ghostly figure smiles.'],
+      requireFlag: '!memory-3-found', setsFlag: 'memory-3-found' },
   ],
   trainers: [],
   warps: [
@@ -56,6 +66,8 @@ export const wraithmoorTown: MapDefinition = {
     { tileX: 4, tileY: 4, targetMap: 'wraithmoor-pokecenter', targetSpawnId: 'default' },
     { tileX: 11, tileY: 9, targetMap: 'wraithmoor-pokemart', targetSpawnId: 'default' },
     { tileX: 5, tileY: 19, targetMap: 'wraithmoor-gym', targetSpawnId: 'default' },
+    // House interior
+    { tileX: 17, tileY: 4, targetMap: 'wraithmoor-town-house-1', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default': { x: 12, y: 12, direction: 'up' },
@@ -64,5 +76,6 @@ export const wraithmoorTown: MapDefinition = {
     'from-pokecenter': { x: 4, y: 5, direction: 'down' },
     'from-pokemart': { x: 11, y: 10, direction: 'down' },
     'from-gym': { x: 5, y: 20, direction: 'down' },
+    'from-house-1': { x: 17, y: 5, direction: 'down' },
   },
 };
