@@ -1,8 +1,8 @@
 import { PokemonInstance } from '@data/interfaces';
 import { moveData } from '@data/moves';
-import { DamageCalculator, DamageResult } from './DamageCalculator';
-import { StatusEffectHandler, EffectResult } from './StatusEffectHandler';
-import { WeatherManager } from './WeatherManager';
+import { DamageCalculator, DamageResult } from '../calculation/DamageCalculator';
+import { StatusEffectHandler, EffectResult } from '../effects/StatusEffectHandler';
+import { WeatherManager } from '../effects/WeatherManager';
 import { randomInt } from '@utils/math-helpers';
 
 export interface MoveExecutionResult {

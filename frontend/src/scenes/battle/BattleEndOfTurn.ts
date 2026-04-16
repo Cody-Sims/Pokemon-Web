@@ -1,9 +1,9 @@
 import { pokemonData } from '@data/pokemon';
-import { AbilityHandler } from '@battle/AbilityHandler';
-import { HeldItemHandler } from '@battle/HeldItemHandler';
+import { AbilityHandler } from '@battle/effects/AbilityHandler';
+import { HeldItemHandler } from '@battle/effects/HeldItemHandler';
 import type { PokemonInstance } from '@data/interfaces';
-import type { StatusEffectHandler } from '@battle/StatusEffectHandler';
-import type { WeatherManager } from '@battle/WeatherManager';
+import type { StatusEffectHandler } from '@battle/effects/StatusEffectHandler';
+import type { WeatherManager } from '@battle/effects/WeatherManager';
 
 export interface EndOfTurnEffects {
   messages: string[];

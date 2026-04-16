@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { DamageCalculator } from '../../frontend/src/battle/DamageCalculator';
-import { StatusEffectHandler } from '../../frontend/src/battle/StatusEffectHandler';
+import { DamageCalculator } from '../../frontend/src/battle/calculation/DamageCalculator';
+import { StatusEffectHandler } from '../../frontend/src/battle/effects/StatusEffectHandler';
 import { PokemonInstance, MoveData } from '../../frontend/src/data/interfaces';
 
 beforeEach(() => {

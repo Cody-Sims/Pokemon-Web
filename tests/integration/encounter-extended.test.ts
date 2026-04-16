@@ -3,7 +3,7 @@ import { EncounterSystem } from '../../frontend/src/systems/EncounterSystem';
 import { encounterTables } from '../../frontend/src/data/encounter-tables';
 import { pokemonData } from '../../frontend/src/data/pokemon';
 import { moveData } from '../../frontend/src/data/moves';
-import { ExperienceCalculator } from '../../frontend/src/battle/ExperienceCalculator';
+import { ExperienceCalculator } from '../../frontend/src/battle/calculation/ExperienceCalculator';
 
 describe('EncounterSystem — Extended', () => {
   describe('createWildPokemon — all registered species', () => {

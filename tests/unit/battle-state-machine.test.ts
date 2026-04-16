@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { BattleStateMachine, BattleState } from '../../frontend/src/battle/BattleStateMachine';
+import { BattleStateMachine, BattleState } from '../../frontend/src/battle/core/BattleStateMachine';
 
 describe('BattleStateMachine', () => {
   it('should start in INTRO state', () => {

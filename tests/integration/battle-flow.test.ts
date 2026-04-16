@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BattleManager, BattleConfig } from '../../frontend/src/battle/BattleManager';
-import { ExperienceCalculator } from '../../frontend/src/battle/ExperienceCalculator';
+import { BattleManager, BattleConfig } from '../../frontend/src/battle/core/BattleManager';
+import { ExperienceCalculator } from '../../frontend/src/battle/calculation/ExperienceCalculator';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
 
 beforeEach(() => {

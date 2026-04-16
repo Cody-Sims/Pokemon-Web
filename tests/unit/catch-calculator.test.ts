@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CatchCalculator } from '../../frontend/src/battle/CatchCalculator';
+import { CatchCalculator } from '../../frontend/src/battle/calculation/CatchCalculator';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
 
 beforeEach(() => {

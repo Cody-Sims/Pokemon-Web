@@ -1,11 +1,11 @@
 import { PokemonInstance } from '@data/interfaces';
 import { moveData } from '@data/moves';
 import { BattleStateMachine } from './BattleStateMachine';
-import { MoveExecutor } from './MoveExecutor';
-import { StatusEffectHandler } from './StatusEffectHandler';
-import { WeatherManager } from './WeatherManager';
-import { AbilityHandler } from './AbilityHandler';
-import { HeldItemHandler } from './HeldItemHandler';
+import { MoveExecutor } from '../execution/MoveExecutor';
+import { StatusEffectHandler } from '../effects/StatusEffectHandler';
+import { WeatherManager } from '../effects/WeatherManager';
+import { AbilityHandler } from '../effects/AbilityHandler';
+import { HeldItemHandler } from '../effects/HeldItemHandler';
 
 export type BattleType = 'wild' | 'trainer';
 

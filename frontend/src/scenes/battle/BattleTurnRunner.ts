@@ -1,6 +1,6 @@
 import { moveData } from '@data/moves';
 import type { PokemonInstance } from '@data/interfaces';
-import type { StatusEffectHandler } from '@battle/StatusEffectHandler';
+import type { StatusEffectHandler } from '@battle/effects/StatusEffectHandler';
 
 /** Pick a random available move for an enemy Pokémon. */
 export function pickEnemyMove(enemy: PokemonInstance): string {

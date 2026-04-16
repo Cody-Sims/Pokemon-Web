@@ -4,7 +4,7 @@ import { weightedRandom, randomInt } from '@utils/math-helpers';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
-import { ExperienceCalculator } from '@battle/ExperienceCalculator';
+import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
 
 /** Step counter → random wild encounter trigger. */
 export class EncounterSystem {

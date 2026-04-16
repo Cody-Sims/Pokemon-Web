@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { StatusEffectHandler } from '../../frontend/src/battle/StatusEffectHandler';
+import { StatusEffectHandler } from '../../frontend/src/battle/effects/StatusEffectHandler';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
 
 beforeEach(() => {

@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BattleManager, BattleConfig } from '../../frontend/src/battle/BattleManager';
-import { MoveExecutor } from '../../frontend/src/battle/MoveExecutor';
-import { ExperienceCalculator } from '../../frontend/src/battle/ExperienceCalculator';
-import { CatchCalculator } from '../../frontend/src/battle/CatchCalculator';
+import { BattleManager, BattleConfig } from '../../frontend/src/battle/core/BattleManager';
+import { MoveExecutor } from '../../frontend/src/battle/execution/MoveExecutor';
+import { ExperienceCalculator } from '../../frontend/src/battle/calculation/ExperienceCalculator';
+import { CatchCalculator } from '../../frontend/src/battle/calculation/CatchCalculator';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
 
 beforeEach(() => { vi.spyOn(Math, 'random').mockReturnValue(0.5); });

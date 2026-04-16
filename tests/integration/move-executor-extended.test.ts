@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MoveExecutor } from '../../frontend/src/battle/MoveExecutor';
-import { StatusEffectHandler } from '../../frontend/src/battle/StatusEffectHandler';
+import { MoveExecutor } from '../../frontend/src/battle/execution/MoveExecutor';
+import { StatusEffectHandler } from '../../frontend/src/battle/effects/StatusEffectHandler';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
 import { moveData } from '../../frontend/src/data/moves';
 

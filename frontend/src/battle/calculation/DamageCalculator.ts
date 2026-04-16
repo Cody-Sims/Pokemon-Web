@@ -6,9 +6,9 @@ import { getCombinedEffectiveness } from '@data/type-chart';
 import { STAB_MULTIPLIER, CRIT_CHANCE, CRIT_MULTIPLIER, RANDOM_MIN, RANDOM_MAX } from '@utils/constants';
 import { randomFloat } from '@utils/math-helpers';
 import { PokemonType } from '@utils/type-helpers';
-import type { StatusEffectHandler } from './StatusEffectHandler';import { AbilityHandler } from './AbilityHandler';
-import { HeldItemHandler } from './HeldItemHandler';
-import type { WeatherManager } from './WeatherManager';
+import type { StatusEffectHandler } from '../effects/StatusEffectHandler';import { AbilityHandler } from '../effects/AbilityHandler';
+import { HeldItemHandler } from '../effects/HeldItemHandler';
+import type { WeatherManager } from '../effects/WeatherManager';
 export interface DamageResult {
   damage: number;
   effectiveness: number;

@@ -2,12 +2,12 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
-import { BattleManager, BattleConfig } from '@battle/BattleManager';
+import { BattleManager, BattleConfig } from '@battle/core/BattleManager';
 import { EncounterSystem } from '@systems/EncounterSystem';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM } from '@utils/audio-keys';
-import { ExperienceCalculator } from '@battle/ExperienceCalculator';
+import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
 import { COLORS } from '@ui/theme';
 
 export class BattleScene extends Phaser.Scene {

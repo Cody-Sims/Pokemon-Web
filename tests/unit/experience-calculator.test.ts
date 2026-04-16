@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ExperienceCalculator, getNatureMultiplier, getNatureDescription } from '../../frontend/src/battle/ExperienceCalculator';
+import { ExperienceCalculator, getNatureMultiplier, getNatureDescription } from '../../frontend/src/battle/calculation/ExperienceCalculator';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
 
 beforeEach(() => {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { DamageCalculator } from '../../frontend/src/battle/DamageCalculator';
+import { DamageCalculator } from '../../frontend/src/battle/calculation/DamageCalculator';
 import { PokemonInstance, MoveData } from '../../frontend/src/data/interfaces';
-import { StatusEffectHandler } from '../../frontend/src/battle/StatusEffectHandler';
+import { StatusEffectHandler } from '../../frontend/src/battle/effects/StatusEffectHandler';
 
 beforeEach(() => {
   vi.spyOn(Math, 'random').mockReturnValue(0.5);

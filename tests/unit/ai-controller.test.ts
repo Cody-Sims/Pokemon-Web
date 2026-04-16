@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AIController } from '../../frontend/src/battle/AIController';
+import { AIController } from '../../frontend/src/battle/core/AIController';
 import { PokemonInstance } from '../../frontend/src/data/interfaces';
 
 beforeEach(() => {
