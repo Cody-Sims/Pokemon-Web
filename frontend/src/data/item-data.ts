@@ -210,4 +210,18 @@ export const itemData: Record<string, ItemData> = {
     description: 'A stone that evolves certain Pokémon. It is found in caves.',
     effect: { type: 'key' },
   },
+
+  // ─── Misc ───
+  'heart-scale': {
+    id: 'heart-scale', name: 'Heart Scale', category: 'key',
+    description: 'A pretty heart-shaped scale. Needed by certain Move Tutors.',
+    effect: { type: 'key' },
+  },
+
+  // ─── Synthesis ───
+  'synthesis-bracelet': {
+    id: 'synthesis-bracelet', name: 'Synthesis Bracelet', category: 'key',
+    description: 'A bracelet infused with Aether energy. Allows Pokémon to enter Synthesis Mode.',
+    effect: { type: 'key' },
+  },
 };

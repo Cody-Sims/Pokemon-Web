@@ -47,6 +47,7 @@ export interface TrainerData {
   party: { pokemonId: number; level: number; moves?: string[] }[];
   dialogue: { before: string[]; after: string[] };
   rewardMoney: number;
+  isDouble?: boolean;
 }
 
 export interface EncounterEntry {

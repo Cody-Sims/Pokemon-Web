@@ -21,8 +21,11 @@ import { NinePatchPanel } from '@ui/NinePatchPanel';
 import { EventManager } from '@managers/EventManager';
 import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
 import { TouchControls } from '@ui/TouchControls';
+import { SynthesisHandler } from '@battle/SynthesisHandler';
+import { SYNTHESIS_ITEM } from '@data/synthesis-data';
+import { getMoveTarget } from '@battle/DoubleBattleManager';
 
-type UIState = 'actions' | 'moves' | 'animating' | 'message';
+type UIState = 'actions' | 'moves' | 'animating' | 'message' | 'target-select';
 
 export class BattleUIScene extends Phaser.Scene {
   private actionTexts: Phaser.GameObjects.Text[] = [];
@@ -38,6 +41,10 @@ export class BattleUIScene extends Phaser.Scene {
   private weatherManager!: WeatherManager;
   private weatherText?: Phaser.GameObjects.Text;
   private pendingWaitConfirm?: () => void;
+  private synthesisHandler!: SynthesisHandler;
+  private synthText?: Phaser.GameObjects.Text;
+  private targetArrows: Phaser.GameObjects.Text[] = [];
+  private targetCursor = 0;
 
   constructor() {
     super({ key: 'BattleUIScene' });
@@ -49,6 +56,7 @@ export class BattleUIScene extends Phaser.Scene {
     // Use the StatusEffectHandler from BattleManager (single source of truth)
     this.statusHandler = this.battle().battleManager.getStatusHandler();
     this.weatherManager = this.battle().battleManager.getWeatherManager();
+    this.synthesisHandler = new SynthesisHandler();
 
     // Weather indicator (top-center, hidden initially)
     this.weatherText = this.add.text(GAME_WIDTH / 2, 12, '', {
@@ -86,6 +94,14 @@ export class BattleUIScene extends Phaser.Scene {
     this.cursor = 0;
     this.updateCursor();
 
+    // ── SYNTH button (conditionally shown) ──
+    this.synthText = this.add.text(
+      GAME_WIDTH / 2, GAME_HEIGHT - 15,
+      'SYNTH', { ...FONTS.menuItem, fontSize: actionFontSize }
+    ).setOrigin(0.5).setVisible(false).setInteractive({ useHandCursor: true });
+    this.synthText.setPadding(12, 8, 12, 8);
+    this.synthText.on('pointerdown', () => { if (this.state === 'actions') this.activateSynthesis(); });
+
     // Keyboard
     this.input.keyboard!.on('keydown-LEFT', () => this.nav('left'));
     this.input.keyboard!.on('keydown-RIGHT', () => this.nav('right'));
@@ -117,6 +133,12 @@ export class BattleUIScene extends Phaser.Scene {
   private nav(dir: string): void {
     if (this.state === 'animating' || this.state === 'message') return;
     AudioManager.getInstance().playSFX(SFX.CURSOR);
+    if (this.state === 'target-select') {
+      if (dir === 'left' && this.targetCursor > 0) this.targetCursor--;
+      if (dir === 'right' && this.targetCursor < this.targetArrows.length - 1) this.targetCursor++;
+      this.updateTargetCursor();
+      return;
+    }
     const cur = this.state === 'moves' ? 'moveCursor' : 'cursor';
     const len = this.state === 'moves' ? this.battle().playerPokemon.moves.length : 4;
     if (dir === 'left'  && this[cur] % 2 === 1) this[cur]--;
@@ -129,6 +151,7 @@ export class BattleUIScene extends Phaser.Scene {
   private confirm(): void {
     if (this.state === 'animating') return;
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
+    if (this.state === 'target-select') { this.confirmTarget(); return; }
     if (this.state === 'message') { this.state = 'actions'; this.showActions(); this.msg('What will you do?'); return; }
     if (this.state === 'actions') this.selectAction();
     else if (this.state === 'moves') this.selectMove();
@@ -137,13 +160,19 @@ export class BattleUIScene extends Phaser.Scene {
   private cancel(): void {
     if (this.state === 'animating') return;
     AudioManager.getInstance().playSFX(SFX.CANCEL);
+    if (this.state === 'target-select') { this.clearTargetArrows(); this.state = 'moves'; this.openMoveMenu(); return; }
     if (this.state === 'moves') this.closeMoveMenu();
   }
 
   // ─── Action menu ───
   private updateCursor(): void { this.actionTexts.forEach((t, i) => t.setColor(i === this.cursor ? COLORS.textHighlight : COLORS.textWhite)); }
-  private showActions(): void { this.actionMenuBg.setVisible(true); this.actionTexts.forEach(t => t.setVisible(true)); this.updateCursor(); }
-  private hideActions(): void { this.actionMenuBg.setVisible(false); this.actionTexts.forEach(t => t.setVisible(false)); }
+  private showActions(): void {
+    this.actionMenuBg.setVisible(true);
+    this.actionTexts.forEach(t => t.setVisible(true));
+    this.updateSynthButton();
+    this.updateCursor();
+  }
+  private hideActions(): void { this.actionMenuBg.setVisible(false); this.actionTexts.forEach(t => t.setVisible(false)); this.synthText?.setVisible(false); }
 
   private selectAction(): void {
     switch (this.actionTexts[this.cursor].text) {
@@ -175,6 +204,101 @@ export class BattleUIScene extends Phaser.Scene {
         this.time.delayedCall(300, () => this.endBattle());
         break;
     }
+  }
+
+  // ─── Synthesis ───
+  private updateSynthButton(): void {
+    if (!this.synthText) return;
+    const gm = GameManager.getInstance();
+    const hasItem = gm.getItemCount(SYNTHESIS_ITEM) > 0;
+    const canSynth = this.synthesisHandler.canSynthesize(this.battle().playerPokemon, hasItem);
+    this.synthText.setVisible(canSynth);
+  }
+
+  private activateSynthesis(): void {
+    const b = this.battle();
+    const player = b.playerPokemon;
+    const gm = GameManager.getInstance();
+    const hasItem = gm.getItemCount(SYNTHESIS_ITEM) > 0;
+
+    if (!this.synthesisHandler.canSynthesize(player, hasItem)) return;
+
+    this.state = 'animating';
+    this.hideActions();
+
+    // Camera flash for synthesis activation
+    this.cameras.main.flash(200, 255, 255, 255);
+    AudioManager.getInstance().playSFX(SFX.STAT_UP);
+
+    const { messages } = this.synthesisHandler.activate(player);
+
+    // Tell BattleScene to show the aura
+    b.showSynthesisAura();
+
+    this.time.delayedCall(300, () => {
+      this.showMessageQueue(messages, 0, () => {
+        // After synthesis messages, auto-open FIGHT menu
+        this.time.delayedCall(400, () => {
+          this.state = 'actions';
+          this.showActions();
+          this.openMoveMenu();
+        });
+      });
+    });
+  }
+
+  // ─── Double battle target selection ───
+  private pendingMoveId?: string;
+
+  private showTargetSelection(moveId: string): void {
+    const b = this.battle();
+    if (!b.isDouble || b.enemySprites.length < 2) {
+      // Single target or only one enemy remains — no selection needed
+      this.executeTurn(moveId);
+      return;
+    }
+
+    const targeting = getMoveTarget(moveId);
+
+    if (targeting === 'self' || targeting === 'all-adjacent' || targeting === 'both-enemies' || targeting === 'all') {
+      // Auto-target, no selection needed
+      this.executeTurn(moveId);
+      return;
+    }
+
+    // Single enemy target — show selection arrows
+    this.pendingMoveId = moveId;
+    this.state = 'target-select';
+    this.targetCursor = 0;
+    this.msg('Choose a target!');
+
+    // Create arrows above enemy sprites
+    this.clearTargetArrows();
+    b.enemySprites.forEach((spr, i) => {
+      const arrow = this.add.text(spr.x, spr.y - 40, '▼', {
+        fontSize: '24px', color: i === 0 ? COLORS.textHighlight : COLORS.textWhite,
+        fontStyle: 'bold',
+      }).setOrigin(0.5).setDepth(100);
+      this.targetArrows.push(arrow);
+    });
+  }
+
+  private updateTargetCursor(): void {
+    this.targetArrows.forEach((a, i) => {
+      a.setColor(i === this.targetCursor ? COLORS.textHighlight : COLORS.textWhite);
+    });
+  }
+
+  private confirmTarget(): void {
+    const moveId = this.pendingMoveId;
+    this.pendingMoveId = undefined;
+    this.clearTargetArrows();
+    if (moveId) this.executeTurn(moveId);
+  }
+
+  private clearTargetArrows(): void {
+    this.targetArrows.forEach(a => a.destroy());
+    this.targetArrows = [];
   }
 
   // ─── Move menu ───
@@ -252,7 +376,11 @@ export class BattleUIScene extends Phaser.Scene {
     this.state = 'animating';
     this.hideActions();
 
-    this.executeTurn(mi.moveId);
+    if (b.isDouble) {
+      this.showTargetSelection(mi.moveId);
+    } else {
+      this.executeTurn(mi.moveId);
+    }
   }
 
   // ─── Turn execution ───
@@ -808,11 +936,14 @@ export class BattleUIScene extends Phaser.Scene {
       }
 
       this.time.delayedCall(1500, () => {
-        // Play victory BGM
-        audio.playBGM(BGM.VICTORY);
-        this.state = 'message';
-        this.msg(isMobile() ? 'Tap to continue...' : 'Press Enter to continue...');
-        this.waitForConfirmThen(() => this.endBattle());
+        // Prompt for nickname
+        this.promptNickname(enemy, name, () => {
+          // Play victory BGM
+          audio.playBGM(BGM.VICTORY);
+          this.state = 'message';
+          this.msg(isMobile() ? 'Tap to continue...' : 'Press Enter to continue...');
+          this.waitForConfirmThen(() => this.endBattle());
+        });
       });
     });
   }
@@ -866,14 +997,20 @@ export class BattleUIScene extends Phaser.Scene {
     const b = this.battle();
     const player = b.playerPokemon;
     const expGained = ExperienceCalculator.calculateExp(b.enemyPokemon, b.isTrainerBattle);
-    const name = pokemonData[player.dataId]?.name ?? '???';
+    const name = player.nickname ?? pokemonData[player.dataId]?.name ?? '???';
+
+    // +3 friendship for the active participant that won
+    const gm = GameManager.getInstance();
+    const participantIdx = gm.getParty().indexOf(player);
+    if (participantIdx >= 0) {
+      gm.adjustFriendship(participantIdx, 3);
+    }
 
     // Switch to victory BGM
     AudioManager.getInstance().playBGM(BGM.VICTORY);
 
     // Handle trainer battle rewards
     if (b.isTrainerBattle && b.trainerId) {
-      const gm = GameManager.getInstance();
       gm.defeatTrainer(b.trainerId);
       EventManager.getInstance().emit('trainer-defeated', b.trainerId);
       const tData = trainerData[b.trainerId];
@@ -1191,6 +1328,7 @@ export class BattleUIScene extends Phaser.Scene {
 
   private endBattle(): void {
     AudioManager.getInstance().stopLowHpWarning();
+    this.synthesisHandler.cleanup();
     this.battle().battleManager.cleanup();
     const b = this.battle();
     const returnScene = b.returnScene;

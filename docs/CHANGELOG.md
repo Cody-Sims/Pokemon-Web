@@ -5,6 +5,17 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [2026-04-16]
+### Added — Synthesis Mode UI & Double Battle Scene
+- **Synthesis Bracelet** key item added to `item-data.ts`. Required to activate Synthesis Mode in battle.
+- **SYNTH button** in `BattleUIScene`: appears in the action menu when the player has the Synthesis Bracelet, hasn't used synthesis this battle, and the active Pokémon is eligible. Activates synthesis with a camera flash, displays boost messages, then auto-opens the FIGHT menu.
+- **Synthesis aura** in `BattleScene`: pulsing cyan ellipse (0x00ffdd) behind the player Pokémon sprite after synthesis activation.
+- **SynthesisHandler** integration: cleanup on battle end to revert stat boosts.
+- **Double battle scene layout**: `BattleScene` accepts `isDouble` flag. When enabled, positions 4 Pokémon sprites (2 per side) with reduced scale. Public arrays for sprites/slots (`playerSprites`, `enemySprites`, `playerPokemonSlots`, `enemyPokemonSlots`).
+- **Target selection UI** in `BattleUIScene`: arrow-based enemy target selection for single-target moves in double battles. Uses `getMoveTarget()` from `DoubleBattleManager` for targeting classification.
+- **TrainerData.isDouble** optional field: trainers can be flagged for double battles.
+- **OverworldScene** passes `isDouble` and full `enemyParty` to BattleScene when trainer data includes `isDouble: true`.
+
+## [2026-04-16]
 ### Added — Cutscene Engine
 - **CutsceneEngine** (`frontend/src/systems/CutsceneEngine.ts`): Data-driven scripted sequence player supporting 16 action types — dialogue, camera pan, NPC/player movement, face direction, wait, fade to/from black, screen flash, BGM/SFX, screen shake, emote bubbles, flag setting, and parallel action execution.
 - **CutsceneAction union type** and **CutsceneDefinition** interface for type-safe cutscene authoring.

@@ -36,6 +36,20 @@ export class BattleScene extends Phaser.Scene {
   public expBarBg!: Phaser.GameObjects.Rectangle;
   public expBarFill!: Phaser.GameObjects.Rectangle;
 
+  // Double battle support
+  public isDouble = false;
+  public playerSprites: Phaser.GameObjects.Image[] = [];
+  public enemySprites: Phaser.GameObjects.Image[] = [];
+  public playerPokemonSlots: (PokemonInstance | null)[] = [];
+  public enemyPokemonSlots: (PokemonInstance | null)[] = [];
+  public playerHpBars: Phaser.GameObjects.Rectangle[] = [];
+  public enemyHpBars: Phaser.GameObjects.Rectangle[] = [];
+  public playerNameTexts: Phaser.GameObjects.Text[] = [];
+  public enemyNameTexts: Phaser.GameObjects.Text[] = [];
+
+  // Synthesis aura
+  private synthesisAura?: Phaser.GameObjects.Ellipse;
+
   private initData?: Record<string, unknown>;
 
   constructor() {
@@ -81,6 +95,7 @@ export class BattleScene extends Phaser.Scene {
     this.returnData = (data?._returnData as Record<string, unknown>) ?? {};
     this.isTrainerBattle = (data?.isTrainer as boolean) ?? false;
     this.trainerId = (data?.trainerId as string) ?? '';
+    this.isDouble = (data?.isDouble as boolean) ?? false;
 
     // Initialize starter if party is empty
     if (gm.getParty().length === 0) {
@@ -139,7 +154,7 @@ export class BattleScene extends Phaser.Scene {
 
     // ── Enemy info box (top-left) — starts above screen ──
     const enemyInfoBox = this.add.rectangle(170, -60, 300, 60, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
-    this.enemyNameText = this.add.text(40, -80, `${enemyData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
+    this.enemyNameText = this.add.text(40, -80, `${this.enemyPokemon.nickname ?? enemyData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
     const enemyLvlText = this.add.text(240, -80, `Lv${this.enemyPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
     this.enemyHpBg = this.add.rectangle(40, -55, 220, 10, 0x333333).setOrigin(0, 0.5);
     this.enemyHpBar = this.add.rectangle(40, -55, 220, 10, 0x4caf50).setOrigin(0, 0.5);
@@ -147,7 +162,7 @@ export class BattleScene extends Phaser.Scene {
 
     // ── Player info box (bottom-right) — starts below screen ──
     const playerInfoBox = this.add.rectangle(GAME_WIDTH - 170, GAME_HEIGHT + 60, 300, 70, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
-    this.playerNameText = this.add.text(GAME_WIDTH - 310, GAME_HEIGHT + 40, `${playerData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
+    this.playerNameText = this.add.text(GAME_WIDTH - 310, GAME_HEIGHT + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
     this.playerLevelText = this.add.text(GAME_WIDTH - 120, GAME_HEIGHT + 40, `Lv${this.playerPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
     this.playerHpBg = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
     this.playerHpBar = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
@@ -219,6 +234,13 @@ export class BattleScene extends Phaser.Scene {
       else battleBgm = BGM.BATTLE_TRAINER;
     }
     audio.playBGM(battleBgm);
+
+    // Double battle layout setup
+    if (this.isDouble && data?.enemyParty) {
+      const enemyParty = data.enemyParty as PokemonInstance[];
+      const gm2 = GameManager.getInstance();
+      this.setupDoubleBattle(gm2.getParty(), enemyParty);
+    }
 
     // Launch battle UI overlay
     this.scene.launch('BattleUIScene');
@@ -379,5 +401,69 @@ export class BattleScene extends Phaser.Scene {
       displayWidth: 180 * pct,
       duration,
     });
+  }
+
+  /** Show a pulsing cyan aura behind the player Pokémon after Synthesis activation. */
+  showSynthesisAura(): void {
+    if (this.synthesisAura) return;
+    const sprite = this.playerSprite;
+    this.synthesisAura = this.add.ellipse(sprite.x, sprite.y + 5, 80, 50, 0x00ffdd, 0.3)
+      .setDepth(sprite.depth - 1);
+    this.tweens.add({
+      targets: this.synthesisAura,
+      alpha: 0.6,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+  }
+
+  /** Hide the synthesis aura. */
+  hideSynthesisAura(): void {
+    if (this.synthesisAura) {
+      this.synthesisAura.destroy();
+      this.synthesisAura = undefined;
+    }
+  }
+
+  /** Set up additional sprites for a double battle (4 Pokémon on screen). */
+  setupDoubleBattle(
+    playerParty: PokemonInstance[],
+    enemyParty: PokemonInstance[],
+  ): void {
+    // Player slot 0: x=200, y=350 (already placed as playerSprite)
+    // Player slot 1: x=350, y=370
+    this.playerSprite.setScale(3);
+    this.playerPokemonSlots = [playerParty[0] ?? null, playerParty[1] ?? null];
+    this.enemyPokemonSlots = [enemyParty[0] ?? null, enemyParty[1] ?? null];
+    this.playerSprites = [this.playerSprite];
+    this.enemySprites = [this.enemySprite];
+
+    // Reposition primary sprites for double layout
+    this.playerSprite.setPosition(200, 350);
+    this.enemySprite.setPosition(500, 140).setScale(1.5);
+
+    // Add second player Pokémon
+    if (this.playerPokemonSlots[1]) {
+      const p1 = this.playerPokemonSlots[1];
+      const p1Data = pokemonData[p1.dataId];
+      if (p1Data) {
+        const spr = this.add.image(350, 370, p1Data.spriteKeys.back).setScale(3).setAlpha(0);
+        this.playerSprites.push(spr);
+        this.tweens.add({ targets: spr, alpha: 1, duration: 600, delay: 400, ease: 'Power2', onComplete: () => spr.clearTint() });
+      }
+    }
+
+    // Add second enemy Pokémon
+    if (this.enemyPokemonSlots[1]) {
+      const e1 = this.enemyPokemonSlots[1];
+      const e1Data = pokemonData[e1.dataId];
+      if (e1Data) {
+        const spr = this.add.image(650, 120, e1Data.spriteKeys.front).setScale(1.5).setAlpha(0);
+        this.enemySprites.push(spr);
+        this.tweens.add({ targets: spr, alpha: 1, duration: 600, delay: 400, ease: 'Power2', onComplete: () => spr.clearTint() });
+      }
+    }
   }
 }

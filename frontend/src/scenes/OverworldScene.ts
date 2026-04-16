@@ -703,6 +703,19 @@ export class OverworldScene extends Phaser.Scene {
           return;
         }
 
+        if (spawnDef?.interactionType === 'move-tutor') {
+          const tutorId = spawnDef.interactionData ?? spawnDef.id;
+          this.scene.pause();
+          this.scene.launch('DialogueScene', { dialogue });
+          this.scene.get('DialogueScene').events.once('shutdown', () => {
+            this.scene.launch('MoveTutorScene', { tutorId });
+            this.scene.get('MoveTutorScene').events.once('shutdown', () => {
+              this.scene.resume();
+            });
+          });
+          return;
+        }
+
         if (spawnDef?.interactionType === 'starter-select' && !gm.getFlag('receivedStarter')) {
           this.scene.pause();
           this.scene.launch('DialogueScene', { dialogue });
