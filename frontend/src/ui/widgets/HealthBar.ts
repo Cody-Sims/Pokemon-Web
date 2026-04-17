@@ -1,59 +1,56 @@
 import Phaser from 'phaser';
 
-/** Animated HP bar widget that changes color based on health percentage. */
+/** Animated HP bar widget using Rectangle objects for efficient updates.
+ *  Only updates width on value change instead of full graphics redraw. */
 export class HealthBar {
-  private bar: Phaser.GameObjects.Graphics;
-  private x: number;
-  private y: number;
+  private bg: Phaser.GameObjects.Rectangle;
+  private fill: Phaser.GameObjects.Rectangle;
   private width: number;
   private height: number;
   private maxValue: number;
   private currentValue: number;
 
   constructor(scene: Phaser.Scene, x: number, y: number, width: number, height: number, maxValue: number) {
-    this.bar = scene.add.graphics();
-    this.x = x;
-    this.y = y;
     this.width = width;
     this.height = height;
     this.maxValue = maxValue;
     this.currentValue = maxValue;
-    this.draw();
+
+    this.bg = scene.add.rectangle(x, y, width, height, 0x333333).setOrigin(0, 0);
+    this.fill = scene.add.rectangle(x, y, width, height, 0x4caf50).setOrigin(0, 0);
   }
 
   setValue(value: number): void {
     this.currentValue = Math.max(0, Math.min(value, this.maxValue));
-    this.draw();
+    this.updateFill();
   }
 
   setMaxValue(maxValue: number): void {
     this.maxValue = maxValue;
-    this.draw();
+    this.updateFill();
   }
 
-  private draw(): void {
-    this.bar.clear();
-
-    // Background
-    this.bar.fillStyle(0x333333);
-    this.bar.fillRect(this.x, this.y, this.width, this.height);
-
-    // Health fill (BUG-088: guard against maxValue <= 0)
-    if (this.maxValue <= 0) return;
+  private updateFill(): void {
+    if (this.maxValue <= 0) {
+      this.fill.width = 0;
+      return;
+    }
     const pct = this.currentValue / this.maxValue;
     let color = 0x4caf50; // green
     if (pct <= 0.2) color = 0xf44336; // red
     else if (pct <= 0.5) color = 0xffeb3b; // yellow
 
-    this.bar.fillStyle(color);
-    this.bar.fillRect(this.x, this.y, this.width * pct, this.height);
+    this.fill.fillColor = color;
+    this.fill.width = this.width * pct;
   }
 
   setDepth(depth: number): void {
-    this.bar.setDepth(depth);
+    this.bg.setDepth(depth);
+    this.fill.setDepth(depth);
   }
 
   destroy(): void {
-    this.bar.destroy();
+    this.bg.destroy();
+    this.fill.destroy();
   }
 }

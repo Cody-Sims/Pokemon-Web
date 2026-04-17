@@ -401,17 +401,17 @@ Object literal specifies `_escRaw` which isn't in the `InputState` type.
 | **High** | 2.7 | Performance | 521 PNGs, no texture atlas | 4 hr | |
 | **High** | 4.1 | Architecture | GameManager god object (383 LOC) | 8 hr | |
 | **High** | 4.2 | Architecture | BattleUIScene mega-file (1013 LOC) | 6 hr | |
-| **High** | 4.3 | Architecture | Duplicated catch logic | 2 hr | |
+| **High** | 4.3 | Architecture | Duplicated catch logic | 2 hr | ✅ Already delegated |
 | **High** | 2.3 | Performance | O(n) NPC collision scan | 1 hr | ✅ Done |
 | **High** | 2.2 | Performance | MoveAnimationPlayer manual Arcs | 3 hr | |
 | **High** | 5.1 | Type Safety | 19 `as any` casts | 3 hr | ✅ Done (GM: 0 casts) |
 | **High** | 1.3 | Bundle | All maps eagerly imported | 2 hr | |
 | **Medium** | 4.4 | Architecture | Turn-order logic in 3 places | 2 hr | ✅ Done |
-| **Medium** | 4.6 | Architecture | Untyped EventManager | 3 hr | |
+| **Medium** | 4.6 | Architecture | Untyped EventManager | 3 hr | ✅ Done |
 | **Medium** | 5.2 | Quality | 9 async functions without try/catch | 2 hr | ✅ Done |
 | **Medium** | 5.5 | Quality | BattleManager ignores AIController | 1 hr | ✅ Done |
 | **Medium** | 5.6 | Quality | No level cap guard in exp loop | 15 min | ✅ Done |
-| **Medium** | 2.4 | Performance | HealthBar full redraw per tick | 1 hr | |
+| **Medium** | 2.4 | Performance | HealthBar full redraw per tick | 1 hr | ✅ Done |
 | **Medium** | 2.5 | Performance | weightedRandom recomputes total | 15 min | ✅ Done |
 | **Medium** | 2.6 | Performance | Heavy per-frame overworld effects | 1 hr | ✅ Done |
 | **Medium** | 6.3 | Tech Debt | Individual sprites instead of tilemaps | 8 hr | |
@@ -428,7 +428,7 @@ Object literal specifies `_escRaw` which isn't in the `InputState` type.
 | **Low** | 4.7 | Architecture | Trainer double-registration | 2 hr | |
 | **Low** | 3.5 | Memory | Dual low-HP setInterval | 30 min | ✅ Done |
 | **Low** | 5.7 | Quality | Nature modifiers ignored | 30 min | ✅ Done |
-| **Low** | 1.5 | Bundle | Ineffective dynamic import | 15 min | |
+| **Low** | 1.5 | Bundle | Ineffective dynamic import | 15 min | ✅ Done |
 
 ---
 
