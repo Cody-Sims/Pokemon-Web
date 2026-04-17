@@ -32,7 +32,7 @@ pokemon-web/
 ├── frontend/                           # All client-side code lives here
 │   ├── index.html                      # Minimal HTML shell, mounts the Phaser canvas
 │   ├── tsconfig.json
-│   ├── vite.config.ts                  # Vite config (aliases, build options)
+│   ├── vite.config.ts                  # Vite config (aliases, build options, code splitting)
 │   │
 │   ├── public/                         # Static assets copied verbatim to dist/
 │   │   └── assets/
@@ -242,7 +242,7 @@ pokemon-web/
 │       │   │   └── HiddenItems.ts         # Hidden item locations + Itemfinder scanning
 │       │   ├── rendering/
 │       │   │   ├── WeatherRenderer.ts     # Overworld weather effects
-│       │   │   ├── LightingSystem.ts      # Cave darkness overlay with light circles
+│       │   │   ├── LightingSystem.ts      # Cave darkness overlay with persistent reusable light image
 │       │   │   ├── AnimationHelper.ts     # Registers shared sprite animations
 │       │   │   └── EmoteBubble.ts         # Emote popup system (!, ?, ♥, etc.)
 │       │   ├── engine/
@@ -255,8 +255,8 @@ pokemon-web/
 │       ├── ui/                         # Reusable UI components
 │       │   ├── theme.ts               # Shared colors, fonts, spacing, mobile scaling helpers
 │       │   ├── controls/
-│       │   │   ├── TouchControls.ts       # Virtual joystick + A/B buttons for mobile
-│       │   │   ├── VirtualJoystick.ts     # Floating joystick at touch location
+│       │   │   ├── TouchControls.ts       # Virtual joystick + A/B buttons for mobile (tracked listener cleanup)
+│       │   │   ├── VirtualJoystick.ts     # Floating joystick at touch location (tracked listener cleanup)
 │       │   │   └── MenuController.ts      # Unified menu input (1D/2D grid, kb+mouse)
 │       │   ├── widgets/
 │       │   │   ├── NinePatchPanel.ts      # Nine-patch style panel (rounded, shadowed)
@@ -272,7 +272,7 @@ pokemon-web/
 │           ├── constants.ts           # TILE_SIZE, WALK_SPEED, MAX_PARTY_SIZE…
 │           ├── type-helpers.ts        # TypeScript types (PokemonType, Nature…)
 │           ├── audio-keys.ts          # BGM/SFX key constants, map→BGM mapping
-│           └── math-helpers.ts        # clamp, lerp, randomInt, weightedRandom
+│           └── math-helpers.ts        # clamp, lerp, randomInt, weightedRandom (supports precomputed totals)
 │
 ├── tiled/                              # Tiled source files (NOT shipped)
 │
@@ -401,7 +401,7 @@ EventManager.on('BATTLE_END', (result) => { /* resume overworld */ });
 The game supports mobile devices via a virtual touch overlay managed by three collaborating modules:
 
 - **`VirtualJoystick`** (`src/ui/controls/VirtualJoystick.ts`): A floating joystick that appears at the user's touch location. Tracks finger drag to calculate 4-directional movement (up/down/left/right) based on angle from origin, with a 15px dead zone. Supports multi-touch via touch identifier tracking and mouse fallback for desktop testing. The joystick base and thumb are Phaser `Circle` objects in a `Container` at depth 999.
-- **`TouchControls`** (`src/ui/controls/TouchControls.ts`): Manages the `VirtualJoystick` and **A/B action buttons** (bottom-right, 72px radius). The joystick is enabled during overworld gameplay and disabled during menus. Action buttons use a poll-and-clear pattern via `consumeConfirm()` / `consumeCancel()`. The joystick's exclude-hit-test callback prevents it from activating when tapping the A/B buttons.
+- **`TouchControls`** (`src/ui/controls/TouchControls.ts`): Manages the `VirtualJoystick` and **A/B action buttons** (bottom-right, 72px radius). The joystick is enabled during overworld gameplay and disabled during menus. Action buttons use a poll-and-clear pattern via `consumeConfirm()` / `consumeCancel()`. The joystick's exclude-hit-test callback prevents it from activating when tapping the A/B buttons. All DOM event listeners are tracked via `trackListener()` and removed in `destroy()` to prevent accumulation on scene restart.
 - **`InputManager`** (`src/systems/engine/InputManager.ts`): Instantiates `TouchControls` when `navigator.maxTouchPoints > 0`. Its `getState()` method merges keyboard and touch input into a unified `InputState { direction, confirm, cancel, menu }` — keyboard is checked first, touch fills in the gaps.
 - **`MenuController`** (`src/ui/controls/MenuController.ts`): Handles menu navigation via keyboard events. Menus rely on Phaser `pointerdown` listeners on individual menu items for touch input.
 
@@ -421,6 +421,7 @@ Pokémon stats, moves, items, encounter tables, and trainer rosters are defined 
 - **BGM crossfade**: `playBGM(key)` fades out the current track and fades in the new one (~500ms). If the requested key matches the current track, it's a no-op.
 - **Safe playback**: Missing audio keys silently no-op instead of crashing.
 - **Autoplay policy**: If the browser blocks audio, the manager queues the BGM and starts it after the first user interaction.
+- **Low-HP warning**: Uses Phaser's `time.addEvent()` timer for repeating beeps that pause when the game loses focus. The `playLoHpWarning()` / `stopLoHpWarning()` methods delegate to the unified timer-based implementation.
 - **Per-map BGM**: `MAP_BGM` in `audio-keys.ts` maps each map key to a BGM track. `OverworldScene` reads this on create to play the correct music, and crossfades automatically on map transitions.
 - **Battle BGM**: `BattleScene` plays `BATTLE_WILD` or `BATTLE_TRAINER`, and `BattleUIScene` switches to `VICTORY` on win.
 - **SFX**: One-shot sounds triggered throughout menus (cursor, confirm, cancel) and battle (hit variants, faint, level-up, encounter sting).

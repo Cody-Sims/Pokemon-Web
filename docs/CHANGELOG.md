@@ -10,9 +10,20 @@ All notable changes to the Pokemon Web project.
 ### Added
 - **Vite code splitting**: Phaser and battle subsystem split into separate chunks for faster initial load and better cache invalidation
 - **Dynamic game resize**: Game width recomputes on viewport/orientation changes so mobile devices fill the full screen width after rotation instead of showing black side bars
+- **Desktop chrome**: Styled background gradient, canvas frame with rounded corners and glow border, fullscreen toggle button (F11), mute toggle button (M key), and keyboard shortcut hints overlay
+- **Desktop mute button**: Persistent mute state via localStorage, wired to AudioManager
+
+### Changed
+- **Overworld cosmetic throttling (2.6)**: Tall grass alpha randomization reduced from every 15 frames to every 60 frames
+- **weightedRandom optimization (2.5)**: Accepts optional precomputed total parameter to avoid redundant `reduce()` calls
+- **Duplicated SPREAD_MOVES (4.5)**: `PartnerAI` now imports `SPREAD_MOVES` from `DoubleBattleManager` instead of maintaining a duplicate set
+
+### Removed
+- **Duplicate scene files (6.1)**: Deleted 3 stale scene copies (`BattleScene.ts`, `IntroScene.ts`, `OverworldScene.ts`) from `scenes/` root that broke TypeScript compilation
+- **Dead updateGrassCrop method (6.2)**: Removed unused method from OverworldScene
+- **AudioManager dual low-HP warning (3.5)**: Removed `setInterval`-based oscillator implementation; unified on Phaser timer-based `startLowHpWarning()`
 
 ### Fixed
-- **Build fix (6.1)**: Deleted 3 duplicate scene files (`BattleScene.ts`, `IntroScene.ts`, `OverworldScene.ts`) that broke TypeScript compilation with 20+ errors
 - **LightingSystem per-frame allocation (2.1)**: Reuse a single persistent `Phaser.GameObjects.Image` in `drawLight()` instead of creating and destroying one per light per frame (eliminated ~360 alloc/GC cycles per second in caves)
 - **TouchControls DOM listener leak (3.1)**: All ~20 canvas/DOM event listeners now tracked and removed in `destroy()`, preventing accumulation on scene restart
 - **VirtualJoystick DOM listener leak (3.2)**: All 7 canvas event listeners now tracked and removed in `destroy()`
@@ -20,18 +31,7 @@ All notable changes to the Pokemon Web project.
 - **ExperienceCalculator level cap (5.6)**: Added `MAX_LEVEL = 100` guard to `awardExp()` while-loop to prevent infinite loop on malformed data
 - **BattleManager ignores AIController (5.5)**: `getEnemyMove()` now routes through `AIController.selectMove()` instead of pure random selection; fixed 'tackle' fallback to 'struggle'
 - **EncounterSystem nature modifiers (5.7)**: `createWildPokemon()` now applies nature multipliers during stat calculation, producing correct stat values
-- **AudioManager dual low-HP warning (3.5)**: Removed `setInterval`-based oscillator implementation; unified on Phaser timer-based `startLowHpWarning()`
 - **Swallowed error in theme.ts (5.3)**: Accessibility module import failure now logs `console.warn` instead of silently discarding
-- **Dead updateGrassCrop method (6.2)**: Removed unused method from OverworldScene
-
-### Changed
-- **Overworld cosmetic throttling (2.6)**: Tall grass alpha randomization reduced from every 15 frames to every 60 frames
-- **weightedRandom optimization (2.5)**: Accepts optional precomputed total parameter to avoid redundant `reduce()` calls
-- **Duplicated SPREAD_MOVES (4.5)**: `PartnerAI` now imports `SPREAD_MOVES` from `DoubleBattleManager` instead of maintaining a duplicate set
-- **Desktop chrome**: Styled background gradient, canvas frame with rounded corners and glow border, fullscreen toggle button (F11), mute toggle button (M key), and keyboard shortcut hints overlay
-- **Desktop mute button**: Persistent mute state via localStorage, wired to AudioManager
-
-### Fixed
 - **BUG-001**: Player faint no longer auto-loses battle; prompts party switch when alive Pokemon remain
 - **BUG-002**: PP now deducted before accuracy check so missed moves still cost PP
 - **BUG-003**: Removed phantom Bulbasaur injection; battle returns to overworld if party is empty
