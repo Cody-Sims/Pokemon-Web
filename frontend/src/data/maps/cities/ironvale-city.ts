@@ -37,7 +37,7 @@ const ironvaleGround = parseMap([
 
 export const ironvaleCity: MapDefinition = {
   key: 'ironvale-city',
-  width: 25,
+  width: 24,
   height: 30,
   ground: ironvaleGround,
   encounterTableKey: '',

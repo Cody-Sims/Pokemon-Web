@@ -30,7 +30,7 @@ const cinderfallGround = parseMap([
 ]);
 
 export const cinderfallTown: MapDefinition = {
-  key: 'cinderfall-town', width: 25, height: 25, ground: cinderfallGround,
+  key: 'cinderfall-town', width: 24, height: 25, ground: cinderfallGround,
   encounterTableKey: '', battleBg: 'bg-fire', displayName: 'Cinderfall Town',
   npcs: [
     { id: 'cinderfall-sign', tileX: 13, tileY: 1, textureKey: 'generic-trainer', facing: 'down',

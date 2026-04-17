@@ -30,7 +30,7 @@ const wraithmoorGround = parseMap([
 ]);
 
 export const wraithmoorTown: MapDefinition = {
-  key: 'wraithmoor-town', width: 25, height: 25, ground: wraithmoorGround,
+  key: 'wraithmoor-town', width: 24, height: 25, ground: wraithmoorGround,
   encounterTableKey: '', battleBg: 'bg-ruins', displayName: 'Wraithmoor Town',
   npcs: [
     { id: 'wraithmoor-sign', tileX: 13, tileY: 1, textureKey: 'generic-trainer', facing: 'down',

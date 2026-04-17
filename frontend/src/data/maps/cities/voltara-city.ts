@@ -37,7 +37,7 @@ const voltaraGround = parseMap([
 
 export const voltaraCity: MapDefinition = {
   key: 'voltara-city',
-  width: 25,
+  width: 24,
   height: 30,
   ground: voltaraGround,
   encounterTableKey: '',

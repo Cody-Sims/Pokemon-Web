@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [Unreleased]
 
+### Fixed
+- **Map dimension mismatches**: Corrected `width: 25` to `width: 24` in 6 city maps (ironvale-city, cinderfall-town, scalecrest-citadel, verdantia-village, voltara-city, wraithmoor-town) to match actual grid row lengths
+- **Verdantia Village ragged rows**: Padded 22 rows from 23 to 24 characters with grass tiles to match declared width
+- **Abyssal Spire F4 ragged rows**: Trimmed 13 rows from 16 to 15 characters to match declared width
+- **Verdantia Lab ragged rows**: Trimmed rows (16-17 chars) to declared width of 15
+- **Shattered Isles Temple ragged rows**: Trimmed 5 rows (19-20 chars) to declared width of 18
+
 ### Added
 - **UI Improvement Plan** (`docs/UI_IMPROVEMENT_PLAN.md`): Comprehensive visual quality roadmap covering tileset pixel art upgrades, city map redesigns, warp validation pipeline, map preview rendering, and UI component overhaul
 - **Tileset pixel art upgrade** (`temp/scripts/tileset/upgrade_tiles.py`): Replaced all 42 solid-color placeholder tiles (IDs 68-109) with hand-crafted GBA-style pixel art. Covers 12 biomes: coastal, volcanic, mine, industrial, forest, electric, ghost/ruin, dragon, fire, synthesis, post-game, and league. Each tile has 6-13 unique colors with proper shading, texture, and depth borders

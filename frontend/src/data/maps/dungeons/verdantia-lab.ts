@@ -5,23 +5,23 @@ import { MapDefinition, parseMap } from '../shared';
 // Discovered after defeating Gym 4 (Ivy). Roots and vines clash with lab equipment.
 const labGround = parseMap([
   'ĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦ', // 0
-  'ĦŦŦŦŦĦ£,,£ĦŊŧŧŊĦ', // 1  north chamber: containment pods
-  'ĦŧƫŧŧĦ£,,£ĦŧŧŧŧĦ', // 2  terminal
-  'ĦŧŧŧŧĦ,¡¡,ĦŧƫŧŧĦ', // 3  vine corridor + terminal
-  'ĦŧŧŧŧĐ,,,,ĐŧŧŧŧĦ', // 4  synthesis doors connect chambers
+  'ĦŦŦŦŦĦ£,,£ĦŊŧŧĦ', // 1  north chamber: containment pods
+  'ĦŧƫŧŧĦ£,,£ĦŧŧŧĦ', // 2  terminal
+  'ĦŧŧŧŧĦ,¡¡,ĦŧƫŧĦ', // 3  vine corridor + terminal
+  'ĦŧŧŧŧĐ,,,,ĐŧŧŧĦ', // 4  synthesis doors connect chambers
   'ĦĦĦĐĦĦĦĦĦĦĦĐĦĦĦ', // 5  wall with doors
-  'Ħ£¡,,,,¡£,,,,¡£,Ħ', // 6  root-covered corridor
-  'Ħ£,,,,,,,,,,,,£,Ħ', // 7
+  'Ħ£¡,,,,¡£,,,,¡Ħ', // 6  root-covered corridor
+  'Ħ£,,,,,,,,,,,,Ħ', // 7
   'ĦĦĦĐĦĦĦĦĦĦĦĐĦĦĦ', // 8  wall with doors
-  'ĦŧŧŧŧĐ,,,,ĐŧŧŧŧĦ', // 9  synthesis doors
-  'ĦŧŊŧŧĦ,¡¡,ĦŧŧŊŧĦ', // 10 containment pods + vines
-  'ĦŧŧƫŧĦ£,,£ĦŧƫŧŧĦ', // 11 terminals
-  'ĦŧŧŧŧĦ£,,£ĦŧŧŧŧĦ', // 12
-  'ĦĦĦĦĦĦ£,,£ĦĦĦĦĦĦĦ', // 13
-  ';;;£,,,,,,,,£;;;¡', // 14 cave transition to exit
-  ';;;£,,,,,,,,£;¡;;', // 15
-  ';;;;;;,,,,;;;;;;¡', // 16
-  ';;;;;;,,,,;;;;;;;', // 17 south exit (stairs up)
+  'ĦŧŧŧŧĐ,,,,ĐŧŧŧĦ', // 9  synthesis doors
+  'ĦŧŊŧŧĦ,¡¡,ĦŧŧŊĦ', // 10 containment pods + vines
+  'ĦŧŧƫŧĦ£,,£ĦŧƫŧĦ', // 11 terminals
+  'ĦŧŧŧŧĦ£,,£ĦŧŧŧĦ', // 12
+  'ĦĦĦĦĦĦ£,,£ĦĦĦĦĦ', // 13
+  ';;;£,,,,,,,,£;;', // 14 cave transition to exit
+  ';;;£,,,,,,,,£;¡', // 15
+  ';;;;;;,,,,;;;;;', // 16
+  ';;;;;;,,,,;;;;;', // 17 south exit (stairs up)
 ]);
 
 export const verdantiaLab: MapDefinition = {

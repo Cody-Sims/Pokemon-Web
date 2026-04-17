@@ -5,34 +5,34 @@ import { MapDefinition, parseMap } from '../shared';
 const verdantiaGround = parseMap([
   'XXXXXXXX.PP.XXXXXXXXXXXX', // 0  north exit to Route 5
   'X........PP............X', // 1
-  'X.CCCCCCCPP..RRRRRRR..X', // 2  center + house
-  'X.c$cccccPP..HH&HHHH..X', // 3
-  'X.cceccc.PP..HHHDHHH..X', // 4
-  'X....PP.PPPPPP........X', // 5
-  'X....PP...........5555X', // 6  light grass
-  'X....PP..MMMMMM..5555.X', // 7
-  'X....PP..mm&mmm..555f.X', // 8
-  'X....PP..mmnmmm..5555.X', // 9
-  'X....PPPPPPPPPPPP.....X', // 10
-  'X....PP......55555....X', // 11
-  'X.f..PP.....555555..f.X', // 12
-  'X....PP......55555....X', // 13
-  'X....PP..............GX', // 14
-  'X....PPPPPPPPP.......GX', // 15
-  'X.........PP.........GX', // 16
-  'X.AAAAAAA.PP..........X', // 17  gym
-  'X.ggg&ggg.PP..........X', // 18
-  'X.gggaggg.PP..........X', // 19
-  'X.........PP..........X', // 20
-  'X..f......PP......f...X', // 21
-  'X.........PP..........X', // 22
-  'X.........PP..........X', // 23
+  'X.CCCCCCCPP..RRRRRRR...X', // 2  center + house
+  'X.c$cccccPP..HH&HHHH...X', // 3
+  'X.cceccc.PP..HHHDHHH...X', // 4
+  'X....PP.PPPPPP.........X', // 5
+  'X....PP...........5555.X', // 6  light grass
+  'X....PP..MMMMMM..5555..X', // 7
+  'X....PP..mm&mmm..555f..X', // 8
+  'X....PP..mmnmmm..5555..X', // 9
+  'X....PPPPPPPPPPPP......X', // 10
+  'X....PP......55555.....X', // 11
+  'X.f..PP.....555555..f..X', // 12
+  'X....PP......55555.....X', // 13
+  'X....PP..............G.X', // 14
+  'X....PPPPPPPPP.......G.X', // 15
+  'X.........PP.........G.X', // 16
+  'X.AAAAAAA.PP...........X', // 17  gym
+  'X.ggg&ggg.PP...........X', // 18
+  'X.gggaggg.PP...........X', // 19
+  'X.........PP...........X', // 20
+  'X..f......PP......f....X', // 21
+  'X.........PP...........X', // 22
+  'X.........PP...........X', // 23
   'XXXXXXXX.PP.XXXXXXXXXXXX', // 24  south border
 ]);
 
 export const verdantiaVillage: MapDefinition = {
   key: 'verdantia-village',
-  width: 25,
+  width: 24,
   height: 25,
   ground: verdantiaGround,
   encounterTableKey: '',
