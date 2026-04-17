@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
@@ -66,11 +66,12 @@ export class FlyMapScene extends Phaser.Scene {
     this.pokemonName = flyUser?.nickname ?? `Pokémon`;
 
     // Background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    drawPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20);
+    const layout = ui(this);
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    drawPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20);
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 30, 'FLY — Choose Destination', {
+    this.add.text(layout.cx, 30, 'FLY — Choose Destination', {
       ...FONTS.heading, color: COLORS.textHighlight,
     }).setOrigin(0.5);
 
@@ -81,7 +82,7 @@ export class FlyMapScene extends Phaser.Scene {
 
     this.destTexts = this.destinations.map((dest, i) => {
       const currentMarker = dest.mapKey === gm.getCurrentMap() ? ' ◄' : '';
-      const t = this.add.text(GAME_WIDTH / 2, startY + i * rowH, dest.displayName + currentMarker, {
+      const t = this.add.text(layout.cx, startY + i * rowH, dest.displayName + currentMarker, {
         ...FONTS.body, fontSize, color: COLORS.textWhite,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -95,7 +96,7 @@ export class FlyMapScene extends Phaser.Scene {
     });
 
     // Description text
-    this.descText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, '', {
+    this.descText = this.add.text(layout.cx, layout.h - 50, '', {
       ...FONTS.caption, color: COLORS.textGray,
     }).setOrigin(0.5);
 

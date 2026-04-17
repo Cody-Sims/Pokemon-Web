@@ -30,7 +30,11 @@ export class EventManager {
     const list = this.listeners.get(event);
     if (!list) return;
     for (const cb of list) {
-      cb(...args);
+      try {
+        cb(...args);
+      } catch (e) {
+        console.error(`[EventManager] Error in listener for '${event}':`, e);
+      }
     }
   }
 

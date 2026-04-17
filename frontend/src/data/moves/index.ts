@@ -19,6 +19,7 @@ import { ghostMoves } from './ghost';
 import { dragonMoves } from './dragon';
 import { darkMoves } from './dark';
 import { fairyMoves } from './fairy';
+import { steelMoves } from './steel';
 
 export const moveData: Record<string, MoveData> = {
   ...normalMoves,
@@ -38,4 +39,5 @@ export const moveData: Record<string, MoveData> = {
   ...dragonMoves,
   ...darkMoves,
   ...fairyMoves,
+  ...steelMoves,
 };

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE, TYPE_COLORS } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager, HallOfFameEntry } from '@managers/GameManager';
@@ -23,20 +23,21 @@ export class HallOfFameScene extends Phaser.Scene {
     const gm = GameManager.getInstance();
     this.entries = gm.getHallOfFame();
     this.page = 0;
+    const layout = ui(this);
 
     // Background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    drawPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20);
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    drawPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20);
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 28, '★ HALL OF FAME ★', {
+    this.add.text(layout.cx, 28, '★ HALL OF FAME ★', {
       ...FONTS.heading, color: '#ffcc00',
     }).setOrigin(0.5);
 
-    this.add.rectangle(GAME_WIDTH / 2, 52, GAME_WIDTH - 50, 2, 0xffcc00, 0.5);
+    this.add.rectangle(layout.cx, 52, layout.w - 50, 2, 0xffcc00, 0.5);
 
     if (this.entries.length === 0) {
-      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'No champion records yet.', {
+      this.add.text(layout.cx, layout.cy, 'No champion records yet.', {
         ...FONTS.body, color: COLORS.textGray,
       }).setOrigin(0.5);
     } else {
@@ -47,7 +48,7 @@ export class HallOfFameScene extends Phaser.Scene {
     const navHint = this.entries.length > this.entriesPerPage
       ? 'LEFT/RIGHT to browse  •  ESC to close'
       : 'Press ESC to close';
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 25, navHint, {
+    this.add.text(layout.cx, layout.h - 25, navHint, {
       ...FONTS.caption, color: COLORS.textDim,
     }).setOrigin(0.5);
 
@@ -65,6 +66,7 @@ export class HallOfFameScene extends Phaser.Scene {
       .filter(c => (c as any).pageContent)
       .forEach(c => c.destroy());
 
+    const layout = ui(this);
     const start = this.page * this.entriesPerPage;
     const pageEntries = this.entries.slice(start, start + this.entriesPerPage);
     const totalPages = Math.ceil(this.entries.length / this.entriesPerPage);
@@ -72,7 +74,7 @@ export class HallOfFameScene extends Phaser.Scene {
     // Page indicator
     if (totalPages > 1) {
       const pi = this.addTagged(
-        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, `Page ${this.page + 1} / ${totalPages}`, {
+        this.add.text(layout.cx, layout.h - 50, `Page ${this.page + 1} / ${totalPages}`, {
           ...FONTS.caption, color: COLORS.textGray,
         }).setOrigin(0.5),
       );
@@ -86,7 +88,7 @@ export class HallOfFameScene extends Phaser.Scene {
 
       // Card background
       this.addTagged(
-        this.add.rectangle(GAME_WIDTH / 2, y + cardH / 2, GAME_WIDTH - 50, cardH, COLORS.bgCard, 0.8)
+        this.add.rectangle(layout.cx, y + cardH / 2, layout.w - 50, cardH, COLORS.bgCard, 0.8)
           .setStrokeStyle(1, 0xffcc00),
       );
 

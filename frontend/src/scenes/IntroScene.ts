@@ -3,7 +3,7 @@ import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX } from '@utils/audio-keys';
-import { TouchControls } from '@ui/controls/TouchControls';
+import { TouchControls } from '@ui/TouchControls';
 
 /**
  * IntroScene — "Welcome to the world of Pokémon!" professor intro,

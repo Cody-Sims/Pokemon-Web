@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { itemData } from '@data/item-data';
@@ -52,18 +52,19 @@ export class InventoryScene extends Phaser.Scene {
     this.battleMode = data?.battleMode ?? false;
     this.detailGroup = this.add.group();
     this.itemListGroup = this.add.group();
+    const layout = ui(this);
 
     // Full background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20, {
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
     });
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 28, 'BAG', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
-    this.add.rectangle(GAME_WIDTH / 2, 46, 160, 2, COLORS.borderHighlight, 0.4);
+    this.add.text(layout.cx, 28, 'BAG', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
+    this.add.rectangle(layout.cx, 46, 160, 2, COLORS.borderHighlight, 0.4);
 
     // Category tabs
     this.tabTexts = CATEGORY_LABELS.map((cat, i) => {
@@ -73,10 +74,10 @@ export class InventoryScene extends Phaser.Scene {
       t.on('pointerdown', () => { this.categoryIndex = i; this.switchCategory(); });
       return t;
     });
-    this.add.rectangle(GAME_WIDTH / 2, 78, GAME_WIDTH - 40, 1, COLORS.border, 0.4);
+    this.add.rectangle(layout.cx, 78, layout.w - 40, 1, COLORS.border, 0.4);
 
     // Detail panel (right side)
-    new NinePatchPanel(this, GAME_WIDTH - 160, GAME_HEIGHT / 2 + 30, 280, GAME_HEIGHT - 160, {
+    new NinePatchPanel(this, layout.w - 160, layout.cy + 30, 280, layout.h - 160, {
       fillColor: COLORS.bgCard,
       fillAlpha: 0.7,
       borderColor: COLORS.border,
@@ -85,19 +86,19 @@ export class InventoryScene extends Phaser.Scene {
 
     // Money display
     const gm = GameManager.getInstance();
-    this.add.text(GAME_WIDTH - 280, GAME_HEIGHT - 50, `₽ ${gm.getMoney()}`, {
+    this.add.text(layout.w - 280, layout.h - 50, `₽ ${gm.getMoney()}`, {
       ...FONTS.body, color: COLORS.textHighlight,
     });
 
     // Close hint / tappable close button
     if (isMobile()) {
-      const closeBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 22, '✕  CLOSE', {
+      const closeBtn = this.add.text(layout.cx, layout.h - 22, '✕  CLOSE', {
         ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       closeBtn.setPadding(16, 8, 16, 8);
       closeBtn.on('pointerdown', () => this.handleEsc());
     } else {
-      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 22, 'ESC to close', FONTS.caption).setOrigin(0.5);
+      this.add.text(layout.cx, layout.h - 22, 'ESC to close', FONTS.caption).setOrigin(0.5);
     }
 
     this.switchCategory();
@@ -152,7 +153,8 @@ export class InventoryScene extends Phaser.Scene {
       .filter((e): e is { item: ItemData; qty: number } => e !== null && e.qty > 0);
 
     if (this.filteredItems.length === 0) {
-      const empty = this.add.text(200, GAME_HEIGHT / 2, 'No items', {
+      const layout = ui(this);
+      const empty = this.add.text(200, layout.cy, 'No items', {
         ...FONTS.bodySmall, color: COLORS.textDim,
       }).setOrigin(0.5);
       this.itemListGroup.add(empty);
@@ -228,7 +230,8 @@ export class InventoryScene extends Phaser.Scene {
     if (idx < 0 || idx >= this.filteredItems.length) return;
 
     const entry = this.filteredItems[idx];
-    const x = GAME_WIDTH - 280;
+    const layout = ui(this);
+    const x = layout.w - 280;
     let y = 110;
 
     const name = this.add.text(x, y, entry.item.name, { ...FONTS.body, fontStyle: 'bold', fontSize: '17px' });
@@ -268,8 +271,9 @@ export class InventoryScene extends Phaser.Scene {
     const isKey = entry.item.category === 'key';
     const isTm = entry.item.category === 'tm';
     const actions = isKey ? ['Cancel'] : isTm ? ['USE', 'Cancel'] : ['USE', 'TOSS', 'Cancel'];
+    const layout = ui(this);
 
-    this.actionPanel = new NinePatchPanel(this, 200, GAME_HEIGHT / 2, 140, actions.length * 34 + 16, {
+    this.actionPanel = new NinePatchPanel(this, 200, layout.cy, 140, actions.length * 34 + 16, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.95,
       borderColor: COLORS.borderLight,
@@ -277,7 +281,7 @@ export class InventoryScene extends Phaser.Scene {
     });
 
     this.actionTexts = actions.map((label, i) => {
-      return this.add.text(200, GAME_HEIGHT / 2 - ((actions.length - 1) * 17) + i * 34, label, {
+      return this.add.text(200, layout.cy - ((actions.length - 1) * 17) + i * 34, label, {
         ...FONTS.body, fontSize: '16px',
       }).setOrigin(0.5);
     });
@@ -363,7 +367,8 @@ export class InventoryScene extends Phaser.Scene {
     const party = GameManager.getInstance().getParty();
     if (party.length === 0) { this.showMessage('No Pokémon!'); this.mode = 'browse'; this.itemController?.setDisabled(false); return; }
 
-    this.targetPanel = new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, 320, party.length * 40 + 32, {
+    const layout = ui(this);
+    this.targetPanel = new NinePatchPanel(this, layout.cx, layout.cy, 320, party.length * 40 + 32, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.95,
       borderColor: COLORS.borderLight,
@@ -374,7 +379,7 @@ export class InventoryScene extends Phaser.Scene {
       const pData = pokemonData[p.dataId];
       const name = p.nickname ?? pData?.name ?? '???';
       const label = `${name}  Lv.${p.level}  HP:${p.currentHp}/${p.stats.hp}`;
-      return this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - ((party.length - 1) * 20) + i * 40, label, {
+      return this.add.text(layout.cx, layout.cy - ((party.length - 1) * 20) + i * 40, label, {
         ...FONTS.body, fontSize: '14px',
       }).setOrigin(0.5);
     });
@@ -496,7 +501,8 @@ export class InventoryScene extends Phaser.Scene {
   }
 
   private showMessage(text: string): void {
-    const msg = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 55, text, {
+    const layout = ui(this);
+    const msg = this.add.text(layout.cx, layout.h - 55, text, {
       ...FONTS.body, color: COLORS.textSuccess, fontSize: '15px',
     }).setOrigin(0.5).setDepth(100);
     this.tweens.add({

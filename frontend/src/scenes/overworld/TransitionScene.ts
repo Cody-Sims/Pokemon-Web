@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 
 export class TransitionScene extends Phaser.Scene {
   constructor() {
@@ -30,7 +30,8 @@ export class TransitionScene extends Phaser.Scene {
     duration: number,
     data: { targetScene: string; returnScene?: string; targetData?: Record<string, unknown>; returnData?: Record<string, unknown> },
   ): void {
-    const cover = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000);
+    const layout = ui(this);
+    const cover = this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, 0x000000);
     cover.setAlpha(0);
 
     this.tweens.add({
@@ -45,22 +46,23 @@ export class TransitionScene extends Phaser.Scene {
     duration: number,
     data: { targetScene: string; returnScene?: string; targetData?: Record<string, unknown>; returnData?: Record<string, unknown> },
   ): void {
+    const layout = ui(this);
     const stripeCount = 12;
-    const stripeH = Math.ceil(GAME_HEIGHT / stripeCount);
+    const stripeH = Math.ceil(layout.h / stripeCount);
 
     for (let i = 0; i < stripeCount; i++) {
       const fromLeft = i % 2 === 0;
       const stripe = this.add.rectangle(
-        fromLeft ? -GAME_WIDTH / 2 : GAME_WIDTH + GAME_WIDTH / 2,
+        fromLeft ? -layout.w / 2 : layout.w + layout.w / 2,
         stripeH * i + stripeH / 2,
-        GAME_WIDTH,
+        layout.w,
         stripeH + 2,
         0x000000,
       );
 
       this.tweens.add({
         targets: stripe,
-        x: GAME_WIDTH / 2,
+        x: layout.cx,
         duration: duration * 0.6,
         delay: i * (duration * 0.03),
         ease: 'Power2',
@@ -74,8 +76,9 @@ export class TransitionScene extends Phaser.Scene {
     duration: number,
     data: { targetScene: string; returnScene?: string; targetData?: Record<string, unknown>; returnData?: Record<string, unknown> },
   ): void {
+    const layout = ui(this);
     const gfx = this.add.graphics();
-    const maxRadius = Math.sqrt(GAME_WIDTH * GAME_WIDTH + GAME_HEIGHT * GAME_HEIGHT) / 2;
+    const maxRadius = Math.sqrt(layout.w * layout.w + layout.h * layout.h) / 2;
 
     this.tweens.addCounter({
       from: 0,
@@ -85,7 +88,7 @@ export class TransitionScene extends Phaser.Scene {
       onUpdate: (tween) => {
         gfx.clear();
         gfx.fillStyle(0x000000, 1);
-        gfx.fillCircle(GAME_WIDTH / 2, GAME_HEIGHT / 2, tween.getValue() ?? 0);
+        gfx.fillCircle(layout.cx, layout.cy, tween.getValue() ?? 0);
       },
       onComplete: () => this.launchTarget(data),
     });

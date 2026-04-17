@@ -136,14 +136,14 @@ export class MoveExecutor {
       };
     }
 
-    // Check accuracy
-    if (!DamageCalculator.doesMoveHit(move)) return miss();
-
-    // Deduct PP
+    // Deduct PP before accuracy check (PP is spent on attempt, not on hit)
     const moveInstance = attacker.moves.find(m => m.moveId === moveId);
     if (moveInstance && moveInstance.currentPp > 0) {
       moveInstance.currentPp--;
     }
+
+    // Check accuracy
+    if (!DamageCalculator.doesMoveHit(move)) return miss();
 
     // ── Fire-type thawing: fire moves thaw frozen targets ──
     const thawMessages: string[] = [];

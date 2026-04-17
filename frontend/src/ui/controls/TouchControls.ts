@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
 import { VirtualJoystick } from '@ui/controls/VirtualJoystick';
+import { hapticTap } from '@utils/haptics';
 
 /** Max time (ms) between touchstart and touchend to count as a tap. */
 const TAP_TIME_THRESHOLD = 300;
@@ -123,6 +124,7 @@ export class TouchControls {
 
         if (elapsed < TAP_TIME_THRESHOLD && dist < TAP_DIST_THRESHOLD) {
           this.confirmPressed = true;
+          hapticTap();
         }
       }
     }, { passive: true });
@@ -149,6 +151,7 @@ export class TouchControls {
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (elapsed < TAP_TIME_THRESHOLD && dist < TAP_DIST_THRESHOLD) {
         this.confirmPressed = true;
+        hapticTap();
       }
     });
   }
@@ -244,11 +247,19 @@ export class TouchControls {
       return;
     }
 
+    const isLandscape = window.innerWidth > window.innerHeight;
     const rect = canvas.getBoundingClientRect();
     const bottomSpace = window.innerHeight - rect.bottom;
 
-    if (bottomSpace > 100) {
-      // Enough space below canvas — show DOM controls, hide in-canvas
+    if (isLandscape && window.innerHeight <= 500) {
+      // Landscape on phone — use side-panel layout (CSS handles positioning)
+      controlsEl.style.top = '';
+      controlsEl.style.height = '';
+      controlsEl.style.display = 'flex';
+      this.domActive = true;
+      this.container.setVisible(false);
+    } else if (bottomSpace > 100) {
+      // Portrait with space below canvas — show DOM controls below
       controlsEl.style.top = rect.bottom + 'px';
       controlsEl.style.height = bottomSpace + 'px';
       controlsEl.style.display = 'flex';
@@ -395,9 +406,11 @@ export class TouchControls {
         if (dx * dx + dy * dy <= btn.radius * btn.radius) {
           if (btn.action === 'confirm') {
             this.confirmPressed = true;
+            hapticTap();
             btn.bg.fillAlpha = 0.9;
           } else if (btn.action === 'cancel') {
             this.cancelPressed = true;
+            hapticTap();
             btn.bg.fillAlpha = 0.9;
           }
           return;
@@ -508,6 +521,14 @@ export class TouchControls {
       }, { passive: true });
       btnB.addEventListener('touchend', () => btnB.classList.remove('pressed'), { passive: true });
       btnB.addEventListener('touchcancel', () => btnB.classList.remove('pressed'), { passive: true });
+    }
+
+    const menuEl = document.getElementById('mobile-menu-btn');
+    if (menuEl) {
+      menuEl.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        this.cancelPressed = true;
+      }, { passive: false });
     }
   }
 

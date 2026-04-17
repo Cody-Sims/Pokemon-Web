@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { moveTutorData, tmData, canLearnMove } from '@data/tm-data';
@@ -59,6 +59,7 @@ export class MoveTutorScene extends Phaser.Scene {
   }
 
   create(data: SceneData): void {
+    const layout = ui(this);
     this.moveGroup = this.add.group();
     this.partyGroup = this.add.group();
     this.replaceGroup = this.add.group();
@@ -76,7 +77,7 @@ export class MoveTutorScene extends Phaser.Scene {
         moves: [{ moveId: this.tmMoveId, cost: 0, costType: 'money' }],
       };
       this.drawBackground();
-      this.headerText = this.add.text(GAME_WIDTH / 2, 28, `Teach ${move?.name ?? this.tmMoveId}?`, {
+      this.headerText = this.add.text(layout.cx, 28, `Teach ${move?.name ?? this.tmMoveId}?`, {
         ...FONTS.heading, fontSize: '22px',
       }).setOrigin(0.5);
       this.selectedMoveIdx = 0;
@@ -92,18 +93,19 @@ export class MoveTutorScene extends Phaser.Scene {
     }
 
     this.drawBackground();
-    this.headerText = this.add.text(GAME_WIDTH / 2, 28, this.tutor.name, {
+    this.headerText = this.add.text(layout.cx, 28, this.tutor.name, {
       ...FONTS.heading, fontSize: '22px',
     }).setOrigin(0.5);
-    this.add.text(GAME_WIDTH / 2, 52, 'Which move would you like to teach?', FONTS.bodySmall).setOrigin(0.5);
+    this.add.text(layout.cx, 52, 'Which move would you like to teach?', FONTS.bodySmall).setOrigin(0.5);
 
     this.showMoveList();
     this.input.keyboard!.on('keydown-ESC', () => this.handleCancel());
   }
 
   private drawBackground(): void {
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20, {
+    const layout = ui(this);
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
@@ -117,7 +119,8 @@ export class MoveTutorScene extends Phaser.Scene {
     this.moveTexts = [];
     this.moveScrollOffset = 0;
 
-    this.moveListPanel = new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20, GAME_WIDTH - 60, 280, {
+    const layout = ui(this);
+    this.moveListPanel = new NinePatchPanel(this, layout.cx, layout.cy + 20, layout.w - 60, 280, {
       fillColor: COLORS.bgCard,
       fillAlpha: 0.7,
       borderColor: COLORS.border,
@@ -154,6 +157,7 @@ export class MoveTutorScene extends Phaser.Scene {
       if (c instanceof Phaser.GameObjects.Text) c.destroy();
     });
 
+    const layout = ui(this);
     const startY = 100;
     const itemH = 40;
     const endIdx = Math.min(this.moveScrollOffset + this.moveMaxVisible, this.tutor.moves.length);
@@ -193,13 +197,13 @@ export class MoveTutorScene extends Phaser.Scene {
 
     // Scroll indicators
     if (this.moveScrollOffset > 0) {
-      const up = this.add.text(GAME_WIDTH / 2, startY - 16, '▲', {
+      const up = this.add.text(layout.cx, startY - 16, '▲', {
         ...FONTS.caption, color: COLORS.textHighlight,
       }).setOrigin(0.5);
       this.moveGroup.add(up);
     }
     if (endIdx < this.tutor.moves.length) {
-      const down = this.add.text(GAME_WIDTH / 2, startY + this.moveMaxVisible * itemH, '▼', {
+      const down = this.add.text(layout.cx, startY + this.moveMaxVisible * itemH, '▼', {
         ...FONTS.caption, color: COLORS.textHighlight,
       }).setOrigin(0.5);
       this.moveGroup.add(down);
@@ -229,6 +233,8 @@ export class MoveTutorScene extends Phaser.Scene {
     this.moveController?.setDisabled(true);
     this.clearGroup(this.partyGroup);
     this.partyTexts = [];
+
+    const layout = ui(this);
 
     const tutorMove = this.tutor.moves[this.selectedMoveIdx];
     const moveId = tutorMove.moveId;
@@ -263,7 +269,7 @@ export class MoveTutorScene extends Phaser.Scene {
     }
 
     const panelH = this.eligibleParty.length * 44 + 40;
-    this.partyPanel = new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40, 400, panelH, {
+    this.partyPanel = new NinePatchPanel(this, layout.cx, layout.cy + 40, 400, panelH, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.95,
       borderColor: COLORS.borderLight,
@@ -271,7 +277,7 @@ export class MoveTutorScene extends Phaser.Scene {
     });
     this.partyGroup.add(this.partyPanel.getGraphics());
 
-    const titleT = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40 - panelH / 2 + 12, 'Select a Pokémon:', {
+    const titleT = this.add.text(layout.cx, layout.cy + 40 - panelH / 2 + 12, 'Select a Pokémon:', {
       ...FONTS.bodySmall, color: COLORS.textHighlight,
     }).setOrigin(0.5);
     this.partyGroup.add(titleT);
@@ -281,8 +287,8 @@ export class MoveTutorScene extends Phaser.Scene {
       const name = pokemon.nickname ?? pData?.name ?? '???';
       const typesStr = pData?.types.join('/') ?? '';
       const label = `${name}  Lv.${pokemon.level}  (${typesStr})`;
-      const startOffset = GAME_HEIGHT / 2 + 40 - panelH / 2 + 36;
-      const t = this.add.text(GAME_WIDTH / 2, startOffset + i * 44, label, {
+      const startOffset = layout.cy + 40 - panelH / 2 + 36;
+      const t = this.add.text(layout.cx, startOffset + i * 44, label, {
         ...FONTS.body, fontSize: '14px',
       }).setOrigin(0.5);
       this.partyGroup.add(t);
@@ -338,9 +344,10 @@ export class MoveTutorScene extends Phaser.Scene {
     this.clearGroup(this.replaceGroup);
     this.replaceTexts = [];
 
+    const layout = ui(this);
     const newMove = moveData[newMoveId];
     const panelH = 5 * 40 + 50;
-    this.replacePanel = new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, 500, panelH, {
+    this.replacePanel = new NinePatchPanel(this, layout.cx, layout.cy, 500, panelH, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.97,
       borderColor: COLORS.borderHighlight,
@@ -350,13 +357,13 @@ export class MoveTutorScene extends Phaser.Scene {
 
     const pData = pokemonData[pokemon.dataId];
     const pokeName = pokemon.nickname ?? pData?.name ?? '???';
-    const headerT = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - panelH / 2 + 16,
+    const headerT = this.add.text(layout.cx, layout.cy - panelH / 2 + 16,
       `${pokeName} wants to learn ${newMove?.name ?? newMoveId}.`, {
         ...FONTS.bodySmall, color: COLORS.textHighlight,
       }).setOrigin(0.5);
     this.replaceGroup.add(headerT);
 
-    const subT = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - panelH / 2 + 36,
+    const subT = this.add.text(layout.cx, layout.cy - panelH / 2 + 36,
       'Choose a move to forget:', FONTS.caption).setOrigin(0.5);
     this.replaceGroup.add(subT);
 
@@ -366,9 +373,9 @@ export class MoveTutorScene extends Phaser.Scene {
       return md ? `${md.name} (${md.type} PP:${m.currentPp}/${md.pp})` : m.moveId;
     }), "Don't learn"];
 
-    const startY = GAME_HEIGHT / 2 - panelH / 2 + 60;
+    const startY = layout.cy - panelH / 2 + 60;
     this.replaceTexts = options.map((label, i) => {
-      const t = this.add.text(GAME_WIDTH / 2, startY + i * 40, label, {
+      const t = this.add.text(layout.cx, startY + i * 40, label, {
         ...FONTS.body, fontSize: '14px',
       }).setOrigin(0.5);
       this.replaceGroup.add(t);
@@ -449,16 +456,17 @@ export class MoveTutorScene extends Phaser.Scene {
     this.mode = 'message';
     this.moveController?.setDisabled(true);
 
-    const msgPanel = new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 60, 60, {
+    const layout = ui(this);
+    const msgPanel = new NinePatchPanel(this, layout.cx, layout.h - 60, layout.w - 60, 60, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.95,
       borderColor: COLORS.borderLight,
       cornerRadius: 6,
     });
 
-    const msgText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 60, text, {
+    const msgText = this.add.text(layout.cx, layout.h - 60, text, {
       ...FONTS.body, fontSize: '15px', color: COLORS.textSuccess,
-      wordWrap: { width: GAME_WIDTH - 100 },
+      wordWrap: { width: layout.w - 100 },
     }).setOrigin(0.5);
 
     const dismiss = () => {

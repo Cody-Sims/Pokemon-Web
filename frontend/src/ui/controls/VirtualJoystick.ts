@@ -1,9 +1,22 @@
 import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
 
-const JOYSTICK_RADIUS = 60;
-const THUMB_RADIUS = 24;
-const DEAD_ZONE = 15;
+const JOYSTICK_PRESETS: Record<string, { radius: number; thumb: number; deadZone: number }> = {
+  small:  { radius: 45, thumb: 18, deadZone: 10 },
+  medium: { radius: 60, thumb: 24, deadZone: 15 },
+  large:  { radius: 80, thumb: 32, deadZone: 20 },
+};
+
+function getJoystickPreset(): { radius: number; thumb: number; deadZone: number } {
+  try {
+    const raw = localStorage.getItem('pokemon_settings');
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s.joystickSize && JOYSTICK_PRESETS[s.joystickSize]) return JOYSTICK_PRESETS[s.joystickSize];
+    }
+  } catch { /* ignore */ }
+  return JOYSTICK_PRESETS.medium;
+}
 
 /**
  * Virtual joystick that appears at the user's touch location.
@@ -21,18 +34,23 @@ export class VirtualJoystick {
   private activePointerId: number | null = null;
   /** Fraction of screen width (from left) where joystick can activate. */
   private activationZone = 0.6;
+  private joystickRadius: number;
+  private deadZone: number;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
+    const preset = getJoystickPreset();
+    this.joystickRadius = preset.radius;
+    this.deadZone = preset.deadZone;
 
     this.container = scene.add.container(0, 0).setDepth(999).setScrollFactor(0).setVisible(false);
 
     // Outer ring
-    this.base = scene.add.circle(0, 0, JOYSTICK_RADIUS, 0x334466, 0.35);
+    this.base = scene.add.circle(0, 0, preset.radius, 0x334466, 0.35);
     this.base.setStrokeStyle(2, 0x5577aa, 0.5);
 
     // Inner thumb
-    this.thumb = scene.add.circle(0, 0, THUMB_RADIUS, 0x5599cc, 0.6);
+    this.thumb = scene.add.circle(0, 0, preset.thumb, 0x5599cc, 0.6);
 
     this.container.add([this.base, this.thumb]);
 
@@ -88,7 +106,7 @@ export class VirtualJoystick {
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         // Clamp thumb inside the base
-        const clampedDist = Math.min(dist, JOYSTICK_RADIUS);
+        const clampedDist = Math.min(dist, this.joystickRadius);
         const angle = Math.atan2(dy, dx);
         this.thumb.setPosition(
           Math.cos(angle) * clampedDist,
@@ -96,7 +114,7 @@ export class VirtualJoystick {
         );
 
         // Calculate 4-way direction if past dead zone
-        if (dist < DEAD_ZONE) {
+        if (dist < this.deadZone) {
           this.activeDirection = null;
         } else {
           // Convert angle to 4-way direction
@@ -157,7 +175,7 @@ export class VirtualJoystick {
       const dx = x - this.originX;
       const dy = y - this.originY;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const clampedDist = Math.min(dist, JOYSTICK_RADIUS);
+      const clampedDist = Math.min(dist, this.joystickRadius);
       const angle = Math.atan2(dy, dx);
 
       this.thumb.setPosition(
@@ -165,7 +183,7 @@ export class VirtualJoystick {
         Math.sin(angle) * clampedDist,
       );
 
-      if (dist < DEAD_ZONE) {
+      if (dist < this.deadZone) {
         this.activeDirection = null;
       } else {
         const deg = angle * (180 / Math.PI);

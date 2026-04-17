@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
@@ -26,18 +26,19 @@ export class PartyScene extends Phaser.Scene {
   }
 
   create(): void {
+    const layout = ui(this);
     const party = GameManager.getInstance().getParty();
 
     // Full-screen background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 30, GAME_HEIGHT - 30, {
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 30, layout.h - 30, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
     });
 
-    this.add.text(GAME_WIDTH / 2, 30, 'POKEMON PARTY', FONTS.heading).setOrigin(0.5);
-    this.add.rectangle(GAME_WIDTH / 2, 48, 200, 2, COLORS.borderHighlight, 0.4);
+    this.add.text(layout.cx, 30, 'POKEMON PARTY', FONTS.heading).setOrigin(0.5);
+    this.add.rectangle(layout.cx, 48, 200, 2, COLORS.borderHighlight, 0.4);
 
     this.slotBgs = [];
     this.cursor = 0;
@@ -48,13 +49,13 @@ export class PartyScene extends Phaser.Scene {
       const hasMon = i < party.length;
       const p = hasMon ? party[i] : null;
 
-      const slotBg = this.add.rectangle(GAME_WIDTH / 2, y + SPACING.slotHeight / 2, GAME_WIDTH - 70, SPACING.slotHeight - 6,
+      const slotBg = this.add.rectangle(layout.cx, y + SPACING.slotHeight / 2, layout.w - 70, SPACING.slotHeight - 6,
         hasMon ? COLORS.bgCard : COLORS.bgDark, hasMon ? 0.9 : 0.5)
         .setStrokeStyle(1, hasMon ? COLORS.border : 0x2a2a3a);
       this.slotBgs.push(slotBg);
 
       if (!hasMon || !p) {
-        this.add.text(GAME_WIDTH / 2, y + SPACING.slotHeight / 2, '—  Empty  —', { ...FONTS.bodySmall, color: COLORS.textDim }).setOrigin(0.5);
+        this.add.text(layout.cx, y + SPACING.slotHeight / 2, '—  Empty  —', { ...FONTS.bodySmall, color: COLORS.textDim }).setOrigin(0.5);
         continue;
       }
 
@@ -93,14 +94,14 @@ export class PartyScene extends Phaser.Scene {
       // Status condition badge
       if (p.status) {
         const col = STATUS_COLORS[p.status] ?? 0x888899;
-        this.add.rectangle(GAME_WIDTH - 90, slotY, 64, 20, col).setStrokeStyle(1, 0xffffff);
-        this.add.text(GAME_WIDTH - 90, slotY, p.status.toUpperCase(), { ...FONTS.label, color: '#ffffff' }).setOrigin(0.5);
+        this.add.rectangle(layout.w - 90, slotY, 64, 20, col).setStrokeStyle(1, 0xffffff);
+        this.add.text(layout.w - 90, slotY, p.status.toUpperCase(), { ...FONTS.label, color: '#ffffff' }).setOrigin(0.5);
       }
 
       // Fainted indicator
       if (isFainted) {
-        this.add.rectangle(GAME_WIDTH - 90, slotY, 64, 20, 0x661111).setStrokeStyle(1, 0xff3333);
-        this.add.text(GAME_WIDTH - 90, slotY, 'FNT', { ...FONTS.label, color: '#ff5555' }).setOrigin(0.5);
+        this.add.rectangle(layout.w - 90, slotY, 64, 20, 0x661111).setStrokeStyle(1, 0xff3333);
+        this.add.text(layout.w - 90, slotY, 'FNT', { ...FONTS.label, color: '#ff5555' }).setOrigin(0.5);
         slotBg.setAlpha(0.6);
       }
 
@@ -121,8 +122,8 @@ export class PartyScene extends Phaser.Scene {
 
     this.updateCursor();
 
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 52, this.selectMode ? 'Choose a Pokémon' : 'Select a Pokémon to view options', FONTS.caption).setOrigin(0.5);
-    drawButton(this, GAME_WIDTH / 2, GAME_HEIGHT - 30, 'Close (ESC)', () => this.closeScene(), 140, 30);
+    this.add.text(layout.cx, layout.h - 52, this.selectMode ? 'Choose a Pokémon' : 'Select a Pokémon to view options', FONTS.caption).setOrigin(0.5);
+    drawButton(this, layout.cx, layout.h - 30, 'Close (ESC)', () => this.closeScene(), 140, 30);
   }
 
   private updateCursor(): void {
@@ -154,9 +155,10 @@ export class PartyScene extends Phaser.Scene {
   }
 
   private openContextMenu(index: number): void {
+    const layout = ui(this);
     this.controller?.setDisabled(true);
     const actions = ['SUMMARY', 'SWITCH', 'Cancel'];
-    const menuX = GAME_WIDTH - 140;
+    const menuX = layout.w - 140;
     const menuY = 64 + index * SPACING.slotHeight + SPACING.slotHeight / 2;
 
     const panel = new NinePatchPanel(this, menuX, menuY, 130, actions.length * 32 + 12, {

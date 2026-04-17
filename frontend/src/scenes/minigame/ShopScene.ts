@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { itemData } from '@data/item-data';
@@ -50,23 +50,24 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private buildUI(): void {
+    const layout = ui(this);
     this.itemListGroup = this.add.group();
 
     // Full background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20, {
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
     });
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 28, 'POKÉ MART', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
-    this.add.rectangle(GAME_WIDTH / 2, 46, 180, 2, COLORS.borderHighlight, 0.4);
+    this.add.text(layout.cx, 28, 'POKÉ MART', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
+    this.add.rectangle(layout.cx, 46, 180, 2, COLORS.borderHighlight, 0.4);
 
     // Money display (top right)
     const gm = GameManager.getInstance();
-    this.moneyText = this.add.text(GAME_WIDTH - 30, 28, `₽ ${gm.getMoney()}`, {
+    this.moneyText = this.add.text(layout.w - 30, 28, `₽ ${gm.getMoney()}`, {
       ...FONTS.body, color: COLORS.textHighlight,
     }).setOrigin(1, 0.5);
 
@@ -87,34 +88,34 @@ export class ShopScene extends Phaser.Scene {
       });
       return tx;
     });
-    this.add.rectangle(GAME_WIDTH / 2, 74, GAME_WIDTH - 40, 1, COLORS.border, 0.4);
+    this.add.rectangle(layout.cx, 74, layout.w - 40, 1, COLORS.border, 0.4);
 
     // Detail panel (right side)
-    new NinePatchPanel(this, GAME_WIDTH - 140, GAME_HEIGHT / 2 + 20, 240, GAME_HEIGHT - 140, {
+    new NinePatchPanel(this, layout.w - 140, layout.cy + 20, 240, layout.h - 140, {
       fillColor: COLORS.bgCard,
       fillAlpha: 0.7,
       borderColor: COLORS.border,
       cornerRadius: 6,
     });
-    this.detailName = this.add.text(GAME_WIDTH - 250, 100, '', { ...FONTS.body, fontStyle: 'bold' });
-    this.detailDesc = this.add.text(GAME_WIDTH - 250, 130, '', { ...FONTS.bodySmall, wordWrap: { width: 220 } });
+    this.detailName = this.add.text(layout.w - 250, 100, '', { ...FONTS.body, fontStyle: 'bold' });
+    this.detailDesc = this.add.text(layout.w - 250, 130, '', { ...FONTS.bodySmall, wordWrap: { width: 220 } });
 
     // Cursor icon
     this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, color: COLORS.textHighlight });
 
     // Scroll indicators
     this.scrollUpIndicator = this.add.text(250, 80, '▲', { ...FONTS.body, color: COLORS.textDim }).setOrigin(0.5).setVisible(false);
-    this.scrollDownIndicator = this.add.text(250, GAME_HEIGHT - 50, '▼', { ...FONTS.body, color: COLORS.textDim }).setOrigin(0.5).setVisible(false);
+    this.scrollDownIndicator = this.add.text(250, layout.h - 50, '▼', { ...FONTS.body, color: COLORS.textDim }).setOrigin(0.5).setVisible(false);
 
     // Close hint / tappable close button
     if (isMobile()) {
-      const closeBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, '✕  LEAVE', {
+      const closeBtn = this.add.text(layout.cx, layout.h - 18, '✕  LEAVE', {
         ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       closeBtn.setPadding(16, 8, 16, 8);
       closeBtn.on('pointerdown', () => this.close());
     } else {
-      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, 'ESC to leave  |  ◀/▶ or Q/E switch tabs', FONTS.caption).setOrigin(0.5);
+      this.add.text(layout.cx, layout.h - 18, 'ESC to leave  |  ◀/▶ or Q/E switch tabs', FONTS.caption).setOrigin(0.5);
     }
 
     // Tab switching keys
@@ -160,6 +161,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private refreshList(): void {
+    const layout = ui(this);
     // Clear old
     this.itemListGroup.clear(true, true);
     this.itemTexts = [];
@@ -178,7 +180,7 @@ export class ShopScene extends Phaser.Scene {
     }
 
     if (this.filteredItems.length === 0) {
-      const emptyText = this.add.text(250, GAME_HEIGHT / 2, this.tab === 'buy' ? 'Nothing for sale!' : 'Nothing to sell!', {
+      const emptyText = this.add.text(250, layout.cy, this.tab === 'buy' ? 'Nothing for sale!' : 'Nothing to sell!', {
         ...FONTS.body, color: COLORS.textDim,
       }).setOrigin(0.5);
       this.itemListGroup.add(emptyText);
@@ -282,6 +284,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private showQuantityUI(entry: { item: ItemData; qty: number }): void {
+    const layout = ui(this);
     this.destroyQuantityUI();
 
     const isBuy = this.tab === 'buy';
@@ -304,8 +307,8 @@ export class ShopScene extends Phaser.Scene {
     this.quantityValue = 1;
 
     // Quantity panel
-    const panelX = GAME_WIDTH / 2;
-    const panelY = GAME_HEIGHT / 2;
+    const panelX = layout.cx;
+    const panelY = layout.cy;
     this.quantityPanel = new NinePatchPanel(this, panelX, panelY, 280, 140, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.borderHighlight,
@@ -389,6 +392,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private executeTransaction(entry: { item: ItemData; qty: number }, unitPrice: number): void {
+    const layout = ui(this);
     const gm = GameManager.getInstance();
     const total = unitPrice * this.quantityValue;
 
@@ -419,7 +423,7 @@ export class ShopScene extends Phaser.Scene {
     const msg = this.tab === 'buy'
       ? `Bought ${this.quantityValue}× ${entry.item.name}!`
       : `Sold ${this.quantityValue}× ${entry.item.name}!`;
-    const flash = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, msg, {
+    const flash = this.add.text(layout.cx, layout.h - 50, msg, {
       ...FONTS.body, color: COLORS.textSuccess,
     }).setOrigin(0.5).setDepth(20);
     this.tweens.add({

@@ -37,8 +37,19 @@ export function collectEndOfTurnEffects(
   messages.push(...eotResult.messages);
 
   // Ability end-of-turn (Speed Boost, Poison Heal, etc.)
-  const abilityEot = AbilityHandler.onEndOfTurn(pokemon);
-  messages.push(...abilityEot.messages);
+  // Poison Heal: skip normal poison damage and heal instead
+  const ability = AbilityHandler.getAbility(pokemon);
+  if (ability === 'poison-heal' && (pokemon.status === 'poison' || pokemon.status === 'bad-poison')) {
+    // Undo the poison damage that was just applied by statusHandler
+    // and heal 1/8 max HP instead
+    const pokeName = pokemon.nickname ?? pokemonData[pokemon.dataId]?.name ?? '???';
+    const heal = Math.max(1, Math.floor(pokemon.stats.hp / 8));
+    pokemon.currentHp = Math.min(pokemon.stats.hp, pokemon.currentHp + heal);
+    messages.push(`${pokeName} restored HP with Poison Heal!`);
+  } else {
+    const abilityEot = AbilityHandler.onEndOfTurn(pokemon, statusHandler);
+    messages.push(...abilityEot.messages);
+  }
 
   // Held item end-of-turn (Leftovers, Black Sludge, etc.)
   const itemEot = HeldItemHandler.onEndOfTurn(pokemon);

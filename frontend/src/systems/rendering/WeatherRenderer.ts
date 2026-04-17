@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { particleMultiplier, maxParticleMultiplier } from '@utils/perf-profile';
 
 export type OverworldWeather = 'none' | 'rain' | 'sandstorm' | 'snow' | 'fog' | 'sunshine';
 
@@ -99,8 +99,9 @@ export class WeatherRenderer {
   private createTintOverlay(weather: OverworldWeather): void {
     const { color, alpha } = WEATHER_TINTS[weather];
     if (alpha <= 0) return;
+    const { width: w, height: h } = this.scene.cameras.main;
     this.tintOverlay = this.scene.add.rectangle(
-      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, color, alpha,
+      w / 2, h / 2, w, h, color, alpha,
     );
     this.tintOverlay.setScrollFactor(0);
     this.tintOverlay.setDepth(89);
@@ -125,17 +126,18 @@ export class WeatherRenderer {
       g.fillRect(3, 0, 2, 8);
     });
 
+    const { width: w, height: h } = this.scene.cameras.main;
     this.emitter = this.scene.add.particles(0, 0, key, {
-      x: { min: -50, max: GAME_WIDTH + 50 },
+      x: { min: -50, max: w + 50 },
       y: -10,
       lifespan: 600,
       speedY: { min: 400, max: 500 },
       speedX: { min: -80, max: -40 },
       scale: { start: 0.6, end: 0.3 },
       alpha: { start: 0.7, end: 0.2 },
-      quantity: 2,
+      quantity: Math.max(1, Math.round(2 * particleMultiplier())),
       frequency: 30,
-      maxAliveParticles: 80,
+      maxAliveParticles: Math.round(80 * maxParticleMultiplier()),
     });
     this.emitter.setScrollFactor(0);
     this.emitter.setDepth(90);
@@ -149,17 +151,18 @@ export class WeatherRenderer {
       g.fillCircle(4, 4, 2);
     });
 
+    const { width: w, height: h } = this.scene.cameras.main;
     this.emitter = this.scene.add.particles(0, 0, key, {
       x: -20,
-      y: { min: 0, max: GAME_HEIGHT },
+      y: { min: 0, max: h },
       lifespan: 800,
       speedX: { min: 300, max: 450 },
       speedY: { min: -30, max: 30 },
       scale: { start: 0.5, end: 0.8 },
       alpha: { start: 0.6, end: 0.1 },
-      quantity: 2,
+      quantity: Math.max(1, Math.round(2 * particleMultiplier())),
       frequency: 40,
-      maxAliveParticles: 70,
+      maxAliveParticles: Math.round(70 * maxParticleMultiplier()),
     });
     this.emitter.setScrollFactor(0);
     this.emitter.setDepth(90);
@@ -173,17 +176,18 @@ export class WeatherRenderer {
       g.fillCircle(4, 4, 3);
     });
 
+    const { width: w, height: h } = this.scene.cameras.main;
     this.emitter = this.scene.add.particles(0, 0, key, {
-      x: { min: -20, max: GAME_WIDTH + 20 },
+      x: { min: -20, max: w + 20 },
       y: -10,
       lifespan: 3000,
       speedY: { min: 40, max: 80 },
       speedX: { min: -20, max: 20 },
       scale: { start: 0.4, end: 0.2 },
       alpha: { start: 0.8, end: 0.3 },
-      quantity: 1,
+      quantity: Math.max(1, Math.round(1 * particleMultiplier())),
       frequency: 60,
-      maxAliveParticles: 60,
+      maxAliveParticles: Math.round(60 * maxParticleMultiplier()),
     });
     this.emitter.setScrollFactor(0);
     this.emitter.setDepth(90);
@@ -192,8 +196,9 @@ export class WeatherRenderer {
   // ── Fog ───────────────────────────────────────────────────
 
   private createFog(): void {
+    const { width: w, height: h } = this.scene.cameras.main;
     this.fogOverlay = this.scene.add.rectangle(
-      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xffffff, 0.35,
+      w / 2, h / 2, w, h, 0xffffff, 0.35,
     );
     this.fogOverlay.setScrollFactor(0);
     this.fogOverlay.setDepth(90);
@@ -218,17 +223,18 @@ export class WeatherRenderer {
     });
 
     // Occasional lens flare sparkles
+    const { width: w, height: h } = this.scene.cameras.main;
     this.emitter = this.scene.add.particles(0, 0, key, {
-      x: { min: 0, max: GAME_WIDTH },
-      y: { min: 0, max: GAME_HEIGHT * 0.4 },
+      x: { min: 0, max: w },
+      y: { min: 0, max: h * 0.4 },
       lifespan: 1500,
       speedY: { min: 10, max: 30 },
       speedX: { min: -5, max: 5 },
       scale: { start: 0.8, end: 0.1 },
       alpha: { start: 0.5, end: 0 },
-      quantity: 1,
+      quantity: Math.max(1, Math.round(1 * particleMultiplier())),
       frequency: 500,
-      maxAliveParticles: 8,
+      maxAliveParticles: Math.round(8 * maxParticleMultiplier()),
     });
     this.emitter.setScrollFactor(0);
     this.emitter.setDepth(90);

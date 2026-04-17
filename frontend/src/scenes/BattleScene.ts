@@ -2,12 +2,12 @@ import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
-import { BattleManager, BattleConfig } from '@battle/core/BattleManager';
-import { EncounterSystem } from '@systems/overworld/EncounterSystem';
+import { BattleManager, BattleConfig } from '@battle/BattleManager';
+import { EncounterSystem } from '@systems/EncounterSystem';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM } from '@utils/audio-keys';
-import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
+import { ExperienceCalculator } from '@battle/ExperienceCalculator';
 import { COLORS } from '@ui/theme';
 
 export class BattleScene extends Phaser.Scene {
@@ -99,11 +99,11 @@ export class BattleScene extends Phaser.Scene {
     this.isDouble = (data?.isDouble as boolean) ?? false;
     this.victoryFlag = (data?.victoryFlag as string) ?? '';
 
-    // Guard: cannot battle without Pokemon
+    // Initialize starter if party is empty
     if (gm.getParty().length === 0) {
-      console.error('[BattleScene] Cannot start battle with empty party!');
-      this.scene.start('OverworldScene');
-      return;
+      const starter = EncounterSystem.createWildPokemon(1, 5);
+      starter.nickname = 'Bulbasaur';
+      gm.addToParty(starter);
     }
 
     // Use first alive party member
@@ -123,17 +123,17 @@ export class BattleScene extends Phaser.Scene {
     };
     this.battleManager = new BattleManager(config);
 
-    const { w, h, cx, cy } = ui(this);
+    const layout = ui(this);
 
     // ── Draw battle scene background ──
     const battleBg = data?.battleBg as string | undefined;
     if (battleBg && this.textures.exists(battleBg)) {
       // Use image-based battle background
-      const bg = this.add.image(cx, cy, battleBg);
-      bg.setDisplaySize(w, h);
+      const bg = this.add.image(layout.cx, layout.cy, battleBg);
+      bg.setDisplaySize(layout.w, layout.h);
     } else {
       // Fallback: procedural solid background
-      this.add.rectangle(cx, cy, w, h, COLORS.bgPanel);
+      this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgPanel);
     }
 
     // Ground areas
@@ -144,12 +144,12 @@ export class BattleScene extends Phaser.Scene {
     const trainerSpriteKey = data?.trainerSpriteKey as string | undefined;
     if (this.isTrainerBattle && trainerSpriteKey && this.textures.exists(trainerSpriteKey)) {
       // Enemy trainer stands behind their Pokémon (upper-right, larger than pokemon)
-      const enemyTrainer = this.add.image(w + 100, 120, trainerSpriteKey, 0);
+      const enemyTrainer = this.add.image(layout.w + 100, 120, trainerSpriteKey, 0);
       enemyTrainer.setScale(8).setAlpha(0.85).setDepth(0);
       this.tweens.add({ targets: enemyTrainer, x: 620, duration: 600, delay: 200, ease: 'Power2' });
     }
     // Enemy pokemon sprite (front view) — starts offscreen right, white tinted
-    this.enemySprite = this.add.image(w + 100, 150, enemyData.spriteKeys.front)
+    this.enemySprite = this.add.image(layout.w + 100, 150, enemyData.spriteKeys.front)
       .setScale(2).setTint(0xffffff).setAlpha(0);
 
     // Player pokemon sprite (back view, larger) — starts offscreen left, white tinted
@@ -165,18 +165,18 @@ export class BattleScene extends Phaser.Scene {
     this.enemyStatusText = this.add.text(270, -80, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
 
     // ── Player info box (bottom-right) — starts below screen ──
-    const playerInfoBox = this.add.rectangle(w - 170, h + 60, 300, 70, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
-    this.playerNameText = this.add.text(w - 310, h + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
-    this.playerLevelText = this.add.text(w - 120, h + 40, `Lv${this.playerPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
-    this.playerHpBg = this.add.rectangle(w - 310, h + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
-    this.playerHpBar = this.add.rectangle(w - 310, h + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
-    this.playerHpText = this.add.text(w - 122, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: '12px', color: '#ffffff' });
-    this.playerStatusText = this.add.text(w - 310, h + 85, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
+    const playerInfoBox = this.add.rectangle(layout.w - 170, layout.h + 60, 300, 70, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
+    this.playerNameText = this.add.text(layout.w - 310, layout.h + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
+    this.playerLevelText = this.add.text(layout.w - 120, layout.h + 40, `Lv${this.playerPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
+    this.playerHpBg = this.add.rectangle(layout.w - 310, layout.h + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
+    this.playerHpBar = this.add.rectangle(layout.w - 310, layout.h + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
+    this.playerHpText = this.add.text(layout.w - 122, layout.h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: '12px', color: '#ffffff' });
+    this.playerStatusText = this.add.text(layout.w - 310, layout.h + 85, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
 
     // ── EXP bar (below player HP) ──
-    this.expBarBg = this.add.rectangle(w - 310, h + 82, 180, 4, 0x222233).setOrigin(0, 0.5);
+    this.expBarBg = this.add.rectangle(layout.w - 310, layout.h + 82, 180, 4, 0x222233).setOrigin(0, 0.5);
     const expPct = this.getExpPercent();
-    this.expBarFill = this.add.rectangle(w - 310, h + 82, 180 * expPct, 4, 0x4488ff).setOrigin(0, 0.5);
+    this.expBarFill = this.add.rectangle(layout.w - 310, layout.h + 82, 180 * expPct, 4, 0x4488ff).setOrigin(0, 0.5);
 
     // ── Slide-in animation ──
     const introDelay = 200;
@@ -421,21 +421,6 @@ export class BattleScene extends Phaser.Scene {
       .setDepth(sprite.depth - 1);
     this.tweens.add({
       targets: this.synthesisAura,
-      alpha: 0.6,
-      duration: 800,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-    });
-  }
-
-  /** Show a synthesis aura around the enemy sprite for boss battles. */
-  showEnemySynthesisAura(): void {
-    const sprite = this.enemySprite;
-    const aura = this.add.ellipse(sprite.x, sprite.y + 5, 80, 50, 0xff00dd, 0.3)
-      .setDepth(sprite.depth - 1);
-    this.tweens.add({
-      targets: aura,
       alpha: 0.6,
       duration: 800,
       yoyo: true,

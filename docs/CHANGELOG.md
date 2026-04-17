@@ -6,15 +6,62 @@ All notable changes to the Pokemon Web project.
 
 ## [Unreleased]
 
+## [2026-04-16]
 ### Fixed
-- **iOS Safari landscape fullscreen**: iPhone landscape mode now collapses Safari address/tab bars via scroll-to-minimize trick since iOS does not support the Fullscreen API. Added `viewport-fit=cover` to extend content behind safe areas, `position: fixed` + `100dvh` CSS for proper viewport sizing, `env(safe-area-inset-*)` padding, and auto-collapse on orientation change. PWA manifest changed from `standalone` to `fullscreen` for true chrome-free experience when installed to home screen.
+- **BUG-001**: Player faint no longer auto-loses battle; prompts party switch when alive Pokemon remain
+- **BUG-002**: PP now deducted before accuracy check so missed moves still cost PP
+- **BUG-003**: Removed phantom Bulbasaur injection; battle returns to overworld if party is empty
+- **BUG-004**: Added `rival_intro_seen` flag to rival-intro cutscene to prevent infinite replay
+- **BUG-005**: SaveManager now uses GameManager.serialize() to persist all state (gameStats, hallOfFame, visitedMaps, boxNames, playerGender, stepCount, settings)
+- **BUG-006**: CutsceneEngine.execSetFlag() now emits 'flag-set' event so QuestManager automation receives cutscene flags
+- **BUG-007**: QuestManager.initAutomation() now guards against duplicate listener registration across scene transitions
+- **BUG-010**: Run action now uses speed-based flee formula with failure chance; blocked in trainer battles
+- **BUG-011**: Speed Boost now actually increments the speed stat stage via StatusEffectHandler
+- **BUG-012**: Poison Heal now skips poison damage and heals 1/8 HP instead of applying damage then healing
+- **BUG-013**: Focus Sash hpBeforeHit now correctly computed before damage clamping
+- **BUG-014**: CHECK_FAINT now searches entire party for alive Pokemon, not just forward indices
+- **BUG-016**: Added GameManager.reset() method for clean new game state
+- **BUG-018**: EventManager.emit() now wraps listeners in try/catch for error isolation
+- **BUG-025**: Enemy fallback move changed from 'tackle' to 'struggle' when all PP exhausted
+- **BUG-026**: Speed ties now resolved by random coin flip instead of always favoring player
+- **BUG-028**: Fixed Smokescreen, Sand Attack, Double Team, Minimize, and Focus Energy to target correct stats
+- **BUG-045**: completeQuest() now checks quest is active before awarding rewards
 
 ### Added
-- **iOS "Add to Home Screen" install banner**: On iOS Safari, a bottom banner prompts users to install the app via Share → Add to Home Screen for a fullscreen experience. Appears after 3 s delay, respects prior dismissal via localStorage, and auto-hides when already running as PWA.
-- **Accessibility: text scaling**: `textScale` setting (small/medium/large) now applies a 0.85×/1.0×/1.25× multiplier to `mobileFontSize()` across all UI.
-- **Accessibility: reduced motion**: `isReducedMotion()` utility checks both the in-game setting and the OS `prefers-reduced-motion` media query.
-- **Accessibility: colorblind mode**: `colorblindMode` setting applies SVG `feColorMatrix` filters (protanopia/deuteranopia) to the game canvas in real time.
-- **Accessibility utility module**: New `frontend/src/utils/accessibility.ts` provides `syncAccessibilitySettings`, `getTextScale`, `isReducedMotion`, `getColorblindMode`, and `colorblindFilter` without circular imports.
+- Steel moves file (steel.ts) with iron-tail, steel-wing, metal-claw, meteor-mash, flash-cannon, bullet-punch, iron-head, gyro-ball
+- Dragon moves: dragon-claw, dragon-pulse, draco-meteor, outrage, dragon-dance, dragon-breath, twister
+- Input validation on GameManager.addMoney() and spendMoney() to prevent negative values
+
+### Changed
+- SaveManager now delegates to GameManager.serialize()/deserialize() for full-fidelity save/load
+
+### Added — Mobile Improvements (Phases 1–7 Complete)
+- **Side-panel touch controls in landscape** (Phase 1.2): On phones in landscape (max-height: 500px), joystick pins to left margin and A/B buttons pin to right margin via CSS media query, keeping the canvas unobstructed. Mobile menu button (☰) added.
+- **Battle UI compact mode** (Phase 2.2): When `isMobile()` and viewport height < 400px, action and move menus collapse from 2×2 grid to a single row (50px tall) for better visibility on small screens.
+- **Dialogue responsive font** (Phase 2.3): Dialogue font size now scales based on viewport width (15px on narrow, 17px mid, 19px wide).
+- **Touch target enforcement** (Phase 3.1): Settings arrow buttons now have 14px padding for minimum 48×48 touch targets.
+- **Haptic feedback** (Phase 3.2): `hapticTap()` and `hapticHeavy()` utilities call `navigator.vibrate()` on touch button presses. Gated behind a "Haptics" toggle in Settings.
+- **Configurable joystick** (Phase 3.4): Joystick radius, thumb size, and dead zone are configurable via "Joystick Size" setting (small/medium/large). Reads from localStorage on construction.
+- **Safe-area utility** (Phase 4): `getSafeAreaInsets()` reads CSS `env(safe-area-inset-*)` values for in-canvas use. Cache invalidated on orientation change.
+- **Mobile performance profile** (Phase 5.1): `particleMultiplier()` and `maxParticleMultiplier()` scale particle counts by render quality. WeatherRenderer rain/sandstorm/snow/sunshine particle emitters now respect quality setting.
+- **Render quality setting** (Phase 5.2): "Render Quality" (high/medium/low) in Settings, applied in real-time.
+- **Visibility-based pausing** (Phase 5.3): Game loop sleeps when tab is backgrounded via `visibilitychange` event.
+- **Enhanced service worker** (Phase 6.1): Upgraded to v2 with stale-while-revalidate for JS/CSS, cache-first with background revalidation for game assets, network-first for HTML, offline fallback page, and versioned cache naming.
+- **PWA install prompt** (Phase 6.2): `beforeinstallprompt` event shows a dismissible in-game install banner.
+- **Manifest improvements** (Phase 6.3): Icons marked `purpose: "any maskable"`, added `categories` field.
+- **Accessibility: text scaling** (Phase 7.1): `textScale` setting (small/medium/large) applies 0.85×/1.0×/1.25× multiplier to `mobileFontSize()` via `accessibility.ts`.
+- **Accessibility: reduced motion** (Phase 7.2): `isReducedMotion()` checks both in-game setting and OS `prefers-reduced-motion`.
+- **Accessibility: colorblind mode** (Phase 7.3): SVG `feColorMatrix` filters (protanopia/deuteranopia) applied to canvas in real-time.
+- **iOS "Add to Home Screen" install banner**: On iOS Safari, a bottom banner prompts users to install the app via Share → Add to Home Screen for a fullscreen experience.
+
+### Added — New Utility Modules
+- `frontend/src/utils/haptics.ts` — Haptic feedback gated behind settings
+- `frontend/src/utils/safe-area.ts` — Safe-area inset reader with caching
+- `frontend/src/utils/perf-profile.ts` — Mobile performance profile (render quality, particle multipliers)
+- `frontend/src/utils/accessibility.ts` — Accessibility settings sync without circular imports
+
+### Fixed
+- **iOS Safari landscape fullscreen**: iPhone landscape mode now collapses Safari address/tab bars via scroll-to-minimize trick.
 
 ## [2026-04-16]
 ### Added — Six Remaining Features from plan.md

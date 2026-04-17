@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AchievementManager, AchievementDef } from '@managers/AchievementManager';
@@ -26,18 +26,19 @@ export class AchievementScene extends Phaser.Scene {
 
   create(): void {
     const am = AchievementManager.getInstance();
+    const layout = ui(this);
 
     // Dim background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark, 1);
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark, 1);
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 20, 'ACHIEVEMENTS', {
+    this.add.text(layout.cx, 20, 'ACHIEVEMENTS', {
       ...FONTS.heading, fontSize: mobileFontSize(22),
     }).setOrigin(0.5);
 
     // Progress counter
     const prog = am.getProgress();
-    this.progressText = this.add.text(GAME_WIDTH / 2, 46, `Unlocked: ${prog.unlocked} / ${prog.total}`, {
+    this.progressText = this.add.text(layout.cx, 46, `Unlocked: ${prog.unlocked} / ${prog.total}`, {
       ...FONTS.bodySmall, fontSize: mobileFontSize(13), color: COLORS.textHighlight,
     }).setOrigin(0.5);
 
@@ -51,7 +52,7 @@ export class AchievementScene extends Phaser.Scene {
       { label: 'Challenge', value: 'challenge' },
     ];
     const tabY = 70;
-    const tabW = Math.floor((GAME_WIDTH - 40) / categories.length);
+    const tabW = Math.floor((layout.w - 40) / categories.length);
     this.tabTexts = categories.map((cat, i) => {
       const t = this.add.text(20 + i * tabW + tabW / 2, tabY, cat.label, {
         ...FONTS.caption, fontSize: mobileFontSize(12),
@@ -67,16 +68,16 @@ export class AchievementScene extends Phaser.Scene {
     });
 
     // Description area at bottom
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT - 70, GAME_WIDTH - 40, 60, {
+    new NinePatchPanel(this, layout.cx, layout.h - 70, layout.w - 40, 60, {
       fillColor: COLORS.bgPanel, borderColor: COLORS.border, cornerRadius: 6,
     });
-    this.descText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 70, '', {
+    this.descText = this.add.text(layout.cx, layout.h - 70, '', {
       ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textWhite,
-      wordWrap: { width: GAME_WIDTH - 80 },
+      wordWrap: { width: layout.w - 80 },
     }).setOrigin(0.5);
 
     // Back button
-    const backBtn = this.add.text(40, GAME_HEIGHT - 25, '← BACK', {
+    const backBtn = this.add.text(40, layout.h - 25, '← BACK', {
       ...FONTS.menuItem, fontSize: mobileFontSize(14), color: COLORS.textGray,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     backBtn.on('pointerdown', () => this.closeScene());
@@ -105,6 +106,7 @@ export class AchievementScene extends Phaser.Scene {
     const am = AchievementManager.getInstance();
     const all = am.getAll();
     this.filtered = this.category === 'all' ? all : all.filter(a => a.category === this.category);
+    const layout = ui(this);
 
     // Update tabs
     const cats: CategoryFilter[] = ['all', 'story', 'collection', 'battle', 'exploration', 'challenge'];
@@ -122,7 +124,7 @@ export class AchievementScene extends Phaser.Scene {
 
     // Grid layout
     const startY = 95;
-    const cellW = Math.floor((GAME_WIDTH - 40) / this.COLS);
+    const cellW = Math.floor((layout.w - 40) / this.COLS);
     const cellH = Math.round(52 * MOBILE_SCALE);
     const maxIdx = Math.min(this.filtered.length, (this.scrollOffset + this.VISIBLE_ROWS) * this.COLS);
 

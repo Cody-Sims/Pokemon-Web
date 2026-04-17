@@ -11,8 +11,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
         'I heard you got a Pokémon from the Professor.',
         'Let\'s see how strong you really are!',
       ]},
-      { type: 'flashScreen', duration: 200 },
-    ],
+      { type: 'flashScreen', duration: 200 },      { type: 'setFlag', flag: 'rival_intro_seen' },    ],
   },
   'willow-lab-intro': {
     id: 'willow-lab-intro',

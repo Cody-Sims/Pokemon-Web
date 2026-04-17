@@ -1,17 +1,18 @@
 import Phaser from 'phaser';
 import { AchievementDef } from '@managers/AchievementManager';
-import { GAME_WIDTH } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS } from '@ui/theme';
 
 /** Slide-in toast notification for achievement unlocks. */
 export class AchievementToast {
   static show(scene: Phaser.Scene, achievement: AchievementDef): void {
+    const layout = ui(scene);
     const bannerW = 320;
     const bannerH = 54;
     const startY = -bannerH;
     const targetY = 10;
 
-    const container = scene.add.container(GAME_WIDTH / 2, startY).setDepth(200);
+    const container = scene.add.container(layout.cx, startY).setDepth(200);
 
     // Gold/dark background
     const bg = scene.add.graphics();

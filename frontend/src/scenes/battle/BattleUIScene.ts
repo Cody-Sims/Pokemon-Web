@@ -48,6 +48,7 @@ export class BattleUIScene extends Phaser.Scene {
   private targetArrows: Phaser.GameObjects.Text[] = [];
   private targetCursor = 0;
   private bossSynthesisTriggered = false;
+  private fleeAttempts = 0;
 
   constructor() {
     super({ key: 'BattleUIScene' });
@@ -63,32 +64,47 @@ export class BattleUIScene extends Phaser.Scene {
 
     const { w, h, cx } = ui(this);
 
+    // Compact mode for small mobile screens
+    const compact = isMobile() && (window.innerHeight < 400 || h < 400);
+    const menuH = compact ? 50 : 100;
+
     // Weather indicator (top-center, hidden initially)
     this.weatherText = this.add.text(cx, 12, '', {
       ...FONTS.caption, fontSize: '12px', color: COLORS.textHighlight,
     }).setOrigin(0.5).setDepth(50);
 
     // Nine-patch message bar
-    new NinePatchPanel(this, cx, h - 120, w - 20, 30, {
+    new NinePatchPanel(this, cx, h - (compact ? 80 : 120), w - 20, 30, {
       fillColor: 0x0a0a18, fillAlpha: 0.92, borderColor: COLORS.border, borderWidth: 1, cornerRadius: 4,
     });
-    this.messageText = this.add.text(30, h - 132, 'What will you do?', { ...FONTS.body, fontSize: '16px' });
+    this.messageText = this.add.text(30, h - (compact ? 92 : 132), 'What will you do?', { ...FONTS.body, fontSize: '16px' });
 
     // Nine-patch action menu
-    this.actionMenuBg = this.add.rectangle(cx, h - 60, w - 20, 100, 0x1a1a2e, 0.95);
+    this.actionMenuBg = this.add.rectangle(cx, h - menuH / 2 - 10, w - 20, menuH, 0x1a1a2e, 0.95);
     this.actionMenuBg.setStrokeStyle(2, COLORS.borderLight);
-    new NinePatchPanel(this, cx, h - 60, w - 20, 100, {
+    new NinePatchPanel(this, cx, h - menuH / 2 - 10, w - 20, menuH, {
       fillColor: COLORS.bgPanel, fillAlpha: 0.95, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 6,
     });
 
     const actions = ['FIGHT', 'BAG', 'POKEMON', 'RUN'];
-    const actionFontSize = mobileFontSize(18);
+    const actionFontSize = mobileFontSize(compact ? 15 : 18);
     const actionRowH = Math.round(35 * MOBILE_SCALE);
     this.actionTexts = actions.map((action, i) => {
-      const col = i % 2;
-      const row = Math.floor(i / 2);
+      let x: number, y: number;
+      if (compact) {
+        // Single row: evenly spaced
+        const spacing = w / 5;
+        x = spacing * (i + 1);
+        y = h - menuH / 2 - 10;
+      } else {
+        // 2x2 grid
+        const col = i % 2;
+        const row = Math.floor(i / 2);
+        x = cx - 80 + col * 160;
+        y = h - 85 + row * actionRowH;
+      }
       const t = this.add.text(
-        cx - 80 + col * 160, h - 85 + row * actionRowH,
+        x, y,
         action, { ...FONTS.menuItem, fontSize: actionFontSize }
       ).setOrigin(0.5).setInteractive({ useHandCursor: true });
       t.setPadding(12, 8, 12, 8);
@@ -146,10 +162,17 @@ export class BattleUIScene extends Phaser.Scene {
     }
     const cur = this.state === 'moves' ? 'moveCursor' : 'cursor';
     const len = this.state === 'moves' ? this.battle().playerPokemon.moves.length : 4;
-    if (dir === 'left'  && this[cur] % 2 === 1) this[cur]--;
-    if (dir === 'right' && this[cur] % 2 === 0 && this[cur] + 1 < len) this[cur]++;
-    if (dir === 'up'    && this[cur] >= 2) this[cur] -= 2;
-    if (dir === 'down'  && this[cur] + 2 < len) this[cur] += 2;
+    const compact = isMobile() && (window.innerHeight < 400 || this.cameras.main.height < 400);
+    if (compact) {
+      // Single row nav: left/right only
+      if (dir === 'left' && this[cur] > 0) this[cur]--;
+      if (dir === 'right' && this[cur] + 1 < len) this[cur]++;
+    } else {
+      if (dir === 'left'  && this[cur] % 2 === 1) this[cur]--;
+      if (dir === 'right' && this[cur] % 2 === 0 && this[cur] + 1 < len) this[cur]++;
+      if (dir === 'up'    && this[cur] >= 2) this[cur] -= 2;
+      if (dir === 'down'  && this[cur] + 2 < len) this[cur] += 2;
+    }
     this.state === 'moves' ? this.updateMoveCursor() : this.updateCursor();
   }
 
@@ -204,10 +227,34 @@ export class BattleUIScene extends Phaser.Scene {
           this.scene.wake();
         });
         break;
-      case 'RUN':
-        AudioManager.getInstance().playSFX(SFX.RUN_SUCCESS);
-        this.time.delayedCall(300, () => this.endBattle());
+      case 'RUN': {
+        const b = this.battle();
+        if (b.battleManager.getBattleType() === 'trainer') {
+          this.msg('Can\'t escape from a trainer battle!');
+          return;
+        }
+        // Speed-based flee formula: fleeChance = (playerSpeed * 128 / enemySpeed + 30 * fleeAttempts) / 256
+        if (!this.fleeAttempts) this.fleeAttempts = 0;
+        this.fleeAttempts++;
+        const playerSpeed = this.statusHandler.getEffectiveStat(b.playerPokemon, 'speed');
+        const enemySpeed = this.statusHandler.getEffectiveStat(b.enemyPokemon, 'speed');
+        const fleeChance = Math.floor((playerSpeed * 128 / Math.max(1, enemySpeed) + 30 * this.fleeAttempts) % 256);
+        if (playerSpeed >= enemySpeed || Math.random() * 256 < fleeChance) {
+          AudioManager.getInstance().playSFX(SFX.RUN_SUCCESS);
+          this.msg('Got away safely!');
+          this.time.delayedCall(800, () => this.endBattle());
+        } else {
+          this.msg('Can\'t escape!');
+          this.state = 'animating';
+          this.time.delayedCall(800, () => {
+            // Enemy gets a free attack
+            this.state = 'actions';
+            this.showActions();
+            this.msg('What will you do?');
+          });
+        }
         break;
+      }
     }
   }
 
@@ -316,12 +363,22 @@ export class BattleUIScene extends Phaser.Scene {
     const moveRowH = Math.round(35 * MOBILE_SCALE);
 
     const { w: mw, h: mh, cx: mcx } = ui(this);
-    this.moveMenuBg = this.add.rectangle(mcx, mh - 60, mw - 20, 100, 0x1a1a2e, 0.95).setStrokeStyle(2, COLORS.borderLight);
+    const compactMoves = isMobile() && (window.innerHeight < 400 || mh < 400);
+    const moveMenuH = compactMoves ? 50 : 100;
+    this.moveMenuBg = this.add.rectangle(mcx, mh - moveMenuH / 2 - 10, mw - 20, moveMenuH, 0x1a1a2e, 0.95).setStrokeStyle(2, COLORS.borderLight);
     this.moveTexts = moves.map((m, i) => {
       const md = moveData[m.moveId];
-      const col = i % 2; const row = Math.floor(i / 2);
-      const x = mcx - 120 + col * 240;
-      const y = mh - 85 + row * moveRowH;
+      let x: number, y: number;
+      if (compactMoves) {
+        // Single row evenly spaced
+        const spacing = mw / (moves.length + 1);
+        x = spacing * (i + 1);
+        y = mh - moveMenuH / 2 - 10;
+      } else {
+        const col = i % 2; const row = Math.floor(i / 2);
+        x = mcx - 120 + col * 240;
+        y = mh - 85 + row * moveRowH;
+      }
 
       // Move type color dot
       if (md) {
@@ -584,7 +641,8 @@ export class BattleUIScene extends Phaser.Scene {
         const lifeOrbResult = HeldItemHandler.onAttackLanded(attacker, result.damage.damage);
         allEffectMsgs.push(...lifeOrbResult.messages);
         // ── Held item: Focus Sash on defender ──
-        const focusResult = HeldItemHandler.onAfterDamage(defender, attacker, result.damage.damage, defender.currentHp + result.damage.damage);
+        const hpBeforeHit = defender.currentHp + result.damage.damage;
+        const focusResult = HeldItemHandler.onAfterDamage(defender, attacker, result.damage.damage, hpBeforeHit);
         allEffectMsgs.push(...focusResult.messages);
         // ── Held item: HP threshold check (Sitrus Berry, etc.) ──
         const threshResult = HeldItemHandler.checkHPThreshold(defender);
@@ -656,9 +714,49 @@ export class BattleUIScene extends Phaser.Scene {
                 if (defender === b.enemyPokemon) {
                   this.runVictorySequence();
                 } else {
-                  this.msg('You blacked out...');
-                  this.state = 'message';
-                  this.time.delayedCall(2000, () => this.endBattle());
+                  // Player's Pokemon fainted — check for remaining alive party members
+                  const gm = GameManager.getInstance();
+                  const aliveParty = gm.getParty().filter(p => p.currentHp > 0);
+                  if (aliveParty.length === 0) {
+                    this.msg('You blacked out...');
+                    this.state = 'message';
+                    this.time.delayedCall(2000, () => this.endBattle());
+                  } else {
+                    // Prompt player to switch
+                    this.msg('Choose your next Pokémon!');
+                    this.time.delayedCall(800, () => {
+                      this.scene.sleep();
+                      this.scene.launch('PartyScene', { forcedSwitch: true });
+                      this.scene.get('PartyScene').events.once('shutdown', () => {
+                        this.scene.wake();
+                        // Update battle references to the new active Pokemon
+                        const newActive = gm.getParty().find(p => p.currentHp > 0);
+                        if (newActive) {
+                          b.playerPokemon = newActive;
+                          // Update the player sprite texture
+                          const newData = pokemonData[newActive.dataId];
+                          if (newData?.spriteKeys?.back) {
+                            b.playerSprite.setTexture(newData.spriteKeys.back);
+                          }
+                          b.updateHpBars();
+                          this.statusHandler.initPokemon(newActive);
+                          // Trigger switch-in abilities
+                          const switchResult = AbilityHandler.onSwitchIn(newActive, b.enemyPokemon, this.statusHandler);
+                          if (switchResult.messages.length > 0) {
+                            this.showMessageQueue(switchResult.messages, 0, () => {
+                              this.state = 'actions';
+                              this.showActions();
+                              this.msg('What will you do?');
+                            });
+                          } else {
+                            this.state = 'actions';
+                            this.showActions();
+                            this.msg('What will you do?');
+                          }
+                        }
+                      });
+                    });
+                  }
                 }
               });
             });

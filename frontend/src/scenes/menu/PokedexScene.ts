@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
@@ -25,6 +25,7 @@ export class PokedexScene extends Phaser.Scene {
   }
 
   create(): void {
+    const layout = ui(this);
     this.listGroup = this.add.group();
     this.detailGroup = this.add.group();
 
@@ -40,34 +41,34 @@ export class PokedexScene extends Phaser.Scene {
     }
 
     // Background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20, {
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20, {
       fillColor: COLORS.bgPanel, borderColor: COLORS.border, cornerRadius: 8,
     });
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 24, 'POKÉDEX', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
-    this.add.rectangle(GAME_WIDTH / 2, 42, 160, 2, COLORS.borderHighlight, 0.4);
+    this.add.text(layout.cx, 24, 'POKÉDEX', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
+    this.add.rectangle(layout.cx, 42, 160, 2, COLORS.borderHighlight, 0.4);
 
     // Counters
-    this.countText = this.add.text(GAME_WIDTH / 2, 56, `Seen: ${this.seenCount}   Caught: ${this.caughtCount}`, {
+    this.countText = this.add.text(layout.cx, 56, `Seen: ${this.seenCount}   Caught: ${this.caughtCount}`, {
       ...FONTS.bodySmall, fontSize: '13px',
     }).setOrigin(0.5);
 
     // Detail panel (right side)
-    new NinePatchPanel(this, GAME_WIDTH - 155, GAME_HEIGHT / 2 + 20, 270, GAME_HEIGHT - 130, {
+    new NinePatchPanel(this, layout.w - 155, layout.cy + 20, 270, layout.h - 130, {
       fillColor: COLORS.bgCard, fillAlpha: 0.7, borderColor: COLORS.border, cornerRadius: 6,
     });
 
     // Close hint / tappable close button
     if (isMobile()) {
-      const closeBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, '✕  CLOSE', {
+      const closeBtn = this.add.text(layout.cx, layout.h - 18, '✕  CLOSE', {
         ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       closeBtn.setPadding(16, 8, 16, 8);
       closeBtn.on('pointerdown', () => { this.controller?.destroy(); this.scene.stop(); });
     } else {
-      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, 'ESC to close', FONTS.caption).setOrigin(0.5);
+      this.add.text(layout.cx, layout.h - 18, 'ESC to close', FONTS.caption).setOrigin(0.5);
     }
 
     this.scrollOffset = 0;
@@ -160,6 +161,7 @@ export class PokedexScene extends Phaser.Scene {
   }
 
   private showDetail(idx: number): void {
+    const layout = ui(this);
     this.detailGroup.clear(true, true);
     const id = this.speciesList[idx];
     const gm = GameManager.getInstance();
@@ -167,11 +169,11 @@ export class PokedexScene extends Phaser.Scene {
     const seen = dex.seen.includes(id);
     const caught = dex.caught.includes(id);
 
-    const x = GAME_WIDTH - 270;
+    const x = layout.w - 270;
     let y = 90;
 
     if (!seen) {
-      const unknown = this.add.text(GAME_WIDTH - 155, GAME_HEIGHT / 2, '???', {
+      const unknown = this.add.text(layout.w - 155, layout.cy, '???', {
         ...FONTS.heading, color: COLORS.textDim,
       }).setOrigin(0.5);
       this.detailGroup.add(unknown);
@@ -184,14 +186,14 @@ export class PokedexScene extends Phaser.Scene {
     // Sprite — load on demand if not yet in texture cache
     const spriteKey = data.spriteKeys.front;
     if (spriteKey && this.textures.exists(spriteKey)) {
-      const sprite = this.add.image(GAME_WIDTH - 155, y + 40, spriteKey).setScale(2);
+      const sprite = this.add.image(layout.w - 155, y + 40, spriteKey).setScale(2);
       this.detailGroup.add(sprite);
     } else if (spriteKey) {
       const name = data.name.toLowerCase();
       this.load.image(spriteKey, `assets/sprites/pokemon/${name}-front.png`);
       this.load.once('complete', () => {
         if (this.detailGroup && this.textures.exists(spriteKey)) {
-          const sprite = this.add.image(GAME_WIDTH - 155, y + 40, spriteKey).setScale(2);
+          const sprite = this.add.image(layout.w - 155, y + 40, spriteKey).setScale(2);
           this.detailGroup.add(sprite);
         }
       });
@@ -203,14 +205,14 @@ export class PokedexScene extends Phaser.Scene {
     AudioManager.getInstance().playCry(id);
 
     // Name
-    const nameText = this.add.text(GAME_WIDTH - 155, y, data.name, {
+    const nameText = this.add.text(layout.w - 155, y, data.name, {
       ...FONTS.body, fontStyle: 'bold', fontSize: '17px',
     }).setOrigin(0.5);
     this.detailGroup.add(nameText);
     y += 22;
 
     // Number
-    const numText = this.add.text(GAME_WIDTH - 155, y, `#${String(id).padStart(3, '0')}`, {
+    const numText = this.add.text(layout.w - 155, y, `#${String(id).padStart(3, '0')}`, {
       ...FONTS.caption,
     }).setOrigin(0.5);
     this.detailGroup.add(numText);
@@ -218,7 +220,7 @@ export class PokedexScene extends Phaser.Scene {
 
     // Types
     data.types.forEach((type, ti) => {
-      const badge = drawTypeBadge(this, GAME_WIDTH - 175 + ti * 72, y, type);
+      const badge = drawTypeBadge(this, layout.w - 175 + ti * 72, y, type);
       this.detailGroup.add(badge);
     });
     y += 28;
@@ -226,7 +228,7 @@ export class PokedexScene extends Phaser.Scene {
     // Status
     const status = caught ? 'Caught ●' : 'Seen ○';
     const statusColor = caught ? COLORS.textSuccess : COLORS.textGray;
-    const statusText = this.add.text(GAME_WIDTH - 155, y, status, {
+    const statusText = this.add.text(layout.w - 155, y, status, {
       ...FONTS.bodySmall, color: statusColor,
     }).setOrigin(0.5);
     this.detailGroup.add(statusText);

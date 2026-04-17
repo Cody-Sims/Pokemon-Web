@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
 export interface LightSource {
   x: number;
@@ -54,7 +53,8 @@ export class LightingSystem {
     }
 
     if (!this.rt) {
-      this.rt = this.scene.add.renderTexture(0, 0, GAME_WIDTH, GAME_HEIGHT);
+      const cam = this.scene.cameras.main;
+      this.rt = this.scene.add.renderTexture(0, 0, cam.width, cam.height);
       this.rt.setOrigin(0, 0);
       this.rt.setScrollFactor(0);
       this.rt.setDepth(DARKNESS_DEPTH);
@@ -99,7 +99,7 @@ export class LightingSystem {
       const radius = light.radius;
 
       // Skip lights far off-screen
-      if (sx < -radius || sy < -radius || sx > GAME_WIDTH + radius || sy > GAME_HEIGHT + radius) {
+      if (sx < -radius || sy < -radius || sx > cam.width + radius || sy > cam.height + radius) {
         continue;
       }
 

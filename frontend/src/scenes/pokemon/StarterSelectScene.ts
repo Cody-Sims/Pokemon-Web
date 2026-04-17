@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
@@ -47,20 +47,22 @@ export class StarterSelectScene extends Phaser.Scene {
   }
 
   private buildUI(): void {
+    const layout = ui(this);
+
     // Darken background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7);
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, 0x000000, 0.7);
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 50, 'Choose Your Starter Pokémon!', {
+    this.add.text(layout.cx, 50, 'Choose Your Starter Pokémon!', {
       ...FONTS.title, fontSize: '24px',
     }).setOrigin(0.5);
 
     // Draw three starter cards
-    const startX = GAME_WIDTH / 2 - 220;
+    const startX = layout.cx - 220;
     for (let i = 0; i < 3; i++) {
       const s = this.starters[i];
       const cx = startX + i * 220;
-      const cy = GAME_HEIGHT / 2 - 20;
+      const cy = layout.cy - 20;
 
       const container = this.add.container(cx, cy);
 
@@ -105,7 +107,7 @@ export class StarterSelectScene extends Phaser.Scene {
     // Hint text
     const hintText = (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0)
       ? 'Swipe or tap to choose' : 'Use ← → to choose, Enter to confirm';
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, hintText, {
+    this.add.text(layout.cx, layout.h - 50, hintText, {
       fontSize: '14px', color: '#888888',
     }).setOrigin(0.5);
 

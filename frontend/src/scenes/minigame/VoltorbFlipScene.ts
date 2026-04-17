@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
@@ -34,21 +34,22 @@ export class VoltorbFlipScene extends Phaser.Scene {
   }
 
   create(): void {
+    const layout = ui(this);
     this.gameOver = false;
     this.score = 0;
     this.roundScore = 1;
 
     // Background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
 
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, 760, 560, {
+    new NinePatchPanel(this, layout.cx, layout.cy, 760, 560, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
     });
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 30, 'VOLTORB FLIP', {
+    this.add.text(layout.cx, 30, 'VOLTORB FLIP', {
       ...FONTS.heading, fontSize: mobileFontSize(22), color: COLORS.textHighlight,
     }).setOrigin(0.5);
 
@@ -67,7 +68,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
     this.totalText = this.add.text(40, 120, `Total Coins: ${this.totalCoins}`, {
       ...FONTS.body, fontSize: mobileFontSize(14),
     });
-    this.messageText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, '', {
+    this.messageText = this.add.text(layout.cx, layout.h - 40, '', {
       ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
     }).setOrigin(0.5);
 
@@ -86,7 +87,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-ESC', () => this.exitGame());
 
     // Close hint
-    this.add.text(GAME_WIDTH - 30, GAME_HEIGHT - 20, 'ESC to quit', {
+    this.add.text(layout.w - 30, layout.h - 20, 'ESC to quit', {
       ...FONTS.caption,
     }).setOrigin(1, 1);
   }

@@ -4,6 +4,7 @@ import { TILE_SIZE, WALK_DURATION } from '@utils/constants';
 import { EmoteBubble, EmoteType } from '@systems/rendering/EmoteBubble';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
+import { EventManager } from '@managers/EventManager';
 
 // ─── CutsceneAction union type ──────────────────────────────
 
@@ -232,6 +233,7 @@ export class CutsceneEngine {
 
   private execSetFlag(action: { flag: string; value?: boolean }): Promise<void> {
     GameManager.getInstance().setFlag(action.flag, action.value ?? true);
+    EventManager.getInstance().emit('flag-set', action.flag);
     return Promise.resolve();
   }
 

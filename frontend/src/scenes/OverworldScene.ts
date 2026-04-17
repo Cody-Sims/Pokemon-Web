@@ -4,14 +4,14 @@ import { ui } from '@utils/ui-layout';
 import { Player } from '@entities/Player';
 import { NPC } from '@entities/NPC';
 import { Trainer } from '@entities/Trainer';
-import { AnimationHelper } from '@systems/rendering/AnimationHelper';
-import { InputManager } from '@systems/engine/InputManager';
-import { TouchControls } from '@ui/controls/TouchControls';
+import { AnimationHelper } from '@systems/AnimationHelper';
+import { InputManager } from '@systems/InputManager';
+import { TouchControls } from '@ui/TouchControls';
 import { Direction } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
-import { EncounterSystem } from '@systems/overworld/EncounterSystem';
-import { GameClock } from '@systems/engine/GameClock';
-import { WeatherRenderer } from '@systems/rendering/WeatherRenderer';
+import { EncounterSystem } from '@systems/EncounterSystem';
+import { GameClock } from '@systems/GameClock';
+import { WeatherRenderer } from '@systems/WeatherRenderer';
 import { TransitionManager } from '@managers/TransitionManager';
 import { PokemonInstance, SaveData } from '@data/interfaces';
 import { trainerData } from '@data/trainer-data';
@@ -29,30 +29,30 @@ import {
 } from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
-import { MapPreloader } from '@systems/engine/MapPreloader';
+import { MapPreloader } from '@systems/MapPreloader';
 import { EventManager } from '@managers/EventManager';
 import { QuestManager } from '@managers/QuestManager';
-import { NPCBehaviorController } from '@systems/overworld/NPCBehavior';
-import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
-import { LightingSystem } from '@systems/rendering/LightingSystem';
-import { AmbientSFX } from '@systems/audio/AmbientSFX';
-import { CutsceneEngine } from '@systems/engine/CutsceneEngine';
+import { NPCBehaviorController } from '@systems/NPCBehavior';
+import { OverworldAbilities } from '@systems/OverworldAbilities';
+import { LightingSystem } from '@systems/LightingSystem';
+import { AmbientSFX } from '@systems/AmbientSFX';
+import { CutsceneEngine } from '@systems/CutsceneEngine';
 import { cutsceneData } from '@data/cutscene-data';
 import { AchievementManager } from '@managers/AchievementManager';
-import { AchievementToast } from '@ui/widgets/AchievementToast';
+import { AchievementToast } from '@ui/AchievementToast';
 import {
   spawnNPCs as spawnNPCsHelper,
   spawnTrainers as spawnTrainersHelper,
-} from './OverworldNPCSpawner';
+} from './overworld/OverworldNPCSpawner';
 import {
   redrawTile as redrawTileHelper,
   showFieldAbilityPopup as showPopup,
   pushBoulder as pushBoulderHelper,
-} from './OverworldFieldAbilities';
-import { getBestRod, attemptFish } from './OverworldFishing';
-import { healParty as healPartyHelper } from './OverworldHealing';
-import { getFootstepSFX as getFootstepSFXHelper } from './OverworldFootsteps';
-import { tryInteract as tryInteractHelper, InteractionContext } from './OverworldInteraction';
+} from './overworld/OverworldFieldAbilities';
+import { getBestRod, attemptFish } from './overworld/OverworldFishing';
+import { healParty as healPartyHelper } from './overworld/OverworldHealing';
+import { getFootstepSFX as getFootstepSFXHelper } from './overworld/OverworldFootsteps';
+import { tryInteract as tryInteractHelper, InteractionContext } from './overworld/OverworldInteraction';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
@@ -85,16 +85,13 @@ export class OverworldScene extends Phaser.Scene {
     super({ key: 'OverworldScene' });
   }
 
-  init(data?: { mapKey?: string; spawnId?: string; saveData?: SaveData; flyTo?: string }): void {
+  init(data?: { mapKey?: string; spawnId?: string; saveData?: SaveData }): void {
     // Restore from save data if provided
     if (data?.saveData) {
       const gm = GameManager.getInstance();
       gm.loadFromSave(data.saveData);
       this.mapKey = gm.getCurrentMap();
       this.spawnId = '__resume';
-    } else if (data?.flyTo) {
-      this.mapKey = data.flyTo;
-      this.spawnId = data.spawnId ?? 'default';
     } else {
       this.mapKey = data?.mapKey ?? GameManager.getInstance().getCurrentMap();
       this.spawnId = data?.spawnId ?? 'default';
@@ -137,7 +134,6 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     gm.setCurrentMap(this.mapKey);
-    gm.markMapVisited(this.mapKey);
     EventManager.getInstance().emit('map-entered', this.mapKey);
 
     const mapW = this.mapDef.width;
@@ -224,8 +220,8 @@ export class OverworldScene extends Phaser.Scene {
     // Camera
     const mapPixelW = mapW * TILE_SIZE;
     const mapPixelH = mapH * TILE_SIZE;
-    const layout = ui(this);
 
+    const layout = ui(this);
     if (this.mapDef.isInterior && mapPixelW <= layout.w && mapPixelH <= layout.h) {
       // Small interior — center the map in the viewport, don't follow player
       this.cameras.main.stopFollow();

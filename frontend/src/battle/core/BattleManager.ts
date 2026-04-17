@@ -67,9 +67,9 @@ export class BattleManager {
             this.fsm.transition('PLAYER_TURN');
           }
         } else if (this.playerActive.currentHp <= 0) {
-          // Player's pokemon fainted
+          // Player's pokemon fainted — search entire party for alive member
           const nextAlive = this.config.playerParty.findIndex(
-            (p, i) => i > this.playerActiveIndex && p.currentHp > 0
+            (p, i) => i !== this.playerActiveIndex && p.currentHp > 0
           );
           if (nextAlive === -1) {
             this.fsm.transition('DEFEAT');
@@ -122,7 +122,7 @@ export class BattleManager {
     const enemyPriority = enemyMove?.priority ?? 0;
 
     const playerFirst = playerPriority > enemyPriority
-      || (playerPriority === enemyPriority && playerSpeed >= enemySpeed);
+      || (playerPriority === enemyPriority && (playerSpeed > enemySpeed || (playerSpeed === enemySpeed && Math.random() < 0.5)));
 
     const first = playerFirst ? this.playerActive : this.enemyActive;
     const second = playerFirst ? this.enemyActive : this.playerActive;

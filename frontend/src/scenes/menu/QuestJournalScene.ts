@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
@@ -19,11 +19,11 @@ export class QuestJournalScene extends Phaser.Scene {
   private tabUnderlines: Phaser.GameObjects.Rectangle[] = [];
   private emptyText?: Phaser.GameObjects.Text;
 
-  // Layout constants
-  private readonly listLeft = 20;
-  private readonly listRight = Math.floor(GAME_WIDTH * 0.4);
-  private readonly detailLeft = Math.floor(GAME_WIDTH * 0.42);
-  private readonly detailRight = GAME_WIDTH - 20;
+  // Layout constants (computed in create)
+  private listLeft = 20;
+  private listRight = 0;
+  private detailLeft = 0;
+  private detailRight = 0;
   private readonly listStartY = 90;
   private readonly itemH = 28;
 
@@ -32,43 +32,48 @@ export class QuestJournalScene extends Phaser.Scene {
   }
 
   create(): void {
+    const layout = ui(this);
+    this.listRight = Math.floor(layout.w * 0.4);
+    this.detailLeft = Math.floor(layout.w * 0.42);
+    this.detailRight = layout.w - 20;
+
     this.listGroup = this.add.group();
     this.detailGroup = this.add.group();
 
     // Full-screen dark background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20, {
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20, {
       fillColor: COLORS.bgPanel, borderColor: COLORS.border, cornerRadius: 8,
     });
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 24, 'QUEST JOURNAL', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
-    this.add.rectangle(GAME_WIDTH / 2, 42, 200, 2, COLORS.borderHighlight, 0.4);
+    this.add.text(layout.cx, 24, 'QUEST JOURNAL', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
+    this.add.rectangle(layout.cx, 42, 200, 2, COLORS.borderHighlight, 0.4);
 
     // Tabs
     this.buildTabs();
 
     // Left list panel
     const listW = this.listRight - this.listLeft;
-    new NinePatchPanel(this, this.listLeft + listW / 2, GAME_HEIGHT / 2 + 20, listW, GAME_HEIGHT - 130, {
+    new NinePatchPanel(this, this.listLeft + listW / 2, layout.cy + 20, listW, layout.h - 130, {
       fillColor: COLORS.bgCard, fillAlpha: 0.7, borderColor: COLORS.border, cornerRadius: 6,
     });
 
     // Right detail panel
     const detailW = this.detailRight - this.detailLeft;
-    new NinePatchPanel(this, this.detailLeft + detailW / 2, GAME_HEIGHT / 2 + 20, detailW, GAME_HEIGHT - 130, {
+    new NinePatchPanel(this, this.detailLeft + detailW / 2, layout.cy + 20, detailW, layout.h - 130, {
       fillColor: COLORS.bgCard, fillAlpha: 0.7, borderColor: COLORS.border, cornerRadius: 6,
     });
 
     // Close hint
     if (isMobile()) {
-      const closeBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, '✕  CLOSE', {
+      const closeBtn = this.add.text(layout.cx, layout.h - 18, '✕  CLOSE', {
         ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       closeBtn.setPadding(16, 8, 16, 8);
       closeBtn.on('pointerdown', () => this.scene.stop());
     } else {
-      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 18, 'ESC to close', FONTS.caption).setOrigin(0.5);
+      this.add.text(layout.cx, layout.h - 18, 'ESC to close', FONTS.caption).setOrigin(0.5);
     }
 
     // Keyboard bindings
@@ -90,7 +95,8 @@ export class QuestJournalScene extends Phaser.Scene {
     const labels = ['ACTIVE', 'COMPLETE'];
     const tabY = 56;
     const tabSpacing = 120;
-    const startX = GAME_WIDTH / 2 - (tabSpacing * (labels.length - 1)) / 2;
+    const layout = ui(this);
+    const startX = layout.cx - (tabSpacing * (labels.length - 1)) / 2;
 
     labels.forEach((label, i) => {
       const x = startX + i * tabSpacing;
@@ -153,6 +159,7 @@ export class QuestJournalScene extends Phaser.Scene {
   /* ───── Draw quest list (left panel) ───── */
 
   private drawList(): void {
+    const layout = ui(this);
     this.listGroup.clear(true, true);
     if (this.emptyText) { this.emptyText.destroy(); this.emptyText = undefined; }
 
@@ -160,7 +167,7 @@ export class QuestJournalScene extends Phaser.Scene {
       const msg = this.tab === 'active' ? 'No active quests' : 'No completed quests';
       this.emptyText = this.add.text(
         (this.listLeft + this.listRight) / 2,
-        GAME_HEIGHT / 2,
+        layout.cy,
         msg,
         { ...FONTS.bodySmall, color: COLORS.textDim },
       ).setOrigin(0.5);

@@ -1,6 +1,8 @@
-// Service Worker — cache-first strategy for game assets, network-first for HTML
-const CACHE_NAME = 'pokemon-web-v1';
+// Service Worker v2 — enhanced caching for offline play
+const CACHE_VERSION = 2;
+const CACHE_NAME = `pokemon-web-v${CACHE_VERSION}`;
 
+// Core assets to precache at install
 const PRECACHE_URLS = [
   '/Pokemon-Web/',
   '/Pokemon-Web/index.html',
@@ -14,6 +16,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
+  // Purge old caches
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
@@ -33,22 +36,57 @@ self.addEventListener('fetch', (event) => {
   // HTML: network-first (always get latest)
   if (event.request.destination === 'document') {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || offlineFallback()))
     );
     return;
   }
 
-  // Assets (images, audio, fonts, JS, CSS): cache-first
+  // Game assets (sprites, tilesets, maps, audio, fonts): cache-first with background revalidation
+  const isGameAsset = url.pathname.includes('/assets/');
+  if (isGameAsset) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        // Return cached immediately, but also fetch fresh copy in background
+        const fetchPromise = fetch(event.request).then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        }).catch(() => cached);
+
+        return cached || fetchPromise;
+      })
+    );
+    return;
+  }
+
+  // All other (JS bundles, CSS): stale-while-revalidate
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
+      const fetchPromise = fetch(event.request).then((response) => {
         if (response.ok) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return response;
-      });
+      }).catch(() => cached);
+      return cached || fetchPromise;
     })
   );
 });
+
+function offlineFallback() {
+  return new Response(
+    '<html><body style="background:#0f0f1a;color:#fff;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center"><div><h1>🎮 Pokemon Web</h1><p>You are offline. Please connect to the internet and refresh.</p></div></body></html>',
+    { headers: { 'Content-Type': 'text/html' } }
+  );
+}

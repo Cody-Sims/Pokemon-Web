@@ -121,7 +121,7 @@ export class AbilityHandler {
   }
 
   /** Called at end of turn for passive abilities. */
-  static onEndOfTurn(pokemon: PokemonInstance): { messages: string[] } {
+  static onEndOfTurn(pokemon: PokemonInstance, statusHandler?: StatusEffectHandler): { messages: string[] } {
     const ability = AbilityHandler.getAbility(pokemon);
     const name = pokemon.nickname ?? pokemonData[pokemon.dataId]?.name ?? '???';
     const messages: string[] = [];
@@ -130,8 +130,16 @@ export class AbilityHandler {
 
     switch (ability) {
       case 'speed-boost': {
-        // handled via statusHandler stat stage
-        messages.push(`${name}'s Speed Boost raised its Speed!`);
+        // Boost speed stat stage via StatusEffectHandler
+        if (statusHandler) {
+          const state = statusHandler.getState(pokemon);
+          if (state.statStages.speed < 6) {
+            state.statStages.speed = Math.min(6, state.statStages.speed + 1);
+            messages.push(`${name}'s Speed Boost raised its Speed!`);
+          }
+        } else {
+          messages.push(`${name}'s Speed Boost raised its Speed!`);
+        }
         break;
       }
       case 'poison-heal':

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { GameManager } from '@managers/GameManager';
@@ -12,16 +12,17 @@ export class TrainerCardScene extends Phaser.Scene {
   }
 
   create(): void {
+    const layout = ui(this);
     const gm = GameManager.getInstance();
 
     // Dim overlay
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgOverlay, 0.6);
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgOverlay, 0.6);
 
     // Card panel
     const cardW = 560;
     const cardH = 380;
-    const cx = GAME_WIDTH / 2;
-    const cy = GAME_HEIGHT / 2;
+    const cx = layout.cx;
+    const cy = layout.cy;
 
     new NinePatchPanel(this, cx, cy, cardW, cardH, {
       fillColor: COLORS.bgPanel,

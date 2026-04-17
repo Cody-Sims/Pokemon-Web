@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, MAX_PARTY_SIZE } from '@utils/constants';
+import { MAX_PARTY_SIZE } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
@@ -39,6 +40,7 @@ export class PCScene extends Phaser.Scene {
   }
 
   create(): void {
+    const layout = ui(this);
     this.boxGroup = this.add.group();
     this.partyGroup = this.add.group();
     this.currentBox = 0;
@@ -48,15 +50,15 @@ export class PCScene extends Phaser.Scene {
     this.heldPokemon = null;
 
     // Background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20, {
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
     });
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 24, 'PC STORAGE', { ...FONTS.heading, fontSize: '22px' }).setOrigin(0.5);
+    this.add.text(layout.cx, 24, 'PC STORAGE', { ...FONTS.heading, fontSize: '22px' }).setOrigin(0.5);
 
     // Box name + arrows
     this.add.text(200, 50, '◀', { ...FONTS.heading, color: COLORS.textHighlight })
@@ -68,29 +70,29 @@ export class PCScene extends Phaser.Scene {
       .on('pointerdown', () => this.switchBox(1));
 
     // Party panel (right side)
-    new NinePatchPanel(this, GAME_WIDTH - 95, GAME_HEIGHT / 2 + 10, 160, GAME_HEIGHT - 90, {
+    new NinePatchPanel(this, layout.w - 95, layout.cy + 10, 160, layout.h - 90, {
       fillColor: COLORS.bgCard,
       fillAlpha: 0.7,
       borderColor: COLORS.border,
       cornerRadius: 6,
     });
-    this.add.text(GAME_WIDTH - 95, 58, 'PARTY', { ...FONTS.bodySmall, fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(layout.w - 95, 58, 'PARTY', { ...FONTS.bodySmall, fontStyle: 'bold' }).setOrigin(0.5);
 
     // Detail text at bottom
-    this.detailText = this.add.text(20, GAME_HEIGHT - 58, '', FONTS.bodySmall);
+    this.detailText = this.add.text(20, layout.h - 58, '', FONTS.bodySmall);
 
     // Mode indicator
-    this.modeText = this.add.text(20, GAME_HEIGHT - 36, '', FONTS.caption);
+    this.modeText = this.add.text(20, layout.h - 36, '', FONTS.caption);
 
     // Help text / tappable exit button
     if (isMobile()) {
-      const exitBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 14, '✕  EXIT', {
+      const exitBtn = this.add.text(layout.cx, layout.h - 14, '✕  EXIT', {
         ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       exitBtn.setPadding(16, 8, 16, 8);
       exitBtn.on('pointerdown', () => this.handleCancel());
     } else {
-      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 14, 'TAB: switch focus  |  ENTER: pick/place  |  Q/E: switch box  |  ESC: exit', FONTS.caption).setOrigin(0.5);
+      this.add.text(layout.cx, layout.h - 14, 'TAB: switch focus  |  ENTER: pick/place  |  Q/E: switch box  |  ESC: exit', FONTS.caption).setOrigin(0.5);
     }
 
     this.bindKeys();
@@ -333,9 +335,10 @@ export class PCScene extends Phaser.Scene {
     this.partySlots = [];
     this.partyLabels = [];
 
+    const layout = ui(this);
     const gm = GameManager.getInstance();
     const party = gm.getParty();
-    const startX = GAME_WIDTH - 95;
+    const startX = layout.w - 95;
     const startY = 78;
     const slotH = 62;
 
@@ -380,6 +383,7 @@ export class PCScene extends Phaser.Scene {
   }
 
   private updateSelection(): void {
+    const layout = ui(this);
     const gm = GameManager.getInstance();
 
     // Reset all slot highlights
@@ -397,7 +401,7 @@ export class PCScene extends Phaser.Scene {
     if (this.heldPokemon) {
       const pData = pokemonData[this.heldPokemon.pokemon.dataId];
       const name = this.heldPokemon.pokemon.nickname ?? pData?.name ?? '???';
-      this.heldIndicator = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 76, `✋ Holding: ${name}`, {
+      this.heldIndicator = this.add.text(layout.cx, layout.h - 76, `✋ Holding: ${name}`, {
         ...FONTS.body, color: COLORS.textHighlight,
       }).setOrigin(0.5);
     }

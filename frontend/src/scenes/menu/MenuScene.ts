@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
@@ -27,15 +27,17 @@ export class MenuScene extends Phaser.Scene {
     }
     this.menuLabels.push('SAVE', 'OPTIONS', 'QUIT', 'EXIT');
 
+    const layout = ui(this);
+
     // Dim overlay
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgOverlay, 0.45);
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgOverlay, 0.45);
 
     // Menu panel
     const rowH = Math.round(48 * MOBILE_SCALE);
     const panelW = Math.round(220 * MOBILE_SCALE);
     const panelH = this.menuLabels.length * rowH + 32;
-    const panelX = GAME_WIDTH - panelW / 2 - 20;
-    const panelY = GAME_HEIGHT / 2;
+    const panelX = layout.w - panelW / 2 - 20;
+    const panelY = layout.cy;
     new NinePatchPanel(this, panelX, panelY, panelW, panelH, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
@@ -167,8 +169,10 @@ export class MenuScene extends Phaser.Scene {
     const sm = SaveManager.getInstance();
     sm.save();
 
+    const layout = ui(this);
+
     // Show save confirmation text
-    const confirmText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, 'Game Saved!', {
+    const confirmText = this.add.text(layout.cx, layout.h - 40, 'Game Saved!', {
       ...FONTS.heading, color: COLORS.textSuccess,
     }).setOrigin(0.5).setDepth(100);
 
@@ -182,10 +186,11 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private confirmQuit(): void {
+    const layout = ui(this);
     new ConfirmBox(
       this,
-      GAME_WIDTH / 2 - 70,
-      GAME_HEIGHT / 2 - 45,
+      layout.cx - 70,
+      layout.cy - 45,
       'Quit to title?',
       (confirmed) => {
         if (confirmed) {

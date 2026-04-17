@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';

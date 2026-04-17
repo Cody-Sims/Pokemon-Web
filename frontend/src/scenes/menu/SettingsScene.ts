@@ -7,6 +7,7 @@ import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { COLORS, FONTS } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
+import { setRenderQuality, type RenderQuality } from '@utils/perf-profile';
 import { syncAccessibilitySettings, colorblindFilter } from '@utils/accessibility';
 
 interface SettingDef {
@@ -29,6 +30,8 @@ const SETTING_DEFS: SettingDef[] = [
   { key: 'colorblindMode', label: 'Colorblind Mode', type: 'cycle', options: ['off', 'protanopia', 'deuteranopia'] },
   { key: 'reducedMotion', label: 'Reduced Motion', type: 'cycle', options: ['false', 'true'] },
   { key: 'haptics', label: 'Haptics', type: 'cycle', options: ['true', 'false'] },
+  { key: 'renderQuality', label: 'Render Quality', type: 'cycle', options: ['high', 'medium', 'low'] },
+  { key: 'joystickSize', label: 'Joystick Size', type: 'cycle', options: ['small', 'medium', 'large'] },
 ];
 
 export class SettingsScene extends Phaser.Scene {
@@ -74,10 +77,11 @@ export class SettingsScene extends Phaser.Scene {
       const currentVal = gm.getSetting(def.key);
       const displayVal = this.formatValue(def, currentVal);
 
-      // Tappable left arrow
+      // Tappable left arrow — enforce MIN_TOUCH_TARGET
       const leftArrow = this.add.text(layout.w - 210, y, '◀', {
         ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
       }).setInteractive({ useHandCursor: true });
+      leftArrow.setPadding(14, 14, 14, 14);
       leftArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(-1); });
 
       // Value display
@@ -85,10 +89,11 @@ export class SettingsScene extends Phaser.Scene {
         ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
       }).setOrigin(0.5, 0);
 
-      // Tappable right arrow
+      // Tappable right arrow — enforce MIN_TOUCH_TARGET
       const rightArrow = this.add.text(layout.w - 95, y, '▶', {
         ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
       }).setInteractive({ useHandCursor: true });
+      rightArrow.setPadding(14, 14, 14, 14);
       rightArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(1); });
 
       // Invisible row hit area for touch selection
@@ -109,6 +114,7 @@ export class SettingsScene extends Phaser.Scene {
     const fsLeftArrow = this.add.text(layout.w - 210, fsY, '◀', {
       ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
     }).setInteractive({ useHandCursor: true });
+    fsLeftArrow.setPadding(14, 14, 14, 14);
     fsLeftArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(-1); });
 
     const fsValue = this.add.text(layout.w - 150, fsY, fsState, {
@@ -118,6 +124,7 @@ export class SettingsScene extends Phaser.Scene {
     const fsRightArrow = this.add.text(layout.w - 95, fsY, '▶', {
       ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
     }).setInteractive({ useHandCursor: true });
+    fsRightArrow.setPadding(14, 14, 14, 14);
     fsRightArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(1); });
 
     const fsHitArea = this.add.rectangle(layout.cx, fsY + 10, layout.w - 80, rowH, 0x000000, 0)
@@ -231,6 +238,10 @@ export class SettingsScene extends Phaser.Scene {
     if (def.key === 'colorblindMode') {
       const mode = String(gm.getSetting('colorblindMode') ?? 'off');
       this.game.canvas.style.filter = mode === 'off' ? 'none' : colorblindFilter(mode);
+    }
+    // Apply render quality change in real-time
+    if (def.key === 'renderQuality') {
+      setRenderQuality(String(gm.getSetting('renderQuality') ?? 'high') as RenderQuality);
     }
   }
 

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
@@ -63,11 +63,13 @@ export class DialogueScene extends Phaser.Scene {
     const speedPref = (settings.textSpeed as string) || 'medium';
     this.charDelay = TEXT_SPEEDS[speedPref] ?? TEXT_SPEEDS.medium;
 
+    const layout = ui(this);
+
     // Nine-patch dialogue box
-    const boxW = GAME_WIDTH - 20;
+    const boxW = layout.w - 20;
     const boxH = 100;
-    const boxX = GAME_WIDTH / 2;
-    const boxY = GAME_HEIGHT - 60;
+    const boxX = layout.cx;
+    const boxY = layout.h - 60;
     this.panel = new NinePatchPanel(this, boxX, boxY, boxW, boxH, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.92,
@@ -79,32 +81,33 @@ export class DialogueScene extends Phaser.Scene {
     // Speaker name panel (if provided)
     if (this.speaker) {
       const speakerW = Math.max(100, this.speaker.length * 10 + 24);
-      this.speakerPanel = new NinePatchPanel(this, 70, GAME_HEIGHT - 118, speakerW, 26, {
+      this.speakerPanel = new NinePatchPanel(this, 70, layout.h - 118, speakerW, 26, {
         fillColor: COLORS.bgCard,
         fillAlpha: 0.95,
         borderColor: COLORS.borderHighlight,
         borderWidth: 1,
         cornerRadius: 4,
       });
-      this.speakerText = this.add.text(70, GAME_HEIGHT - 118, this.speaker, {
+      this.speakerText = this.add.text(70, layout.h - 118, this.speaker, {
         ...FONTS.caption, color: COLORS.textHighlight, fontStyle: 'bold', fontSize: '13px',
       }).setOrigin(0.5);
     }
 
-    // Text display
-    this.dialogueText = this.add.text(30, GAME_HEIGHT - 100, '', {
+    // Text display — scale font for viewport width
+    const baseFontPx = layout.w < 900 ? 15 : layout.w > 1200 ? 19 : 17;
+    this.dialogueText = this.add.text(30, layout.h - 100, '', {
       ...FONTS.body,
-      fontSize: mobileFontSize(17),
-      wordWrap: { width: GAME_WIDTH - 60 },
+      fontSize: mobileFontSize(baseFontPx),
+      wordWrap: { width: layout.w - 60 },
     });
 
     // Animated advance indicator (bouncing arrow)
-    this.advanceIndicator = this.add.text(GAME_WIDTH - 40, GAME_HEIGHT - 22, '▼', {
+    this.advanceIndicator = this.add.text(layout.w - 40, layout.h - 22, '▼', {
       fontSize: '14px', color: COLORS.textHighlight,
     }).setOrigin(0.5).setAlpha(0);
     this.indicatorTween = this.tweens.add({
       targets: this.advanceIndicator,
-      y: GAME_HEIGHT - 16,
+      y: layout.h - 16,
       duration: 500,
       yoyo: true,
       repeat: -1,
@@ -205,14 +208,15 @@ export class DialogueScene extends Phaser.Scene {
 
   private showChoices(): void {
     if (!this.choices) return;
+    const layout = ui(this);
     this.inChoiceMode = true;
     this.choiceCursor = 0;
     this.advanceIndicator.setAlpha(0);
 
     const choiceW = 150;
     const choiceH = this.choices.length * 30 + 16;
-    const choiceX = GAME_WIDTH - 100;
-    const choiceY = GAME_HEIGHT - 120 - choiceH / 2;
+    const choiceX = layout.w - 100;
+    const choiceY = layout.h - 120 - choiceH / 2;
 
     this.choicePanel = new NinePatchPanel(this, choiceX, choiceY, choiceW, choiceH, {
       fillColor: 0x0a0a18,

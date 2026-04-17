@@ -68,10 +68,13 @@ export class QuestManager {
     GameManager.getInstance().setFlag(quest.steps[stepIndex].completionFlag);
   }
 
-  /** Complete an entire quest and apply rewards. */
+  /** Complete an entire quest and apply rewards. Only awards if quest is currently active. */
   completeQuest(questId: string): void {
     const quest = questData[questId];
     if (!quest) return;
+
+    // Guard: only complete if quest is active (prevents double rewards)
+    if (this.getQuestStatus(questId) !== 'active') return;
 
     const gm = GameManager.getInstance();
     gm.setFlag(quest.completeFlag);
@@ -102,8 +105,13 @@ export class QuestManager {
     QuestManager.instance = undefined as unknown as QuestManager;
   }
 
-  /** Initialize quest automation — call once on game start. */
+  private automationInitialized = false;
+
+  /** Initialize quest automation — call once on game start. Guards against duplicate registration. */
   initAutomation(): void {
+    if (this.automationInitialized) return;
+    this.automationInitialized = true;
+
     const em = EventManager.getInstance();
 
     em.on('flag-set', (flag: unknown) => {

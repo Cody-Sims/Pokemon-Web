@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
@@ -17,18 +17,19 @@ export class StatisticsScene extends Phaser.Scene {
   create(): void {
     const gm = GameManager.getInstance();
     const stats = gm.getGameStats();
+    const layout = ui(this);
 
     // Background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    drawPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20);
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    drawPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20);
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 28, 'STATISTICS', {
+    this.add.text(layout.cx, 28, 'STATISTICS', {
       ...FONTS.heading, color: COLORS.textHighlight,
     }).setOrigin(0.5);
 
     // Divider
-    this.add.rectangle(GAME_WIDTH / 2, 52, GAME_WIDTH - 50, 2, COLORS.border, 0.5);
+    this.add.rectangle(layout.cx, 52, layout.w - 50, 2, COLORS.border, 0.5);
 
     // Format playtime
     const playtime = gm.getPlaytime();
@@ -61,12 +62,12 @@ export class StatisticsScene extends Phaser.Scene {
     const lineH = Math.round(34 * MOBILE_SCALE);
     const fontSize = mobileFontSize(15);
     const labelX = 60;
-    const valueX = GAME_WIDTH - 60;
+    const valueX = layout.w - 60;
 
     rows.forEach(([label, value], i) => {
       // Alternating row backgrounds
       if (i % 2 === 0) {
-        this.add.rectangle(GAME_WIDTH / 2, startY + i * lineH, GAME_WIDTH - 40, lineH, COLORS.bgCard, 0.3);
+        this.add.rectangle(layout.cx, startY + i * lineH, layout.w - 40, lineH, COLORS.bgCard, 0.3);
       }
 
       this.add.text(labelX, startY + i * lineH, label, {
@@ -79,7 +80,7 @@ export class StatisticsScene extends Phaser.Scene {
     });
 
     // Close hint
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 25, 'Press ESC to close', {
+    this.add.text(layout.cx, layout.h - 25, 'Press ESC to close', {
       ...FONTS.caption, color: COLORS.textDim,
     }).setOrigin(0.5);
 

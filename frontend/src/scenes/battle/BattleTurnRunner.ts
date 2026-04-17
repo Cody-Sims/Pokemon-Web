@@ -5,7 +5,7 @@ import type { StatusEffectHandler } from '@battle/effects/StatusEffectHandler';
 /** Pick a random available move for an enemy Pokémon. */
 export function pickEnemyMove(enemy: PokemonInstance): string {
   const avail = enemy.moves.filter(m => m.currentPp > 0);
-  if (avail.length === 0) return 'tackle';
+  if (avail.length === 0) return 'struggle';
   return avail[Math.floor(Math.random() * avail.length)].moveId;
 }
 
@@ -32,7 +32,7 @@ export function calculateTurnOrder(
   const enemyPriority = enemyMove?.priority ?? 0;
 
   const playerFirst = playerPriority > enemyPriority
-    || (playerPriority === enemyPriority && playerSpeed >= enemySpeed);
+    || (playerPriority === enemyPriority && (playerSpeed > enemySpeed || (playerSpeed === enemySpeed && Math.random() < 0.5)));
 
   return playerFirst
     ? [

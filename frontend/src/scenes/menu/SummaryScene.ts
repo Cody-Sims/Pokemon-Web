@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
@@ -27,16 +27,17 @@ export class SummaryScene extends Phaser.Scene {
 
   create(): void {
     this.contentGroup = this.add.group();
+    const layout = ui(this);
 
     // Background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    drawPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20);
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    drawPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20);
 
     // Pokemon name + level header
     const pData = pokemonData[this.pokemon.dataId];
     const name = this.pokemon.nickname ?? pData?.name ?? '???';
     this.add.text(40, 22, name, { ...FONTS.heading });
-    this.add.text(GAME_WIDTH - 150, 22, `Lv. ${this.pokemon.level}`, { ...FONTS.heading, color: COLORS.textHighlight });
+    this.add.text(layout.w - 150, 22, `Lv. ${this.pokemon.level}`, { ...FONTS.heading, color: COLORS.textHighlight });
 
     // Type badges
     if (pData) {
@@ -46,7 +47,7 @@ export class SummaryScene extends Phaser.Scene {
     }
 
     // Close button
-    drawButton(this, GAME_WIDTH - 40, 25, '✕', () => this.scene.stop(), 40, 30);
+    drawButton(this, layout.w - 40, 25, '✕', () => this.scene.stop(), 40, 30);
 
     // Tabs
     const tabs: Tab[] = ['INFO', 'STATS', 'MOVES'];
@@ -59,7 +60,7 @@ export class SummaryScene extends Phaser.Scene {
     });
 
     // Divider
-    this.add.rectangle(GAME_WIDTH / 2, 98, GAME_WIDTH - 50, 2, COLORS.border, 0.5);
+    this.add.rectangle(layout.cx, 98, layout.w - 50, 2, COLORS.border, 0.5);
 
     // Keyboard
     this.input.keyboard!.on('keydown-LEFT', () => {
@@ -102,10 +103,11 @@ export class SummaryScene extends Phaser.Scene {
     const x = 50;
     let y = 120;
     const lineH = 28;
+    const layout = ui(this);
 
     // Pokemon sprite
     const spriteKey = pData?.spriteKeys.front;
-    const spriteX = GAME_WIDTH - 110;
+    const spriteX = layout.w - 110;
     const spriteY = 190;
     // Background box
     const spriteBox = this.add.rectangle(spriteX, spriteY, 120, 120, COLORS.bgCard).setStrokeStyle(2, COLORS.border);
@@ -296,9 +298,10 @@ export class SummaryScene extends Phaser.Scene {
     const p = this.pokemon;
     const x = 50;
     let y = 120;
+    const layout = ui(this);
 
     if (p.moves.length === 0) {
-      const noMoves = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'No moves', { fontSize: '18px', color: '#888888' }).setOrigin(0.5);
+      const noMoves = this.add.text(layout.cx, layout.cy, 'No moves', { fontSize: '18px', color: '#888888' }).setOrigin(0.5);
       this.contentGroup.add(noMoves);
       return;
     }
@@ -308,7 +311,7 @@ export class SummaryScene extends Phaser.Scene {
       if (!md) return;
 
       // Move card background — full width
-      const cardBg = this.add.rectangle(GAME_WIDTH / 2, y + 45, GAME_WIDTH - 50, 90, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
+      const cardBg = this.add.rectangle(layout.cx, y + 45, layout.w - 50, 90, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
       this.contentGroup.add(cardBg);
 
       // Type badge
@@ -326,7 +329,7 @@ export class SummaryScene extends Phaser.Scene {
       this.contentGroup.add(moveName);
 
       // PP
-      const pp = this.add.text(GAME_WIDTH - 100, y + 3, `PP ${m.currentPp}/${md.pp}`, { fontSize: '14px', color: '#aaaaaa' });
+      const pp = this.add.text(layout.w - 100, y + 3, `PP ${m.currentPp}/${md.pp}`, { fontSize: '14px', color: '#aaaaaa' });
       this.contentGroup.add(pp);
 
       // Power / Accuracy

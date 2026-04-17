@@ -85,6 +85,30 @@ export class GameManager {
     return GameManager.instance;
   }
 
+  /** Reset all game state for a new game. */
+  reset(): void {
+    this.party = [];
+    this.bag = [];
+    this.money = 3000;
+    this.badges = [];
+    this.flags = {};
+    this.trainersDefeated = [];
+    this.pokedex = { seen: new Set<number>(), caught: new Set<number>() };
+    this.playerName = 'Red';
+    this.playerGender = 'boy';
+    this.playtime = 0;
+    this.currentMap = 'pallet-town';
+    this.playerPosition = { x: 7, y: 10, direction: 'down' as string };
+    this.boxes = Array.from({ length: 12 }, () => []);
+    this.boxNames = Array.from({ length: 12 }, (_, i) => `Box ${i + 1}`);
+    this.difficulty = 'classic';
+    this.nuzlockeEncountered = [];
+    this.stepCount = 0;
+    this.gameStats = defaultStats();
+    this.hallOfFame = [];
+    this.visitedMaps = new Set(['pallet-town']);
+  }
+
   // Party
   getParty(): PokemonInstance[] { return this.party; }
   setParty(party: PokemonInstance[]): void { this.party = party; }
@@ -119,9 +143,12 @@ export class GameManager {
 
   // Money
   getMoney(): number { return this.money; }
-  addMoney(amount: number): void { this.money += amount; }
+  addMoney(amount: number): void {
+    if (amount < 0) return; // Prevent negative money additions
+    this.money += amount;
+  }
   spendMoney(amount: number): boolean {
-    if (this.money < amount) return false;
+    if (amount < 0 || this.money < amount) return false;
     this.money -= amount;
     return true;
   }

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { QuestManager } from '@managers/QuestManager';
 import { EventManager } from '@managers/EventManager';
@@ -21,10 +21,11 @@ export class QuestTrackerScene extends Phaser.Scene {
   }
 
   create(): void {
+    const layout = ui(this);
     const padX = 8;
     const padY = 6;
     const width = isMobile() ? 180 : 210;
-    const x = GAME_WIDTH - width - 8;
+    const x = layout.w - width - 8;
     const y = 6;
 
     this.bg = this.add.rectangle(0, 0, width, 48, 0x000000, 0.55).setOrigin(0, 0);
