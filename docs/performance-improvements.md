@@ -397,18 +397,18 @@ Object literal specifies `_escRaw` which isn't in the `InputState` type.
 | **Critical** | 3.1 | Memory | TouchControls DOM listener leak | 1 hr | ✅ Done |
 | **Critical** | 3.2 | Memory | VirtualJoystick DOM listener leak | 30 min | ✅ Done |
 | **Critical** | 1.1 | Bundle | 1.85 MB single chunk, no code splitting | 4 hr | ✅ Done |
-| **High** | 3.3 | Memory | No scene shutdown() methods | 4 hr | |
+| **High** | 3.3 | Memory | No scene shutdown() methods | 4 hr | ✅ Done (5 scenes) |
 | **High** | 2.7 | Performance | 521 PNGs, no texture atlas | 4 hr | |
 | **High** | 4.1 | Architecture | GameManager god object (383 LOC) | 8 hr | |
 | **High** | 4.2 | Architecture | BattleUIScene mega-file (1013 LOC) | 6 hr | |
 | **High** | 4.3 | Architecture | Duplicated catch logic | 2 hr | |
 | **High** | 2.3 | Performance | O(n) NPC collision scan | 1 hr | ✅ Done |
 | **High** | 2.2 | Performance | MoveAnimationPlayer manual Arcs | 3 hr | |
-| **High** | 5.1 | Type Safety | 19 `as any` casts | 3 hr | |
+| **High** | 5.1 | Type Safety | 19 `as any` casts | 3 hr | ✅ Done (GM: 0 casts) |
 | **High** | 1.3 | Bundle | All maps eagerly imported | 2 hr | |
-| **Medium** | 4.4 | Architecture | Turn-order logic in 3 places | 2 hr | |
+| **Medium** | 4.4 | Architecture | Turn-order logic in 3 places | 2 hr | ✅ Done |
 | **Medium** | 4.6 | Architecture | Untyped EventManager | 3 hr | |
-| **Medium** | 5.2 | Quality | 9 async functions without try/catch | 2 hr | |
+| **Medium** | 5.2 | Quality | 9 async functions without try/catch | 2 hr | ✅ Done |
 | **Medium** | 5.5 | Quality | BattleManager ignores AIController | 1 hr | ✅ Done |
 | **Medium** | 5.6 | Quality | No level cap guard in exp loop | 15 min | ✅ Done |
 | **Medium** | 2.4 | Performance | HealthBar full redraw per tick | 1 hr | |
@@ -417,7 +417,7 @@ Object literal specifies `_escRaw` which isn't in the `InputState` type.
 | **Medium** | 6.3 | Tech Debt | Individual sprites instead of tilemaps | 8 hr | |
 | **Medium** | 1.2 | Bundle | No minification/compression config | 1 hr | |
 | **Medium** | 1.4 | Bundle | All Pokemon/move data eager | 2 hr | |
-| **Medium** | 3.4 | Memory | AudioManager stale scene reference | 1 hr | |
+| **Medium** | 3.4 | Memory | AudioManager stale scene reference | 1 hr | ✅ Done |
 | **Medium** | 5.3 | Quality | Swallowed errors in theme.ts | 15 min | ✅ Done |
 | **Medium** | 5.4 | Quality | 13 stale import paths | Fixed by 6.1 | ✅ Done |
 | **Low** | 6.2 | Dead Code | Dead updateGrassCrop method | 5 min | ✅ Done |
@@ -442,9 +442,9 @@ Object literal specifies `_escRaw` which isn't in the `InputState` type.
 5. ~~Remove dead `updateGrassCrop` (6.2)~~ ✅
 6. ~~Add level cap guard (5.6)~~ ✅
 
-### Phase 2 — Memory Leak Fixes (< 2 hours) — Partial
+### Phase 2 — Memory Leak Fixes (< 2 hours) ✅ Complete
 7. ~~Add `destroy()` to TouchControls and VirtualJoystick (3.1, 3.2)~~ ✅
-8. Add `shutdown()` to top 5 most-restarted scenes (3.3 partial) — **TODO**
+8. ~~Add `shutdown()` to top 5 most-restarted scenes (3.3 partial)~~ ✅
 
 ### Phase 3 — Hot-Path Performance (< 2 hours) ✅ Complete
 9. ~~Reuse persistent Image in LightingSystem (2.1)~~ ✅

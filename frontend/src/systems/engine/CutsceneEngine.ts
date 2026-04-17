@@ -83,23 +83,27 @@ export class CutsceneEngine {
 
   /** Execute a single action. */
   private async executeAction(action: CutsceneAction): Promise<void> {
-    switch (action.type) {
-      case 'dialogue':      return this.execDialogue(action);
-      case 'moveCameraTo':  return this.execMoveCameraTo(action);
-      case 'moveNPC':       return this.execMoveNPC(action);
-      case 'faceNPC':       return this.execFaceNPC(action);
-      case 'facePlayer':    return this.execFacePlayer(action);
-      case 'wait':          return this.execWait(action);
-      case 'fadeToBlack':   return this.execFadeToBlack(action);
-      case 'fadeFromBlack': return this.execFadeFromBlack(action);
-      case 'flashScreen':   return this.execFlashScreen(action);
-      case 'playBGM':       return this.execPlayBGM(action);
-      case 'playSFX':       return this.execPlaySFX(action);
-      case 'screenShake':   return this.execScreenShake(action);
-      case 'showEmote':     return this.execShowEmote(action);
-      case 'setFlag':       return this.execSetFlag(action);
-      case 'parallel':      return this.execParallel(action);
-      case 'movePlayer':    return this.execMovePlayer(action);
+    try {
+      switch (action.type) {
+        case 'dialogue':      return this.execDialogue(action);
+        case 'moveCameraTo':  return this.execMoveCameraTo(action);
+        case 'moveNPC':       return this.execMoveNPC(action);
+        case 'faceNPC':       return this.execFaceNPC(action);
+        case 'facePlayer':    return this.execFacePlayer(action);
+        case 'wait':          return this.execWait(action);
+        case 'fadeToBlack':   return this.execFadeToBlack(action);
+        case 'fadeFromBlack': return this.execFadeFromBlack(action);
+        case 'flashScreen':   return this.execFlashScreen(action);
+        case 'playBGM':       return this.execPlayBGM(action);
+        case 'playSFX':       return this.execPlaySFX(action);
+        case 'screenShake':   return this.execScreenShake(action);
+        case 'showEmote':     return this.execShowEmote(action);
+        case 'setFlag':       return this.execSetFlag(action);
+        case 'parallel':      return this.execParallel(action);
+        case 'movePlayer':    return this.execMovePlayer(action);
+      }
+    } catch (err) {
+      console.warn(`CutsceneEngine: action '${action.type}' failed:`, err);
     }
   }
 

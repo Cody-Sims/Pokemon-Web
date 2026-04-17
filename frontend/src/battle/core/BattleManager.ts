@@ -6,8 +6,8 @@ import { StatusEffectHandler } from '../effects/StatusEffectHandler';
 import { WeatherManager } from '../effects/WeatherManager';
 import { AbilityHandler } from '../effects/AbilityHandler';
 import { HeldItemHandler } from '../effects/HeldItemHandler';
-
 import { AIController } from './AIController';
+import { calculateTurnOrder } from '../../scenes/battle/BattleTurnRunner';
 
 export type BattleType = 'wild' | 'trainer';
 
@@ -118,24 +118,15 @@ export class BattleManager {
   } {
     const turnMessages: string[] = [];
 
-    // Use effective speed (accounts for stat stages and paralysis)
-    const playerSpeed = this.statusHandler.getEffectiveStat(this.playerActive, 'speed');
-    const enemySpeed = this.statusHandler.getEffectiveStat(this.enemyActive, 'speed');
-
-    // Check move priority
-    const playerMove = moveData[moveId];
     const enemyMoveId = this.getEnemyMove();
-    const enemyMove = moveData[enemyMoveId];
-    const playerPriority = playerMove?.priority ?? 0;
-    const enemyPriority = enemyMove?.priority ?? 0;
+    const turnOrder = calculateTurnOrder(
+      this.playerActive, this.enemyActive, moveId, enemyMoveId, this.statusHandler,
+    );
 
-    const playerFirst = playerPriority > enemyPriority
-      || (playerPriority === enemyPriority && (playerSpeed > enemySpeed || (playerSpeed === enemySpeed && Math.random() < 0.5)));
-
-    const first = playerFirst ? this.playerActive : this.enemyActive;
-    const second = playerFirst ? this.enemyActive : this.playerActive;
-    const firstMove = playerFirst ? moveId : enemyMoveId;
-    const secondMove = playerFirst ? enemyMoveId : moveId;
+    const first = turnOrder[0].attacker;
+    const second = turnOrder[1].attacker;
+    const firstMove = turnOrder[0].moveId;
+    const secondMove = turnOrder[1].moveId;
 
     // Turn-start check for first mover
     const firstFlinch = this.statusHandler.checkFlinch(first);
@@ -188,6 +179,7 @@ export class BattleManager {
 
     this.fsm.transition('CHECK_FAINT');
 
+    const playerFirst = turnOrder[0].isPlayer;
     return {
       playerResult: playerFirst ? firstResult : secondResult,
       enemyResult: playerFirst ? secondResult : firstResult,

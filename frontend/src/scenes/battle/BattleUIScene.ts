@@ -1118,4 +1118,8 @@ export class BattleUIScene extends Phaser.Scene {
     this.scene.stop('BattleScene');
     this.scene.start(returnScene, returnData);
   }
+
+  shutdown(): void {
+    this.input.keyboard?.removeAllListeners();
+  }
 }

@@ -815,4 +815,13 @@ export class OverworldScene extends Phaser.Scene {
     }
   }
 
+  shutdown(): void {
+    this.input.keyboard?.removeAllListeners();
+    this.lightingSystem?.destroy();
+    this.ambientSFX?.destroy();
+    this.weatherRenderer?.destroy();
+    this.npcBehaviors = [];
+    this.npcOccupiedTiles.clear();
+  }
+
 }

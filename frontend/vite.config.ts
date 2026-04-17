@@ -20,12 +20,18 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, '..', 'dist'),
     emptyOutDir: true,
+    target: 'es2020',
     rollupOptions: {
       output: {
         manualChunks: {
           phaser: ['phaser'],
           battle: [
             './src/battle/index.ts',
+          ],
+          data: [
+            './src/data/pokemon/index.ts',
+            './src/data/moves/index.ts',
+            './src/data/type-chart.ts',
           ],
         },
       },

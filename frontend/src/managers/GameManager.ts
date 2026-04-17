@@ -339,7 +339,7 @@ export class GameManager {
     if (data.boxNames) this.boxNames = data.boxNames;
     if (data.settings) this.settings = { ...this.settings, ...data.settings };
     if (data.difficulty) this.difficulty = data.difficulty as DifficultyMode;
-    if ((data as any).trainerId) this.trainerId = (data as any).trainerId;
+    if (data.trainerId) this.trainerId = data.trainerId;
     if (data.nuzlockeEncountered) this.nuzlockeEncountered = data.nuzlockeEncountered;
     if (data.gameStats) this.gameStats = { ...defaultStats(), ...data.gameStats };
     if (data.hallOfFame) this.hallOfFame = data.hallOfFame;
@@ -350,6 +350,7 @@ export class GameManager {
   loadFromSave(save: {
     player: {
       name: string;
+      gender?: 'boy' | 'girl';
       position: { mapKey: string; x: number; y: number; direction: string };
       party: PokemonInstance[];
       bag: { itemId: string; quantity: number }[];
@@ -363,6 +364,9 @@ export class GameManager {
     boxes?: PokemonInstance[][];
     difficulty?: string;
     nuzlockeEncountered?: string[];
+    gameStats?: Record<string, number>;
+    hallOfFame?: unknown[];
+    visitedMaps?: string[];
   }): void {
     this.party = save.player.party;
     this.bag = save.player.bag;
@@ -373,7 +377,7 @@ export class GameManager {
     this.pokedex.seen = new Set(save.player.pokedex.seen);
     this.pokedex.caught = new Set(save.player.pokedex.caught);
     this.playerName = save.player.name;
-    if ((save.player as any).gender) this.playerGender = (save.player as any).gender as 'boy' | 'girl';
+    if (save.player.gender) this.playerGender = save.player.gender;
     this.playtime = save.player.playtime;
     this.currentMap = save.player.position.mapKey;
     this.playerPosition = {
@@ -384,8 +388,8 @@ export class GameManager {
     if (save.boxes) this.boxes = save.boxes;
     if (save.difficulty) this.difficulty = save.difficulty as DifficultyMode;
     if (save.nuzlockeEncountered) this.nuzlockeEncountered = save.nuzlockeEncountered;
-    if ((save as any).gameStats) this.gameStats = { ...defaultStats(), ...(save as any).gameStats };
-    if ((save as any).hallOfFame) this.hallOfFame = (save as any).hallOfFame;
-    if ((save as any).visitedMaps) this.visitedMaps = new Set((save as any).visitedMaps);
+    if (save.gameStats) this.gameStats = { ...defaultStats(), ...save.gameStats };
+    if (save.hallOfFame) this.hallOfFame = save.hallOfFame as typeof this.hallOfFame;
+    if (save.visitedMaps) this.visitedMaps = new Set(save.visitedMaps);
   }
 }

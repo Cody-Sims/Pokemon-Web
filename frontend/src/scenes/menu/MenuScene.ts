@@ -167,6 +167,10 @@ export class MenuScene extends Phaser.Scene {
     this.scene.resume('OverworldScene');
   }
 
+  shutdown(): void {
+    this.input.keyboard?.removeAllListeners();
+  }
+
   private saveGame(): void {
     const sm = SaveManager.getInstance();
     sm.save();

@@ -8,7 +8,16 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-16]
 
+### Added
+- **Scene shutdown() methods (3.3)**: OverworldScene, BattleUIScene, MenuScene, and DialogueScene now clean up keyboard listeners and sub-systems on shutdown, preventing listener accumulation
+- **Vite data chunk splitting (1.2)**: Pokemon, moves, and type-chart data split into a separate `data` bundle chunk
+
 ### Fixed
+- **AudioManager stale scene guard (3.4)**: All audio methods now check `isSceneActive()` before accessing the scene's sound/tween/timer plugins, preventing crashes on destroyed scenes
+- **BattleManager turn-order duplication (4.4)**: `selectMove()` now calls shared `calculateTurnOrder()` from BattleTurnRunner instead of inline priority/speed logic
+- **GameManager `as any` casts (5.1)**: Expanded `loadFromSave()` and `deserialize()` parameter types to eliminate all `as any` casts (gender, gameStats, hallOfFame, visitedMaps, trainerId)
+- **CutsceneEngine async error handling (5.2)**: `executeAction()` now wraps all action dispatches in try/catch with console.warn for graceful degradation
+- **Stale OverworldScene.ts duplicate**: Removed lingering copy that reappeared after stash operation
 - **BUG-059: Professor identity crisis** — Unified all Oak references to Prof. Willow across pallet-oak-lab, OverworldScene, item-data, tm-data, viridian-pokemart, pallet-player-house, and pallet-town NPC dialogue
 - **BUG-060: Pallet Town → Littoral Town** — Updated all player-facing text from "Pallet Town" to "Littoral Town" in NPC dialogue, signs, dock pier, generic-house, route-1 sign, and cutscene comments
 - **BUG-061: Missing quest reward items** — Added rare-candy, master-ball, mystic-water, spell-tag, dragon-scale, and charcoal to item-data.ts

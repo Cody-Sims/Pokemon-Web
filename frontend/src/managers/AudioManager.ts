@@ -56,6 +56,11 @@ export class AudioManager {
     }
   }
 
+  /** Check if the bound scene is still usable. */
+  private isSceneActive(): boolean {
+    return !!this.scene && !!this.scene.sys && this.scene.sys.isActive();
+  }
+
   /** Check if an audio key is loaded in the cache. */
   private hasAudio(key: string): boolean {
     if (!this.scene) return false;
@@ -64,7 +69,7 @@ export class AudioManager {
 
   /** Play background music with crossfade. Skips if same track is already playing. */
   playBGM(key: string): void {
-    if (!this.scene || this.muted) return;
+    if (!this.isSceneActive() || this.muted) return;
 
     // Already playing this track
     if (this.currentBGMKey === key && this.currentBGM) return;
@@ -81,7 +86,7 @@ export class AudioManager {
       const oldBGM = this.currentBGM;
       this.previousBGMKey = this.currentBGMKey;
       this.currentBGMKey = key;
-      this.scene.tweens.add({
+      this.scene!.tweens.add({
         targets: oldBGM,
         volume: 0,
         duration: 500,
@@ -147,16 +152,16 @@ export class AudioManager {
 
   /** Play a one-shot sound effect. Safe to call with missing keys. */
   playSFX(key: string): void {
-    if (!this.scene || this.muted || !this.unlocked) return;
+    if (!this.isSceneActive() || this.muted || !this.unlocked) return;
     if (!this.hasAudio(key)) return;
-    this.scene.sound.play(key, { volume: this.sfxVolume });
+    this.scene!.sound.play(key, { volume: this.sfxVolume });
   }
 
   /** Play SFX with a custom playback rate for pitch-shifted variations. */
   playSFXWithRate(key: string, rate: number): void {
-    if (!this.scene || this.muted || !this.unlocked) return;
+    if (!this.isSceneActive() || this.muted || !this.unlocked) return;
     if (!this.hasAudio(key)) return;
-    const sfx = this.scene.sound.add(key, { volume: this.sfxVolume });
+    const sfx = this.scene!.sound.add(key, { volume: this.sfxVolume });
     if ('setRate' in sfx) {
       (sfx as Phaser.Sound.WebAudioSound).setRate(rate);
     }

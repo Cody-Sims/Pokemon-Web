@@ -281,4 +281,11 @@ export class DialogueScene extends Phaser.Scene {
     this.scene.stop();
     this.scene.resume(this.callingScene);
   }
+
+  shutdown(): void {
+    this.input.keyboard?.removeAllListeners();
+    this.input.removeAllListeners();
+    this.typeTimer?.destroy();
+    this.indicatorTween?.destroy();
+  }
 }
