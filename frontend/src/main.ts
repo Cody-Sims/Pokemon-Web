@@ -26,13 +26,56 @@ function onFirstInteraction(): void {
     const el = document.documentElement;
     const rfs = el.requestFullscreen ?? (el as unknown as Record<string, () => Promise<void>>).webkitRequestFullscreen;
     if (rfs) {
-      rfs.call(el).then(() => tryLockOrientation()).catch(() => {});
+      rfs.call(el).then(() => tryLockOrientation()).catch(() => {
+        // Fullscreen API not supported (e.g. iOS Safari) — use scroll trick
+        collapseIOSSafariChrome();
+      });
+    } else {
+      // No fullscreen API at all (iOS Safari) — use scroll trick
+      collapseIOSSafariChrome();
     }
   }
 
   document.removeEventListener('pointerdown', onFirstInteraction);
 }
 document.addEventListener('pointerdown', onFirstInteraction, { once: true });
+
+// ── iOS Safari chrome collapse ──
+// iOS Safari hides the address/tab bar when the page scrolls.
+// Temporarily allow scrolling, scroll by 1px, then lock scrolling again.
+function collapseIOSSafariChrome(): void {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (!isIOS) return;
+
+  const html = document.documentElement;
+  const body = document.body;
+
+  // Temporarily make body scrollable
+  html.style.overflow = 'auto';
+  body.style.overflow = 'auto';
+  body.style.position = 'relative';
+  body.style.height = 'calc(100vh + 1px)';
+
+  // Scroll to collapse the chrome
+  requestAnimationFrame(() => {
+    window.scrollTo(0, 1);
+    // Re-lock scrolling after the chrome collapses
+    setTimeout(() => {
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      body.style.position = 'fixed';
+      body.style.height = '100dvh';
+      // Trigger Phaser resize to use reclaimed space
+      game.scale.refresh();
+    }, 300);
+  });
+}
+
+// Re-collapse iOS Safari chrome after orientation change
+window.addEventListener('orientationchange', () => {
+  setTimeout(collapseIOSSafariChrome, 500);
+});
 
 // ── Portrait orientation prompt ──
 function updateOrientationPrompt(): void {

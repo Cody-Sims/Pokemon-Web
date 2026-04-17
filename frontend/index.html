@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#ffcc00" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -10,8 +10,10 @@
   <title>Pokemon Web</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; touch-action: none;
-      user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    html, body { width: 100%; height: 100dvh; height: 100%; background: #000; overflow: hidden; touch-action: none;
+      user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
     canvas { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
     #mobile-controls {
       position: fixed; left: 0; right: 0; bottom: 0;

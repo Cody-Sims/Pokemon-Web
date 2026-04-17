@@ -4,7 +4,7 @@
   "description": "A browser-based Pokémon-style RPG",
   "start_url": "/Pokemon-Web/",
   "scope": "/Pokemon-Web/",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "landscape",
   "background_color": "#0f0f1a",
   "theme_color": "#ffcc00",
