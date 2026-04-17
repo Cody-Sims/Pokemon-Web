@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { gameConfig } from '@config/game-config';
 import { resetSafeAreaCache } from '@utils/safe-area';
 import { syncAccessibilitySettings } from '@utils/accessibility';
+import { computeGameWidth, GAME_HEIGHT } from '@utils/constants';
+import { AudioManager } from '@managers/AudioManager';
 
 const game = new Phaser.Game(gameConfig);
 
@@ -25,6 +27,10 @@ try {
         game.canvas.style.filter = filterMap[settings.colorblindMode] ?? 'none';
       });
     }
+  }
+  // Restore mute state for desktop mute button
+  if (localStorage.getItem('pokemon-web-muted') === '1') {
+    AudioManager.getInstance().setMuted(true);
   }
 } catch { /* no saved settings yet */ }
 
@@ -101,6 +107,25 @@ function collapseIOSSafariChrome(): void {
 window.addEventListener('orientationchange', () => {
   resetSafeAreaCache();
   setTimeout(collapseIOSSafariChrome, 500);
+});
+
+// ── Dynamic game resize — fill the viewport after orientation or resize changes ──
+let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+function handleViewportResize(): void {
+  if (resizeTimer) clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const newWidth = computeGameWidth();
+    const current = game.scale.gameSize;
+    if (current.width !== newWidth || current.height !== GAME_HEIGHT) {
+      game.scale.resize(newWidth, GAME_HEIGHT);
+    }
+    game.scale.refresh();
+  }, 150);
+}
+window.addEventListener('resize', handleViewportResize);
+window.addEventListener('orientationchange', () => {
+  // Delay a bit longer for orientation — the viewport needs time to settle
+  setTimeout(handleViewportResize, 400);
 });
 
 // ── iOS "Add to Home Screen" install prompt ──
@@ -186,3 +211,8 @@ function showInstallBanner(): void {
     deferredInstallPrompt = null;
   });
 }
+
+// ── Desktop mute toggle via custom event from index.html ──
+window.addEventListener('pokemon-mute-toggle', ((e: CustomEvent<{ muted: boolean }>) => {
+  AudioManager.getInstance().setMuted(e.detail.muted);
+}) as EventListener);

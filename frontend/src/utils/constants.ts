@@ -24,7 +24,7 @@ export const TRAINER_EXP_MULTIPLIER = 1.5;
 export const GAME_HEIGHT = 600;
 
 /** Compute a game width that matches the device aspect ratio (clamped 4:3 – 21:9). */
-function computeGameWidth(): number {
+export function computeGameWidth(): number {
   if (typeof window === 'undefined') return 800; // SSR / test fallback
   const aspect = window.innerWidth / window.innerHeight;
   // Clamp between 4:3 (1.333) and 21:9 (2.333)

@@ -7,6 +7,11 @@ All notable changes to the Pokemon Web project.
 ## [Unreleased]
 
 ## [2026-04-16]
+### Added
+- **Dynamic game resize**: Game width recomputes on viewport/orientation changes so mobile devices fill the full screen width after rotation instead of showing black side bars
+- **Desktop chrome**: Styled background gradient, canvas frame with rounded corners and glow border, fullscreen toggle button (F11), mute toggle button (M key), and keyboard shortcut hints overlay
+- **Desktop mute button**: Persistent mute state via localStorage, wired to AudioManager
+
 ### Fixed
 - **BUG-001**: Player faint no longer auto-loses battle; prompts party switch when alive Pokemon remain
 - **BUG-002**: PP now deducted before accuracy check so missed moves still cost PP
