@@ -6,6 +6,9 @@ All notable changes to the Pokemon Web project.
 
 ## [Unreleased]
 
+### Changed
+- **Wraithmoor Town map redesign** (`frontend/src/data/maps/cities/wraithmoor-town.ts`): Replaced generic grid layout with organic haunted ruins town. Added graveyard section with GRAVE_MARKERs, ruined cathedral/shrine area (east) using RUIN_WALL/RUIN_PILLAR/CRACKED_FLOOR, MIST overlay throughout, AUTUMN_TREE/DARK_GRASS biome theming, winding cracked stone paths. Buildings repositioned: PokéCenter (NW), PokéMart (W), Ghost Gym (SW among graves), House remnant (NE). All warps, spawns, and NPC coordinates updated and validated
+
 ### Fixed
 - **Map dimension mismatches**: Corrected `width: 25` to `width: 24` in 6 city maps (ironvale-city, cinderfall-town, scalecrest-citadel, verdantia-village, voltara-city, wraithmoor-town) to match actual grid row lengths
 - **Verdantia Village ragged rows**: Padded 22 rows from 23 to 24 characters with grass tiles to match declared width
