@@ -137,11 +137,11 @@ Each city needs: unique building arrangement (no grid pattern), biome-appropriat
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| **Fly fast-travel UI** | Map selection scene from visited towns, badge-gated | Not started |
+| **Fly fast-travel UI** | Map selection scene from visited towns, badge-gated | **Done** |
 | **Cycling sprite/animation** | Distinct visual for bicycle mode | Not started |
-| **Boss trainer Synthesis** | Vex and Aldric use Synthesis Mode in their battles | Not started |
-| **Partner AI in doubles** | Smart move selection for NPC allies (Rook, Kael) in tag battles | Not started |
-| **Trainer rematches** | All 8 Gym Leaders (Lv 60+), Elite Four (Lv 70+), Kael Champion challenger (Lv 60–65) | Not started |
+| **Boss trainer Synthesis** | Vex and Aldric use Synthesis Mode in their battles | **Done** |
+| **Partner AI in doubles** | Smart move selection for NPC allies (Rook, Kael) in tag battles | **Done** |
+| **Trainer rematches** | All 8 Gym Leaders (Lv 60+), Elite Four (Lv 70+), Kael Champion challenger (Lv 60–65) | **Done** |
 | **~10 remaining cutscenes** | Full narrative coverage for all story beats | Partial |
 
 #### Gameplay — Medium Priority
@@ -149,8 +149,8 @@ Each city needs: unique building arrangement (no grid pattern), biome-appropriat
 | Feature | Description | Status |
 |---------|-------------|--------|
 | **Overworld visual polish** | Window light shafts in interiors, neon glow in Voltara, Aether crystal pulse animation | Not started |
-| **Statistics sub-menu** | Detailed stat viewer scene (GameStats already tracked) | Not started |
-| **Hall of Fame on title screen** | View past champion completions from title menu | Not started |
+| **Statistics sub-menu** | Detailed stat viewer scene (GameStats already tracked) | **Done** |
+| **Hall of Fame on title screen** | View past champion completions from title menu | **Done** |
 | **Wire remaining achievement triggers** | All gym badges, champion, sweep-trainer, underdog-win, etc. | Partial |
 | **Town Map scene** | Show visited cities/routes with current objective marker | Not started |
 | **Double battle UI polish** | Partner HP display, partner action indication, clearer messaging | Not started |

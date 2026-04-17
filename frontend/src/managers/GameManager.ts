@@ -1,7 +1,37 @@
 import { PokemonInstance } from '@data/interfaces';
 import { DifficultyMode, DifficultyConfig, DIFFICULTY_CONFIGS } from '@data/difficulty';
 
-/** Central game state: party, badges, playtime, flags. */
+export interface GameStats {
+  totalBattlesWon: number;
+  totalBattlesLost: number;
+  wildBattles: number;
+  trainerBattles: number;
+  totalCatches: number;
+  totalSteps: number;
+  moneyEarned: number;
+  moneySpent: number;
+  pokemonEvolved: number;
+  criticalHits: number;
+  highestDamage: number;
+}
+
+export interface HallOfFameEntry {
+  timestamp: number;
+  playerName: string;
+  playtime: number;
+  party: { pokemonId: number; level: number; nickname?: string }[];
+}
+
+function defaultStats(): GameStats {
+  return {
+    totalBattlesWon: 0, totalBattlesLost: 0, wildBattles: 0,
+    trainerBattles: 0, totalCatches: 0, totalSteps: 0,
+    moneyEarned: 0, moneySpent: 0, pokemonEvolved: 0,
+    criticalHits: 0, highestDamage: 0,
+  };
+}
+
+/** Central game state: party, badges, playtime, flags, stats. */
 export class GameManager {
   private static instance: GameManager;
 
@@ -22,6 +52,9 @@ export class GameManager {
   private difficulty: DifficultyMode = 'classic';
   private nuzlockeEncountered: string[] = []; // route keys where first encounter already happened
   private stepCount = 0;
+  private gameStats: GameStats = defaultStats();
+  private hallOfFame: HallOfFameEntry[] = [];
+  private visitedMaps: Set<string> = new Set(['pallet-town']);
   private settings: Record<string, string | number | boolean> = {
     textSpeed: 'medium',
     musicVolume: 0.5,
@@ -201,6 +234,32 @@ export class GameManager {
   getSetting(key: string): string | number | boolean | undefined { return this.settings[key]; }
   setSetting(key: string, value: string | number | boolean): void { this.settings[key] = value; }
 
+  // Game Stats
+  getGameStats(): GameStats { return this.gameStats; }
+  incrementStat(key: keyof GameStats, amount = 1): void {
+    this.gameStats[key] += amount;
+  }
+  getStat(key: keyof GameStats): number { return this.gameStats[key]; }
+
+  // Hall of Fame
+  getHallOfFame(): HallOfFameEntry[] { return this.hallOfFame; }
+  addHallOfFameEntry(): void {
+    this.hallOfFame.push({
+      timestamp: Date.now(),
+      playerName: this.playerName,
+      playtime: this.playtime,
+      party: this.party.map(p => ({
+        pokemonId: p.dataId,
+        level: p.level,
+        nickname: p.nickname,
+      })),
+    });
+  }
+
+  // Visited Maps
+  hasVisitedMap(mapKey: string): boolean { return this.visitedMaps.has(mapKey); }
+  markMapVisited(mapKey: string): void { this.visitedMaps.add(mapKey); }
+
   /** Serialize state for saving. */
   serialize() {
     return {
@@ -221,6 +280,9 @@ export class GameManager {
       settings: this.settings,
       difficulty: this.difficulty,
       nuzlockeEncountered: this.nuzlockeEncountered,
+      gameStats: this.gameStats,
+      hallOfFame: this.hallOfFame,
+      visitedMaps: [...this.visitedMaps],
     };
   }
 
@@ -244,6 +306,9 @@ export class GameManager {
     if (data.settings) this.settings = { ...this.settings, ...data.settings };
     if (data.difficulty) this.difficulty = data.difficulty as DifficultyMode;
     if (data.nuzlockeEncountered) this.nuzlockeEncountered = data.nuzlockeEncountered;
+    if (data.gameStats) this.gameStats = { ...defaultStats(), ...data.gameStats };
+    if (data.hallOfFame) this.hallOfFame = data.hallOfFame;
+    if (data.visitedMaps) this.visitedMaps = new Set(data.visitedMaps);
   }
 
   /** Restore state from a SaveData object (from localStorage). */
@@ -284,5 +349,8 @@ export class GameManager {
     if (save.boxes) this.boxes = save.boxes;
     if (save.difficulty) this.difficulty = save.difficulty as DifficultyMode;
     if (save.nuzlockeEncountered) this.nuzlockeEncountered = save.nuzlockeEncountered;
+    if ((save as any).gameStats) this.gameStats = { ...defaultStats(), ...(save as any).gameStats };
+    if ((save as any).hallOfFame) this.hallOfFame = (save as any).hallOfFame;
+    if ((save as any).visitedMaps) this.visitedMaps = new Set((save as any).visitedMaps);
   }
 }

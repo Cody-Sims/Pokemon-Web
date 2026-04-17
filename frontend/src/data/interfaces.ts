@@ -52,6 +52,12 @@ export interface TrainerData {
   victoryFlag?: string;
   /** Badge to award when this trainer is defeated (gym leaders). */
   badgeReward?: string;
+  /** If true, this is a post-game rematch variant. */
+  isRematch?: boolean;
+  /** If true, this trainer uses Synthesis Mode on one of their Pokémon. */
+  useSynthesis?: boolean;
+  /** Party slot index (0-based) for Synthesis activation. */
+  synthesisSlot?: number;
 }
 
 export interface EncounterEntry {

@@ -7,6 +7,20 @@ All notable changes to the Pokemon Web project.
 ## [Unreleased]
 
 ## [2026-04-16]
+### Added — Six Remaining Features from plan.md
+- **FlyMapScene** (`scenes/menu/FlyMapScene.ts`): Fly fast-travel scene showing visited towns on a list, badge-gated via OverworldAbilities. Accessible from pause menu when Fly is available.
+- **StatisticsScene** (`scenes/menu/StatisticsScene.ts`): GameStats viewer displaying 14 tracked stats (battles, catches, steps, money, etc.). Accessible from pause menu under STATS.
+- **HallOfFameScene** (`scenes/menu/HallOfFameScene.ts`): Paginated champion record viewer showing party, playtime, and date. Accessible from both title screen and pause menu.
+- **PartnerAI** (`battle/core/PartnerAI.ts`): Smart NPC ally move selection for tag/double battles. Considers STAB, effectiveness, ally safety (penalizes spread moves), prioritizes finishing low-HP targets. Wired into DoubleBattleManager.
+- **Trainer Rematches** (`data/trainers/rematch.ts`): Post-game rematch teams for all 8 Gym Leaders (Lv 60–65), 4 Elite Four (Lv 70–75), Champion Aldric (Lv 72–78 with Synthesis), and rival Kael (Lv 60–65). Registered in trainer data index.
+- **Boss Trainer Synthesis**: `useSynthesis` field on TrainerData interface. BattleUIScene triggers Synthesis activation on first turn for boss trainers with eligible Pokémon. Champion Aldric rematch uses Synthesis on Mewtwo.
+- **GameManager extensions**: `GameStats` interface (11 tracked stats), `HallOfFameEntry` interface, `visitedMaps` Set, `incrementStat()`, `getStat()`, `addHallOfFameEntry()`, `hasVisitedMap()`, `markMapVisited()`. All persisted via serialize/deserialize.
+- **MenuScene**: Added STATS, HALL OF FAME, and conditional FLY options to pause menu.
+- **TitleScene**: Conditional "Hall of Fame" option when save has entries.
+
+### Fixed
+- Fixed rematch Gym Leader Ivy using nonexistent `moonlight` move (replaced with `mega-drain`)
+
 ### Added — Mobile Landscape Experience
 - **Widescreen-aware resolution**: Game width now dynamically adapts to the device aspect ratio (clamped 4:3–21:9, height fixed at 600). Phones with 19.5:9 screens get a ~1300×600 canvas instead of letter-boxed 800×600, eliminating black bars in landscape.
 - **`ui()` layout helper** (`utils/ui-layout.ts`): Camera-relative positioning utility that returns viewport dimensions, center point, edges, and proportional coordinate functions. Replaces hardcoded `GAME_WIDTH`/`GAME_HEIGHT` constants in scene layouts.

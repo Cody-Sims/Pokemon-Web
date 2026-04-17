@@ -429,6 +429,21 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
+  /** Show a synthesis aura around the enemy sprite for boss battles. */
+  showEnemySynthesisAura(): void {
+    const sprite = this.enemySprite;
+    const aura = this.add.ellipse(sprite.x, sprite.y + 5, 80, 50, 0xff00dd, 0.3)
+      .setDepth(sprite.depth - 1);
+    this.tweens.add({
+      targets: aura,
+      alpha: 0.6,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+  }
+
   /** Hide the synthesis aura. */
   hideSynthesisAura(): void {
     if (this.synthesisAura) {

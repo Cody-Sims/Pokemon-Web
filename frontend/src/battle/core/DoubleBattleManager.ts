@@ -7,6 +7,7 @@ import { WeatherManager } from '../effects/WeatherManager';
 import { AbilityHandler } from '../effects/AbilityHandler';
 import { HeldItemHandler } from '../effects/HeldItemHandler';
 import { AIController } from './AIController';
+import { PartnerAI } from './PartnerAI';
 
 // ── Move targeting ──────────────────────────────────────────────
 
@@ -478,5 +479,26 @@ export class DoubleBattleManager {
   cleanup(): void {
     this.statusHandler.cleanup();
     this.weatherManager.cleanup();
+  }
+
+  /**
+   * Generate a TurnAction for the NPC partner in a tag battle (slot 1).
+   * Uses PartnerAI for smarter move selection that considers ally safety.
+   */
+  getPartnerAction(): TurnAction | null {
+    const partner = this.playerActive[1];
+    if (!partner || partner.currentHp <= 0) return null;
+
+    const ally = this.playerActive[0]; // The player's Pokémon
+    const enemies = [this.enemyActive[0], this.enemyActive[1]];
+
+    const { moveId, targetSlot } = PartnerAI.selectMove(partner, enemies, ally);
+
+    return {
+      type: 'move',
+      pokemonIndex: 1, // Partner is always slot 1
+      moveId,
+      targetSlot: targetSlot,
+    };
   }
 }

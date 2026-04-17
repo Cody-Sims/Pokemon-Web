@@ -100,7 +100,10 @@ pokemon-web/
 │       │   │   ├── QuestJournalScene.ts    # Quest log — Active/Complete tabs
 │       │   │   ├── QuestTrackerScene.ts    # HUD overlay — active quest step
 │       │   │   ├── TrainerCardScene.ts     # Trainer card display
-│       │   │   └── AchievementScene.ts     # Achievement gallery with category tabs
+│       │   │   ├── AchievementScene.ts     # Achievement gallery with category tabs
+│       │   │   ├── FlyMapScene.ts          # Fly fast-travel destination picker
+│       │   │   ├── StatisticsScene.ts      # GameStats viewer (battles, catches, steps, etc.)
+│       │   │   └── HallOfFameScene.ts      # Hall of Fame champion records browser
 │       │   ├── pokemon/
 │       │   │   ├── StarterSelectScene.ts   # Starter Pokémon selection overlay
 │       │   │   ├── NicknameScene.ts        # Pokémon nickname input overlay
@@ -122,7 +125,8 @@ pokemon-web/
 │       │   │   ├── BattleManager.ts       # Orchestrates turns, win/loss, party (single battles)
 │       │   │   ├── DoubleBattleManager.ts # 2v2 double/tag battle manager
 │       │   │   ├── BattleStateMachine.ts  # FSM: INTRO → PLAYER_TURN → EXECUTE_TURN → …
-│       │   │   └── AIController.ts        # Enemy move selection heuristics
+│       │   │   ├── AIController.ts        # Enemy move selection heuristics
+│       │   │   └── PartnerAI.ts           # Smart NPC ally move selection for tag/double battles
 │       │   ├── calculation/
 │       │   │   ├── DamageCalculator.ts    # Pokémon damage formula (STAB, type, crit, weather)
 │       │   │   ├── ExperienceCalculator.ts # EXP yield, level-up, stat recalc, natures
@@ -206,7 +210,8 @@ pokemon-web/
 │       │   │   ├── gym-leaders.ts     # 8 gym leader trainers
 │       │   │   ├── elite-four.ts      # Elite Four + Champion
 │       │   │   ├── route-trainers.ts  # Route & area trainers (~40)
-│       │   │   └── team-grunts.ts     # Team Synthesis grunts & admins
+│       │   │   ├── team-grunts.ts     # Team Synthesis grunts & admins
+│       │   │   └── rematch.ts         # Post-game rematches (gym leaders, E4, champion, rival)
 │       │   ├── encounter-tables.ts    # Per-route wild Pokémon + level ranges
 │       │   ├── evolution-data.ts      # Evolution conditions (level, item, trade)
 │       │   ├── quest-data.ts          # Side quest definitions (steps, flags, rewards)

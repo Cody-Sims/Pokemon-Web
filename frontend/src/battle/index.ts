@@ -4,6 +4,7 @@ export type { BattleConfig, BattleType } from './core/BattleManager';
 export { BattleStateMachine } from './core/BattleStateMachine';
 export { DoubleBattleManager, getMoveTarget } from './core/DoubleBattleManager';
 export { AIController } from './core/AIController';
+export { PartnerAI } from './core/PartnerAI';
 
 // ── Calculation ──────────────────────────────────────────────
 export { DamageCalculator } from './calculation/DamageCalculator';

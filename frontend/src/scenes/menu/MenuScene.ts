@@ -7,18 +7,26 @@ import { GameManager } from '@managers/GameManager';
 import { SaveManager } from '@managers/SaveManager';
 import { SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
+import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 
 export class MenuScene extends Phaser.Scene {
   private cursor = 0;
   private menuItems!: Phaser.GameObjects.Text[];
   private cursorIcon!: Phaser.GameObjects.Text;
-  private menuLabels = ['POKEDEX', 'POKEMON', 'BAG', 'QUESTS', 'SAVE', 'OPTIONS', 'QUIT', 'EXIT'];
+  private menuLabels: string[] = [];
 
   constructor() {
     super({ key: 'MenuScene' });
   }
 
   create(): void {
+    // Build menu labels dynamically
+    this.menuLabels = ['POKEDEX', 'POKEMON', 'BAG', 'QUESTS', 'STATS', 'HALL OF FAME'];
+    if (OverworldAbilities.canUse('fly')) {
+      this.menuLabels.push('FLY');
+    }
+    this.menuLabels.push('SAVE', 'OPTIONS', 'QUIT', 'EXIT');
+
     // Dim overlay
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgOverlay, 0.45);
 
@@ -110,6 +118,25 @@ export class MenuScene extends Phaser.Scene {
         this.scene.get('QuestJournalScene').events.once('shutdown', () => {
           this.scene.wake();
         });
+        break;
+      case 'STATS':
+        this.scene.sleep();
+        this.scene.launch('StatisticsScene');
+        this.scene.get('StatisticsScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
+        break;
+      case 'HALL OF FAME':
+        this.scene.sleep();
+        this.scene.launch('HallOfFameScene');
+        this.scene.get('HallOfFameScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
+        break;
+      case 'FLY':
+        this.scene.stop();
+        this.scene.pause('OverworldScene');
+        this.scene.launch('FlyMapScene');
         break;
       case 'SAVE':
         this.saveGame();

@@ -84,13 +84,16 @@ export class OverworldScene extends Phaser.Scene {
     super({ key: 'OverworldScene' });
   }
 
-  init(data?: { mapKey?: string; spawnId?: string; saveData?: SaveData }): void {
+  init(data?: { mapKey?: string; spawnId?: string; saveData?: SaveData; flyTo?: string }): void {
     // Restore from save data if provided
     if (data?.saveData) {
       const gm = GameManager.getInstance();
       gm.loadFromSave(data.saveData);
       this.mapKey = gm.getCurrentMap();
       this.spawnId = '__resume';
+    } else if (data?.flyTo) {
+      this.mapKey = data.flyTo;
+      this.spawnId = data.spawnId ?? 'default';
     } else {
       this.mapKey = data?.mapKey ?? GameManager.getInstance().getCurrentMap();
       this.spawnId = data?.spawnId ?? 'default';
@@ -133,6 +136,7 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     gm.setCurrentMap(this.mapKey);
+    gm.markMapVisited(this.mapKey);
     EventManager.getInstance().emit('map-entered', this.mapKey);
 
     const mapW = this.mapDef.width;

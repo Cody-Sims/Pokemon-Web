@@ -4,6 +4,7 @@ import { gymLeaderTrainers } from './gym-leaders';
 import { eliteFourTrainers } from './elite-four';
 import { routeTrainers } from './route-trainers';
 import { teamGruntTrainers } from './team-grunts';
+import { rematchTrainers } from './rematch';
 
 export const trainerData: Record<string, TrainerData> = {
   ...rivalTrainers,
@@ -11,6 +12,7 @@ export const trainerData: Record<string, TrainerData> = {
   ...eliteFourTrainers,
   ...routeTrainers,
   ...teamGruntTrainers,
+  ...rematchTrainers,
 };
 
 export { rivalTrainers } from './rival';
@@ -18,3 +20,4 @@ export { gymLeaderTrainers } from './gym-leaders';
 export { eliteFourTrainers } from './elite-four';
 export { routeTrainers } from './route-trainers';
 export { teamGruntTrainers } from './team-grunts';
+export { rematchTrainers } from './rematch';

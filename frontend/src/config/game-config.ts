@@ -21,6 +21,9 @@ import { QuestJournalScene } from '@scenes/menu/QuestJournalScene';
 import { QuestTrackerScene } from '@scenes/menu/QuestTrackerScene';
 import { MoveTutorScene } from '@scenes/pokemon/MoveTutorScene';
 import { NicknameScene } from '@scenes/pokemon/NicknameScene';
+import { FlyMapScene } from '@scenes/menu/FlyMapScene';
+import { StatisticsScene } from '@scenes/menu/StatisticsScene';
+import { HallOfFameScene } from '@scenes/menu/HallOfFameScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
 const isMobile = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
@@ -64,5 +67,8 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     QuestTrackerScene,
     MoveTutorScene,
     NicknameScene,
+    FlyMapScene,
+    StatisticsScene,
+    HallOfFameScene,
   ],
 };

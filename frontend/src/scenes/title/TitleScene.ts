@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { SaveManager } from '@managers/SaveManager';
 import { AudioManager } from '@managers/AudioManager';
+import { GameManager } from '@managers/GameManager';
 import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
 import { BGM, SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
@@ -67,6 +68,11 @@ export class TitleScene extends Phaser.Scene {
     if (SaveManager.getInstance().hasSave()) {
       options.unshift('Continue');
       options.push('Delete Save');
+    }
+    // Show Hall of Fame if save has entries
+    const gm = GameManager.getInstance();
+    if (gm.getHallOfFame().length > 0) {
+      options.push('Hall of Fame');
     }
     options.push('Options');
 
@@ -186,6 +192,13 @@ export class TitleScene extends Phaser.Scene {
             }
           },
         );
+        break;
+      case 'Hall of Fame':
+        this.scene.sleep();
+        this.scene.launch('HallOfFameScene');
+        this.scene.get('HallOfFameScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
         break;
     }
   }

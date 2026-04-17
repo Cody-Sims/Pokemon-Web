@@ -17,8 +17,9 @@ import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { SynthesisHandler } from '@battle/effects/SynthesisHandler';
-import { SYNTHESIS_ITEM } from '@data/synthesis-data';
+import { SYNTHESIS_ITEM, SYNTHESIS_ELIGIBLE } from '@data/synthesis-data';
 import { getMoveTarget } from '@battle/core/DoubleBattleManager';
+import { trainerData } from '@data/trainers';
 import { pickEnemyMove, calculateTurnOrder } from './BattleTurnRunner';
 import { showMessageQueue as showMsgQueue } from './BattleMessageQueue';
 import { showDamagePopup as showDmgPopup } from './BattleDamageNumbers';
@@ -46,6 +47,7 @@ export class BattleUIScene extends Phaser.Scene {
   private synthText?: Phaser.GameObjects.Text;
   private targetArrows: Phaser.GameObjects.Text[] = [];
   private targetCursor = 0;
+  private bossSynthesisTriggered = false;
 
   constructor() {
     super({ key: 'BattleUIScene' });
@@ -389,6 +391,34 @@ export class BattleUIScene extends Phaser.Scene {
 
   // ─── Turn execution ───
   private executeTurn(playerMoveId: string): void {
+    const b = this.battle();
+    const player = b.playerPokemon;
+    const enemy = b.enemyPokemon;
+
+    // Boss Synthesis: trigger on first turn if trainer data says so
+    if (!this.bossSynthesisTriggered && b.isTrainerBattle) {
+      const tData = b.trainerId ? trainerData[b.trainerId] : null;
+      if (tData && (tData as any).useSynthesis && enemy.dataId in SYNTHESIS_ELIGIBLE) {
+        this.bossSynthesisTriggered = true;
+        this.state = 'animating';
+        this.hideActions();
+        this.cameras.main.flash(200, 200, 50, 200);
+        AudioManager.getInstance().playSFX(SFX.STAT_UP);
+        const { messages } = this.synthesisHandler.activate(enemy);
+        b.showEnemySynthesisAura?.();
+        this.time.delayedCall(300, () => {
+          this.showMessageQueue(messages, 0, () => {
+            this.time.delayedCall(400, () => this.doExecuteTurn(playerMoveId));
+          });
+        });
+        return;
+      }
+    }
+
+    this.doExecuteTurn(playerMoveId);
+  }
+
+  private doExecuteTurn(playerMoveId: string): void {
     const b = this.battle();
     const player = b.playerPokemon;
     const enemy = b.enemyPokemon;

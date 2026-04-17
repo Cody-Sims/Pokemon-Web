@@ -1,0 +1,171 @@
+import Phaser from 'phaser';
+import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE, TYPE_COLORS } from '@ui/theme';
+import { AudioManager } from '@managers/AudioManager';
+import { GameManager, HallOfFameEntry } from '@managers/GameManager';
+import { pokemonData } from '@data/pokemon';
+import { SFX } from '@utils/audio-keys';
+
+/**
+ * Hall of Fame scene showing past champion completions.
+ * Accessible from both the title screen and pause menu.
+ */
+export class HallOfFameScene extends Phaser.Scene {
+  private entries: HallOfFameEntry[] = [];
+  private page = 0;
+  private readonly entriesPerPage = 3;
+
+  constructor() {
+    super({ key: 'HallOfFameScene' });
+  }
+
+  create(): void {
+    const gm = GameManager.getInstance();
+    this.entries = gm.getHallOfFame();
+    this.page = 0;
+
+    // Background
+    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
+    drawPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 20, GAME_HEIGHT - 20);
+
+    // Title
+    this.add.text(GAME_WIDTH / 2, 28, '★ HALL OF FAME ★', {
+      ...FONTS.heading, color: '#ffcc00',
+    }).setOrigin(0.5);
+
+    this.add.rectangle(GAME_WIDTH / 2, 52, GAME_WIDTH - 50, 2, 0xffcc00, 0.5);
+
+    if (this.entries.length === 0) {
+      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'No champion records yet.', {
+        ...FONTS.body, color: COLORS.textGray,
+      }).setOrigin(0.5);
+    } else {
+      this.drawPage();
+    }
+
+    // Navigation hint
+    const navHint = this.entries.length > this.entriesPerPage
+      ? 'LEFT/RIGHT to browse  •  ESC to close'
+      : 'Press ESC to close';
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 25, navHint, {
+      ...FONTS.caption, color: COLORS.textDim,
+    }).setOrigin(0.5);
+
+    // Input
+    this.input.keyboard!.on('keydown-ESC', () => this.close());
+    this.input.keyboard!.on('keydown-ENTER', () => this.close());
+    this.input.keyboard!.on('keydown-LEFT', () => this.prevPage());
+    this.input.keyboard!.on('keydown-RIGHT', () => this.nextPage());
+    this.input.on('pointerdown', () => this.close());
+  }
+
+  private drawPage(): void {
+    // Remove old content (tagged as 'page-content')
+    this.children.list
+      .filter(c => (c as any).pageContent)
+      .forEach(c => c.destroy());
+
+    const start = this.page * this.entriesPerPage;
+    const pageEntries = this.entries.slice(start, start + this.entriesPerPage);
+    const totalPages = Math.ceil(this.entries.length / this.entriesPerPage);
+
+    // Page indicator
+    if (totalPages > 1) {
+      const pi = this.addTagged(
+        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, `Page ${this.page + 1} / ${totalPages}`, {
+          ...FONTS.caption, color: COLORS.textGray,
+        }).setOrigin(0.5),
+      );
+    }
+
+    const cardH = 150;
+    const startY = 75;
+
+    pageEntries.forEach((entry, i) => {
+      const y = startY + i * (cardH + 10);
+
+      // Card background
+      this.addTagged(
+        this.add.rectangle(GAME_WIDTH / 2, y + cardH / 2, GAME_WIDTH - 50, cardH, COLORS.bgCard, 0.8)
+          .setStrokeStyle(1, 0xffcc00),
+      );
+
+      // Entry number and date
+      const entryNum = start + i + 1;
+      const dateStr = new Date(entry.timestamp).toLocaleDateString();
+      this.addTagged(
+        this.add.text(40, y + 10, `#${entryNum} — ${dateStr}`, {
+          ...FONTS.bodySmall, color: '#ffcc00',
+        }),
+      );
+
+      // Player name and playtime
+      const hours = Math.floor(entry.playtime / 3600);
+      const mins = Math.floor((entry.playtime % 3600) / 60);
+      this.addTagged(
+        this.add.text(40, y + 30, `${entry.playerName}  •  ${hours}h ${mins}m`, {
+          ...FONTS.body, color: COLORS.textWhite,
+        }),
+      );
+
+      // Party display
+      const partyY = y + 60;
+      const slotW = 85;
+      const startX = 40;
+
+      entry.party.forEach((p, pi) => {
+        const data = pokemonData[p.pokemonId];
+        const name = data?.name ?? `#${p.pokemonId}`;
+        const typeColor = data ? TYPE_COLORS[data.types[0]] ?? 0x888888 : 0x888888;
+
+        const sx = startX + pi * slotW;
+
+        // Type dot
+        this.addTagged(
+          this.add.circle(sx + 8, partyY + 8, 6, typeColor),
+        );
+
+        // Name
+        this.addTagged(
+          this.add.text(sx + 20, partyY, name, {
+            fontSize: '12px', color: '#ffffff',
+          }),
+        );
+
+        // Level
+        this.addTagged(
+          this.add.text(sx + 20, partyY + 16, `Lv${p.level}`, {
+            fontSize: '11px', color: '#aaaaaa',
+          }),
+        );
+      });
+    });
+  }
+
+  private addTagged<T extends Phaser.GameObjects.GameObject>(obj: T): T {
+    (obj as any).pageContent = true;
+    return obj;
+  }
+
+  private nextPage(): void {
+    const totalPages = Math.ceil(this.entries.length / this.entriesPerPage);
+    if (this.page < totalPages - 1) {
+      this.page++;
+      this.drawPage();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
+    }
+  }
+
+  private prevPage(): void {
+    if (this.page > 0) {
+      this.page--;
+      this.drawPage();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
+    }
+  }
+
+  private close(): void {
+    AudioManager.getInstance().playSFX(SFX.CANCEL);
+    this.scene.stop();
+  }
+}
