@@ -66,11 +66,11 @@ describe('SaveManager', () => {
 
     const loaded = sm.load();
     expect(loaded).not.toBeNull();
-    expect(loaded!.player.name).toBe('Red');
-    expect(loaded!.player.party).toHaveLength(1);
-    expect(loaded!.player.bag).toEqual([{ itemId: 'potion', quantity: 3 }]);
-    expect(loaded!.player.badges).toContain('boulder');
-    expect(loaded!.player.money).toBe(3500);
+    expect(loaded!.playerName).toBe('Red');
+    expect(loaded!.party).toHaveLength(1);
+    expect(loaded!.bag).toEqual([{ itemId: 'potion', quantity: 3 }]);
+    expect(loaded!.badges).toContain('boulder');
+    expect(loaded!.money).toBe(3500);
     expect(loaded!.flags['got-pokedex']).toBe(true);
     expect(loaded!.trainersDefeated).toContain('rival-1');
   });
@@ -129,19 +129,7 @@ describe('SaveManager', () => {
 
     // Load and restore
     const data = sm.load()!;
-    gm2.deserialize({
-      party: data.player.party,
-      bag: data.player.bag,
-      money: data.player.money,
-      badges: data.player.badges,
-      flags: data.flags,
-      trainersDefeated: data.trainersDefeated,
-      pokedex: data.player.pokedex,
-      playerName: data.player.name,
-      playtime: data.player.playtime,
-      currentMap: data.player.position.mapKey,
-      playerPosition: { x: data.player.position.x, y: data.player.position.y, direction: data.player.position.direction },
-    });
+    gm2.deserialize(data as any);
 
     expect(gm2.getPlayerName()).toBe('Ash');
     expect(gm2.getParty()).toHaveLength(2);

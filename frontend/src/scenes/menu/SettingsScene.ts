@@ -269,6 +269,12 @@ export class SettingsScene extends Phaser.Scene {
 
     this.controller?.destroy();
     this.scene.stop();
-    this.scene.resume(this.returnScene);
+    // Use wake() to match the sleep() used by MenuScene, fall back to resume()
+    const target = this.scene.get(this.returnScene);
+    if (target && !target.scene.isActive()) {
+      this.scene.wake(this.returnScene);
+    } else {
+      this.scene.resume(this.returnScene);
+    }
   }
 }

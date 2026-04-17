@@ -155,6 +155,7 @@ export class StarterSelectScene extends Phaser.Scene {
     gm.setParty([]);
     gm.addToParty(starter);
     gm.setFlag('receivedStarter');
+    gm.setFlag(`starterChoice_${choice.id}`);
     gm.markSeen(choice.id);
     gm.markCaught(choice.id);
 

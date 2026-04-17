@@ -45,6 +45,7 @@ export interface MoveEffect {
   hits?: number;   // Exact hit count for multi-hit (e.g. 2 for Double Kick)
   weather?: WeatherCondition;
   twoTurnMove?: string; // e.g. 'fly', 'dig', 'solar-beam'
+  rechargeOnly?: boolean; // true for moves like Hyper Beam that only recharge (no charge turn)
 }
 
 // Weather conditions

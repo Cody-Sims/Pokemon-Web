@@ -8,6 +8,7 @@ export interface InputState {
   cancel: boolean;
   menu: boolean;
   bicycle: boolean;
+  _escRaw?: boolean; // Raw ESC key state for disambiguation
 }
 
 /** Unified input manager: WASD/Arrow keys + touch controls. */
@@ -58,12 +59,16 @@ export class InputManager {
     const touchConfirm = this.touchControls?.consumeConfirm() ?? false;
     const touchCancel = this.touchControls?.consumeCancel() ?? false;
 
+    // ESC/cancel maps to 'cancel' in menus, 'menu' only when nothing is open
+    const cancelActive = escPressed || touchCancel;
+
     return {
       direction,
       confirm: Phaser.Input.Keyboard.JustDown(this.confirmKey) || Phaser.Input.Keyboard.JustDown(this.spaceKey) || touchConfirm,
-      cancel: escPressed || touchCancel,
+      cancel: cancelActive,
       bicycle: Phaser.Input.Keyboard.JustDown(this.bicycleKey),
-      menu: escPressed || touchCancel,
+      menu: cancelActive,
+      _escRaw: escPressed,
     };
   }
 

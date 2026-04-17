@@ -142,6 +142,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
         'A familiar handwriting catches your eye in the Champion\'s records... Could it be?',
       ]},
       { type: 'setFlag', flag: 'quest_fatherTrail_started' },
+      { type: 'setFlag', flag: 'fatherTrail_active' },
     ],
   },
 

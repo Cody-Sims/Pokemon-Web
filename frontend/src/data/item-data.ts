@@ -56,6 +56,30 @@ export const itemData: Record<string, ItemData> = {
     buyPrice: 1500,
     effect: { type: 'heal-hp', amount: -1 }, // -1 = half max HP
   },
+  'hyper-potion': {
+    id: 'hyper-potion', name: 'Hyper Potion', category: 'medicine',
+    description: 'Restores 200 HP to a single Pokémon.',
+    buyPrice: 1200,
+    effect: { type: 'heal-hp', amount: 200 },
+  },
+  'max-potion': {
+    id: 'max-potion', name: 'Max Potion', category: 'medicine',
+    description: 'Fully restores the HP of a single Pokémon.',
+    buyPrice: 2500,
+    effect: { type: 'heal-hp', amount: 9999 },
+  },
+  'full-restore': {
+    id: 'full-restore', name: 'Full Restore', category: 'medicine',
+    description: 'Fully restores HP and cures all status conditions.',
+    buyPrice: 3000,
+    effect: { type: 'heal-hp', amount: 9999 },
+  },
+  'max-revive': {
+    id: 'max-revive', name: 'Max Revive', category: 'medicine',
+    description: 'Revives a fainted Pokémon to full HP.',
+    buyPrice: 4000,
+    effect: { type: 'heal-hp', amount: -2 }, // -2 = full max HP
+  },
 
   // ─── Poké Balls ───
   'poke-ball': {
@@ -82,7 +106,7 @@ export const itemData: Record<string, ItemData> = {
     id: 'repel', name: 'Repel', category: 'battle',
     description: 'Prevents weak wild Pokémon from appearing for 100 steps.',
     buyPrice: 350,
-    effect: { type: 'key' },
+    effect: { type: 'repel', steps: 100 },
   },
 
   // ─── Key Items ───
@@ -121,27 +145,27 @@ export const itemData: Record<string, ItemData> = {
   'leftovers': {
     id: 'leftovers', name: 'Leftovers', category: 'battle',
     description: 'Restores 1/16 of max HP at the end of each turn in battle.',
-    effect: { type: 'key' },
+    effect: { type: 'held-passive', held: 'leftovers' },
   },
   'life-orb': {
     id: 'life-orb', name: 'Life Orb', category: 'battle',
     description: 'Boosts move power by 30% but costs 10% HP per attack.',
-    effect: { type: 'key' },
+    effect: { type: 'held-passive', held: 'life-orb' },
   },
   'choice-band': {
     id: 'choice-band', name: 'Choice Band', category: 'battle',
     description: 'Boosts Attack by 50% but locks into one move.',
-    effect: { type: 'key' },
+    effect: { type: 'held-passive', held: 'choice-band' },
   },
   'choice-specs': {
     id: 'choice-specs', name: 'Choice Specs', category: 'battle',
     description: 'Boosts Sp. Atk by 50% but locks into one move.',
-    effect: { type: 'key' },
+    effect: { type: 'held-passive', held: 'choice-specs' },
   },
   'focus-sash': {
     id: 'focus-sash', name: 'Focus Sash', category: 'battle',
     description: 'Survives a one-hit KO from full HP, leaving 1 HP. Single use.',
-    effect: { type: 'key' },
+    effect: { type: 'held-passive', held: 'focus-sash' },
   },
   'sitrus-berry': {
     id: 'sitrus-berry', name: 'Sitrus Berry', category: 'medicine',
@@ -186,29 +210,29 @@ export const itemData: Record<string, ItemData> = {
 
   // ─── Evolution Stones ───
   'fire-stone': {
-    id: 'fire-stone', name: 'Fire Stone', category: 'key',
+    id: 'fire-stone', name: 'Fire Stone', category: 'evolution',
     description: 'A stone that evolves certain Pokémon. It is colored orange.',
-    effect: { type: 'key' },
+    effect: { type: 'evolution-stone', stone: 'fire-stone' },
   },
   'water-stone': {
-    id: 'water-stone', name: 'Water Stone', category: 'key',
+    id: 'water-stone', name: 'Water Stone', category: 'evolution',
     description: 'A stone that evolves certain Pokémon. It is a blue shard.',
-    effect: { type: 'key' },
+    effect: { type: 'evolution-stone', stone: 'water-stone' },
   },
   'thunder-stone': {
-    id: 'thunder-stone', name: 'Thunder Stone', category: 'key',
+    id: 'thunder-stone', name: 'Thunder Stone', category: 'evolution',
     description: 'A stone that evolves certain Pokémon. It has a thunderbolt pattern.',
-    effect: { type: 'key' },
+    effect: { type: 'evolution-stone', stone: 'thunder-stone' },
   },
   'leaf-stone': {
-    id: 'leaf-stone', name: 'Leaf Stone', category: 'key',
+    id: 'leaf-stone', name: 'Leaf Stone', category: 'evolution',
     description: 'A stone that evolves certain Pokémon. It has a leaf pattern.',
-    effect: { type: 'key' },
+    effect: { type: 'evolution-stone', stone: 'leaf-stone' },
   },
   'moon-stone': {
-    id: 'moon-stone', name: 'Moon Stone', category: 'key',
+    id: 'moon-stone', name: 'Moon Stone', category: 'evolution',
     description: 'A stone that evolves certain Pokémon. It is found in caves.',
-    effect: { type: 'key' },
+    effect: { type: 'evolution-stone', stone: 'moon-stone' },
   },
 
   // ─── Misc ───

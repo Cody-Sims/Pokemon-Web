@@ -1,9 +1,13 @@
 import { moveData } from '@data/moves';
+import { AIController } from '@battle/core/AIController';
 import type { PokemonInstance } from '@data/interfaces';
 import type { StatusEffectHandler } from '@battle/effects/StatusEffectHandler';
 
-/** Pick a random available move for an enemy Pokémon. */
-export function pickEnemyMove(enemy: PokemonInstance): string {
+/** Pick a move for an enemy Pokémon using AI when available. */
+export function pickEnemyMove(enemy: PokemonInstance, opponent?: PokemonInstance, isTrainer?: boolean): string {
+  if (opponent && isTrainer !== undefined) {
+    return AIController.selectMove(enemy, opponent, isTrainer);
+  }
   const avail = enemy.moves.filter(m => m.currentPp > 0);
   if (avail.length === 0) return 'struggle';
   return avail[Math.floor(Math.random() * avail.length)].moveId;

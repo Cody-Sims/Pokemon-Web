@@ -28,15 +28,18 @@ export interface MoveData {
 export interface ItemData {
   id: string;
   name: string;
-  category: 'pokeball' | 'medicine' | 'battle' | 'key' | 'tm';
+  category: 'pokeball' | 'medicine' | 'battle' | 'key' | 'tm' | 'evolution';
   description: string;
   buyPrice?: number;
   effect: {
-    type: 'heal-hp' | 'heal-status' | 'capture' | 'boost-stat' | 'key' | 'teach-move';
+    type: 'heal-hp' | 'heal-status' | 'capture' | 'boost-stat' | 'key' | 'teach-move' | 'repel' | 'held-passive' | 'evolution-stone';
     amount?: number;
     status?: string;
     catchRateMultiplier?: number;
     moveId?: string;
+    steps?: number;
+    held?: string;
+    stone?: string;
   };
 }
 

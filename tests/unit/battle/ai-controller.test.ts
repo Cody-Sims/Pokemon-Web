@@ -34,7 +34,7 @@ describe('AIController', () => {
       expect(['ember', 'tackle', 'growl']).toContain(move);
     });
 
-    it('should return tackle as fallback when no PP left', () => {
+    it('should return struggle as fallback when no PP left', () => {
       const wild = makePokemon({
         moves: [
           { moveId: 'ember', currentPp: 0 },
@@ -42,7 +42,7 @@ describe('AIController', () => {
         ],
       });
       const opponent = makePokemon({ dataId: 1 });
-      expect(AIController.selectMove(wild, opponent, false)).toBe('tackle');
+      expect(AIController.selectMove(wild, opponent, false)).toBe('struggle');
     });
   });
 

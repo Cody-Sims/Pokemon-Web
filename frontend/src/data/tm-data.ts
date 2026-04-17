@@ -42,7 +42,6 @@ export const tmData: Record<string, TMData> = {
   'tm41': { id: 'tm41', moveId: 'dig',            name: 'TM41 Dig',            price: 0, location: 'Crystal Cavern',          reusable: true },
   'tm43': { id: 'tm43', moveId: 'rest',           name: 'TM43 Rest',           price: 0, location: 'Route 1',                 reusable: true },
   'tm47': { id: 'tm47', moveId: 'dark-pulse',     name: 'TM47 Dark Pulse',     price: 0, location: 'Ember Mines',             reusable: true },
-  'tm48': { id: 'tm48', moveId: 'brick-break',    name: 'TM48 Brick Break',    price: 0, location: 'Route 6',                 reusable: true },
 
   // ─── Shop TMs ────────────────────────────────────────────────────────────────
   'tm02': { id: 'tm02', moveId: 'dragon-rage',    name: 'TM02 Dragon Rage',    price: 5000,  location: 'Scalecrest shop',      reusable: true },
@@ -67,6 +66,7 @@ export const tmData: Record<string, TMData> = {
   'tm42': { id: 'tm42', moveId: 'substitute',     name: 'TM42 Substitute',     price: 4000,  location: 'Pokemon League shop',  reusable: true },
   'tm45': { id: 'tm45', moveId: 'sandstorm',      name: 'TM45 Sandstorm',      price: 3000,  location: 'Pewter shop',          reusable: true },
   'tm46': { id: 'tm46', moveId: 'thunder-wave',   name: 'TM46 Thunder Wave',   price: 2000,  location: 'Voltara shop',         reusable: true },
+  'tm48': { id: 'tm48', moveId: 'flash-cannon',  name: 'TM48 Flash Cannon',  price: 5500,  location: 'Ironvale shop',        reusable: true },
   'tm49': { id: 'tm49', moveId: 'swift',          name: 'TM49 Swift',          price: 2000,  location: 'Viridian shop',        reusable: true },
   'tm50': { id: 'tm50', moveId: 'energy-ball',    name: 'TM50 Energy Ball',    price: 5500,  location: 'Verdantia shop',       reusable: true },
 };

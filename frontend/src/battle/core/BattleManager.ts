@@ -64,6 +64,12 @@ export class BattleManager {
             this.fsm.transition('VICTORY');
           } else {
             this.enemyActive = this.config.enemyParty[this.enemyActiveIndex];
+            // Initialize status tracking and fire switch-in abilities
+            this.statusHandler.initPokemon(this.enemyActive);
+            const switchResult = AbilityHandler.onSwitchIn(this.enemyActive, this.playerActive, this.statusHandler);
+            if (switchResult.weather) {
+              this.weatherManager.setWeather(switchResult.weather);
+            }
             this.fsm.transition('PLAYER_TURN');
           }
         } else if (this.playerActive.currentHp <= 0) {

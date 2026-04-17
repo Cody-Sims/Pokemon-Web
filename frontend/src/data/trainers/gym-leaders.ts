@@ -59,7 +59,7 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
     party: [
       { pokemonId: 81, level: 24, moves: ['thunder-shock', 'sonic-boom', 'supersonic', 'tackle'] },
       { pokemonId: 82, level: 24, moves: ['thunder-shock', 'sonic-boom', 'tri-attack'] },
-      { pokemonId: 95, level: 27, moves: ['rock-throw', 'bind', 'slam', 'screech'] },
+      { pokemonId: 95, level: 27, moves: ['iron-tail', 'rock-throw', 'bind', 'screech'] },
     ],
     dialogue: {
       before: [
@@ -145,6 +145,7 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
       { pokemonId: 93, level: 38, moves: ['lick', 'hypnosis', 'dream-eater', 'confuse-ray'] },
       { pokemonId: 94, level: 40, moves: ['lick', 'hypnosis', 'dream-eater', 'night-shade'] },
       { pokemonId: 93, level: 38, moves: ['night-shade', 'confuse-ray', 'hypnosis', 'lick'] },
+      { pokemonId: 105, level: 39, moves: ['bone-club', 'bonemerang', 'headbutt', 'leer'] },
     ],
     dialogue: {
       before: ['Morwen: The spirits whisper of your coming...', 'Morwen: Let us see if you can face what lies beyond the veil.'],
@@ -161,6 +162,7 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
     party: [
       { pokemonId: 148, level: 42, moves: ['dragon-rage', 'slam', 'thunder-wave', 'agility'] },
       { pokemonId: 130, level: 42, moves: ['hydro-pump', 'bite', 'dragon-rage', 'thrash'] },
+      { pokemonId: 142, level: 43, moves: ['wing-attack', 'bite', 'slash', 'agility'] },
       { pokemonId: 149, level: 45, moves: ['dragon-rage', 'slam', 'thunder-wave', 'agility'] },
     ],
     dialogue: {

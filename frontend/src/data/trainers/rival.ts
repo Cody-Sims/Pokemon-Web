@@ -1,5 +1,9 @@
 import { TrainerData } from '../interfaces';
 
+// Note: Rival starter is hardcoded to Charmander line (pokemonId: 4/5/6).
+// TODO: Implement dynamic rival starter based on player's starterChoice flag
+// when the battle system supports dynamic party generation at encounter time.
+
 export const rivalTrainers: Record<string, TrainerData> = {
   // ─── Rival: Kael Ashford ───
   // Encounter 1: Professor Willow's Lab (starter advantage over player)

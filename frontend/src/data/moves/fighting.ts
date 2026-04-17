@@ -10,4 +10,8 @@ export const fightingMoves: Record<string, MoveData> = {
   'submission':   { id: 'submission', name: 'Submission', type: 'fighting', category: 'physical', power: 80, accuracy: 80, pp: 20, effect: { type: 'recoil', target: 'self', amount: 25 } },
   'counter':      { id: 'counter', name: 'Counter', type: 'fighting', category: 'physical', power: null, accuracy: 100, pp: 20 },
   'seismic-toss': { id: 'seismic-toss', name: 'Seismic Toss', type: 'fighting', category: 'physical', power: null, accuracy: 100, pp: 20, effect: { type: 'level-damage', target: 'enemy' } },
+  'brick-break':  { id: 'brick-break', name: 'Brick Break', type: 'fighting', category: 'physical', power: 75, accuracy: 100, pp: 15 },
+  'focus-punch':  { id: 'focus-punch', name: 'Focus Punch', type: 'fighting', category: 'physical', power: 150, accuracy: 100, pp: 20, priority: -3 },
+  'cross-chop':   { id: 'cross-chop', name: 'Cross Chop', type: 'fighting', category: 'physical', power: 100, accuracy: 80, pp: 5 },
+  'close-combat': { id: 'close-combat', name: 'Close Combat', type: 'fighting', category: 'physical', power: 120, accuracy: 100, pp: 5, effect: { type: 'stat-change', target: 'self', stat: 'defense', stages: -1 } },
 };

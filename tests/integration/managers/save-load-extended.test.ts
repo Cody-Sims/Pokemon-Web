@@ -45,13 +45,7 @@ describe('Save/Load — Extended Round-Trip Tests', () => {
     GameManager.instance = undefined;
     const gm2 = GameManager.getInstance();
     const data = SaveManager.getInstance().load()!;
-    gm2.deserialize({
-      party: data.player.party, bag: data.player.bag, money: data.player.money,
-      badges: data.player.badges, flags: data.flags, trainersDefeated: data.trainersDefeated,
-      pokedex: data.player.pokedex, playerName: data.player.name, playtime: data.player.playtime,
-      currentMap: data.player.position.mapKey,
-      playerPosition: { x: data.player.position.x, y: data.player.position.y, direction: data.player.position.direction },
-    });
+    gm2.deserialize(data as any);
 
     const restored = gm2.getParty()[0];
     expect(restored.nickname).toBe('Blaze');
@@ -74,9 +68,9 @@ describe('Save/Load — Extended Round-Trip Tests', () => {
     // @ts-expect-error private access
     GameManager.instance = undefined;
     const data = SaveManager.getInstance().load()!;
-    expect(data.player.bag).toHaveLength(4);
-    expect(data.player.bag.find(e => e.itemId === 'potion')?.quantity).toBe(10);
-    expect(data.player.bag.find(e => e.itemId === 'poke-ball')?.quantity).toBe(5);
+    expect(data.bag).toHaveLength(4);
+    expect(data.bag.find((e: any) => e.itemId === 'potion')?.quantity).toBe(10);
+    expect(data.bag.find((e: any) => e.itemId === 'poke-ball')?.quantity).toBe(5);
   });
 
   it('should preserve pokedex entries', () => {
@@ -91,11 +85,11 @@ describe('Save/Load — Extended Round-Trip Tests', () => {
     // @ts-expect-error private access
     GameManager.instance = undefined;
     const data = SaveManager.getInstance().load()!;
-    expect(data.player.pokedex.seen).toContain(1);
-    expect(data.player.pokedex.seen).toContain(4);
-    expect(data.player.pokedex.seen).toContain(7);
-    expect(data.player.pokedex.caught).toContain(4);
-    expect(data.player.pokedex.caught).not.toContain(1);
+    expect(data.pokedex.seen).toContain(1);
+    expect(data.pokedex.seen).toContain(4);
+    expect(data.pokedex.seen).toContain(7);
+    expect(data.pokedex.caught).toContain(4);
+    expect(data.pokedex.caught).not.toContain(1);
   });
 
   it('should preserve trainer defeat history', () => {
@@ -133,7 +127,7 @@ describe('Save/Load — Extended Round-Trip Tests', () => {
 
     SaveManager.getInstance().save();
     const data = SaveManager.getInstance().load()!;
-    expect(data.player.party).toHaveLength(6);
+    expect(data.party).toHaveLength(6);
   });
 
   it('should handle multiple save/load cycles', () => {
@@ -150,8 +144,8 @@ describe('Save/Load — Extended Round-Trip Tests', () => {
     sm.save();
 
     const data = sm.load()!;
-    expect(data.player.party).toHaveLength(1);
-    expect(data.player.bag.find(e => e.itemId === 'potion')?.quantity).toBe(5);
-    expect(data.player.badges).toContain('boulder');
+    expect(data.party).toHaveLength(1);
+    expect(data.bag.find((e: any) => e.itemId === 'potion')?.quantity).toBe(5);
+    expect(data.badges).toContain('boulder');
   });
 });

@@ -10,6 +10,7 @@ export const eliteFourTrainers: Record<string, TrainerData> = {
       { pokemonId: 131, level: 52, moves: ['ice-beam', 'surf', 'thunderbolt', 'sing'] },
       { pokemonId: 62, level: 50, moves: ['surf', 'body-slam', 'earthquake', 'hypnosis'] },
       { pokemonId: 121, level: 51, moves: ['surf', 'psychic', 'ice-beam', 'thunderbolt'] },
+      { pokemonId: 73, level: 52, moves: ['surf', 'sludge', 'ice-beam', 'wrap'] },
     ],
     dialogue: {
       before: ['Nerida: Welcome, challenger. The waters run deep here.', 'Nerida: Let us see how long you can hold your breath.'],

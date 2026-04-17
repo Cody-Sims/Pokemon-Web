@@ -12,9 +12,10 @@ All notable changes to the Pokemon Web project.
 - **BUG-002**: PP now deducted before accuracy check so missed moves still cost PP
 - **BUG-003**: Removed phantom Bulbasaur injection; battle returns to overworld if party is empty
 - **BUG-004**: Added `rival_intro_seen` flag to rival-intro cutscene to prevent infinite replay
-- **BUG-005**: SaveManager now uses GameManager.serialize() to persist all state (gameStats, hallOfFame, visitedMaps, boxNames, playerGender, stepCount, settings)
+- **BUG-005**: SaveManager now uses GameManager.serialize() to persist all state including achievements
 - **BUG-006**: CutsceneEngine.execSetFlag() now emits 'flag-set' event so QuestManager automation receives cutscene flags
 - **BUG-007**: QuestManager.initAutomation() now guards against duplicate listener registration across scene transitions
+- **BUG-008**: Tag battle handler now uses correct `targetScene`/`targetData` keys for TransitionScene
 - **BUG-010**: Run action now uses speed-based flee formula with failure chance; blocked in trainer battles
 - **BUG-011**: Speed Boost now actually increments the speed stat stage via StatusEffectHandler
 - **BUG-012**: Poison Heal now skips poison damage and heals 1/8 HP instead of applying damage then healing
@@ -25,12 +26,39 @@ All notable changes to the Pokemon Web project.
 - **BUG-025**: Enemy fallback move changed from 'tackle' to 'struggle' when all PP exhausted
 - **BUG-026**: Speed ties now resolved by random coin flip instead of always favoring player
 - **BUG-028**: Fixed Smokescreen, Sand Attack, Double Team, Minimize, and Focus Energy to target correct stats
+- **BUG-029**: Hyper Beam now has recharge turn via two-turn move system
+- **BUG-030**: Phantom Force now uses two-turn move system (vanish then strike)
+- **BUG-032**: Enemy switch-in now runs initPokemon and ability triggers (Intimidate, weather setters)
+- **BUG-034**: Repel now uses proper 'repel' effect type instead of 'key'
+- **BUG-035**: Evolution stones now use 'evolution-stone' effect type with proper category
+- **BUG-037**: Added shop inventories for 8 missing cities (coral-harbor through pokemon-league)
+- **BUG-038**: Held items (Leftovers, Life Orb, Choice Band/Specs, Focus Sash) now use 'held-passive' effect type
+- **BUG-040**: GridMovement now updates tile position when tween completes, not at start
+- **BUG-042**: AudioManager.setScene() now cancels in-flight crossfade tweens from old scene
+- **BUG-043**: ESC/cancel input now uses shared flag instead of separate simultaneous triggers
+- **BUG-044**: Post-champion cutscene now sets both quest flag and active flag for QuestManager
 - **BUG-045**: completeQuest() now checks quest is active before awarding rewards
+- **BUG-046**: Wild Pokemon now get a random nature from all 25 natures instead of always 'hardy'
+- **BUG-047**: SettingsScene now uses wake() to match MenuScene's sleep(), with resume() fallback
+- **BUG-054**: Gym Leader Ferris now uses iron-tail on Onix (steel move on steel gym)
+- **BUG-055**: Gym Leaders Morwen and Drake now have 4 Pokemon each (added Marowak and Aerodactyl)
+- **BUG-056**: Elite Four Nerida now has 6 Pokemon (added Tentacruel)
+- **BUG-057**: TM48 changed from duplicate brick-break to flash-cannon
 
 ### Added
 - Steel moves file (steel.ts) with iron-tail, steel-wing, metal-claw, meteor-mash, flash-cannon, bullet-punch, iron-head, gyro-ball
 - Dragon moves: dragon-claw, dragon-pulse, draco-meteor, outrage, dragon-dance, dragon-breath, twister
+- Fighting moves: brick-break, focus-punch, cross-chop, close-combat
+- Flying moves: aerial-ace, brave-bird, air-slash
+- Grass moves: energy-ball, giga-drain
+- Medicine items: hyper-potion, max-potion, full-restore, max-revive
 - Input validation on GameManager.addMoney() and spendMoney() to prevent negative values
+- SaveManager.loadAndApply() method for clean save restoration with GameManager reset
+- Save version migration from v1 to v2 format (BUG-020)
+- Achievement persistence via SaveManager (BUG-015)
+- Starter choice flag (`starterChoice_{id}`) for future rival adaptation
+- `rechargeOnly` and `_escRaw` fields to MoveEffect and InputState types
+- `evolution` item category and `repel`/`held-passive`/`evolution-stone` effect types
 
 ### Changed
 - SaveManager now delegates to GameManager.serialize()/deserialize() for full-fidelity save/load

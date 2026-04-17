@@ -32,6 +32,10 @@ export class AudioManager {
 
   /** Bind to the active scene's sound manager. Call when entering a new scene. */
   setScene(scene: Phaser.Scene): void {
+    // Cancel any in-flight crossfade tweens from the old scene
+    if (this.scene && this.scene.tweens) {
+      try { this.scene.tweens.killAll(); } catch { /* scene may already be destroyed */ }
+    }
     this.scene = scene;
     this.handleAutoplayPolicy();
   }

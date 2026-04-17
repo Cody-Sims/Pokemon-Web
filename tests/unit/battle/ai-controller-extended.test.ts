@@ -52,14 +52,14 @@ describe('AIController — Extended', () => {
       expect(AIController.selectMove(trainer, opponent, true)).toBe('ember');
     });
 
-    it('should fallback to tackle when all PP exhausted', () => {
+    it('should fallback to struggle when all PP exhausted', () => {
       const trainer = makePokemon({
         moves: [
           { moveId: 'ember', currentPp: 0 },
           { moveId: 'flamethrower', currentPp: 0 },
         ],
       });
-      expect(AIController.selectMove(trainer, makePokemon({ dataId: 1 }), true)).toBe('tackle');
+      expect(AIController.selectMove(trainer, makePokemon({ dataId: 1 }), true)).toBe('struggle');
     });
   });
 

@@ -43,7 +43,7 @@ export const normalMoves: Record<string, MoveData> = {
   'explosion':    { id: 'explosion', name: 'Explosion', type: 'normal', category: 'physical', power: 250, accuracy: 100, pp: 5, effect: { type: 'self-destruct', target: 'self' } },
 
   // ─── Normal – Special ───
-  'hyper-beam':   { id: 'hyper-beam', name: 'Hyper Beam', type: 'normal', category: 'special', power: 150, accuracy: 90, pp: 5 },
+  'hyper-beam':   { id: 'hyper-beam', name: 'Hyper Beam', type: 'normal', category: 'special', power: 150, accuracy: 90, pp: 5, effect: { type: 'two-turn', target: 'enemy', twoTurnMove: 'hyper-beam', rechargeOnly: true } },
   'swift':        { id: 'swift', name: 'Swift', type: 'normal', category: 'special', power: 60, accuracy: 100, pp: 20 },
   'tri-attack':   { id: 'tri-attack', name: 'Tri Attack', type: 'normal', category: 'special', power: 80, accuracy: 100, pp: 10, effect: { type: 'status', target: 'enemy', status: 'paralysis', chance: 20 } },
   'sonic-boom':   { id: 'sonic-boom', name: 'Sonic Boom', type: 'normal', category: 'special', power: null, accuracy: 90, pp: 20, effect: { type: 'fixed-damage', target: 'enemy', amount: 20 } },

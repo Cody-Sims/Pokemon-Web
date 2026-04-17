@@ -223,8 +223,8 @@ export function tryInteract(ctx: InteractionContext): void {
             sm.launch('DialogueScene', { dialogue });
             sm.get('DialogueScene').events.once('shutdown', () => {
               sm.start('TransitionScene', {
-                target: 'BattleScene',
-                data: {
+                targetScene: 'BattleScene',
+                targetData: {
                   isDouble: true,
                   allyParty,
                   enemyParty: [...enemyParty1, ...enemyParty2],

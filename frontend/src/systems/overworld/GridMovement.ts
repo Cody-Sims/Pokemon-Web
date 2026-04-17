@@ -73,8 +73,11 @@ export class GridMovement {
     }
 
     this.isMoving = true;
-    this.tileX = targetX;
-    this.tileY = targetY;
+    // Store target tile but don't update tileX/tileY until tween completes
+    const prevTileX = this.tileX;
+    const prevTileY = this.tileY;
+    const finalTileX = targetX;
+    const finalTileY = targetY;
 
     const duration = this.cycling
       ? Math.round(WALK_DURATION * 0.35)
@@ -102,6 +105,8 @@ export class GridMovement {
         },
         onComplete: () => {
           (this.sprite as unknown as { y: number }).y = targetPxY;
+          this.tileX = finalTileX;
+          this.tileY = finalTileY;
           this.isMoving = false;
           this.moveCompleteCallback?.();
         },
@@ -113,6 +118,8 @@ export class GridMovement {
         y: targetPxY,
         duration,
         onComplete: () => {
+          this.tileX = finalTileX;
+          this.tileY = finalTileY;
           this.isMoving = false;
           this.moveCompleteCallback?.();
         },

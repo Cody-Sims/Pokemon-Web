@@ -72,6 +72,14 @@ export class EncounterSystem {
         currentPp: moveData[entry.moveId]?.pp ?? 10,
       }));
 
+    const NATURES = [
+      'hardy', 'lonely', 'brave', 'adamant', 'naughty',
+      'bold', 'docile', 'relaxed', 'impish', 'lax',
+      'timid', 'hasty', 'serious', 'jolly', 'naive',
+      'modest', 'mild', 'quiet', 'bashful', 'rash',
+      'calm', 'gentle', 'sassy', 'careful', 'quirky',
+    ];
+
     return {
       dataId: pokemonId,
       level,
@@ -79,7 +87,7 @@ export class EncounterSystem {
       stats,
       ivs,
       evs,
-      nature: 'hardy',
+      nature: NATURES[Math.floor(Math.random() * NATURES.length)],
       moves: learnedMoves,
       status: null,
       exp: ExperienceCalculator.expForLevel(level),

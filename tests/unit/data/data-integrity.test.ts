@@ -102,7 +102,7 @@ describe('Data Integrity', () => {
 
   describe('item-data', () => {
     it('all items have valid categories', () => {
-      const validCategories = ['pokeball', 'medicine', 'battle', 'key', 'tm'];
+      const validCategories = ['pokeball', 'medicine', 'battle', 'key', 'tm', 'evolution'];
       for (const [, item] of Object.entries(itemData)) {
         expect(validCategories, `Item ${item.name} has invalid category ${item.category}`).toContain(item.category);
       }

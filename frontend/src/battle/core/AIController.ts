@@ -10,7 +10,7 @@ export class AIController {
   /** Select a move for a wild/trainer Pokemon. */
   static selectMove(pokemon: PokemonInstance, opponent: PokemonInstance, isTrainer: boolean): string {
     const availableMoves = pokemon.moves.filter(m => m.currentPp > 0);
-    if (availableMoves.length === 0) return 'tackle'; // Struggle fallback
+    if (availableMoves.length === 0) return 'struggle'; // Struggle fallback
 
     if (!isTrainer) {
       // Wild: mostly random
