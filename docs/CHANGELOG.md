@@ -4,7 +4,7 @@ All notable changes to the Pokemon Web project.
 
 ---
 
-## [Unreleased]
+## [2026-04-17]
 
 ### Changed
 - **Route 1 biome polish**: Added DENSE_TREE borders, extra flowers near path for color on the starter route
