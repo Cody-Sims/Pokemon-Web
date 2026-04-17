@@ -53,6 +53,38 @@
     #btn-b { background: rgba(170,68,68,0.6); }
     .action-btn.pressed { filter: brightness(1.5); }
 
+    /* Landscape side-panel layout */
+    @media (orientation: landscape) and (max-height: 500px) {
+      #mobile-controls {
+        position: fixed; top: 0; bottom: 0; left: 0; right: 0;
+        flex-direction: row; align-items: stretch;
+        padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+        border-top: none; pointer-events: none;
+      }
+      #mobile-controls > * { pointer-events: auto; }
+      #joystick-zone {
+        width: 120px; flex: none; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(0,0,0,0.15);
+      }
+      #action-buttons {
+        width: 120px; flex: none; height: 100%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: rgba(0,0,0,0.15);
+        margin-left: auto;
+      }
+      .action-btn { width: 64px; height: 64px; font-size: 22px; }
+      /* Menu button in landscape */
+      #mobile-menu-btn {
+        position: absolute; top: 8px; right: 130px;
+        width: 36px; height: 36px; border-radius: 4px;
+        background: rgba(51,68,102,0.5); color: #fff;
+        font-family: monospace; font-size: 12px; line-height: 36px; text-align: center;
+        border: 1px solid rgba(85,119,170,0.4);
+        -webkit-tap-highlight-color: transparent; touch-action: none;
+      }
+    }
+
     /* Rotate-to-landscape prompt */
     #rotate-prompt {
       display: none; position: fixed; inset: 0;
@@ -140,7 +172,19 @@
       <div id="btn-a" class="action-btn">A</div>
       <div id="btn-b" class="action-btn">B</div>
     </div>
+    <div id="mobile-menu-btn">☰</div>
   </div>
+  <!-- Colorblind filters (applied via CSS on canvas) -->
+  <svg style="position:absolute;width:0;height:0">
+    <defs>
+      <filter id="protanopia-filter">
+        <feColorMatrix type="matrix" values="0.567,0.433,0,0,0 0.558,0.442,0,0,0 0,0.242,0.758,0,0 0,0,0,1,0"/>
+      </filter>
+      <filter id="deuteranopia-filter">
+        <feColorMatrix type="matrix" values="0.625,0.375,0,0,0 0.7,0.3,0,0,0 0,0.3,0.7,0,0 0,0,0,1,0"/>
+      </filter>
+    </defs>
+  </svg>
   <script type="module" src="/src/main.ts"></script>
   <script>
     // Prevent double-tap zoom and pinch zoom on iOS/Android

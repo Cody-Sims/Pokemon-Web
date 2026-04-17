@@ -11,6 +11,10 @@ All notable changes to the Pokemon Web project.
 
 ### Added
 - **iOS "Add to Home Screen" install banner**: On iOS Safari, a bottom banner prompts users to install the app via Share → Add to Home Screen for a fullscreen experience. Appears after 3 s delay, respects prior dismissal via localStorage, and auto-hides when already running as PWA.
+- **Accessibility: text scaling**: `textScale` setting (small/medium/large) now applies a 0.85×/1.0×/1.25× multiplier to `mobileFontSize()` across all UI.
+- **Accessibility: reduced motion**: `isReducedMotion()` utility checks both the in-game setting and the OS `prefers-reduced-motion` media query.
+- **Accessibility: colorblind mode**: `colorblindMode` setting applies SVG `feColorMatrix` filters (protanopia/deuteranopia) to the game canvas in real time.
+- **Accessibility utility module**: New `frontend/src/utils/accessibility.ts` provides `syncAccessibilitySettings`, `getTextScale`, `isReducedMotion`, `getColorblindMode`, and `colorblindFilter` without circular imports.
 
 ## [2026-04-16]
 ### Added — Six Remaining Features from plan.md

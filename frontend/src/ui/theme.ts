@@ -112,10 +112,21 @@ export function isMobile(): boolean {
 /** Scale factor for mobile-friendly UI elements (fonts, hit targets). */
 export const MOBILE_SCALE = isMobile() ? 1.35 : 1.0;
 
-/** Get a font size string scaled for mobile. Input: base px number. */
+/** Get a font size string scaled for mobile and user text-scale preference. Input: base px number. */
 export function mobileFontSize(basePx: number): string {
-  return `${Math.round(basePx * MOBILE_SCALE)}px`;
+  // Lazy import to avoid circular dependency with GameManager
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  let scale = 1.0;
+  try {
+    const { getTextScale } = _accessibilityModule ?? {};
+    if (getTextScale) scale = getTextScale();
+  } catch { /* accessibility not yet loaded */ }
+  return `${Math.round(basePx * MOBILE_SCALE * scale)}px`;
 }
+
+// Late-bound reference to accessibility module (set once at import time)
+let _accessibilityModule: typeof import('@utils/accessibility') | undefined;
+import('@utils/accessibility').then(m => { _accessibilityModule = m; }).catch(() => {});
 
 /** Minimum interactive hit area for touch targets (px). */
 export const MIN_TOUCH_TARGET = isMobile() ? 48 : 0;

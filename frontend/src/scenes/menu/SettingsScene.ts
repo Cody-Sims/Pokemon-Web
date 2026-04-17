@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
@@ -7,6 +7,7 @@ import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { COLORS, FONTS } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
+import { syncAccessibilitySettings, colorblindFilter } from '@utils/accessibility';
 
 interface SettingDef {
   key: string;
@@ -27,6 +28,7 @@ const SETTING_DEFS: SettingDef[] = [
   { key: 'textScale', label: 'Text Size', type: 'cycle', options: ['small', 'medium', 'large'] },
   { key: 'colorblindMode', label: 'Colorblind Mode', type: 'cycle', options: ['off', 'protanopia', 'deuteranopia'] },
   { key: 'reducedMotion', label: 'Reduced Motion', type: 'cycle', options: ['false', 'true'] },
+  { key: 'haptics', label: 'Haptics', type: 'cycle', options: ['true', 'false'] },
 ];
 
 export class SettingsScene extends Phaser.Scene {
@@ -46,18 +48,19 @@ export class SettingsScene extends Phaser.Scene {
   create(): void {
     const gm = GameManager.getInstance();
     const isMobile = TouchControls.isTouchDevice();
+    const layout = ui(this);
 
     // Background
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgDark);
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH - 60, GAME_HEIGHT - 60, {
+    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 60, layout.h - 60, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
     });
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 50, 'SETTINGS', { ...FONTS.heading, fontSize: '26px' }).setOrigin(0.5);
-    this.add.rectangle(GAME_WIDTH / 2, 70, 180, 2, COLORS.borderHighlight, 0.4);
+    this.add.text(layout.cx, 50, 'SETTINGS', { ...FONTS.heading, fontSize: '26px' }).setOrigin(0.5);
+    this.add.rectangle(layout.cx, 70, 180, 2, COLORS.borderHighlight, 0.4);
 
     // Settings rows
     const startY = 100;
@@ -72,24 +75,24 @@ export class SettingsScene extends Phaser.Scene {
       const displayVal = this.formatValue(def, currentVal);
 
       // Tappable left arrow
-      const leftArrow = this.add.text(GAME_WIDTH - 210, y, '◀', {
+      const leftArrow = this.add.text(layout.w - 210, y, '◀', {
         ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
       }).setInteractive({ useHandCursor: true });
       leftArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(-1); });
 
       // Value display
-      const value = this.add.text(GAME_WIDTH - 150, y, displayVal, {
+      const value = this.add.text(layout.w - 150, y, displayVal, {
         ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
       }).setOrigin(0.5, 0);
 
       // Tappable right arrow
-      const rightArrow = this.add.text(GAME_WIDTH - 95, y, '▶', {
+      const rightArrow = this.add.text(layout.w - 95, y, '▶', {
         ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
       }).setInteractive({ useHandCursor: true });
       rightArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(1); });
 
       // Invisible row hit area for touch selection
-      const hitArea = this.add.rectangle(GAME_WIDTH / 2, y + 10, GAME_WIDTH - 80, rowH, 0x000000, 0)
+      const hitArea = this.add.rectangle(layout.cx, y + 10, layout.w - 80, rowH, 0x000000, 0)
         .setInteractive({ useHandCursor: true });
       hitArea.on('pointerover', () => { this.controller?.setCursor(i); this.highlightRow(i); });
       rowHitAreas.push(hitArea);
@@ -103,21 +106,21 @@ export class SettingsScene extends Phaser.Scene {
     this.isFullscreen = this.scale.isFullscreen;
     const fsState = this.isFullscreen ? 'ON' : 'OFF';
 
-    const fsLeftArrow = this.add.text(GAME_WIDTH - 210, fsY, '◀', {
+    const fsLeftArrow = this.add.text(layout.w - 210, fsY, '◀', {
       ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
     }).setInteractive({ useHandCursor: true });
     fsLeftArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(-1); });
 
-    const fsValue = this.add.text(GAME_WIDTH - 150, fsY, fsState, {
+    const fsValue = this.add.text(layout.w - 150, fsY, fsState, {
       ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
     }).setOrigin(0.5, 0);
 
-    const fsRightArrow = this.add.text(GAME_WIDTH - 95, fsY, '▶', {
+    const fsRightArrow = this.add.text(layout.w - 95, fsY, '▶', {
       ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
     }).setInteractive({ useHandCursor: true });
     fsRightArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(1); });
 
-    const fsHitArea = this.add.rectangle(GAME_WIDTH / 2, fsY + 10, GAME_WIDTH - 80, rowH, 0x000000, 0)
+    const fsHitArea = this.add.rectangle(layout.cx, fsY + 10, layout.w - 80, rowH, 0x000000, 0)
       .setInteractive({ useHandCursor: true });
     fsHitArea.on('pointerover', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); });
     rowHitAreas.push(fsHitArea);
@@ -125,7 +128,7 @@ export class SettingsScene extends Phaser.Scene {
     this.settingTexts.push({ label: fsLabel, value: fsValue, leftArrow: fsLeftArrow, rightArrow: fsRightArrow });
 
     // Back button (visible for touch users, always works)
-    const backBtn = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 70, '[ Back ]', {
+    const backBtn = this.add.text(layout.cx, layout.h - 70, '[ Back ]', {
       ...FONTS.body, fontSize: '20px', color: COLORS.textHighlight,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     backBtn.on('pointerdown', () => this.closeSettings());
@@ -134,7 +137,7 @@ export class SettingsScene extends Phaser.Scene {
 
     // Close hint
     const hintText = isMobile ? 'Tap ◀ ▶ to change  •  Tap [ Back ] to return' : 'ESC to go back   ◀ ▶ to change values';
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, hintText, FONTS.caption).setOrigin(0.5);
+    this.add.text(layout.cx, layout.h - 40, hintText, FONTS.caption).setOrigin(0.5);
 
     const allItemCount = SETTING_DEFS.length + 1; // +1 for fullscreen
 
@@ -151,6 +154,16 @@ export class SettingsScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-RIGHT', () => this.adjustValue(1));
 
     this.highlightRow(0);
+
+    // Sync accessibility settings on scene create
+    syncAccessibilitySettings({
+      textScale: String(gm.getSetting('textScale') ?? 'medium'),
+      reducedMotion: String(gm.getSetting('reducedMotion') ?? 'false'),
+      colorblindMode: String(gm.getSetting('colorblindMode') ?? 'off'),
+    });
+    // Apply saved colorblind filter to canvas
+    const savedMode = String(gm.getSetting('colorblindMode') ?? 'off');
+    this.game.canvas.style.filter = savedMode === 'off' ? 'none' : colorblindFilter(savedMode);
   }
 
   private highlightRow(idx: number): void {
@@ -205,6 +218,20 @@ export class SettingsScene extends Phaser.Scene {
     if (typeof sfxVol === 'number') audio.setSFXVolume(sfxVol);
 
     audio.playSFX(SFX.CURSOR);
+
+    // Sync accessibility settings when relevant keys change
+    if (def.key === 'textScale' || def.key === 'reducedMotion' || def.key === 'colorblindMode') {
+      syncAccessibilitySettings({
+        textScale: String(gm.getSetting('textScale') ?? 'medium'),
+        reducedMotion: String(gm.getSetting('reducedMotion') ?? 'false'),
+        colorblindMode: String(gm.getSetting('colorblindMode') ?? 'off'),
+      });
+    }
+    // Apply colorblind filter to canvas in real-time
+    if (def.key === 'colorblindMode') {
+      const mode = String(gm.getSetting('colorblindMode') ?? 'off');
+      this.game.canvas.style.filter = mode === 'off' ? 'none' : colorblindFilter(mode);
+    }
   }
 
   private formatValue(def: SettingDef, val: string | number | boolean | undefined): string {

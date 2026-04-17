@@ -1,7 +1,32 @@
 import Phaser from 'phaser';
 import { gameConfig } from '@config/game-config';
+import { resetSafeAreaCache } from '@utils/safe-area';
+import { syncAccessibilitySettings } from '@utils/accessibility';
 
 const game = new Phaser.Game(gameConfig);
+
+// ── Sync accessibility settings from saved preferences on boot ──
+try {
+  const raw = localStorage.getItem('pokemon-web-settings');
+  if (raw) {
+    const settings = JSON.parse(raw);
+    syncAccessibilitySettings({
+      textScale: settings.textScale,
+      reducedMotion: settings.reducedMotion,
+      colorblindMode: settings.colorblindMode,
+    });
+    // Apply saved colorblind filter to canvas once it exists
+    if (settings.colorblindMode && settings.colorblindMode !== 'off') {
+      game.events.once('ready', () => {
+        const filterMap: Record<string, string> = {
+          protanopia: 'url(#protanopia-filter)',
+          deuteranopia: 'url(#deuteranopia-filter)',
+        };
+        game.canvas.style.filter = filterMap[settings.colorblindMode] ?? 'none';
+      });
+    }
+  }
+} catch { /* no saved settings yet */ }
 
 // ── Orientation lock (works in fullscreen / installed PWA) ──
 function tryLockOrientation(): void {
@@ -74,6 +99,7 @@ function collapseIOSSafariChrome(): void {
 
 // Re-collapse iOS Safari chrome after orientation change
 window.addEventListener('orientationchange', () => {
+  resetSafeAreaCache();
   setTimeout(collapseIOSSafariChrome, 500);
 });
 
@@ -107,6 +133,16 @@ function showIOSInstallPrompt(): void {
 // Show after a short delay so it doesn't compete with the rotate prompt
 setTimeout(showIOSInstallPrompt, 3000);
 
+// ── Tab visibility — pause non-essential work when backgrounded ──
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    game.loop.sleep();
+  } else {
+    game.loop.wake();
+    game.scale.refresh();
+  }
+});
+
 // ── Portrait orientation prompt ──
 function updateOrientationPrompt(): void {
   const overlay = document.getElementById('rotate-prompt');
@@ -120,3 +156,33 @@ window.addEventListener('resize', updateOrientationPrompt);
 window.addEventListener('orientationchange', updateOrientationPrompt);
 // Initial check after a tick (canvas may not be laid out yet)
 requestAnimationFrame(updateOrientationPrompt);
+
+// ── PWA install prompt ──
+let deferredInstallPrompt: Event | null = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallBanner();
+});
+
+function showInstallBanner(): void {
+  if (document.getElementById('install-banner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'install-banner';
+  banner.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(26,26,46,0.95);border:1px solid #ffcc00;border-radius:8px;padding:12px 20px;z-index:9998;font-family:monospace;color:#fff;display:flex;align-items:center;gap:12px;';
+  banner.innerHTML = '<span>📱 Add to Home Screen for the best experience</span><button id="install-accept" style="background:#ffcc00;color:#000;border:none;padding:6px 14px;border-radius:4px;font-family:monospace;cursor:pointer">Install</button><button id="install-dismiss" style="background:none;border:none;color:#888;font-family:monospace;cursor:pointer">✕</button>';
+  document.body.appendChild(banner);
+
+  document.getElementById('install-accept')?.addEventListener('click', async () => {
+    banner.remove();
+    if (deferredInstallPrompt && 'prompt' in deferredInstallPrompt) {
+      (deferredInstallPrompt as any).prompt();
+    }
+    deferredInstallPrompt = null;
+  });
+  document.getElementById('install-dismiss')?.addEventListener('click', () => {
+    banner.remove();
+    deferredInstallPrompt = null;
+  });
+}
