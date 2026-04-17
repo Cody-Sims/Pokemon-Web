@@ -7,6 +7,8 @@ import { WeatherManager } from '../effects/WeatherManager';
 import { AbilityHandler } from '../effects/AbilityHandler';
 import { HeldItemHandler } from '../effects/HeldItemHandler';
 
+import { AIController } from './AIController';
+
 export type BattleType = 'wild' | 'trainer';
 
 export interface BattleConfig {
@@ -223,10 +225,7 @@ export class BattleManager {
   }
 
   private getEnemyMove(): string {
-    // Simple: pick a random move from enemy's available moves
-    const moves = this.enemyActive.moves.filter(m => m.currentPp > 0);
-    if (moves.length === 0) return 'tackle'; // Struggle fallback
-    const idx = Math.floor(Math.random() * moves.length);
-    return moves[idx].moveId;
+    const isTrainer = this.config.type === 'trainer';
+    return AIController.selectMove(this.enemyActive, this.playerActive, isTrainer);
   }
 }

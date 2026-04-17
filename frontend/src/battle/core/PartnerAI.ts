@@ -3,6 +3,7 @@ import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { getCombinedEffectiveness } from '@data/type-chart';
 import { PokemonType } from '@utils/type-helpers';
+import { SPREAD_MOVES } from './DoubleBattleManager';
 
 /**
  * Smart move selection for NPC partner Pokémon in tag/double battles.
@@ -102,14 +103,6 @@ export class PartnerAI {
   }
 }
 
-/** Spread moves that hit all adjacent targets (would also hit the ally). */
-const SPREAD_MOVE_IDS = new Set([
-  'earthquake', 'surf', 'rock-slide', 'blizzard', 'dazzling-gleam',
-  'discharge', 'heat-wave', 'muddy-water', 'sludge-wave', 'hyper-voice',
-  'icy-wind', 'razor-leaf', 'swift', 'eruption', 'water-spout',
-  'bubble', 'electroweb', 'breaking-swipe', 'bulldoze',
-]);
-
 function isSpreadMove(moveId: string): boolean {
-  return SPREAD_MOVE_IDS.has(moveId);
+  return SPREAD_MOVES.has(moveId);
 }

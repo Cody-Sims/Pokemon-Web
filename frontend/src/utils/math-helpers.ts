@@ -18,9 +18,10 @@ export function randomFloat(min: number, max: number): number {
   return Math.random() * (max - min) + min;
 }
 
-/** Pick a weighted random entry. Returns the index. */
-export function weightedRandom(weights: number[]): number {
-  const total = weights.reduce((sum, w) => sum + w, 0);
+/** Pick a weighted random entry. Returns the index.
+ *  Pass a precomputed total to avoid repeated reduce(). */
+export function weightedRandom(weights: number[], precomputedTotal?: number): number {
+  const total = precomputedTotal ?? weights.reduce((sum, w) => sum + w, 0);
   let roll = Math.random() * total;
   for (let i = 0; i < weights.length; i++) {
     roll -= weights[i];

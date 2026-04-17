@@ -54,6 +54,13 @@ export class TouchControls {
   private domJoystickOriginX = 0;
   private domJoystickOriginY = 0;
   private updatingLayout = false;
+  private boundHandlers: { element: EventTarget; event: string; handler: EventListener }[] = [];
+
+  /** Register and track an event listener for cleanup. */
+  private trackListener(element: EventTarget, event: string, handler: EventListener, options?: AddEventListenerOptions): void {
+    element.addEventListener(event, handler, options);
+    this.boundHandlers.push({ element, event, handler });
+  }
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -92,20 +99,22 @@ export class TouchControls {
   private bindTapDetection(): void {
     const canvas = this.scene.game.canvas;
 
-    canvas.addEventListener('touchstart', (e) => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
+    const onTouchStart = (e: Event) => {
+      const te = e as TouchEvent;
+      for (let i = 0; i < te.changedTouches.length; i++) {
+        const t = te.changedTouches[i];
         this.trackedTouches.set(t.identifier, {
           startTime: performance.now(),
           startX: t.clientX,
           startY: t.clientY,
         });
       }
-    }, { passive: true });
+    };
 
-    canvas.addEventListener('touchend', (e) => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
+    const onTouchEnd = (e: Event) => {
+      const te = e as TouchEvent;
+      for (let i = 0; i < te.changedTouches.length; i++) {
+        const t = te.changedTouches[i];
         const tracked = this.trackedTouches.get(t.identifier);
         this.trackedTouches.delete(t.identifier);
         if (!tracked) continue;
@@ -127,33 +136,42 @@ export class TouchControls {
           hapticTap();
         }
       }
-    }, { passive: true });
+    };
 
-    canvas.addEventListener('touchcancel', (e) => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        this.trackedTouches.delete(e.changedTouches[i].identifier);
+    const onTouchCancel = (e: Event) => {
+      const te = e as TouchEvent;
+      for (let i = 0; i < te.changedTouches.length; i++) {
+        this.trackedTouches.delete(te.changedTouches[i].identifier);
       }
-    }, { passive: true });
+    };
 
     // Mouse tap for desktop testing
     let mouseDownTime = 0;
     let mouseStartX = 0;
     let mouseStartY = 0;
-    canvas.addEventListener('mousedown', (e) => {
+    const onMouseDown = (e: Event) => {
+      const me = e as MouseEvent;
       mouseDownTime = performance.now();
-      mouseStartX = e.clientX;
-      mouseStartY = e.clientY;
-    });
-    canvas.addEventListener('mouseup', (e) => {
+      mouseStartX = me.clientX;
+      mouseStartY = me.clientY;
+    };
+    const onMouseUp = (e: Event) => {
+      const me = e as MouseEvent;
       const elapsed = performance.now() - mouseDownTime;
-      const dx = e.clientX - mouseStartX;
-      const dy = e.clientY - mouseStartY;
+      const dx = me.clientX - mouseStartX;
+      const dy = me.clientY - mouseStartY;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (elapsed < TAP_TIME_THRESHOLD && dist < TAP_DIST_THRESHOLD) {
         this.confirmPressed = true;
         hapticTap();
       }
-    });
+    };
+
+    this.trackListener(canvas, 'touchstart', onTouchStart, { passive: true });
+    this.trackListener(canvas, 'touchend', onTouchEnd, { passive: true });
+    this.trackListener(canvas, 'touchcancel', onTouchCancel, { passive: true });
+    this.trackListener(canvas, 'mousedown', onMouseDown);
+    this.trackListener(canvas, 'mouseup', onMouseUp);
   }
 
   /** Poll touch direction from the virtual joystick (or null). */
@@ -233,7 +251,8 @@ export class TouchControls {
 
     // Initial layout + listen for orientation/resize changes
     requestAnimationFrame(() => this.updateDOMLayout());
-    window.addEventListener('resize', () => this.updateDOMLayout());
+    const resizeHandler = () => this.updateDOMLayout();
+    this.trackListener(window, 'resize', resizeHandler);
   }
 
   private updateDOMLayout(): void {
@@ -284,9 +303,10 @@ export class TouchControls {
     const DEAD_ZONE = 15;
     const RADIUS = 60;
 
-    zone.addEventListener('touchstart', (e) => {
+    const onStart = (e: Event) => {
+      const te = e as TouchEvent;
       if (this.domJoystickPointerId !== null) return;
-      const t = e.changedTouches[0];
+      const t = te.changedTouches[0];
       this.domJoystickPointerId = t.identifier;
       const zoneRect = zone.getBoundingClientRect();
       this.domJoystickOriginX = t.clientX;
@@ -299,11 +319,12 @@ export class TouchControls {
       base.style.display = 'block';
       thumb.style.display = 'block';
       this.domDirection = null;
-    }, { passive: true });
+    };
 
-    zone.addEventListener('touchmove', (e) => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
+    const onMove = (e: Event) => {
+      const te = e as TouchEvent;
+      for (let i = 0; i < te.changedTouches.length; i++) {
+        const t = te.changedTouches[i];
         if (t.identifier !== this.domJoystickPointerId) continue;
 
         const dx = t.clientX - this.domJoystickOriginX;
@@ -327,11 +348,12 @@ export class TouchControls {
         }
         break;
       }
-    }, { passive: true });
+    };
 
-    const endHandler = (e: TouchEvent) => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === this.domJoystickPointerId) {
+    const onEnd = (e: Event) => {
+      const te = e as TouchEvent;
+      for (let i = 0; i < te.changedTouches.length; i++) {
+        if (te.changedTouches[i].identifier === this.domJoystickPointerId) {
           this.domJoystickPointerId = null;
           this.domDirection = null;
           base.style.display = 'none';
@@ -341,8 +363,10 @@ export class TouchControls {
       }
     };
 
-    zone.addEventListener('touchend', endHandler, { passive: true });
-    zone.addEventListener('touchcancel', endHandler, { passive: true });
+    this.trackListener(zone, 'touchstart', onStart, { passive: true });
+    this.trackListener(zone, 'touchmove', onMove, { passive: true });
+    this.trackListener(zone, 'touchend', onEnd, { passive: true });
+    this.trackListener(zone, 'touchcancel', onEnd, { passive: true });
   }
 
   private layout(): void {
@@ -424,15 +448,21 @@ export class TouchControls {
       }
     };
 
-    canvas.addEventListener('touchstart', (e) => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        handleDown(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
+    const onActionTouchStart = (e: Event) => {
+      const te = e as TouchEvent;
+      for (let i = 0; i < te.changedTouches.length; i++) {
+        handleDown(te.changedTouches[i].clientX, te.changedTouches[i].clientY);
       }
-    }, { passive: true });
-    canvas.addEventListener('touchend', () => handleUp(), { passive: true });
-    canvas.addEventListener('touchcancel', () => handleUp(), { passive: true });
-    canvas.addEventListener('mousedown', (e) => handleDown(e.clientX, e.clientY));
-    canvas.addEventListener('mouseup', () => handleUp());
+    };
+    const onActionTouchEnd = () => handleUp();
+    const onActionMouseDown = (e: Event) => { const me = e as MouseEvent; handleDown(me.clientX, me.clientY); };
+    const onActionMouseUp = () => handleUp();
+
+    this.trackListener(canvas, 'touchstart', onActionTouchStart, { passive: true });
+    this.trackListener(canvas, 'touchend', onActionTouchEnd, { passive: true });
+    this.trackListener(canvas, 'touchcancel', onActionTouchEnd, { passive: true });
+    this.trackListener(canvas, 'mousedown', onActionMouseDown);
+    this.trackListener(canvas, 'mouseup', onActionMouseUp);
   }
 
   private createButtons(): void {
@@ -506,35 +536,38 @@ export class TouchControls {
     const btnB = document.getElementById('btn-b');
 
     if (btnA) {
-      btnA.addEventListener('touchstart', () => {
-        this.confirmPressed = true;
-        btnA.classList.add('pressed');
-      }, { passive: true });
-      btnA.addEventListener('touchend', () => btnA.classList.remove('pressed'), { passive: true });
-      btnA.addEventListener('touchcancel', () => btnA.classList.remove('pressed'), { passive: true });
+      const aStart = () => { this.confirmPressed = true; btnA.classList.add('pressed'); };
+      const aEnd = () => btnA.classList.remove('pressed');
+      this.trackListener(btnA, 'touchstart', aStart, { passive: true });
+      this.trackListener(btnA, 'touchend', aEnd, { passive: true });
+      this.trackListener(btnA, 'touchcancel', aEnd, { passive: true });
     }
 
     if (btnB) {
-      btnB.addEventListener('touchstart', () => {
-        this.cancelPressed = true;
-        btnB.classList.add('pressed');
-      }, { passive: true });
-      btnB.addEventListener('touchend', () => btnB.classList.remove('pressed'), { passive: true });
-      btnB.addEventListener('touchcancel', () => btnB.classList.remove('pressed'), { passive: true });
+      const bStart = () => { this.cancelPressed = true; btnB.classList.add('pressed'); };
+      const bEnd = () => btnB.classList.remove('pressed');
+      this.trackListener(btnB, 'touchstart', bStart, { passive: true });
+      this.trackListener(btnB, 'touchend', bEnd, { passive: true });
+      this.trackListener(btnB, 'touchcancel', bEnd, { passive: true });
     }
 
     const menuEl = document.getElementById('mobile-menu-btn');
     if (menuEl) {
-      menuEl.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        this.cancelPressed = true;
-      }, { passive: false });
+      const menuStart = (e: Event) => { e.preventDefault(); this.cancelPressed = true; };
+      this.trackListener(menuEl, 'touchstart', menuStart);
     }
   }
 
   destroy(): void {
+    for (const { element, event, handler } of this.boundHandlers) {
+      element.removeEventListener(event, handler);
+    }
+    this.boundHandlers = [];
     this.container.destroy(true);
     this.joystick.destroy();
     this.buttons = [];
+    if (TouchControls.activeInstance === this) {
+      TouchControls.activeInstance = undefined;
+    }
   }
 }

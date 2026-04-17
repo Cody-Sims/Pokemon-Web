@@ -20,8 +20,18 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, '..', 'dist'),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          phaser: ['phaser'],
+          battle: [
+            './src/battle/index.ts',
+          ],
+        },
+      },
+    },
   },
   server: {
-    port: 3019,
+    port: 3020,
   },
 });

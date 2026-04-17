@@ -76,7 +76,8 @@ export class ExperienceCalculator {
 
     const data = pokemonData[pokemon.dataId];
 
-    while (pokemon.exp >= ExperienceCalculator.expForLevel(pokemon.level + 1)) {
+    const MAX_LEVEL = 100;
+    while (pokemon.level < MAX_LEVEL && pokemon.exp >= ExperienceCalculator.expForLevel(pokemon.level + 1)) {
       pokemon.level++;
       levelsGained++;
 

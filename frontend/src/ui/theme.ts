@@ -126,7 +126,7 @@ export function mobileFontSize(basePx: number): string {
 
 // Late-bound reference to accessibility module (set once at import time)
 let _accessibilityModule: typeof import('@utils/accessibility') | undefined;
-import('@utils/accessibility').then(m => { _accessibilityModule = m; }).catch(() => {});
+import('@utils/accessibility').then(m => { _accessibilityModule = m; }).catch((err) => { console.warn('Accessibility module failed to load:', err); });
 
 /** Minimum interactive hit area for touch targets (px). */
 export const MIN_TOUCH_TARGET = isMobile() ? 48 : 0;

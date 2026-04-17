@@ -19,7 +19,6 @@ export class AudioManager {
   private lowHpActive = false;
   private previousBGMKey = '';
   private bgmPaused = false;
-  private loHpIntervalId?: ReturnType<typeof setInterval>;
 
   private constructor() {}
 
@@ -274,37 +273,14 @@ export class AudioManager {
     }
   }
 
-  /** Start a repeating low-HP warning beep (oscillator) layered over BGM. */
+  /** Start the low-HP warning beep loop. Plays the LOW_HP SFX every 1.5 seconds. */
   playLoHpWarning(): void {
-    if (this.loHpIntervalId != null) return;
-    if (!this.scene || this.muted) return;
-
-    const ctx = (this.scene.sound as Phaser.Sound.WebAudioSoundManager)?.context;
-    if (!ctx) return;
-
-    const beep = () => {
-      if (this.muted) return;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'square';
-      osc.frequency.value = 440;
-      gain.gain.value = 0.15;
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.2);
-    };
-
-    beep();
-    this.loHpIntervalId = setInterval(beep, 1500);
+    this.startLowHpWarning();
   }
 
-  /** Stop the oscillator-based low-HP warning beep. */
+  /** Stop the low-HP warning beep. */
   stopLoHpWarning(): void {
-    if (this.loHpIntervalId != null) {
-      clearInterval(this.loHpIntervalId);
-      this.loHpIntervalId = undefined;
-    }
+    this.stopLowHpWarning();
   }
 
   /** Pause the current BGM without destroying it. */

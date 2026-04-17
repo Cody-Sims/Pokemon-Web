@@ -80,6 +80,8 @@ export class OverworldScene extends Phaser.Scene {
   private lavaTileSprites: Phaser.GameObjects.Image[] = [];
   private tileAnimFrame = 0;
   private ambientSFX!: AmbientSFX;
+  /** O(1) lookup set for NPC-occupied tile positions. */
+  private npcOccupiedTiles = new Set<string>();
 
   constructor() {
     super({ key: 'OverworldScene' });
@@ -188,6 +190,9 @@ export class OverworldScene extends Phaser.Scene {
     this.spawnNPCs();
     this.spawnTrainers();
 
+    // Build O(1) NPC position lookup
+    this.rebuildNpcOccupiedTiles();
+
     // Set up collision: solid tiles + NPC positions
     this.player.gridMovement.setCollisionCheck((tx, ty) => {
       if (tx < 0 || ty < 0 || ty >= mapH || tx >= mapW) return true;
@@ -203,12 +208,8 @@ export class OverworldScene extends Phaser.Scene {
       } else if (SOLID_TILES.has(groundTile)) {
         return true;
       }
-      // Block NPC/Trainer tiles
-      for (const npc of this.npcs) {
-        const npcTX = Math.floor(npc.x / TILE_SIZE);
-        const npcTY = Math.floor(npc.y / TILE_SIZE);
-        if (npcTX === tx && npcTY === ty) return true;
-      }
+      // Block NPC/Trainer tiles (O(1) lookup)
+      if (this.npcOccupiedTiles.has(`${tx},${ty}`)) return true;
       return false;
     });
 
@@ -466,7 +467,7 @@ export class OverworldScene extends Phaser.Scene {
         if (gm.getParty().length === 0 && !targetDef?.isInterior) {
           this.scene.pause();
           this.scene.launch('DialogueScene', {
-            dialogue: ['You should go see Prof. Oak first!'],
+            dialogue: ['You should go see Prof. Willow first!'],
           });
           return;
         }
@@ -719,7 +720,10 @@ export class OverworldScene extends Phaser.Scene {
       controller.update(delta);
     }
 
-    // Animated tile effects (run every frame, even while player moves)
+    // Refresh NPC occupied tile positions after behavior updates
+    this.rebuildNpcOccupiedTiles();
+
+    // Animated tile effects (throttled: water/lava every 30 frames, grass every 60)
     this.tileAnimFrame++;
     if (this.tileAnimFrame % 30 === 0) {
       const waterTints = [0x3090e0, 0x40a0f0, 0x2080d0];
@@ -728,7 +732,7 @@ export class OverworldScene extends Phaser.Scene {
       for (const s of this.waterTileSprites) s.setTint(waterTints[idx]);
       for (const s of this.lavaTileSprites) s.setTint(lavaTints[idx]);
     }
-    if (this.tileAnimFrame % 15 === 0) {
+    if (this.tileAnimFrame % 60 === 0) {
       for (const s of this.tallGrassTileSprites) {
         s.setAlpha(0.85 + Math.random() * 0.15);
       }
@@ -801,25 +805,14 @@ export class OverworldScene extends Phaser.Scene {
     this.player.move(input.direction);
   }
 
-  /**
-   * Crop the bottom portion of entities standing on tall grass tiles
-   * so they appear partially hidden in the grass (classic Pokémon effect).
-   */
-  private updateGrassCrop(): void {
-    const entities: Phaser.GameObjects.Sprite[] = [this.player, ...this.npcs];
-    for (const entity of entities) {
-      if (!entity.active) continue;
-      const tx = Math.floor(entity.x / TILE_SIZE);
-      const ty = Math.floor(entity.y / TILE_SIZE);
-      const tile = this.mapDef.ground[ty]?.[tx];
-      if (tile === Tile.TALL_GRASS) {
-        // Hide bottom ~35% of sprite to simulate wading through grass
-        const frame = entity.frame;
-        const cropH = Math.floor(frame.height * 0.65);
-        entity.setCrop(0, 0, frame.width, cropH);
-      } else {
-        entity.setCrop();
-      }
+  /** Rebuild the O(1) NPC occupied tile set from current NPC positions. */
+  private rebuildNpcOccupiedTiles(): void {
+    this.npcOccupiedTiles.clear();
+    for (const npc of this.npcs) {
+      const tx = Math.floor(npc.x / TILE_SIZE);
+      const ty = Math.floor(npc.y / TILE_SIZE);
+      this.npcOccupiedTiles.add(`${tx},${ty}`);
     }
   }
+
 }

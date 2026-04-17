@@ -4,7 +4,7 @@ import { weightedRandom, randomInt } from '@utils/math-helpers';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
-import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
+import { ExperienceCalculator, getNatureMultiplier } from '@battle/calculation/ExperienceCalculator';
 
 /** Step counter → random wild encounter trigger. */
 export class EncounterSystem {
@@ -53,15 +53,32 @@ export class EncounterSystem {
 
     const evs = { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 };
 
-    // Calculate stats
+    const NATURES = [
+      'hardy', 'lonely', 'brave', 'adamant', 'naughty',
+      'bold', 'docile', 'relaxed', 'impish', 'lax',
+      'timid', 'hasty', 'serious', 'jolly', 'naive',
+      'modest', 'mild', 'quiet', 'bashful', 'rash',
+      'calm', 'gentle', 'sassy', 'careful', 'quirky',
+    ];
+
+    const nature = NATURES[Math.floor(Math.random() * NATURES.length)];
+
+    // Calculate stats with nature modifiers
     const stats = {
       hp: Math.floor(((2 * data.baseStats.hp + ivs.hp) * level) / 100) + level + 10,
-      attack: Math.floor(((2 * data.baseStats.attack + ivs.attack) * level) / 100) + 5,
-      defense: Math.floor(((2 * data.baseStats.defense + ivs.defense) * level) / 100) + 5,
-      spAttack: Math.floor(((2 * data.baseStats.spAttack + ivs.spAttack) * level) / 100) + 5,
-      spDefense: Math.floor(((2 * data.baseStats.spDefense + ivs.spDefense) * level) / 100) + 5,
-      speed: Math.floor(((2 * data.baseStats.speed + ivs.speed) * level) / 100) + 5,
+      attack: Math.floor((((2 * data.baseStats.attack + ivs.attack) * level) / 100) + 5) * getNatureMultiplier(nature, 'attack'),
+      defense: Math.floor((((2 * data.baseStats.defense + ivs.defense) * level) / 100) + 5) * getNatureMultiplier(nature, 'defense'),
+      spAttack: Math.floor((((2 * data.baseStats.spAttack + ivs.spAttack) * level) / 100) + 5) * getNatureMultiplier(nature, 'spAttack'),
+      spDefense: Math.floor((((2 * data.baseStats.spDefense + ivs.spDefense) * level) / 100) + 5) * getNatureMultiplier(nature, 'spDefense'),
+      speed: Math.floor((((2 * data.baseStats.speed + ivs.speed) * level) / 100) + 5) * getNatureMultiplier(nature, 'speed'),
     };
+
+    // Round nature-modified stats
+    stats.attack = Math.floor(stats.attack);
+    stats.defense = Math.floor(stats.defense);
+    stats.spAttack = Math.floor(stats.spAttack);
+    stats.spDefense = Math.floor(stats.spDefense);
+    stats.speed = Math.floor(stats.speed);
 
     // Determine moves (up to 4 most recent)
     const learnedMoves = data.learnset
@@ -72,14 +89,6 @@ export class EncounterSystem {
         currentPp: moveData[entry.moveId]?.pp ?? 10,
       }));
 
-    const NATURES = [
-      'hardy', 'lonely', 'brave', 'adamant', 'naughty',
-      'bold', 'docile', 'relaxed', 'impish', 'lax',
-      'timid', 'hasty', 'serious', 'jolly', 'naive',
-      'modest', 'mild', 'quiet', 'bashful', 'rash',
-      'calm', 'gentle', 'sassy', 'careful', 'quirky',
-    ];
-
     return {
       dataId: pokemonId,
       level,
@@ -87,7 +96,7 @@ export class EncounterSystem {
       stats,
       ivs,
       evs,
-      nature: NATURES[Math.floor(Math.random() * NATURES.length)],
+      nature,
       moves: learnedMoves,
       status: null,
       exp: ExperienceCalculator.expForLevel(level),

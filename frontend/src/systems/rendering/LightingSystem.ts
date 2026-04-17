@@ -25,6 +25,9 @@ export class LightingSystem {
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.createLightTexture();
+    // Create a persistent reusable image for drawing lights (avoids per-frame alloc)
+    this.lightImage = scene.make.image({ x: 0, y: 0, key: LIGHT_TEXTURE_KEY }, false);
+    this.lightImage.setOrigin(0.5, 0.5);
   }
 
   /** Generate a radial gradient circle texture used to erase darkness. */
@@ -109,17 +112,14 @@ export class LightingSystem {
 
   private drawLight(screenX: number, screenY: number, radius: number, intensity?: number): void {
     const scale = (radius * 2) / LIGHT_TEXTURE_SIZE;
-    const img = this.scene.make.image(
-      { x: screenX, y: screenY, key: LIGHT_TEXTURE_KEY },
-      false,
-    );
-    img.setScale(scale);
-    img.setOrigin(0.5, 0.5);
+    this.lightImage.setPosition(screenX, screenY);
+    this.lightImage.setScale(scale);
     if (intensity !== undefined && intensity < 1) {
-      img.setAlpha(intensity);
+      this.lightImage.setAlpha(intensity);
+    } else {
+      this.lightImage.setAlpha(1);
     }
-    this.rt.erase(img, screenX, screenY);
-    img.destroy();
+    this.rt.erase(this.lightImage, screenX, screenY);
   }
 
   setPlayerLightRadius(radius: number): void {
@@ -129,6 +129,9 @@ export class LightingSystem {
   destroy(): void {
     this.staticLights.length = 0;
     this.enabled = false;
+    if (this.lightImage) {
+      this.lightImage.destroy();
+    }
     if (this.rt) {
       this.rt.destroy();
     }

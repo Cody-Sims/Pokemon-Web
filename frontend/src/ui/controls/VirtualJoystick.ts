@@ -36,6 +36,7 @@ export class VirtualJoystick {
   private activationZone = 0.6;
   private joystickRadius: number;
   private deadZone: number;
+  private boundHandlers: { element: HTMLElement | EventTarget; event: string; handler: EventListener; options?: AddEventListenerOptions }[] = [];
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -211,6 +212,16 @@ export class VirtualJoystick {
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
+
+    this.boundHandlers = [
+      { element: canvas, event: 'touchstart', handler: handleTouchStart as EventListener, options: { passive: true } },
+      { element: canvas, event: 'touchmove', handler: handleTouchMove as EventListener, options: { passive: true } },
+      { element: canvas, event: 'touchend', handler: handleTouchEnd as EventListener, options: { passive: true } },
+      { element: canvas, event: 'touchcancel', handler: handleTouchEnd as EventListener, options: { passive: true } },
+      { element: canvas, event: 'mousedown', handler: handleMouseDown as EventListener },
+      { element: canvas, event: 'mousemove', handler: handleMouseMove as EventListener },
+      { element: canvas, event: 'mouseup', handler: handleMouseUp as EventListener },
+    ];
   }
 
   getDirection(): Direction | null {
@@ -236,6 +247,10 @@ export class VirtualJoystick {
   }
 
   destroy(): void {
+    for (const { element, event, handler } of this.boundHandlers) {
+      element.removeEventListener(event, handler);
+    }
+    this.boundHandlers = [];
     this.container.destroy(true);
   }
 }
