@@ -475,6 +475,10 @@ export class InventoryScene extends Phaser.Scene {
     if (used) {
       gm.removeItem(entry.item.id, 1);
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
+      // In battle mode, signal that a turn-consuming item was used (BUG-064)
+      if (this.battleMode) {
+        this.events.emit('use-battle-item');
+      }
     } else {
       AudioManager.getInstance().playSFX(SFX.ERROR);
     }

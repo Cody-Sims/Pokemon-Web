@@ -29,7 +29,7 @@ export const viridianPokemart: MapDefinition = {
       facing: 'down',
       dialogue: [
         'Welcome to the PokéMart!',
-        'Oh wait, I have a package for Prof. Oak.',
+        'Oh wait, I have a package for Prof. Willow.',
         'Would you deliver it for me?',
       ],
       flagDialogue: [

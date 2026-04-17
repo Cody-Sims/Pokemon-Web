@@ -22,6 +22,13 @@ export class MenuList {
 
     labels.forEach((label, i) => {
       const text = scene.add.text(x, y + i * 32, label, textStyle);
+      // Touch/pointer support (BUG-068)
+      text.setInteractive({ useHandCursor: true });
+      text.on('pointerdown', () => {
+        this.cursor = i;
+        this.updateCursor();
+        this.onSelect(i);
+      });
       this.items.push(text);
     });
 

@@ -119,6 +119,8 @@ export class PCScene extends Phaser.Scene {
 
   private switchBox(delta: number): void {
     this.currentBox = (this.currentBox + delta + BOXES_COUNT) % BOXES_COUNT;
+    // BUG-095: Reset cursor when switching boxes to avoid out-of-range index
+    this.boxCursor = 0;
     AudioManager.getInstance().playSFX(SFX.CURSOR);
     this.renderBox();
     this.updateSelection();

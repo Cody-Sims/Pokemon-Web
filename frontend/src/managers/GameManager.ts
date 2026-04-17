@@ -50,6 +50,7 @@ export class GameManager {
   private boxes: PokemonInstance[][] = Array.from({ length: 12 }, () => []);
   private boxNames: string[] = Array.from({ length: 12 }, (_, i) => `Box ${i + 1}`);
   private difficulty: DifficultyMode = 'classic';
+  private trainerId = '00000';
   private nuzlockeEncountered: string[] = []; // route keys where first encounter already happened
   private stepCount = 0;
   private gameStats: GameStats = defaultStats();
@@ -102,6 +103,7 @@ export class GameManager {
     this.boxes = Array.from({ length: 12 }, () => []);
     this.boxNames = Array.from({ length: 12 }, (_, i) => `Box ${i + 1}`);
     this.difficulty = 'classic';
+    this.trainerId = String(10000 + Math.floor(Math.random() * 90000));
     this.nuzlockeEncountered = [];
     this.stepCount = 0;
     this.gameStats = defaultStats();
@@ -211,6 +213,10 @@ export class GameManager {
   setDifficulty(mode: DifficultyMode): void { this.difficulty = mode; }
   getDifficultyConfig(): DifficultyConfig { return DIFFICULTY_CONFIGS[this.difficulty]; }
 
+  // Trainer ID
+  getTrainerId(): string { return this.trainerId; }
+  setTrainerId(id: string): void { this.trainerId = id; }
+
   // Nuzlocke tracking
   getNuzlockeEncountered(): string[] { return this.nuzlockeEncountered; }
   hasNuzlockeEncountered(routeKey: string): boolean { return this.nuzlockeEncountered.includes(routeKey); }
@@ -306,6 +312,7 @@ export class GameManager {
       boxNames: this.boxNames,
       settings: this.settings,
       difficulty: this.difficulty,
+      trainerId: this.trainerId,
       nuzlockeEncountered: this.nuzlockeEncountered,
       gameStats: this.gameStats,
       hallOfFame: this.hallOfFame,
@@ -332,6 +339,7 @@ export class GameManager {
     if (data.boxNames) this.boxNames = data.boxNames;
     if (data.settings) this.settings = { ...this.settings, ...data.settings };
     if (data.difficulty) this.difficulty = data.difficulty as DifficultyMode;
+    if ((data as any).trainerId) this.trainerId = (data as any).trainerId;
     if (data.nuzlockeEncountered) this.nuzlockeEncountered = data.nuzlockeEncountered;
     if (data.gameStats) this.gameStats = { ...defaultStats(), ...data.gameStats };
     if (data.hallOfFame) this.hallOfFame = data.hallOfFame;

@@ -38,7 +38,8 @@ export class HealthBar {
     this.bar.fillStyle(0x333333);
     this.bar.fillRect(this.x, this.y, this.width, this.height);
 
-    // Health fill
+    // Health fill (BUG-088: guard against maxValue <= 0)
+    if (this.maxValue <= 0) return;
     const pct = this.currentValue / this.maxValue;
     let color = 0x4caf50; // green
     if (pct <= 0.2) color = 0xf44336; // red

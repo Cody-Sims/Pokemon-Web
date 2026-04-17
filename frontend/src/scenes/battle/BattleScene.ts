@@ -109,7 +109,10 @@ export class BattleScene extends Phaser.Scene {
     // Use first alive party member
     this.playerPokemon = gm.getParty().find(p => p.currentHp > 0) ?? gm.getParty()[0];
 
-    // Create enemy pokemon
+    // Create enemy pokemon (BUG-093: log warning for missing encounter data)
+    if (!data?.enemyPokemon) {
+      console.warn('[BattleScene] No enemy Pokémon provided — encounter data may be missing for this map.');
+    }
     this.enemyPokemon = data?.enemyPokemon as PokemonInstance ?? EncounterSystem.createWildPokemon(16, 3);
 
     const enemyData = pokemonData[this.enemyPokemon.dataId];

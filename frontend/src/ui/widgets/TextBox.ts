@@ -19,6 +19,10 @@ export class TextBox {
       color: '#ffffff',
       wordWrap: { width: width - 24 },
     });
+
+    // Touch-to-skip typewriter effect (BUG-081)
+    this.background.setInteractive();
+    this.background.on('pointerdown', () => this.skipToEnd());
   }
 
   /** Display text with typewriter effect. */

@@ -148,6 +148,7 @@ export class FlyMapScene extends Phaser.Scene {
     this.cameras.main.fadeOut(400, 0, 0, 0);
     this.cameras.main.once('camerafadeoutcomplete', () => {
       this.scene.stop();
+      this.scene.stop('MenuScene');
       this.scene.stop('OverworldScene');
       this.scene.start('OverworldScene', {
         flyTo: dest.mapKey,
@@ -159,6 +160,5 @@ export class FlyMapScene extends Phaser.Scene {
   private close(): void {
     AudioManager.getInstance().playSFX(SFX.CANCEL);
     this.scene.stop();
-    this.scene.resume('OverworldScene');
   }
 }

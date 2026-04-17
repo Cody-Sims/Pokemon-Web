@@ -23,7 +23,7 @@ export const palletOakLab: MapDefinition = {
   ground,
   encounterTableKey: '',
   isInterior: true,
-  displayName: "Oak's Laboratory",
+  displayName: "Willow's Laboratory",
   npcs: [
     {
       id: 'lab-oak',
@@ -32,9 +32,9 @@ export const palletOakLab: MapDefinition = {
       textureKey: 'npc-oak',
       facing: 'down',
       dialogue: [
-        'Prof. Oak: Ah, there you are!',
-        'Prof. Oak: The world of Pokémon awaits!',
-        'Prof. Oak: Go ahead and choose one of the three Poké Balls on the table!',
+        'Prof. Willow: Ah, there you are!',
+        'Prof. Willow: The world of Pokémon awaits!',
+        'Prof. Willow: Go ahead and choose one of the three Poké Balls on the table!',
       ],
       setsFlag: 'oakOfferedStarter',
       requireFlag: '!receivedStarter',
@@ -46,24 +46,24 @@ export const palletOakLab: MapDefinition = {
       textureKey: 'npc-oak',
       facing: 'down',
       dialogue: [
-        'Prof. Oak: Your Pokémon is looking great!',
-        'Prof. Oak: Go explore the world!',
+        'Prof. Willow: Your Pokémon is looking great!',
+        'Prof. Willow: Go explore the world!',
       ],
       flagDialogue: [
         {
           flag: 'receivedPokedex',
           dialogue: [
-            'Prof. Oak: Fill up that Pokédex for me!',
-            'Prof. Oak: There are 151 Pokémon to discover!',
+            'Prof. Willow: Fill up that Pokédex for me!',
+            'Prof. Willow: There are so many Pokémon to discover!',
           ],
         },
         {
           flag: 'hasParcel',
           dialogue: [
-            'Prof. Oak: Oh! Is that a package from the PokéMart?',
-            'Prof. Oak: Thank you for delivering it!',
-            'Prof. Oak: Here, take this Pokédex!',
-            'Prof. Oak: It records data on all Pokémon you encounter.',
+            'Prof. Willow: Oh! Is that a package from the PokéMart?',
+            'Prof. Willow: Thank you for delivering it!',
+            'Prof. Willow: Here, take this Pokédex!',
+            'Prof. Willow: It records data on all Pokémon you encounter.',
           ],
         },
       ],
@@ -76,7 +76,7 @@ export const palletOakLab: MapDefinition = {
       textureKey: 'npc-scientist',
       facing: 'down',
       dialogue: [
-        "I'm one of Prof. Oak's aides.",
+        "I'm one of Prof. Willow's aides.",
         'We study Pokémon habitats and behaviors.',
       ],
     },
@@ -87,7 +87,7 @@ export const palletOakLab: MapDefinition = {
       textureKey: 'npc-scientist',
       facing: 'down',
       dialogue: [
-        "Prof. Oak is the authority on Pokémon!",
+        "Prof. Willow is the authority on Pokémon!",
         "His research is known worldwide.",
       ],
     },

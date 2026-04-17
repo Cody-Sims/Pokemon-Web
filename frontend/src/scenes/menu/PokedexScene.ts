@@ -34,9 +34,10 @@ export class PokedexScene extends Phaser.Scene {
     this.seenCount = dex.seen.length;
     this.caughtCount = dex.caught.length;
 
-    // Build species list: all 151 IDs
+    // Build species list: all available Pokémon IDs
     this.speciesList = [];
-    for (let id = 1; id <= 151; id++) {
+    const maxId = Math.max(...Object.values(pokemonData).map(p => p.id));
+    for (let id = 1; id <= maxId; id++) {
       this.speciesList.push(id);
     }
 

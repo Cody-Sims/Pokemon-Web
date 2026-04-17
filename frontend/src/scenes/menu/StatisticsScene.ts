@@ -80,14 +80,14 @@ export class StatisticsScene extends Phaser.Scene {
     });
 
     // Close hint
-    this.add.text(layout.cx, layout.h - 25, 'Press ESC to close', {
+    const closeBtn = this.add.text(layout.cx, layout.h - 25, '[ CLOSE ]', {
       ...FONTS.caption, color: COLORS.textDim,
-    }).setOrigin(0.5);
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => this.close());
 
-    // Input
+    // Input (BUG-085: removed global pointerdown close)
     this.input.keyboard!.on('keydown-ESC', () => this.close());
     this.input.keyboard!.on('keydown-ENTER', () => this.close());
-    this.input.on('pointerdown', () => this.close());
   }
 
   private close(): void {

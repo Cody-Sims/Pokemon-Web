@@ -29,7 +29,7 @@ export const palletPlayerHouse: MapDefinition = {
       facing: 'down',
       dialogue: [
         'Mom: Good morning, sweetie!',
-        'Mom: Prof. Oak is in his lab to the south.',
+        'Mom: Prof. Willow is in the lab to the south.',
       ],
       interactionType: 'heal',
       flagDialogue: [

@@ -136,9 +136,11 @@ export class MenuScene extends Phaser.Scene {
         });
         break;
       case 'FLY':
-        this.scene.stop();
-        this.scene.pause('OverworldScene');
+        this.scene.sleep();
         this.scene.launch('FlyMapScene');
+        this.scene.get('FlyMapScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
         break;
       case 'SAVE':
         this.saveGame();

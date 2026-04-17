@@ -13,5 +13,5 @@ export const fightingMoves: Record<string, MoveData> = {
   'brick-break':  { id: 'brick-break', name: 'Brick Break', type: 'fighting', category: 'physical', power: 75, accuracy: 100, pp: 15 },
   'focus-punch':  { id: 'focus-punch', name: 'Focus Punch', type: 'fighting', category: 'physical', power: 150, accuracy: 100, pp: 20, priority: -3 },
   'cross-chop':   { id: 'cross-chop', name: 'Cross Chop', type: 'fighting', category: 'physical', power: 100, accuracy: 80, pp: 5 },
-  'close-combat': { id: 'close-combat', name: 'Close Combat', type: 'fighting', category: 'physical', power: 120, accuracy: 100, pp: 5, effect: { type: 'stat-change', target: 'self', stat: 'defense', stages: -1 } },
+  'close-combat': { id: 'close-combat', name: 'Close Combat', type: 'fighting', category: 'physical', power: 120, accuracy: 100, pp: 5, effect: { type: 'stat-change', target: 'self', statChanges: [{ stat: 'defense', stages: -1 }, { stat: 'spDefense', stages: -1 }] } },
 };

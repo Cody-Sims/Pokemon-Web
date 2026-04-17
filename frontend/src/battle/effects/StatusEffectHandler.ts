@@ -252,7 +252,11 @@ export class StatusEffectHandler {
     switch (effect.type) {
       // ── Status condition ──
       case 'status': {
-        const status = effect.status;
+        let status = effect.status;
+        // Support random status selection (e.g. Tri Attack)
+        if (!status && effect.randomStatus && effect.randomStatus.length > 0) {
+          status = effect.randomStatus[Math.floor(Math.random() * effect.randomStatus.length)];
+        }
         if (!status) break;
 
         // Volatile statuses (can stack alongside a non-volatile)
@@ -295,24 +299,31 @@ export class StatusEffectHandler {
 
       // ── Stat change ──
       case 'stat-change': {
-        const stat = effect.stat;
-        const stages = effect.stages ?? 0;
-        if (!stat || stages === 0) break;
+        // Support multi-stat changes via statChanges array
+        const changes = effect.statChanges ?? (effect.stat && effect.stages != null
+          ? [{ stat: effect.stat, stages: effect.stages }]
+          : []);
 
-        const state = this.getState(target);
-        const statKey = stat as keyof StatStages;
-        if (!(statKey in state.statStages)) break;
+        for (const change of changes) {
+          const stat = change.stat;
+          const stages = change.stages ?? 0;
+          if (!stat || stages === 0) continue;
 
-        const old = state.statStages[statKey];
-        state.statStages[statKey] = clamp(old + stages, -6, 6) as number;
-        const actual = state.statStages[statKey] - old;
+          const state = this.getState(target);
+          const statKey = stat as keyof StatStages;
+          if (!(statKey in state.statStages)) continue;
 
-        if (actual === 0) {
-          messages.push(`${targetName}'s ${STAT_NAMES[statKey]} won't go any ${stages > 0 ? 'higher' : 'lower'}!`);
-        } else if (Math.abs(actual) === 1) {
-          messages.push(`${targetName}'s ${STAT_NAMES[statKey]} ${actual > 0 ? 'rose' : 'fell'}!`);
-        } else if (Math.abs(actual) >= 2) {
-          messages.push(`${targetName}'s ${STAT_NAMES[statKey]} ${actual > 0 ? 'rose sharply' : 'fell harshly'}!`);
+          const old = state.statStages[statKey];
+          state.statStages[statKey] = clamp(old + stages, -6, 6) as number;
+          const actual = state.statStages[statKey] - old;
+
+          if (actual === 0) {
+            messages.push(`${targetName}'s ${STAT_NAMES[statKey]} won't go any ${stages > 0 ? 'higher' : 'lower'}!`);
+          } else if (Math.abs(actual) === 1) {
+            messages.push(`${targetName}'s ${STAT_NAMES[statKey]} ${actual > 0 ? 'rose' : 'fell'}!`);
+          } else if (Math.abs(actual) >= 2) {
+            messages.push(`${targetName}'s ${STAT_NAMES[statKey]} ${actual > 0 ? 'rose sharply' : 'fell harshly'}!`);
+          }
         }
         break;
       }

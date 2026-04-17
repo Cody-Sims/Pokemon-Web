@@ -31,7 +31,7 @@ export const tmData: Record<string, TMData> = {
   'tm06': { id: 'tm06', moveId: 'toxic',          name: 'TM06 Toxic',          price: 0, location: 'Route 4',                 reusable: true },
   'tm10': { id: 'tm10', moveId: 'facade',         name: 'TM10 Facade',         price: 0, location: 'Route 3',                 reusable: true },
   'tm14': { id: 'tm14', moveId: 'blizzard',       name: 'TM14 Blizzard',       price: 0, location: 'Victory Road',            reusable: true },
-  'tm21': { id: 'tm21', moveId: 'return',         name: 'TM21 Return',         price: 0, location: 'Pallet Town (Prof. Oak)', reusable: true },
+  'tm21': { id: 'tm21', moveId: 'return',         name: 'TM21 Return',         price: 0, location: 'Littoral Town (Prof. Willow)', reusable: true },
   'tm23': { id: 'tm23', moveId: 'thunder',        name: 'TM23 Thunder',        price: 0, location: 'Route 7',                 reusable: true },
   'tm25': { id: 'tm25', moveId: 'earthquake',     name: 'TM25 Earthquake',     price: 0, location: 'Victory Road',            reusable: true },
   'tm27': { id: 'tm27', moveId: 'double-team',    name: 'TM27 Double Team',    price: 0, location: 'Route 3',                 reusable: true },

@@ -47,7 +47,7 @@ export function createGenericHouse(cityKey: string, houseIndex: number, npcDialo
 
 // Pre-built generic house interiors for each city that has residential buildings
 export const palletHouse1 = createGenericHouse('pallet-town', 1, [
-  'This is our home in Pallet Town.',
+  'This is our home in Littoral Town.',
   'Mom always said this region is special.',
   'Be careful on your journey!',
 ]);

@@ -20,6 +20,7 @@ export interface DialogueData {
   speaker?: string;
   choices?: { text: string; value: string }[];
   onChoice?: (value: string) => void;
+  callingScene?: string;
 }
 
 export class DialogueScene extends Phaser.Scene {
@@ -42,6 +43,7 @@ export class DialogueScene extends Phaser.Scene {
   private choiceCursor = 0;
   private inChoiceMode = false;
   private choicePanel?: NinePatchPanel;
+  private callingScene = 'OverworldScene';
 
   constructor() {
     super({ key: 'DialogueScene' });
@@ -53,6 +55,7 @@ export class DialogueScene extends Phaser.Scene {
     this.speaker = data.speaker;
     this.choices = data.choices;
     this.onChoice = data.onChoice;
+    this.callingScene = data.callingScene ?? 'OverworldScene';
     this.inChoiceMode = false;
     this.choiceTexts = [];
   }
@@ -276,6 +279,6 @@ export class DialogueScene extends Phaser.Scene {
     this.indicatorTween?.destroy();
     this.cleanupChoices();
     this.scene.stop();
-    this.scene.resume('OverworldScene');
+    this.scene.resume(this.callingScene);
   }
 }

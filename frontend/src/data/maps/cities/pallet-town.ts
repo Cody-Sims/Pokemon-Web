@@ -50,7 +50,7 @@ export const palletTown: MapDefinition = {
       textureKey: 'npc-male-1',
       facing: 'down',
       dialogue: [
-        'Welcome to Pallet Town!',
+        'Welcome to Littoral Town!',
         'The breeze from the sea is wonderful here.',
       ],
       behavior: { type: 'look-around' },
@@ -62,7 +62,7 @@ export const palletTown: MapDefinition = {
       textureKey: 'npc-female-1',
       facing: 'left',
       dialogue: [
-        'Prof. Oak\'s Lab is that big building in the south.',
+        'Prof. Willow\'s Lab is that big building in the south.',
         'He studies Pokémon for a living!',
       ],
     },
@@ -142,7 +142,7 @@ export const palletTown: MapDefinition = {
       tileY: 22,
       textureKey: 'generic-trainer',
       facing: 'down',
-      dialogue: ['PALLET TOWN PIER', '"Where the sea breeze begins"'],
+      dialogue: ['LITTORAL TOWN PIER', '"Where the sea breeze begins"'],
     },
     // ─── Mom (heals party) ───
     {

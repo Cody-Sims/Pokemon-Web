@@ -111,8 +111,8 @@ export const itemData: Record<string, ItemData> = {
 
   // ─── Key Items ───
   'oaks-parcel': {
-    id: 'oaks-parcel', name: "Oak's Parcel", category: 'key',
-    description: 'A parcel to be delivered to Prof. Oak from Viridian City.',
+    id: 'oaks-parcel', name: "Prof. Willow's Parcel", category: 'key',
+    description: 'A parcel to be delivered to Prof. Willow from the PokéMart.',
     effect: { type: 'key' },
   },
   'pokedex': {
@@ -247,5 +247,37 @@ export const itemData: Record<string, ItemData> = {
     id: 'synthesis-bracelet', name: 'Synthesis Bracelet', category: 'key',
     description: 'A bracelet infused with Aether energy. Allows Pokémon to enter Synthesis Mode.',
     effect: { type: 'key' },
+  },
+
+  // ─── Quest Reward Items ───
+  'rare-candy': {
+    id: 'rare-candy', name: 'Rare Candy', category: 'medicine',
+    description: 'Raises the level of a single Pokémon by one.',
+    effect: { type: 'heal-hp', amount: 0 },
+  },
+  'master-ball': {
+    id: 'master-ball', name: 'Master Ball', category: 'pokeball',
+    description: 'The best Poké Ball. It will catch any wild Pokémon without fail.',
+    effect: { type: 'capture', catchRateMultiplier: 255 },
+  },
+  'mystic-water': {
+    id: 'mystic-water', name: 'Mystic Water', category: 'battle',
+    description: 'Boosts the power of Water-type moves when held.',
+    effect: { type: 'held-passive', held: 'mystic-water' },
+  },
+  'spell-tag': {
+    id: 'spell-tag', name: 'Spell Tag', category: 'battle',
+    description: 'Boosts the power of Ghost-type moves when held.',
+    effect: { type: 'held-passive', held: 'spell-tag' },
+  },
+  'dragon-scale': {
+    id: 'dragon-scale', name: 'Dragon Scale', category: 'evolution',
+    description: 'A thick and tough scale. Needed for certain Pokémon to evolve.',
+    effect: { type: 'evolution-stone', stone: 'dragon-scale' },
+  },
+  'charcoal': {
+    id: 'charcoal', name: 'Charcoal', category: 'battle',
+    description: 'Boosts the power of Fire-type moves when held.',
+    effect: { type: 'held-passive', held: 'charcoal' },
   },
 };

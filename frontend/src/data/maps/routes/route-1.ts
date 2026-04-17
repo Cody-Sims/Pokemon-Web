@@ -62,7 +62,7 @@ export const route1: MapDefinition = {
       tileY: 1,
       textureKey: 'generic-trainer',
       facing: 'down',
-      dialogue: ['ROUTE 1', 'VIRIDIAN CITY ↑  PALLET TOWN ↓'],
+      dialogue: ['ROUTE 1', 'VIRIDIAN CITY ↑  LITTORAL TOWN ↓'],
     },
     {
       id: 'route1-npc-1',

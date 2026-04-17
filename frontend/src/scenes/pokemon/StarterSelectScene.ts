@@ -57,11 +57,12 @@ export class StarterSelectScene extends Phaser.Scene {
       ...FONTS.title, fontSize: '24px',
     }).setOrigin(0.5);
 
-    // Draw three starter cards
-    const startX = layout.cx - 220;
+    // Draw three starter cards (BUG-080: use relative spacing)
+    const cardSpacing = Math.min(220, (layout.w - 60) / 3);
+    const startX = layout.cx - cardSpacing;
     for (let i = 0; i < 3; i++) {
       const s = this.starters[i];
-      const cx = startX + i * 220;
+      const cx = startX + i * cardSpacing;
       const cy = layout.cy - 20;
 
       const container = this.add.container(cx, cy);
@@ -126,6 +127,8 @@ export class StarterSelectScene extends Phaser.Scene {
     });
     this.input.keyboard!.on('keydown-ENTER', () => this.selectStarter());
     this.input.keyboard!.on('keydown-SPACE', () => this.selectStarter());
+    // BUG-079: Add back/cancel handler
+    this.input.keyboard!.on('keydown-ESC', () => this.goBack());
   }
 
   private updateCursor(): void {
@@ -139,6 +142,12 @@ export class StarterSelectScene extends Phaser.Scene {
         card.setScale(1);
       }
     });
+  }
+
+  /** BUG-079: Allow canceling out of starter selection to return to lab. */
+  private goBack(): void {
+    AudioManager.getInstance().playSFX(SFX.CANCEL);
+    this.scene.stop();
   }
 
   private selectStarter(): void {

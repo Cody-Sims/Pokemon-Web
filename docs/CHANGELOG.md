@@ -7,6 +7,55 @@ All notable changes to the Pokemon Web project.
 ## [Unreleased]
 
 ## [2026-04-16]
+
+### Fixed
+- **BUG-059: Professor identity crisis** — Unified all Oak references to Prof. Willow across pallet-oak-lab, OverworldScene, item-data, tm-data, viridian-pokemart, pallet-player-house, and pallet-town NPC dialogue
+- **BUG-060: Pallet Town → Littoral Town** — Updated all player-facing text from "Pallet Town" to "Littoral Town" in NPC dialogue, signs, dock pier, generic-house, route-1 sign, and cutscene comments
+- **BUG-061: Missing quest reward items** — Added rare-candy, master-ball, mystic-water, spell-tag, dragon-scale, and charcoal to item-data.ts
+- **BUG-062: End-of-turn faint skips party check** — All faint paths (poison/burn, recoil, confusion self-hit) now check for alive party members before triggering blackout; added `promptPartySwitch` for forced switch
+- **BUG-063: Voluntary Pokemon switch does nothing** — PartyScene now launched in selectMode from battle; switch queues enemy-only attack turn
+- **BUG-064: BAG non-Pokeball items don't consume a turn** — InventoryScene emits `use-battle-item` event; BattleUIScene executes enemy turn after item use
+- **BUG-065: Failed flee allows player to act again** — Failed flee now executes enemy-only attack turn
+- **BUG-066: AchievementScene and TrainerCardScene not registered** — Added both scenes to game-config.ts scene array
+- **BUG-067: ConfirmBox zero touch support** — Added pointer/touch handlers on YES/NO buttons; added ESC cancel support
+- **BUG-068: MenuList no touch support** — Menu items now interactive with pointer-to-select behavior
+- **BUG-069: willow-lab-intro replays infinitely** — Added `setFlag` action for `willow_lab_intro_seen`
+- **BUG-070: Kael says "Gramps"** — Changed to "the Professor" to match Aurum storyline
+- **BUG-071: IntroScene duplicate click handler** — Removed duplicate girlPreviewBg handler that incorrectly set appearance to boy
+- **BUG-072: IntroScene generic professor sprite** — Changed from `npc-professor` to `npc-oak` (the dedicated professor sprite)
+- **BUG-073/074: FLY menu scene lifecycle** — FLY now sleeps MenuScene instead of stopping it; cancel returns to menu instead of dropping to overworld
+- **BUG-075: DialogueScene hard-coded resume** — Added `callingScene` parameter; defaults to OverworldScene but can be overridden
+- **BUG-076: Pokedex hardcoded to 151** — Now dynamically detects max Pokemon ID from data
+- **BUG-077: Dragon Dance missing Speed boost** — Added `statChanges` array support; Dragon Dance now raises ATK and SPD
+- **BUG-078: Close Combat missing Sp.Def drop** — Close Combat now lowers both DEF and Sp.DEF
+- **BUG-079: StarterSelectScene no back handler** — Added ESC/back handler to return to lab
+- **BUG-080: Starter cards overflow on mobile** — Cards now use relative spacing based on screen width
+- **BUG-081: TextBox no touch-to-skip** — Added pointerdown handler on text box background to skip typewriter
+- **BUG-082: ConfirmBox prompt text not destroyed** — Stored prompt text reference and destroy it in cleanup
+- **BUG-083: ConfirmBox keyboard conflicts** — Added `active` guard flag to prevent pass-through when dismissed
+- **BUG-084: TrainerCard trainerId lost on reload** — Added `trainerId` as proper GameManager field, serialized in saves
+- **BUG-085: StatisticsScene/HallOfFameScene close on any click** — Replaced global pointerdown with dedicated close button
+- **BUG-086: HallOfFameScene destroys children during iteration** — Copy children array before iterating
+- **BUG-087: Dead fatherTrail_active flag** — Removed unused flag from post-champion-victory cutscene
+- **BUG-088: HealthBar division-by-zero** — Added guard for maxValue <= 0
+- **BUG-089: IntroScene finishIntro no cleanup** — Added `tweens.killAll()` and input listener removal before transition
+- **BUG-092: Tri Attack only paralysis** — Added `randomStatus` support; Tri Attack now randomly picks burn/freeze/paralysis
+- **BUG-093: Encounter fallback creates Pidgey** — Added console.warn when BattleScene receives no enemy Pokemon
+- **BUG-094: NPC stale collision after map transition** — Added `preDestroy` hook to disable physics body
+- **BUG-095: PCScene box cursor persists across box switches** — Reset `boxCursor` to 0 when switching boxes
+- **BUG-096: 151 Pokémon count in lab dialogue** — Changed to "so many Pokémon to discover!"
+- **BUG-097: Oak's parcel references wrong professor** — Updated to "Prof. Willow's Parcel" with corrected description
+- **Pre-existing: IntroScene TouchControls import** — Fixed incorrect import path from `@ui/TouchControls` to `@ui/controls/TouchControls`
+
+### Added
+- `statChanges` array field on `MoveEffect` interface for multi-stat moves (Dragon Dance, Close Combat)
+- `randomStatus` array field on `MoveEffect` for random status selection (Tri Attack)
+- `trainerId` field on GameManager with serialization/deserialization support
+- `callingScene` parameter on DialogueScene for flexible scene resumption
+- `executeEnemyOnlyTurn` and `promptPartySwitch` methods on BattleUIScene
+- `hasAlivePartyMember` helper on BattleUIScene for party-check on faint
+
+## [2026-04-16]
 ### Added
 - **Vite code splitting**: Phaser and battle subsystem split into separate chunks for faster initial load and better cache invalidation
 - **Dynamic game resize**: Game width recomputes on viewport/orientation changes so mobile devices fill the full screen width after rotation instead of showing black side bars

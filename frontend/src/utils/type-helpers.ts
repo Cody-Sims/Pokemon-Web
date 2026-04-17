@@ -39,6 +39,7 @@ export interface MoveEffect {
   target: 'self' | 'enemy';
   stat?: keyof Stats;
   stages?: number;
+  statChanges?: { stat: keyof Stats; stages: number }[];
   status?: StatusCondition | VolatileStatus;
   chance?: number; // 0-100 probability
   amount?: number; // Fixed damage, heal %, or recoil %
@@ -46,6 +47,7 @@ export interface MoveEffect {
   weather?: WeatherCondition;
   twoTurnMove?: string; // e.g. 'fly', 'dig', 'solar-beam'
   rechargeOnly?: boolean; // true for moves like Hyper Beam that only recharge (no charge turn)
+  randomStatus?: StatusCondition[]; // For moves like Tri Attack that randomly pick a status
 }
 
 // Weather conditions

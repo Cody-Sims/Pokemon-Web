@@ -47,16 +47,8 @@ export class TrainerCardScene extends Phaser.Scene {
       ...FONTS.body, fontSize: mobileFontSize(15),
     }).setOrigin(0, 0.5);
 
-    // Trainer ID (derived from player name hash, stored as flag)
-    let trainerId = gm.getFlag('trainerId');
-    if (!trainerId) {
-      // Generate a 5-digit ID on first view
-      const id = String(10000 + Math.floor(Math.random() * 90000));
-      gm.setFlag('trainerId', true);
-      (gm as any)._trainerId = id;
-      trainerId = true;
-    }
-    const idStr = (gm as any)._trainerId ?? '00000';
+    // Trainer ID (BUG-084: use proper GameManager field)
+    const idStr = gm.getTrainerId();
     this.add.text(rightX, rowY, `ID No. ${idStr}`, {
       ...FONTS.body, fontSize: mobileFontSize(15),
     }).setOrigin(0, 0.5);

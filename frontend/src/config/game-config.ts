@@ -24,6 +24,8 @@ import { NicknameScene } from '@scenes/pokemon/NicknameScene';
 import { FlyMapScene } from '@scenes/menu/FlyMapScene';
 import { StatisticsScene } from '@scenes/menu/StatisticsScene';
 import { HallOfFameScene } from '@scenes/menu/HallOfFameScene';
+import { AchievementScene } from '@scenes/menu/AchievementScene';
+import { TrainerCardScene } from '@scenes/menu/TrainerCardScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
 const isMobile = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
@@ -70,5 +72,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     FlyMapScene,
     StatisticsScene,
     HallOfFameScene,
+    AchievementScene,
+    TrainerCardScene,
   ],
 };

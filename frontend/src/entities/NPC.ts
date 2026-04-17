@@ -55,4 +55,11 @@ export class NPC extends Phaser.GameObjects.Sprite {
       case 'right': return 'left';
     }
   }
+
+  /** BUG-094: Clear collision references on destroy to prevent stale callbacks. */
+  preDestroy(): void {
+    if (this.body && 'enable' in this.body) {
+      (this.body as Phaser.Physics.Arcade.Body).enable = false;
+    }
+  }
 }

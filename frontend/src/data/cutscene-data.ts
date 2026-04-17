@@ -20,8 +20,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
         'Welcome to my laboratory!',
         'I study the Pokémon of the Aurum Region.',
         'But first, choose your partner Pokémon!',
-      ]},
-    ],
+      ]},      { type: 'setFlag', flag: 'willow_lab_intro_seen' },    ],
   },
   'route-1-blockade': {
     id: 'route-1-blockade',
@@ -142,11 +141,10 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
         'A familiar handwriting catches your eye in the Champion\'s records... Could it be?',
       ]},
       { type: 'setFlag', flag: 'quest_fatherTrail_started' },
-      { type: 'setFlag', flag: 'fatherTrail_active' },
     ],
   },
 
-  // ─── Game Intro (entering Pallet Town) ───
+  // ─── Game Intro (entering Littoral Town) ───
   'game-intro': {
     id: 'game-intro',
     actions: [
@@ -177,7 +175,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
       { type: 'showEmote', targetId: 'kael', emote: 'exclamation' },
       { type: 'wait', ms: 400 },
       { type: 'dialogue', speaker: 'Kael', lines: [
-        'Well, well! So YOU\'re the one Gramps chose?',
+        'Well, well! So YOU\'re the one the Professor chose?',
         'I already picked my partner. Obviously the best one.',
         'Let\'s battle right now — I\'ll show you the difference between us!',
       ]},

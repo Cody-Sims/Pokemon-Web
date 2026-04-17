@@ -209,24 +209,65 @@ export class BattleUIScene extends Phaser.Scene {
         this.scene.sleep();
         this.scene.launch('InventoryScene', { battleMode: true });
         const invScene = this.scene.get('InventoryScene');
+        let ballUsed = false;
+        let itemUsed = false;
         // Listen for pokeball use
         invScene.events.once('use-pokeball', (ballItemId: string) => {
+          ballUsed = true;
           this.scene.wake();
           this.handlePokeBallUse(ballItemId);
         });
+        // Listen for non-ball item use in battle (BUG-064)
+        invScene.events.once('use-battle-item', () => {
+          itemUsed = true;
+        });
         invScene.events.once('shutdown', () => {
-          // If shutdown without using a ball, just wake back up
+          if (ballUsed) return;
           this.scene.wake();
+          // If a non-ball item was used, enemy gets a free attack (BUG-064)
+          if (itemUsed) {
+            this.executeEnemyOnlyTurn();
+          }
         });
         break;
       }
-      case 'POKEMON':
+      case 'POKEMON': {
         this.scene.sleep();
-        this.scene.launch('PartyScene');
-        this.scene.get('PartyScene').events.once('shutdown', () => {
+        this.scene.launch('PartyScene', { selectMode: true });
+        const partyScene = this.scene.get('PartyScene');
+        let switched = false;
+        // Listen for pokemon selection (BUG-063)
+        partyScene.events.once('pokemon-selected', (index: number) => {
+          switched = true;
+          const gm = GameManager.getInstance();
+          const party = gm.getParty();
+          const b = this.battle();
+          // Don't switch to the active Pokemon or fainted Pokemon
+          if (index === 0 || !party[index] || party[index].currentHp <= 0) {
+            switched = false;
+            return;
+          }
+          // Swap the selected Pokemon to the front
+          const temp = party[0];
+          party[0] = party[index];
+          party[index] = temp;
+          b.playerPokemon = party[0];
+          const pData = pokemonData[party[0].dataId];
+          if (pData) b.playerSprite.setTexture(pData.spriteKeys.back);
+          b.updateHpBars();
+          const name = pData?.name ?? '???';
+          this.msg(`Go! ${name}!`);
+          this.statusHandler.clearPokemon(party[index]);
+        });
+        partyScene.events.once('shutdown', () => {
           this.scene.wake();
+          if (switched) {
+            // Enemy gets a free attack after switch (BUG-063)
+            this.executeEnemyOnlyTurn();
+          }
         });
         break;
+      }
       case 'RUN': {
         const b = this.battle();
         if (b.battleManager.getBattleType() === 'trainer') {
@@ -247,10 +288,8 @@ export class BattleUIScene extends Phaser.Scene {
           this.msg('Can\'t escape!');
           this.state = 'animating';
           this.time.delayedCall(800, () => {
-            // Enemy gets a free attack
-            this.state = 'actions';
-            this.showActions();
-            this.msg('What will you do?');
+            // Enemy gets a free attack on failed flee (BUG-065)
+            this.executeEnemyOnlyTurn();
           });
         }
         break;
@@ -531,9 +570,14 @@ export class BattleUIScene extends Phaser.Scene {
               this.msg(`${atkName} fainted!`);
               this.time.delayedCall(1500, () => {
                 if (isPlayer) {
-                  this.msg('You blacked out...');
-                  this.state = 'message';
-                  this.time.delayedCall(2000, () => this.endBattle());
+                  // BUG-062: Check for alive party members before blacking out
+                  if (this.hasAlivePartyMember()) {
+                    this.promptPartySwitch();
+                  } else {
+                    this.msg('You blacked out...');
+                    this.state = 'message';
+                    this.time.delayedCall(2000, () => this.endBattle());
+                  }
                 } else {
                   this.runVictorySequence();
                 }
@@ -775,9 +819,14 @@ export class BattleUIScene extends Phaser.Scene {
               this.msg(`${atkName} fainted!`);
               this.time.delayedCall(1500, () => {
                 if (isPlayer) {
-                  this.msg('You blacked out...');
-                  this.state = 'message';
-                  this.time.delayedCall(2000, () => this.endBattle());
+                  // BUG-062: Check for alive party members before blacking out
+                  if (this.hasAlivePartyMember()) {
+                    this.promptPartySwitch();
+                  } else {
+                    this.msg('You blacked out...');
+                    this.state = 'message';
+                    this.time.delayedCall(2000, () => this.endBattle());
+                  }
                 } else {
                   this.runVictorySequence();
                 }
@@ -875,9 +924,14 @@ export class BattleUIScene extends Phaser.Scene {
       b.faintSprite(b.playerSprite);
       this.msg(`${defName} fainted!`);
       this.time.delayedCall(1500, () => {
-        this.msg('You blacked out...');
-        this.state = 'message';
-        this.time.delayedCall(2000, () => this.endBattle());
+        // BUG-062: Check for alive party members before blacking out
+        if (this.hasAlivePartyMember()) {
+          this.promptPartySwitch();
+        } else {
+          this.msg('You blacked out...');
+          this.state = 'message';
+          this.time.delayedCall(2000, () => this.endBattle());
+        }
       });
       return;
     }
@@ -897,6 +951,60 @@ export class BattleUIScene extends Phaser.Scene {
 
   private pickEnemyMove(enemy: PokemonInstance): string {
     return pickEnemyMove(enemy);
+  }
+
+  /** Execute an enemy-only turn (after player uses item, switches, or fails to flee). */
+  private executeEnemyOnlyTurn(): void {
+    const b = this.battle();
+    const enemy = b.enemyPokemon;
+    const player = b.playerPokemon;
+    const enemyMoveId = this.pickEnemyMove(enemy);
+
+    this.state = 'animating';
+    this.hideActions();
+
+    // Create a single-entry turn order with only the enemy attacking
+    const order = [{ attacker: enemy, defender: player, moveId: enemyMoveId, isPlayer: false }];
+    this.runTurnStep(order, 0);
+  }
+
+  /** Check if the player has alive party members (for BUG-062). */
+  private hasAlivePartyMember(): boolean {
+    const party = GameManager.getInstance().getParty();
+    return party.some(p => p.currentHp > 0);
+  }
+
+  /** Prompt the player to choose a replacement Pokemon after a faint. */
+  private promptPartySwitch(): void {
+    this.msg('Choose a Pokémon!');
+    this.scene.sleep();
+    this.scene.launch('PartyScene', { selectMode: true });
+    const partyScene = this.scene.get('PartyScene');
+    partyScene.events.once('pokemon-selected', (index: number) => {
+      const gm = GameManager.getInstance();
+      const party = gm.getParty();
+      if (index > 0 && party[index] && party[index].currentHp > 0) {
+        const temp = party[0];
+        party[0] = party[index];
+        party[index] = temp;
+        const b = this.battle();
+        b.playerPokemon = party[0];
+        const pData = pokemonData[party[0].dataId];
+        if (pData) b.playerSprite.setTexture(pData.spriteKeys.back);
+        b.updateHpBars();
+        const name = pData?.name ?? '???';
+        this.msg(`Go! ${name}!`);
+        this.statusHandler.clearPokemon(party[index]);
+      }
+    });
+    partyScene.events.once('shutdown', () => {
+      this.scene.wake();
+      this.time.delayedCall(600, () => {
+        this.state = 'actions';
+        this.showActions();
+        this.msg('What will you do?');
+      });
+    });
   }
 
   private msg(text: string): void { this.messageText.setText(text); }

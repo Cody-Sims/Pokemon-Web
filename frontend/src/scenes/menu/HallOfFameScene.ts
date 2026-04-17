@@ -48,23 +48,22 @@ export class HallOfFameScene extends Phaser.Scene {
     const navHint = this.entries.length > this.entriesPerPage
       ? 'LEFT/RIGHT to browse  •  ESC to close'
       : 'Press ESC to close';
-    this.add.text(layout.cx, layout.h - 25, navHint, {
+    const closeBtn = this.add.text(layout.cx, layout.h - 25, `[ ${navHint} ]`, {
       ...FONTS.caption, color: COLORS.textDim,
-    }).setOrigin(0.5);
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => this.close());
 
-    // Input
+    // Input (BUG-085: removed global pointerdown close)
     this.input.keyboard!.on('keydown-ESC', () => this.close());
     this.input.keyboard!.on('keydown-ENTER', () => this.close());
     this.input.keyboard!.on('keydown-LEFT', () => this.prevPage());
     this.input.keyboard!.on('keydown-RIGHT', () => this.nextPage());
-    this.input.on('pointerdown', () => this.close());
   }
 
   private drawPage(): void {
-    // Remove old content (tagged as 'page-content')
-    this.children.list
-      .filter(c => (c as any).pageContent)
-      .forEach(c => c.destroy());
+    // Remove old content (tagged as 'page-content') — BUG-086: copy array first
+    const toRemove = this.children.list.filter(c => (c as any).pageContent);
+    toRemove.forEach(c => c.destroy());
 
     const layout = ui(this);
     const start = this.page * this.entriesPerPage;
