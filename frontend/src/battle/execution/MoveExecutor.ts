@@ -136,6 +136,20 @@ export class MoveExecutor {
       };
     }
 
+    // BUG-052: Status moves with no effect implementation
+    if (move.category === 'status' && !move.effect) {
+      const moveInstance = attacker.moves.find(m => m.moveId === moveId);
+      if (moveInstance && moveInstance.currentPp > 0) moveInstance.currentPp--;
+      return {
+        damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false },
+        moveHit: true,
+        moveName: move.name,
+        attackerName,
+        defenderName,
+        effectMessages: ['But nothing happened!'],
+      };
+    }
+
     // Deduct PP before accuracy check (PP is spent on attempt, not on hit)
     const moveInstance = attacker.moves.find(m => m.moveId === moveId);
     if (moveInstance && moveInstance.currentPp > 0) {
@@ -143,7 +157,31 @@ export class MoveExecutor {
     }
 
     // Check accuracy
-    if (!DamageCalculator.doesMoveHit(move)) return miss();
+    if (!DamageCalculator.doesMoveHit(move)) {
+      // BUG-051: Jump Kick / High Jump Kick crash damage on miss
+      if (moveId === 'jump-kick' || moveId === 'high-jump-kick') {
+        const crashDmg = Math.max(1, Math.floor(attacker.stats.hp / 2));
+        attacker.currentHp = Math.max(0, attacker.currentHp - crashDmg);
+        return {
+          ...miss(),
+          effectMessages: [`${attackerName} kept going and crashed! ${crashDmg} damage!`],
+          recoilDamage: crashDmg,
+        };
+      }
+      return miss();
+    }
+
+    // BUG-027: Dream Eater requires target to be asleep
+    if (move.effect?.requireSleep && defender.status !== 'sleep') {
+      return {
+        damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false },
+        moveHit: false,
+        moveName: move.name,
+        attackerName,
+        defenderName,
+        effectMessages: [`${defenderName} isn't asleep!`],
+      };
+    }
 
     // ── Fire-type thawing: fire moves thaw frozen targets ──
     const thawMessages: string[] = [];

@@ -197,6 +197,13 @@ export class StatusEffectHandler {
     return null;
   }
 
+  /** BUG-033: Clear flinch volatiles for all active Pokemon at turn start. */
+  clearFlinchAll(): void {
+    for (const state of this.states.values()) {
+      state.volatileStatuses.delete('flinch');
+    }
+  }
+
   // ── Fire-type thawing ───────────────────────────────────────
 
   /** Check if a fire-type move thaws a frozen defender. Call before damage. */
@@ -438,7 +445,8 @@ export class StatusEffectHandler {
           atkState.protectSuccessRate *= 0.5;
           messages.push(`${pokeName(attacker)} protected itself!`);
         } else {
-          atkState.protectSuccessRate = 1.0;
+          // NEW-009: Don't reset rate on failure — keep halving
+          atkState.protectSuccessRate *= 0.5;
           messages.push(`But it failed!`);
         }
         break;

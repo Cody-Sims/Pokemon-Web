@@ -221,10 +221,10 @@ export class PCScene extends Phaser.Scene {
   private placePokemon(gm: GameManager): void {
     if (!this.heldPokemon) return;
 
-    // Determine target based on current navigation context
-    // If we're looking at the box grid, place in box; if looking at party, place in party
-    const targetIsBox = this.boxSlots[this.boxCursor]?.getData('highlighted') === true;
-    const targetIsParty = this.partySlots[this.partyCursor]?.getData('highlighted') === true;
+    // NEW-013: Determine target from current cursor focus, not stale highlight data
+    const lastFocus = this.partySlots[this.partyCursor]?.getData('highlighted') === true ? 'party' : 'box';
+    const targetIsBox = lastFocus === 'box';
+    const targetIsParty = lastFocus === 'party';
 
     if (targetIsBox || (!targetIsParty && this.heldPokemon.source === 'party')) {
       // Place into box

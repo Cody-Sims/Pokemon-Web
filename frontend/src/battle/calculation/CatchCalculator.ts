@@ -35,14 +35,14 @@ export class CatchCalculator {
 
     // Guaranteed catch
     if (modifiedRate >= 255) {
-      return { caught: true, shakes: 3 };
+      return { caught: true, shakes: 4 };
     }
 
-    // Shake check probability
+    // Shake check probability (4 checks per Gen III+ formula)
     const shakeProbability = Math.sqrt(Math.sqrt(modifiedRate / 255));
 
     let shakes = 0;
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       if (Math.random() < shakeProbability) {
         shakes++;
       } else {
@@ -50,6 +50,6 @@ export class CatchCalculator {
       }
     }
 
-    return { caught: shakes === 3, shakes };
+    return { caught: shakes === 4, shakes };
   }
 }

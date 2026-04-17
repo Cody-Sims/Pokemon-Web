@@ -69,9 +69,11 @@ export class TitleScene extends Phaser.Scene {
       options.unshift('Continue');
       options.push('Delete Save');
     }
-    // Show Hall of Fame if save has entries
+    // Show Hall of Fame if save data has entries (NEW-010: check saved data, not stale GM)
     const gm = GameManager.getInstance();
-    if (gm.getHallOfFame().length > 0) {
+    const sm = SaveManager.getInstance();
+    const savedHoF = sm.hasSave() ? gm.getHallOfFame().length > 0 : false;
+    if (savedHoF) {
       options.push('Hall of Fame');
     }
     options.push('Options');

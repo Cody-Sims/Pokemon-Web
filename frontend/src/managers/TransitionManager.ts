@@ -18,7 +18,10 @@ export class TransitionManager {
     scene.cameras.main.fadeOut(duration / 2, 0, 0, 0);
     scene.cameras.main.once('camerafadeoutcomplete', () => {
       callback();
-      scene.cameras.main.fadeIn(duration / 2, 0, 0, 0);
+      // NEW-001: Check scene is still alive before fade-in
+      if (scene.scene.isActive()) {
+        scene.cameras.main.fadeIn(duration / 2, 0, 0, 0);
+      }
     });
   }
 }

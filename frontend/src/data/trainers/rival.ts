@@ -1,16 +1,33 @@
 import { TrainerData } from '../interfaces';
+import { GameManager } from '@managers/GameManager';
 
-// Note: Rival starter is hardcoded to Charmander line (pokemonId: 4/5/6).
-// TODO: Implement dynamic rival starter based on player's starterChoice flag
-// when the battle system supports dynamic party generation at encounter time.
+/**
+ * Get the rival's starter Pokemon ID based on the player's choice.
+ * Rival picks the type-advantage starter:
+ *   Player Bulbasaur (1) → Rival Charmander (4)
+ *   Player Charmander (4) → Rival Squirtle (7)
+ *   Player Squirtle (7) → Rival Bulbasaur (1)
+ */
+function getRivalStarterBase(): number {
+  const gm = GameManager.getInstance();
+  if (gm.getFlag('starterChoice_1')) return 4;  // Player picked Bulbasaur → rival gets Charmander
+  if (gm.getFlag('starterChoice_4')) return 7;  // Player picked Charmander → rival gets Squirtle
+  if (gm.getFlag('starterChoice_7')) return 1;  // Player picked Squirtle → rival gets Bulbasaur
+  return 4; // default fallback
+}
 
-export const rivalTrainers: Record<string, TrainerData> = {
+/** Get rival starter at each evolution stage. */
+function rivalStarter(stage: 0 | 1 | 2): number { return getRivalStarterBase() + stage; }
+
+/** Build rival trainer data dynamically based on player's starter choice. */
+function buildRivalTrainers(): Record<string, TrainerData> {
+  return {
   // ─── Rival: Kael Ashford ───
   // Encounter 1: Professor Willow's Lab (starter advantage over player)
   'rival-1': {
     id: 'rival-1', name: 'Kael', spriteKey: 'rival',
     party: [
-      { pokemonId: 4, level: 5, moves: ['scratch', 'growl'] }, // Adapts to starter choice
+      { pokemonId: rivalStarter(0), level: 5, moves: ['scratch', 'growl'] },
     ],
     dialogue: {
       before: [
@@ -29,7 +46,7 @@ export const rivalTrainers: Record<string, TrainerData> = {
   'rival-2': {
     id: 'rival-2', name: 'Kael', spriteKey: 'rival',
     party: [
-      { pokemonId: 5, level: 16, moves: ['ember', 'scratch', 'smokescreen', 'fury-swipes'] },
+      { pokemonId: rivalStarter(1), level: 16, moves: ['ember', 'scratch', 'smokescreen', 'fury-swipes'] },
       { pokemonId: 16, level: 14, moves: ['gust', 'quick-attack', 'sand-attack'] },
       { pokemonId: 19, level: 14, moves: ['tackle', 'quick-attack', 'bite'] },
     ],
@@ -52,7 +69,7 @@ export const rivalTrainers: Record<string, TrainerData> = {
   'rival-3': {
     id: 'rival-3', name: 'Kael', spriteKey: 'rival',
     party: [
-      { pokemonId: 6, level: 28, moves: ['flamethrower', 'slash', 'smokescreen', 'dragon-rage'] },
+      { pokemonId: rivalStarter(2), level: 28, moves: ['flamethrower', 'slash', 'smokescreen', 'dragon-rage'] },
       { pokemonId: 17, level: 25, moves: ['wing-attack', 'quick-attack', 'gust'] },
       { pokemonId: 20, level: 25, moves: ['hyper-fang', 'bite', 'quick-attack'] },
       { pokemonId: 57, level: 26, moves: ['karate-chop', 'fury-swipes', 'seismic-toss', 'low-kick'] },
@@ -75,7 +92,7 @@ export const rivalTrainers: Record<string, TrainerData> = {
   'rival-4': {
     id: 'rival-4', name: 'Kael', spriteKey: 'rival',
     party: [
-      { pokemonId: 6, level: 37, moves: ['flamethrower', 'slash', 'dragon-rage', 'fire-spin'] },
+      { pokemonId: rivalStarter(2), level: 37, moves: ['flamethrower', 'slash', 'dragon-rage', 'fire-spin'] },
       { pokemonId: 18, level: 34, moves: ['wing-attack', 'quick-attack', 'mirror-move', 'agility'] },
       { pokemonId: 20, level: 34, moves: ['hyper-fang', 'super-fang', 'bite', 'body-slam'] },
       { pokemonId: 57, level: 35, moves: ['karate-chop', 'seismic-toss', 'fury-swipes', 'low-kick'] },
@@ -101,7 +118,7 @@ export const rivalTrainers: Record<string, TrainerData> = {
   'rival-5': {
     id: 'rival-5', name: 'Kael', spriteKey: 'rival',
     party: [
-      { pokemonId: 6, level: 48, moves: ['flamethrower', 'slash', 'dragon-rage', 'fire-blast'] },
+      { pokemonId: rivalStarter(2), level: 48, moves: ['flamethrower', 'slash', 'dragon-rage', 'fire-blast'] },
       { pokemonId: 18, level: 45, moves: ['wing-attack', 'quick-attack', 'mirror-move', 'agility'] },
       { pokemonId: 20, level: 45, moves: ['hyper-fang', 'super-fang', 'bite', 'body-slam'] },
       { pokemonId: 57, level: 46, moves: ['karate-chop', 'seismic-toss', 'thunder-punch', 'double-kick'] },
@@ -128,7 +145,7 @@ export const rivalTrainers: Record<string, TrainerData> = {
   'rival-6': {
     id: 'rival-6', name: 'Kael', spriteKey: 'rival',
     party: [
-      { pokemonId: 6, level: 65, moves: ['flamethrower', 'fire-blast', 'dragon-rage', 'slash'] },
+      { pokemonId: rivalStarter(2), level: 65, moves: ['flamethrower', 'fire-blast', 'dragon-rage', 'slash'] },
       { pokemonId: 18, level: 62, moves: ['fly', 'quick-attack', 'mirror-move', 'agility'] },
       { pokemonId: 20, level: 62, moves: ['hyper-fang', 'super-fang', 'bite', 'body-slam'] },
       { pokemonId: 57, level: 63, moves: ['karate-chop', 'seismic-toss', 'thunder-punch', 'earthquake'] },
@@ -219,4 +236,25 @@ export const rivalTrainers: Record<string, TrainerData> = {
     },
     rewardMoney: 5800,
   },
-};
+  };
+}
+
+/** Proxy that builds rival data on access so starter choice is reflected dynamically. */
+export const rivalTrainers: Record<string, TrainerData> = new Proxy({} as Record<string, TrainerData>, {
+  get(_target, prop: string) {
+    return buildRivalTrainers()[prop];
+  },
+  ownKeys() {
+    return Object.keys(buildRivalTrainers());
+  },
+  has(_target, prop: string) {
+    return prop in buildRivalTrainers();
+  },
+  getOwnPropertyDescriptor(_target, prop: string) {
+    const data = buildRivalTrainers();
+    if (prop in data) {
+      return { configurable: true, enumerable: true, value: data[prop] };
+    }
+    return undefined;
+  },
+});

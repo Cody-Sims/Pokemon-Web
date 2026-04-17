@@ -8,6 +8,44 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-16]
 
+### Fixed — Remaining Bug Sweep (28 bugs)
+- **BUG-017: EventManager listener cleanup** — Added `clearByTag()` and `onTagged()` methods for scene-scoped listener registration and bulk cleanup
+- **BUG-027: Dream Eater works on awake targets** — Added `requireSleep` field; MoveExecutor now fails Dream Eater if target is not asleep
+- **BUG-031: Thrash/Petal Dance no multi-turn lock** — Added `multi-turn-lock` effect type to both moves (3-turn lock)
+- **BUG-033: Stale flinch volatile persists** — Added `clearFlinchAll()` called at turn start in `doExecuteTurn()`
+- **BUG-036: Rival starter hardcoded** — Rival now dynamically picks type-advantage starter based on player's `starterChoice` flag via Proxy-wrapped data
+- **BUG-039: Dual evolution data sources** — Documented as accepted architectural pattern; existing tests validate consistency
+- **BUG-048: Spread damage retroactive reversal** — Added clarifying comment; HP restoration approach is net-correct but documented as known limitation
+- **BUG-049: Catch formula 3 shakes** — Changed to 4 shake checks per Gen III+ formula
+- **BUG-050: Foul Play wrong stat** — DamageCalculator now uses defender's Attack for Foul Play
+- **BUG-051: Jump Kick/HJK no crash damage** — MoveExecutor now applies 50% max HP crash damage on miss
+- **BUG-052: Unimplemented status moves** — MoveExecutor now shows "But nothing happened!" for status moves with no effect
+- **BUG-058: GameClock not persisted** — Added `gameClockMinutes` to GameManager with serialize/deserialize support
+- **BUG-090: MenuScene keyboard cleanup** — Already had `shutdown()` method from prior fix; verified working
+- **BUG-091: Drake non-Dragon team** — Replaced Aerodactyl with second Dragonair; Gyarados kept as Dragon Rage user
+- **NEW-001: TransitionManager dead scene callback** — Added `scene.isActive()` guard before fade-in
+- **NEW-002: CutsceneEngine hardcoded resume** — Changed to `this.scene.scene.key` for dynamic scene resume
+- **NEW-003: BerryGarden persistence broken** — Added `berryPlots` field to GameManager with proper getter/setter/serialization
+- **NEW-004: GridMovement hop y conflict** — Removed `y` from tween targets; handled entirely in `onUpdate`
+- **NEW-005: isCycling not reset** — Added `this.isCycling = false` to OverworldScene `init()`
+- **NEW-007: LightingSystem resize** — Added `scale.on('resize')` handler to recreate RenderTexture
+- **NEW-008: Double fishing resume** — Removed manual resume; second DialogueScene uses `callingScene` param
+- **NEW-009: Protect rate resets on failure** — Rate now continues halving even on failure
+- **NEW-010: TitleScene stale HoF** — Now also checks `SaveManager.hasSave()` before showing option
+- **NEW-011: Quest tracker duplicates** — Added `isSleeping` check alongside `isActive`
+- **NEW-012: Trainer walk-toward destruction** — Added `scene.isActive()` and `trainer.active` guards
+- **NEW-013: PCScene stale highlight** — Placement now uses last-focused panel instead of stale data property
+
+### Added
+- `clearByTag()`, `onTagged()`, `offAll()` methods on EventManager for scene-scoped cleanup
+- `clearFlinchAll()` method on StatusEffectHandler
+- `requireSleep` and `turns` fields on MoveEffect interface
+- `multi-turn-lock` effect type for Thrash/Petal Dance
+- `berryPlots` and `gameClockMinutes` fields on GameManager with serialization
+- Dynamic rival starter selection via Proxy pattern
+
+## [2026-04-16]
+
 ### Added
 - **Scene shutdown() methods (3.3)**: OverworldScene, BattleUIScene, MenuScene, and DialogueScene now clean up keyboard listeners and sub-systems on shutdown, preventing listener accumulation
 - **Vite data chunk splitting (1.2)**: Pokemon, moves, and type-chart data split into a separate `data` bundle chunk

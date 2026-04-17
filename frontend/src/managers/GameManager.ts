@@ -356,8 +356,8 @@ export class GameManager {
     if (data.gameStats) this.gameStats = { ...defaultStats(), ...data.gameStats };
     if (data.hallOfFame) this.hallOfFame = data.hallOfFame;
     if (data.visitedMaps) this.visitedMaps = new Set(data.visitedMaps);
-    if ((data as any).berryPlots) this.berryPlots = (data as any).berryPlots;
-    if ((data as any).gameClockMinutes != null) this.gameClockMinutes = (data as any).gameClockMinutes;
+    if (data.berryPlots) this.berryPlots = data.berryPlots;
+    if (data.gameClockMinutes != null) this.gameClockMinutes = data.gameClockMinutes;
   }
 
   /** Restore state from a SaveData object (from localStorage). */

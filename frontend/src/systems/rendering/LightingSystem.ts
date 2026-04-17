@@ -61,6 +61,18 @@ export class LightingSystem {
       this.rt.setOrigin(0, 0);
       this.rt.setScrollFactor(0);
       this.rt.setDepth(DARKNESS_DEPTH);
+
+      // NEW-007: Recreate RT on window resize
+      this.scene.scale.on('resize', () => {
+        if (this.rt && this.enabled) {
+          const c = this.scene.cameras.main;
+          this.rt.destroy();
+          this.rt = this.scene.add.renderTexture(0, 0, c.width, c.height);
+          this.rt.setOrigin(0, 0);
+          this.rt.setScrollFactor(0);
+          this.rt.setDepth(DARKNESS_DEPTH);
+        }
+      });
     }
 
     this.enabled = true;

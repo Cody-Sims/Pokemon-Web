@@ -117,7 +117,7 @@ export class CutsceneEngine {
         speaker: action.speaker,
       });
       this.scene.scene.get('DialogueScene').events.once('shutdown', () => {
-        this.scene.scene.resume('OverworldScene');
+        this.scene.scene.resume(this.scene.scene.key);
         resolve();
       });
     });

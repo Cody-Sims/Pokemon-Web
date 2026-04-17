@@ -47,15 +47,17 @@ export class DamageCalculator {
     // Choose attack/defense stats based on move category, using stat stages if available
     let A: number;
     let D: number;
+    // BUG-050: Foul Play uses the defender's Attack stat
+    const isFoulPlay = move.id === 'foul-play';
     if (statusHandler) {
       A = move.category === 'physical'
-        ? statusHandler.getEffectiveStat(attacker, 'attack')
+        ? statusHandler.getEffectiveStat(isFoulPlay ? defender : attacker, 'attack')
         : statusHandler.getEffectiveStat(attacker, 'spAttack');
       D = move.category === 'physical'
         ? statusHandler.getEffectiveStat(defender, 'defense')
         : statusHandler.getEffectiveStat(defender, 'spDefense');
     } else {
-      A = move.category === 'physical' ? attacker.stats.attack : attacker.stats.spAttack;
+      A = move.category === 'physical' ? (isFoulPlay ? defender : attacker).stats.attack : attacker.stats.spAttack;
       D = move.category === 'physical' ? defender.stats.defense : defender.stats.spDefense;
     }
 

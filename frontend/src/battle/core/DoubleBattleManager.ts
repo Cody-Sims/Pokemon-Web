@@ -262,10 +262,12 @@ export class DoubleBattleManager {
             this.weatherManager,
           );
 
-          // Spread move damage reduction (0.75x)
+          // BUG-048: Apply spread move reduction BEFORE damage is final
+          // MoveExecutor already applied full damage, so we add back the difference
           if (targets.length > 1 && result.damage.damage > 0) {
             const reduced = Math.floor(result.damage.damage * 0.75);
             const diff = result.damage.damage - reduced;
+            // Restore the over-dealt damage
             defender.currentHp = Math.min(defender.currentHp + diff, defender.stats.hp);
             result.damage = { ...result.damage, damage: reduced };
           }

@@ -94,7 +94,7 @@ export class GridMovement {
       this.scene.tweens.add({
         targets: this.sprite,
         x: targetPxX,
-        y: targetPxY,
+        // NEW-004: Only tween x; handle y entirely in onUpdate for parabolic arc
         duration: hopDuration,
         onUpdate: (tween) => {
           // Parabolic arc: raise sprite at midpoint

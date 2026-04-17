@@ -161,9 +161,9 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
     id: 'gym-drake', name: 'Gym Leader Drake', spriteKey: 'npc-male-5',
     party: [
       { pokemonId: 148, level: 42, moves: ['dragon-rage', 'slam', 'thunder-wave', 'agility'] },
+      { pokemonId: 148, level: 43, moves: ['dragon-pulse', 'slam', 'thunder-wave', 'dragon-dance'] },
       { pokemonId: 130, level: 42, moves: ['hydro-pump', 'bite', 'dragon-rage', 'thrash'] },
-      { pokemonId: 142, level: 43, moves: ['wing-attack', 'bite', 'slash', 'agility'] },
-      { pokemonId: 149, level: 45, moves: ['dragon-rage', 'slam', 'thunder-wave', 'agility'] },
+      { pokemonId: 149, level: 45, moves: ['dragon-claw', 'slam', 'thunder-wave', 'dragon-dance'] },
     ],
     dialogue: {
       before: ['Drake: My ancestors swore to protect the ley lines.', 'Drake: Only the worthy may pass. Prove yourself!'],

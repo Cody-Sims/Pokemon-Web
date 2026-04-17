@@ -103,6 +103,7 @@ export class OverworldScene extends Phaser.Scene {
     }
     this.transitioning = false;
     this.surfing = false;
+    this.isCycling = false;
     this.npcs = [];
     this.trainers = [];
     this.npcBehaviors = [];
@@ -120,7 +121,7 @@ export class OverworldScene extends Phaser.Scene {
     QuestManager.getInstance().initAutomation();
 
     // Launch quest tracker HUD overlay
-    if (!this.scene.isActive('QuestTrackerScene')) {
+    if (!this.scene.isActive('QuestTrackerScene') && !this.scene.isSleeping('QuestTrackerScene')) {
       this.scene.launch('QuestTrackerScene');
     }
 
@@ -552,6 +553,11 @@ export class OverworldScene extends Phaser.Scene {
 
     // After a brief pause, trainer walks toward the player
     this.time.delayedCall(600, () => {
+      // NEW-012: Guard against scene/sprite destruction during delay
+      if (!this.scene.isActive() || !trainer.active) {
+        excl.destroy();
+        return;
+      }
       excl.destroy();
 
       // Trainer walks toward the player (stops 1 tile away)
@@ -653,15 +659,15 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     this.scene.pause();
-    this.scene.launch('DialogueScene', { dialogue: ['...', '...!'] });
+    this.scene.launch('DialogueScene', { dialogue: ['...', '...!'], callingScene: 'OverworldScene' });
     this.scene.get('DialogueScene').events.once('shutdown', () => {
       const pokemon = attemptFish(this.mapKey, rod);
       if (pokemon) {
         this.scene.resume();
         this.triggerWildEncounter(pokemon);
       } else {
-        this.scene.launch('DialogueScene', { dialogue: ['Not even a nibble...'] });
-        this.scene.get('DialogueScene').events.once('shutdown', () => this.scene.resume());
+        this.scene.launch('DialogueScene', { dialogue: ['Not even a nibble...'], callingScene: 'OverworldScene' });
+        // NEW-008: Don't add extra resume — DialogueScene handles it via callingScene
       }
     });
   }

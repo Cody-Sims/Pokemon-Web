@@ -27,7 +27,7 @@ describe('CatchCalculator', () => {
     // modifiedRate = ((3*20 - 2*20) * 255 * 1 * 1) / (3*20) = 255
     const result = CatchCalculator.calculate(makeWild(), 1);
     expect(result.caught).toBe(true);
-    expect(result.shakes).toBe(3);
+    expect(result.shakes).toBe(4);
   });
 
   it('should have lower catch rate for low-catchRate Pokemon', () => {

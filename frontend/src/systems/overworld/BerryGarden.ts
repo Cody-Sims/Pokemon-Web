@@ -23,17 +23,8 @@ export class BerryGarden {
 
   /** Get all plots keyed by mapId. */
   static getPlots(): Record<string, BerryPlot[]> {
-    const raw = GameManager.getInstance().getFlag('berryPlots');
-    if (raw && typeof raw === 'boolean') {
-      // Flag was stored as boolean — no plot data yet
-      return {};
-    }
-    try {
-      const stored = (GameManager.getInstance() as any)._berryPlots as Record<string, BerryPlot[]> | undefined;
-      return stored ?? {};
-    } catch {
-      return {};
-    }
+    const gm = GameManager.getInstance();
+    return gm.getBerryPlots() as Record<string, BerryPlot[]>;
   }
 
   /** Ensure plot array exists for a map with the given number of slots. */
@@ -158,6 +149,6 @@ export class BerryGarden {
   }
 
   private static savePlots(all: Record<string, BerryPlot[]>): void {
-    (GameManager.getInstance() as any)._berryPlots = all;
+    GameManager.getInstance().setBerryPlots(all as Record<string, unknown[]>);
   }
 }

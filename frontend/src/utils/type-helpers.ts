@@ -35,7 +35,7 @@ export interface StatStages {
 export interface MoveEffect {
   type: 'stat-change' | 'status' | 'heal' | 'recoil' | 'drain' | 'multi-hit' | 'flinch'
     | 'ohko' | 'fixed-damage' | 'level-damage' | 'self-destruct' | 'leech-seed' | 'trap'
-    | 'weather' | 'protect' | 'two-turn';
+    | 'weather' | 'protect' | 'two-turn' | 'multi-turn-lock';
   target: 'self' | 'enemy';
   stat?: keyof Stats;
   stages?: number;
@@ -48,6 +48,8 @@ export interface MoveEffect {
   twoTurnMove?: string; // e.g. 'fly', 'dig', 'solar-beam'
   rechargeOnly?: boolean; // true for moves like Hyper Beam that only recharge (no charge turn)
   randomStatus?: StatusCondition[]; // For moves like Tri Attack that randomly pick a status
+  requireSleep?: boolean; // For Dream Eater: only works if target is asleep
+  turns?: number; // For multi-turn-lock: number of turns locked (2-3)
 }
 
 // Weather conditions

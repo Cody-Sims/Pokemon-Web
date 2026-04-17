@@ -18,7 +18,7 @@ export const normalMoves: Record<string, MoveData> = {
   'bind':         { id: 'bind', name: 'Bind', type: 'normal', category: 'physical', power: 15, accuracy: 85, pp: 20, effect: { type: 'trap', target: 'enemy', chance: 100 } },
   'take-down':    { id: 'take-down', name: 'Take Down', type: 'normal', category: 'physical', power: 90, accuracy: 85, pp: 20, effect: { type: 'recoil', target: 'self', amount: 25 } },
   'double-edge':  { id: 'double-edge', name: 'Double-Edge', type: 'normal', category: 'physical', power: 120, accuracy: 100, pp: 15, effect: { type: 'recoil', target: 'self', amount: 33 } },
-  'thrash':       { id: 'thrash', name: 'Thrash', type: 'normal', category: 'physical', power: 120, accuracy: 100, pp: 10 },
+  'thrash':       { id: 'thrash', name: 'Thrash', type: 'normal', category: 'physical', power: 120, accuracy: 100, pp: 10, effect: { type: 'multi-turn-lock', target: 'enemy', turns: 3 } },
   'rage':         { id: 'rage', name: 'Rage', type: 'normal', category: 'physical', power: 20, accuracy: 100, pp: 20 },
   'quick-attack': { id: 'quick-attack', name: 'Quick Attack', type: 'normal', category: 'physical', power: 40, accuracy: 100, pp: 30, priority: 1 },
   'hyper-fang':   { id: 'hyper-fang', name: 'Hyper Fang', type: 'normal', category: 'physical', power: 80, accuracy: 90, pp: 15, effect: { type: 'flinch', target: 'enemy', chance: 10 } },

@@ -519,6 +519,9 @@ export class BattleUIScene extends Phaser.Scene {
     const player = b.playerPokemon;
     const enemy = b.enemyPokemon;
 
+    // BUG-033: Clear stale flinch volatiles at turn start
+    this.statusHandler.clearFlinchAll();
+
     // Check if player is charging a two-turn move — auto-execute it
     const playerCharging = this.statusHandler.getChargingMove(player);
     const actualPlayerMoveId = playerCharging ?? playerMoveId;
