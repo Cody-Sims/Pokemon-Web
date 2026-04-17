@@ -249,20 +249,20 @@ export function playMoveAnimation(
         const endX = defenderSprite.x;
         const endY = defenderSprite.y;
 
-        // Create a "projectile" cluster of circles
+        // Create a "projectile" cluster using pre-generated texture
+        ensureParticleTexture(scene);
         const projCount = Math.min(anim.particles.count, 6);
         const projParticles: Phaser.GameObjects.Arc[] = [];
         for (let i = 0; i < projCount; i++) {
           const color = anim.particles.colors[i % anim.particles.colors.length];
-          const p = scene.add.circle(
+          const p = scene.add.image(
             startX + Phaser.Math.Between(-10, 10),
             startY + Phaser.Math.Between(-10, 10),
-            Phaser.Math.Between(3, 7),
-            color,
-            0.9,
-          ).setDepth(90);
-          projParticles.push(p);
-          particles.push(p);
+            PARTICLE_TEXTURE_KEY,
+          ).setDepth(90).setTint(color).setAlpha(0.9)
+           .setScale(Phaser.Math.FloatBetween(0.4, 0.7));
+          projParticles.push(p as unknown as Phaser.GameObjects.Arc);
+          particles.push(p as unknown as Phaser.GameObjects.Arc);
         }
 
         // Tween cluster to defender
@@ -284,7 +284,8 @@ export function playMoveAnimation(
       }
 
       case 'beam': {
-        // Draw a series of circles in a line from attacker to defender, rapid fire
+        // Draw a series of texture-based particles in a line from attacker to defender
+        ensureParticleTexture(scene);
         const sx = attackerSprite.x;
         const sy = attackerSprite.y;
         const ex = defenderSprite.x;
@@ -298,14 +299,13 @@ export function playMoveAnimation(
 
           scene.time.delayedCall(i * 30, () => {
             const color = anim.particles.colors[i % anim.particles.colors.length];
-            const p = scene.add.circle(
+            const p = scene.add.image(
               bx + Phaser.Math.Between(-6, 6),
               by + Phaser.Math.Between(-6, 6),
-              Phaser.Math.Between(3, 8),
-              color,
-              0.9,
-            ).setDepth(90);
-            particles.push(p);
+              PARTICLE_TEXTURE_KEY,
+            ).setDepth(90).setTint(color).setAlpha(0.9)
+             .setScale(Phaser.Math.FloatBetween(0.4, 0.8));
+            particles.push(p as unknown as Phaser.GameObjects.Arc);
 
             scene.tweens.add({
               targets: p,
@@ -329,6 +329,7 @@ export function playMoveAnimation(
 
       case 'area': {
         // Particles fill the defender's area broadly
+        ensureParticleTexture(scene);
         const cx = defenderSprite.x;
         const cy = defenderSprite.y;
         const count = anim.particles.count;
@@ -337,8 +338,10 @@ export function playMoveAnimation(
             const color = anim.particles.colors[i % anim.particles.colors.length];
             const px = cx + Phaser.Math.Between(-60, 60);
             const py = cy + Phaser.Math.Between(-50, 50);
-            const p = scene.add.circle(px, py, Phaser.Math.Between(3, 8), color, 0.8).setDepth(90);
-            particles.push(p);
+            const p = scene.add.image(px, py, PARTICLE_TEXTURE_KEY)
+              .setDepth(90).setTint(color).setAlpha(0.8)
+              .setScale(Phaser.Math.FloatBetween(0.3, 0.8));
+            particles.push(p as unknown as Phaser.GameObjects.Arc);
 
             scene.tweens.add({
               targets: p,
@@ -361,20 +364,20 @@ export function playMoveAnimation(
 
       case 'self': {
         // Particles glow around the attacker (buffs/heals)
+        ensureParticleTexture(scene);
         const cx = attackerSprite.x;
         const cy = attackerSprite.y;
         for (let i = 0; i < anim.particles.count; i++) {
           const angle = (i / anim.particles.count) * Math.PI * 2;
           const dist = 20;
           const color = anim.particles.colors[i % anim.particles.colors.length];
-          const p = scene.add.circle(
+          const p = scene.add.image(
             cx + Math.cos(angle) * dist,
             cy + Math.sin(angle) * dist,
-            4,
-            color,
-            anim.particles.alpha.start,
-          ).setDepth(90);
-          particles.push(p);
+            PARTICLE_TEXTURE_KEY,
+          ).setDepth(90).setTint(color).setAlpha(anim.particles.alpha.start)
+           .setScale(0.5);
+          particles.push(p as unknown as Phaser.GameObjects.Arc);
 
           scene.tweens.add({
             targets: p,
@@ -423,7 +426,21 @@ export function playMoveAnimation(
   });
 }
 
-/** Spawn burst particles at a given point. */
+const PARTICLE_TEXTURE_KEY = '__move-particle';
+const PARTICLE_TEXTURE_SIZE = 12;
+
+/** Ensure a reusable circle texture exists for particle effects. */
+function ensureParticleTexture(scene: Phaser.Scene): void {
+  if (scene.textures.exists(PARTICLE_TEXTURE_KEY)) return;
+  const gfx = scene.make.graphics({ x: 0, y: 0 }, false);
+  const half = PARTICLE_TEXTURE_SIZE / 2;
+  gfx.fillStyle(0xffffff, 1);
+  gfx.fillCircle(half, half, half);
+  gfx.generateTexture(PARTICLE_TEXTURE_KEY, PARTICLE_TEXTURE_SIZE, PARTICLE_TEXTURE_SIZE);
+  gfx.destroy();
+}
+
+/** Spawn burst particles at a given point using a pre-generated texture. */
 function spawnParticles(
   scene: Phaser.Scene,
   x: number,
@@ -431,22 +448,26 @@ function spawnParticles(
   config: ParticleConfig,
   tracker: Phaser.GameObjects.Arc[],
 ): void {
+  ensureParticleTexture(scene);
   const burstCount = Math.min(config.count, 12);
   for (let i = 0; i < burstCount; i++) {
     const angle = (i / burstCount) * Math.PI * 2 + Math.random() * 0.5;
     const speed = config.speed * (0.5 + Math.random() * 0.5);
     const color = config.colors[i % config.colors.length];
-    const radius = Phaser.Math.Between(2, 6);
 
-    const p = scene.add.circle(x, y, radius, color, config.alpha.start).setDepth(90);
-    tracker.push(p);
+    const p = scene.add.image(x, y, PARTICLE_TEXTURE_KEY).setDepth(90)
+      .setTint(color)
+      .setAlpha(config.alpha.start)
+      .setScale(Phaser.Math.FloatBetween(0.3, 0.8));
+    // Store in tracker as any since cleanup uses destroy() which exists on Image too
+    tracker.push(p as unknown as Phaser.GameObjects.Arc);
 
     scene.tweens.add({
       targets: p,
       x: x + Math.cos(angle) * speed * 0.4,
       y: y + Math.sin(angle) * speed * 0.4,
-      scaleX: config.scale.end,
-      scaleY: config.scale.end,
+      scaleX: config.scale.end * 0.5,
+      scaleY: config.scale.end * 0.5,
       alpha: config.alpha.end,
       duration: config.lifespan,
       onComplete: () => p.destroy(),

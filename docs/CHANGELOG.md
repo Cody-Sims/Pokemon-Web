@@ -12,10 +12,13 @@ All notable changes to the Pokemon Web project.
 - **Scene shutdown() methods (3.3)**: OverworldScene, BattleUIScene, MenuScene, and DialogueScene now clean up keyboard listeners and sub-systems on shutdown, preventing listener accumulation
 - **Vite data chunk splitting (1.2)**: Pokemon, moves, and type-chart data split into a separate `data` bundle chunk
 - **Typed EventManager (4.6)**: EventManager now uses a typed `EventMap` interface for compile-time verification of event names and payload types
+- **Vite maps chunk (1.3)**: All map definitions split into a separate `maps` bundle chunk to reduce initial load
+- **CSS minification (1.2)**: Enabled `cssMinify` in Vite build config
 
 ### Changed
 - **HealthBar Rectangle optimization (2.4)**: Replaced `Graphics.clear()` + `fillRect()` redraw with two Rectangle game objects that only update `width` and `fillColor`
 - **Accessibility import fix (1.5)**: Replaced ineffective dynamic `import()` in theme.ts with direct static import since the module is already in the main bundle
+- **MoveAnimationPlayer texture-based particles (2.2)**: Replaced per-animation `scene.add.circle()` calls with a pre-generated circle texture (`__move-particle`) using `scene.add.image()` + `setTint()`, reducing GC pressure from move animations
 
 ### Fixed
 - **AudioManager stale scene guard (3.4)**: All audio methods now check `isSceneActive()` before accessing the scene's sound/tween/timer plugins, preventing crashes on destroyed scenes

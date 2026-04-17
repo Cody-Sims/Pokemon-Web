@@ -56,6 +56,8 @@ export class GameManager {
   private gameStats: GameStats = defaultStats();
   private hallOfFame: HallOfFameEntry[] = [];
   private visitedMaps: Set<string> = new Set(['pallet-town']);
+  private berryPlots: Record<string, unknown[]> = {};
+  private gameClockMinutes = 0;
   private settings: Record<string, string | number | boolean> = {
     textSpeed: 'medium',
     musicVolume: 0.5,
@@ -293,6 +295,14 @@ export class GameManager {
   hasVisitedMap(mapKey: string): boolean { return this.visitedMaps.has(mapKey); }
   markMapVisited(mapKey: string): void { this.visitedMaps.add(mapKey); }
 
+  // Berry Plots (NEW-003)
+  getBerryPlots(): Record<string, unknown[]> { return this.berryPlots; }
+  setBerryPlots(plots: Record<string, unknown[]>): void { this.berryPlots = plots; }
+
+  // Game Clock (BUG-058)
+  getGameClockMinutes(): number { return this.gameClockMinutes; }
+  setGameClockMinutes(minutes: number): void { this.gameClockMinutes = minutes; }
+
   /** Serialize state for saving. */
   serialize() {
     return {
@@ -317,6 +327,8 @@ export class GameManager {
       gameStats: this.gameStats,
       hallOfFame: this.hallOfFame,
       visitedMaps: [...this.visitedMaps],
+      berryPlots: this.berryPlots,
+      gameClockMinutes: this.gameClockMinutes,
     };
   }
 
@@ -344,6 +356,8 @@ export class GameManager {
     if (data.gameStats) this.gameStats = { ...defaultStats(), ...data.gameStats };
     if (data.hallOfFame) this.hallOfFame = data.hallOfFame;
     if (data.visitedMaps) this.visitedMaps = new Set(data.visitedMaps);
+    if ((data as any).berryPlots) this.berryPlots = (data as any).berryPlots;
+    if ((data as any).gameClockMinutes != null) this.gameClockMinutes = (data as any).gameClockMinutes;
   }
 
   /** Restore state from a SaveData object (from localStorage). */

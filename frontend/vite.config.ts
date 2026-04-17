@@ -21,6 +21,7 @@ export default defineConfig({
     outDir: path.resolve(__dirname, '..', 'dist'),
     emptyOutDir: true,
     target: 'es2020',
+    cssMinify: true,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -32,6 +33,9 @@ export default defineConfig({
             './src/data/pokemon/index.ts',
             './src/data/moves/index.ts',
             './src/data/type-chart.ts',
+          ],
+          maps: [
+            './src/data/maps/index.ts',
           ],
         },
       },

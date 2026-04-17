@@ -403,9 +403,9 @@ Object literal specifies `_escRaw` which isn't in the `InputState` type.
 | **High** | 4.2 | Architecture | BattleUIScene mega-file (1013 LOC) | 6 hr | |
 | **High** | 4.3 | Architecture | Duplicated catch logic | 2 hr | ✅ Already delegated |
 | **High** | 2.3 | Performance | O(n) NPC collision scan | 1 hr | ✅ Done |
-| **High** | 2.2 | Performance | MoveAnimationPlayer manual Arcs | 3 hr | |
+| **High** | 2.2 | Performance | MoveAnimationPlayer manual Arcs | 3 hr | ✅ Done (texture-based) |
 | **High** | 5.1 | Type Safety | 19 `as any` casts | 3 hr | ✅ Done (GM: 0 casts) |
-| **High** | 1.3 | Bundle | All maps eagerly imported | 2 hr | |
+| **High** | 1.3 | Bundle | All maps eagerly imported | 2 hr | ✅ Done (maps chunk) |
 | **Medium** | 4.4 | Architecture | Turn-order logic in 3 places | 2 hr | ✅ Done |
 | **Medium** | 4.6 | Architecture | Untyped EventManager | 3 hr | ✅ Done |
 | **Medium** | 5.2 | Quality | 9 async functions without try/catch | 2 hr | ✅ Done |
@@ -415,7 +415,7 @@ Object literal specifies `_escRaw` which isn't in the `InputState` type.
 | **Medium** | 2.5 | Performance | weightedRandom recomputes total | 15 min | ✅ Done |
 | **Medium** | 2.6 | Performance | Heavy per-frame overworld effects | 1 hr | ✅ Done |
 | **Medium** | 6.3 | Tech Debt | Individual sprites instead of tilemaps | 8 hr | |
-| **Medium** | 1.2 | Bundle | No minification/compression config | 1 hr | |
+| **Medium** | 1.2 | Bundle | No minification/compression config | 1 hr | ✅ Done |
 | **Medium** | 1.4 | Bundle | All Pokemon/move data eager | 2 hr | |
 | **Medium** | 3.4 | Memory | AudioManager stale scene reference | 1 hr | ✅ Done |
 | **Medium** | 5.3 | Quality | Swallowed errors in theme.ts | 15 min | ✅ Done |
