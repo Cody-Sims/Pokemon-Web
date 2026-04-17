@@ -6,6 +6,41 @@ All notable changes to the Pokemon Web project.
 
 ## [Unreleased]
 
+### Added
+- **UI Improvement Plan** (`docs/UI_IMPROVEMENT_PLAN.md`): Comprehensive visual quality roadmap covering tileset pixel art upgrades, city map redesigns, warp validation pipeline, map preview rendering, and UI component overhaul
+- **Tileset pixel art upgrade** (`temp/scripts/tileset/upgrade_tiles.py`): Replaced all 42 solid-color placeholder tiles (IDs 68-109) with hand-crafted GBA-style pixel art. Covers 12 biomes: coastal, volcanic, mine, industrial, forest, electric, ghost/ruin, dragon, fire, synthesis, post-game, and league. Each tile has 6-13 unique colors with proper shading, texture, and depth borders
+- **Warp validation script** (`temp/scripts/map-audit/validate-warps.py`): Automated validation of all map warps across 69 maps checking target existence, bidirectional connections, walkable tiles, spawn validity, NPC placement, and dimension consistency. Found 56 errors and 63 warnings
+- **Map preview annotation layers** (`temp/scripts/map-preview/render_all_maps.py`): Enhanced the map renderer with warp markers (cyan diamonds), spawn point markers (green circles with direction arrows), NPC markers (blue dots), trainer markers (red dots), placeholder tile highlighting (yellow overlay for tiles 68-109), and a summary stats bar on each annotated preview
+- **Two output modes per map**: `{name}_clean.png` (tiles only) and `{name}_preview.png` (annotated with all markers and stats)
+- **Tileset reference sheet**: `tileset_reference.png` showing all 110 tiles with index, name, and green/red quality borders
+- **Auto-discovery of all maps**: Script now walks the entire maps directory (65 maps) instead of a hardcoded list of 8
+- **Extended TILE_NAMES**: Full coverage for tiles 0-109 (TIDE_POOL through CHAMPION_THRONE)
+
+### Changed
+- **Service worker v3** (`frontend/public/sw.js`): Expanded precache to include player sprite atlas, overworld tileset, Pallet Town map, and app icon so the starter area works offline
+- **Apple touch icon** (`frontend/index.html`): Added `apple-touch-icon` link for iOS home-screen installs
+- **Offline/online toasts** (`frontend/src/main.ts`): Network status toasts notify the player when connectivity changes
+
+### Added
+- **`layout-on.ts` utility** (`frontend/src/utils/layout-on.ts`): Resize-safe layout helper that runs a callback on create and re-runs on every resize/orientation change, with automatic shutdown cleanup
+- **`hint-text.ts` utility** (`frontend/src/utils/hint-text.ts`): Input-mode-aware hint text that returns "Tap A" on mobile vs "Press Z" on desktop
+- **UI Improvement Plan** (`docs/UI_IMPROVEMENT_PLAN.md`): Comprehensive visual quality roadmap covering tileset pixel art upgrades (42 solid-color tiles), city map redesigns, warp validation pipeline, map preview rendering, and UI component overhaul. Companion to the Level Up Plan.
+
+### Changed
+- **Mobile detection improved** (`frontend/src/ui/theme.ts`): `isMobile()` now uses multi-signal heuristic (touch + coarse pointer + screen size) instead of `maxTouchPoints` alone; added `isTablet()` helper
+- **Scene mobile scaling** (Phase 1): `StarterSelectScene`, `MoveTutorScene`, `ShopScene`, and `PCScene` now use `mobileFontSize()` for all text and enforce `MIN_TOUCH_TARGET` (48px) for interactive elements on mobile
+- **Dialogue choice touch targets** (`DialogueScene`): Choice rows expand to 48px height on mobile with padding for comfortable tapping; font scaled via `mobileFontSize()`
+- **Mobile menu button enlarged** (`index.html`): Hamburger button increased from 36×36px to 48×48px to meet touch target minimum
+- **Orientation prompt persistence** (`index.html`, `main.ts`): "Continue Anyway" dismissal persists via `sessionStorage` so the rotate prompt does not reappear on every resize within a session
+- **`ScrollContainer` widget** (`frontend/src/ui/widgets/ScrollContainer.ts`): Momentum scroll container with drag-to-scroll, inertia decay, overscroll rubber-banding, and configurable vertical/horizontal direction for mobile list scenes
+- **Performance tiering expansion** (`frontend/src/utils/perf-profile.ts`): Added 6 quality-gated feature flags (`battleAnimFrameSkip`, `shouldShowWeather`, `shouldShowShadows`, `shouldShowTextEffects`, `shouldCrossFadeTiles`, `maxActiveTweens`) and an FPS auto-downgrade monitor that drops quality after sustained low frame rates
+- **Swipe tab navigation** (`SummaryScene`): Horizontal swipe gesture switches between INFO/STATS/MOVES tabs on mobile
+- **Long-press context menu** (`PartyScene`): 500ms long-press on a party slot opens the context menu directly, bypassing select-then-confirm flow
+- **Double-tap run toggle** (`TouchControls`, `OverworldScene`): Double-tap the joystick to toggle running on mobile (requires running shoes)
+- **Quick-save floating button** (`OverworldScene`): Semi-transparent save icon appears on mobile for one-tap quick saves
+- **Accessibility settings** (`SettingsScene`): Added One-Handed Mode, Swap A/B, Joystick Dead Zone slider, and High Visibility Controls toggle
+- **`layoutOn` import** added to `OverworldScene`, `DialogueScene`, and `MenuScene` for future resize-safe layout migration
+
 ## [2026-04-16]
 
 ### Fixed — Remaining Bug Sweep (28 bugs)

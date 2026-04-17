@@ -265,14 +265,17 @@ pokemon-web/
 │       │   │   ├── MenuList.ts            # Selectable vertical menu (legacy)
 │       │   │   ├── ConfirmBox.ts          # Yes/No prompt
 │       │   │   ├── BattleHUD.ts           # Composite: name + level + HP + EXP
-│       │   │   └── AchievementToast.ts    # Slide-in gold banner for achievement unlocks
+│       │   │   ├── AchievementToast.ts    # Slide-in gold banner for achievement unlocks
+│       │   │   └── ScrollContainer.ts    # Momentum scroll container for mobile lists
 │       │   └── index.ts                   # Barrel re-exports
 │       │
 │       └── utils/                      # Pure utility functions
 │           ├── constants.ts           # TILE_SIZE, WALK_SPEED, MAX_PARTY_SIZE…
 │           ├── type-helpers.ts        # TypeScript types (PokemonType, Nature…)
 │           ├── audio-keys.ts          # BGM/SFX key constants, map→BGM mapping
-│           └── math-helpers.ts        # clamp, lerp, randomInt, weightedRandom (supports precomputed totals)
+│           ├── math-helpers.ts        # clamp, lerp, randomInt, weightedRandom (supports precomputed totals)
+│           ├── layout-on.ts           # Resize-safe layout utility (runs callback on create + resize)
+│           └── hint-text.ts           # Input-mode-aware hint strings (mobile/desktop)
 │
 ├── tiled/                              # Tiled source files (NOT shipped)
 │

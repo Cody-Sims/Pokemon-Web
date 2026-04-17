@@ -32,6 +32,10 @@ const SETTING_DEFS: SettingDef[] = [
   { key: 'haptics', label: 'Haptics', type: 'cycle', options: ['true', 'false'] },
   { key: 'renderQuality', label: 'Render Quality', type: 'cycle', options: ['high', 'medium', 'low'] },
   { key: 'joystickSize', label: 'Joystick Size', type: 'cycle', options: ['small', 'medium', 'large'] },
+  { key: 'oneHandedMode', label: 'One-Handed Mode', type: 'cycle', options: ['off', 'left', 'right'] },
+  { key: 'swapAB', label: 'Swap A/B Buttons', type: 'cycle', options: ['false', 'true'] },
+  { key: 'deadZone', label: 'Joystick Dead Zone', type: 'slider', min: 0.05, max: 0.4, step: 0.05, format: (v) => `${Math.round(v * 100)}%` },
+  { key: 'highVisControls', label: 'High Vis Controls', type: 'cycle', options: ['false', 'true'] },
 ];
 
 export class SettingsScene extends Phaser.Scene {

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { pokemonData } from '@data/pokemon';
@@ -54,7 +54,7 @@ export class StarterSelectScene extends Phaser.Scene {
 
     // Title
     this.add.text(layout.cx, 50, 'Choose Your Starter Pokémon!', {
-      ...FONTS.title, fontSize: '24px',
+      ...FONTS.title, fontSize: mobileFontSize(24),
     }).setOrigin(0.5);
 
     // Draw three starter cards (BUG-080: use relative spacing)
@@ -81,19 +81,19 @@ export class StarterSelectScene extends Phaser.Scene {
 
       // Name
       const nameText = this.add.text(0, 50, s.name, {
-        fontSize: '18px', color: '#ffffff', fontStyle: 'bold',
+        fontSize: mobileFontSize(18), color: '#ffffff', fontStyle: 'bold',
       }).setOrigin(0.5);
       container.add(nameText);
 
       // Type
       const typeText = this.add.text(0, 75, s.type, {
-        fontSize: '14px', color: '#cccccc',
+        fontSize: mobileFontSize(14), color: '#cccccc',
       }).setOrigin(0.5);
       container.add(typeText);
 
       // Level
       const lvlText = this.add.text(0, 95, 'Lv. 5', {
-        fontSize: '14px', color: '#aaaaaa',
+        fontSize: mobileFontSize(14), color: '#aaaaaa',
       }).setOrigin(0.5);
       container.add(lvlText);
 
@@ -106,10 +106,9 @@ export class StarterSelectScene extends Phaser.Scene {
     }
 
     // Hint text
-    const hintText = (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0)
-      ? 'Swipe or tap to choose' : 'Use ← → to choose, Enter to confirm';
-    this.add.text(layout.cx, layout.h - 50, hintText, {
-      fontSize: '14px', color: '#888888',
+    const hint = isMobile() ? 'Swipe or tap to choose' : 'Use ← → to choose, Enter to confirm';
+    this.add.text(layout.cx, layout.h - 50, hint, {
+      fontSize: mobileFontSize(14), color: '#888888',
     }).setOrigin(0.5);
 
     this.updateCursor();

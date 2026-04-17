@@ -5,7 +5,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { itemData } from '@data/item-data';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
-import { COLORS, FONTS, SPACING, mobileFontSize, isMobile } from '@ui/theme';
+import { COLORS, FONTS, SPACING, mobileFontSize, isMobile, MIN_TOUCH_TARGET, MOBILE_SCALE } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { ItemData } from '@data/interfaces';
 
@@ -62,7 +62,7 @@ export class ShopScene extends Phaser.Scene {
     });
 
     // Title
-    this.add.text(layout.cx, 28, 'POKÉ MART', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
+    this.add.text(layout.cx, 28, 'POKÉ MART', { ...FONTS.heading, fontSize: mobileFontSize(24) }).setOrigin(0.5);
     this.add.rectangle(layout.cx, 46, 180, 2, COLORS.borderHighlight, 0.4);
 
     // Money display (top right)
@@ -78,7 +78,7 @@ export class ShopScene extends Phaser.Scene {
     ];
     this.tabTexts = tabLabels.map((t, i) => {
       const tx = this.add.text(100 + i * 120, 58, t.label, {
-        ...FONTS.body, fontSize: '16px',
+        ...FONTS.body, fontSize: mobileFontSize(16),
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       tx.on('pointerdown', () => {
         if (this.mode !== 'browse') return;
@@ -198,14 +198,14 @@ export class ShopScene extends Phaser.Scene {
 
     const visible = this.filteredItems.slice(this.scrollOffset, this.scrollOffset + this.maxVisible);
     const startY = 90;
-    const lineH = 36;
+    const lineH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 36 * MOBILE_SCALE) : 36;
 
     visible.forEach((entry, i) => {
       const y = startY + i * lineH;
       const nameLabel = this.tab === 'sell'
         ? `${entry.item.name} ×${entry.qty}`
         : entry.item.name;
-      const name = this.add.text(40, y, nameLabel, FONTS.body)
+      const name = this.add.text(40, y, nameLabel, { ...FONTS.body, fontSize: mobileFontSize(16) })
         .setInteractive({ useHandCursor: true });
       name.on('pointerover', () => this.listController?.hoverIndex(i));
       name.on('pointerdown', () => this.listController?.clickIndex(i));
@@ -216,7 +216,7 @@ export class ShopScene extends Phaser.Scene {
         ? (entry.item.buyPrice ?? 0)
         : Math.floor((entry.item.buyPrice ?? 0) / 2);
       const priceText = this.add.text(390, y, `₽${price}`, {
-        ...FONTS.bodySmall, color: COLORS.textHighlight,
+        ...FONTS.bodySmall, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
       });
       this.itemListGroup.add(priceText);
       this.itemPriceTexts.push(priceText);

@@ -3,7 +3,7 @@ import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
-import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawHpBar, drawButton } from '@ui/theme';
+import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawHpBar, drawButton, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { SFX } from '@utils/audio-keys';
@@ -37,7 +37,7 @@ export class PartyScene extends Phaser.Scene {
       cornerRadius: 8,
     });
 
-    this.add.text(layout.cx, 30, 'POKEMON PARTY', FONTS.heading).setOrigin(0.5);
+    this.add.text(layout.cx, 30, 'POKEMON PARTY', { ...FONTS.heading, fontSize: mobileFontSize(22) }).setOrigin(0.5);
     this.add.rectangle(layout.cx, 48, 200, 2, COLORS.borderHighlight, 0.4);
 
     this.slotBgs = [];
@@ -55,7 +55,7 @@ export class PartyScene extends Phaser.Scene {
       this.slotBgs.push(slotBg);
 
       if (!hasMon || !p) {
-        this.add.text(layout.cx, y + SPACING.slotHeight / 2, '—  Empty  —', { ...FONTS.bodySmall, color: COLORS.textDim }).setOrigin(0.5);
+        this.add.text(layout.cx, y + SPACING.slotHeight / 2, '—  Empty  —', { ...FONTS.bodySmall, fontSize: mobileFontSize(14), color: COLORS.textDim }).setOrigin(0.5);
         continue;
       }
 
@@ -72,17 +72,17 @@ export class PartyScene extends Phaser.Scene {
       }
 
       // Name (dimmed if fainted)
-      const nameText = this.add.text(55, slotY - 18, name, { ...FONTS.body, fontStyle: 'bold' });
+      const nameText = this.add.text(55, slotY - 18, name, { ...FONTS.body, fontSize: mobileFontSize(16), fontStyle: 'bold' });
       if (isFainted) nameText.setAlpha(0.5);
 
       // Level
-      const lvText = this.add.text(55, slotY + 4, `Lv. ${p.level}`, FONTS.caption);
+      const lvText = this.add.text(55, slotY + 4, `Lv. ${p.level}`, { ...FONTS.caption, fontSize: mobileFontSize(12) });
       if (isFainted) lvText.setAlpha(0.5);
 
       // HP bar
-      this.add.text(230, slotY - 18, 'HP', FONTS.label);
+      this.add.text(230, slotY - 18, 'HP', { ...FONTS.label, fontSize: mobileFontSize(11) });
       drawHpBar(this, 256, slotY - 12, 170, 10, p.currentHp, p.stats.hp);
-      this.add.text(434, slotY - 18, `${p.currentHp}/${p.stats.hp}`, FONTS.caption);
+      this.add.text(434, slotY - 18, `${p.currentHp}/${p.stats.hp}`, { ...FONTS.caption, fontSize: mobileFontSize(12) });
 
       // Type badges
       if (pData) {
@@ -95,19 +95,34 @@ export class PartyScene extends Phaser.Scene {
       if (p.status) {
         const col = STATUS_COLORS[p.status] ?? 0x888899;
         this.add.rectangle(layout.w - 90, slotY, 64, 20, col).setStrokeStyle(1, 0xffffff);
-        this.add.text(layout.w - 90, slotY, p.status.toUpperCase(), { ...FONTS.label, color: '#ffffff' }).setOrigin(0.5);
+        this.add.text(layout.w - 90, slotY, p.status.toUpperCase(), { ...FONTS.label, fontSize: mobileFontSize(11), color: '#ffffff' }).setOrigin(0.5);
       }
 
       // Fainted indicator
       if (isFainted) {
         this.add.rectangle(layout.w - 90, slotY, 64, 20, 0x661111).setStrokeStyle(1, 0xff3333);
-        this.add.text(layout.w - 90, slotY, 'FNT', { ...FONTS.label, color: '#ff5555' }).setOrigin(0.5);
+        this.add.text(layout.w - 90, slotY, 'FNT', { ...FONTS.label, fontSize: mobileFontSize(11), color: '#ff5555' }).setOrigin(0.5);
         slotBg.setAlpha(0.6);
       }
 
       slotBg.setInteractive({ useHandCursor: true });
       slotBg.on('pointerover', () => this.controller?.hoverIndex(i));
       slotBg.on('pointerdown', () => this.controller?.clickIndex(i));
+
+      // Long-press (500ms) opens context menu directly on mobile
+      if (isMobile() && hasMon) {
+        let longPressTimer: ReturnType<typeof setTimeout> | null = null;
+        slotBg.on('pointerdown', () => {
+          longPressTimer = setTimeout(() => {
+            longPressTimer = null;
+            this.cursor = i;
+            this.updateCursor();
+            this.openContextMenu(i);
+          }, 500);
+        });
+        slotBg.on('pointerup', () => { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } });
+        slotBg.on('pointerout', () => { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } });
+      }
     }
 
     this.controller = new MenuController(this, {
@@ -122,8 +137,8 @@ export class PartyScene extends Phaser.Scene {
 
     this.updateCursor();
 
-    this.add.text(layout.cx, layout.h - 52, this.selectMode ? 'Choose a Pokémon' : 'Select a Pokémon to view options', FONTS.caption).setOrigin(0.5);
-    drawButton(this, layout.cx, layout.h - 30, 'Close (ESC)', () => this.closeScene(), 140, 30);
+    this.add.text(layout.cx, layout.h - 52, this.selectMode ? 'Choose a Pokémon' : 'Select a Pokémon to view options', { ...FONTS.caption, fontSize: mobileFontSize(12) }).setOrigin(0.5);
+    drawButton(this, layout.cx, layout.h - 30, 'Close (ESC)', () => this.closeScene(), 140, Math.max(MIN_TOUCH_TARGET, 30));
   }
 
   private updateCursor(): void {
@@ -161,16 +176,17 @@ export class PartyScene extends Phaser.Scene {
     const menuX = layout.w - 140;
     const menuY = 64 + index * SPACING.slotHeight + SPACING.slotHeight / 2;
 
-    const panel = new NinePatchPanel(this, menuX, menuY, 130, actions.length * 32 + 12, {
+    const panel = new NinePatchPanel(this, menuX, menuY, 130, actions.length * Math.max(MIN_TOUCH_TARGET, 32) + 12, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.95,
       borderColor: COLORS.borderLight,
       cornerRadius: 6,
     });
 
+    const itemSpacing = Math.max(MIN_TOUCH_TARGET, 32);
     const texts = actions.map((label, i) => {
-      return this.add.text(menuX, menuY - ((actions.length - 1) * 16) + i * 32, label, {
-        ...FONTS.body, fontSize: '15px',
+      return this.add.text(menuX, menuY - ((actions.length - 1) * (itemSpacing / 2)) + i * itemSpacing, label, {
+        ...FONTS.body, fontSize: mobileFontSize(15),
       }).setOrigin(0.5);
     });
 

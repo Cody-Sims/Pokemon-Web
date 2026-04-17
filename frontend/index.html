@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="/Pokemon-Web/manifest.json" />
+  <link rel="apple-touch-icon" href="/Pokemon-Web/assets/ui/icon-192.png" />
   <title>Pokemon Web</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -123,9 +124,9 @@
       /* Menu button in landscape */
       #mobile-menu-btn {
         position: absolute; top: 8px; right: 130px;
-        width: 36px; height: 36px; border-radius: 4px;
+        width: 48px; height: 48px; border-radius: 6px;
         background: rgba(51,68,102,0.5); color: #fff;
-        font-family: monospace; font-size: 12px; line-height: 36px; text-align: center;
+        font-family: monospace; font-size: 18px; line-height: 48px; text-align: center;
         border: 1px solid rgba(85,119,170,0.4);
         -webkit-tap-highlight-color: transparent; touch-action: none;
       }
@@ -263,6 +264,7 @@
       dismissBtn.addEventListener('click', function() {
         var overlay = document.getElementById('rotate-prompt');
         if (overlay) overlay.style.display = 'none';
+        try { sessionStorage.setItem('pokemon-web-rotate-dismissed', '1'); } catch(e) {}
       });
     }
     // ── Desktop fullscreen toggle ──

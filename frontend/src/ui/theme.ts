@@ -106,9 +106,20 @@ export const STATUS_COLORS: Record<string, number> = {
 
 // ─── Helper functions ───
 
-/** Whether the device is a touch/mobile device. */
+/** Whether the device is a touch/mobile phone or tablet (not a touchscreen laptop). */
 export function isMobile(): boolean {
-  return typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
+  if (typeof navigator === 'undefined') return false;
+  const hasTouch = navigator.maxTouchPoints > 0;
+  const hasCoarsePointer = typeof matchMedia !== 'undefined'
+    && matchMedia('(pointer: coarse)')?.matches;
+  const isSmallScreen = window.innerWidth <= 1024 && window.innerHeight <= 768;
+  // Coarse pointer + small screen = phone/tablet; touch alone = maybe laptop
+  return hasTouch && (hasCoarsePointer || isSmallScreen);
+}
+
+/** Whether the device is a tablet (large touch screen, not a phone). */
+export function isTablet(): boolean {
+  return isMobile() && Math.min(window.innerWidth, window.innerHeight) > 768;
 }
 
 /** Scale factor for mobile-friendly UI elements (fonts, hit targets). */

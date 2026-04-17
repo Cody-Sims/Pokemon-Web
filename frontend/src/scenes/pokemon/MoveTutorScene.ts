@@ -8,7 +8,7 @@ import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
-import { COLORS, FONTS, TYPE_COLORS } from '@ui/theme';
+import { COLORS, FONTS, TYPE_COLORS, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { PokemonInstance, MoveInstance, MoveData } from '@data/interfaces';
 
@@ -78,7 +78,7 @@ export class MoveTutorScene extends Phaser.Scene {
       };
       this.drawBackground();
       this.headerText = this.add.text(layout.cx, 28, `Teach ${move?.name ?? this.tmMoveId}?`, {
-        ...FONTS.heading, fontSize: '22px',
+        ...FONTS.heading, fontSize: mobileFontSize(22),
       }).setOrigin(0.5);
       this.selectedMoveIdx = 0;
       this.showPartySelect();
@@ -94,7 +94,7 @@ export class MoveTutorScene extends Phaser.Scene {
 
     this.drawBackground();
     this.headerText = this.add.text(layout.cx, 28, this.tutor.name, {
-      ...FONTS.heading, fontSize: '22px',
+      ...FONTS.heading, fontSize: mobileFontSize(22),
     }).setOrigin(0.5);
     this.add.text(layout.cx, 52, 'Which move would you like to teach?', FONTS.bodySmall).setOrigin(0.5);
 
@@ -159,7 +159,7 @@ export class MoveTutorScene extends Phaser.Scene {
 
     const layout = ui(this);
     const startY = 100;
-    const itemH = 40;
+    const itemH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 40) : 40;
     const endIdx = Math.min(this.moveScrollOffset + this.moveMaxVisible, this.tutor.moves.length);
 
     for (let vi = this.moveScrollOffset; vi < endIdx; vi++) {
@@ -174,7 +174,7 @@ export class MoveTutorScene extends Phaser.Scene {
 
       // Move name
       const nameT = this.add.text(65, y, move?.name ?? entry.moveId, {
-        ...FONTS.body, fontSize: '15px',
+        ...FONTS.body, fontSize: mobileFontSize(15),
       });
       this.moveGroup.add(nameT);
       this.moveTexts.push(nameT);
@@ -268,7 +268,8 @@ export class MoveTutorScene extends Phaser.Scene {
       }
     }
 
-    const panelH = this.eligibleParty.length * 44 + 40;
+    const partyItemH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 44) : 44;
+    const panelH = this.eligibleParty.length * partyItemH + 40;
     this.partyPanel = new NinePatchPanel(this, layout.cx, layout.cy + 40, 400, panelH, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.95,
@@ -288,8 +289,8 @@ export class MoveTutorScene extends Phaser.Scene {
       const typesStr = pData?.types.join('/') ?? '';
       const label = `${name}  Lv.${pokemon.level}  (${typesStr})`;
       const startOffset = layout.cy + 40 - panelH / 2 + 36;
-      const t = this.add.text(layout.cx, startOffset + i * 44, label, {
-        ...FONTS.body, fontSize: '14px',
+      const t = this.add.text(layout.cx, startOffset + i * partyItemH, label, {
+        ...FONTS.body, fontSize: mobileFontSize(14),
       }).setOrigin(0.5);
       this.partyGroup.add(t);
       return t;

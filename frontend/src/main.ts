@@ -172,6 +172,8 @@ document.addEventListener('visibilitychange', () => {
 function updateOrientationPrompt(): void {
   const overlay = document.getElementById('rotate-prompt');
   if (!overlay) return;
+  const dismissed = (() => { try { return sessionStorage.getItem('pokemon-web-rotate-dismissed') === '1'; } catch { return false; } })();
+  if (dismissed) { overlay.style.display = 'none'; return; }
   const isPortrait = window.innerHeight > window.innerWidth;
   const isMobile = navigator.maxTouchPoints > 0;
   overlay.style.display = isMobile && isPortrait ? 'flex' : 'none';
@@ -216,3 +218,24 @@ function showInstallBanner(): void {
 window.addEventListener('pokemon-mute-toggle', ((e: CustomEvent<{ muted: boolean }>) => {
   AudioManager.getInstance().setMuted(e.detail.muted);
 }) as EventListener);
+
+// ── Offline / Online status toasts ──
+function showNetworkToast(message: string): void {
+  const existing = document.getElementById('network-toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'network-toast';
+  toast.textContent = message;
+  Object.assign(toast.style, {
+    position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+    background: 'rgba(15,15,26,0.92)', color: '#e8e8f0', fontFamily: 'monospace',
+    fontSize: '13px', padding: '8px 20px', borderRadius: '6px', zIndex: '9990',
+    border: '1px solid rgba(255,204,0,0.3)', transition: 'opacity 0.5s',
+  });
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+  setTimeout(() => toast.remove(), 3600);
+}
+
+window.addEventListener('offline', () => showNetworkToast('Playing offline — progress saves locally'));
+window.addEventListener('online', () => showNetworkToast('Back online'));

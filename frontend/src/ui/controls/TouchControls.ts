@@ -47,6 +47,11 @@ export class TouchControls {
   // Tap tracking
   private trackedTouches = new Map<number, TrackedTouch>();
 
+  // Double-tap run toggle
+  private runToggled = false;
+  private lastJoystickTapTime = 0;
+  private readonly DOUBLE_TAP_THRESHOLD = 400;
+
   // DOM controls state
   private domActive = false;
   private domDirection: Direction | null = null;
@@ -198,6 +203,26 @@ export class TouchControls {
       return true;
     }
     return false;
+  }
+
+  /** Whether the run toggle is active (double-tap joystick). */
+  isRunToggled(): boolean {
+    return this.runToggled;
+  }
+
+  /** Reset run toggle (e.g., when stopping movement). */
+  resetRunToggle(): void {
+    this.runToggled = false;
+  }
+
+  /** Call on each joystick activation to detect double-tap. */
+  notifyJoystickActivated(): void {
+    const now = performance.now();
+    if (now - this.lastJoystickTapTime < this.DOUBLE_TAP_THRESHOLD) {
+      this.runToggled = !this.runToggled;
+      hapticTap();
+    }
+    this.lastJoystickTapTime = now;
   }
 
   /** Show/hide the joystick (hide during menus, show during overworld). */

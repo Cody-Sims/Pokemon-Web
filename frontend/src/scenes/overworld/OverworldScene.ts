@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { TILE_SIZE } from '@utils/constants';
 import { ui } from '@utils/ui-layout';
+import { layoutOn } from '@utils/layout-on';
 import { Player } from '@entities/Player';
 import { NPC } from '@entities/NPC';
 import { Trainer } from '@entities/Trainer';
@@ -300,6 +301,22 @@ export class OverworldScene extends Phaser.Scene {
       fontSize: '14px',
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
+
+    // Quick-save floating button (mobile only, top-right below menu button)
+    if (TouchControls.isTouchDevice()) {
+      const saveBtn = this.add.text(width - 20, 60, '💾', {
+        fontSize: '22px',
+      }).setOrigin(1, 0).setScrollFactor(0).setDepth(100).setAlpha(0.5)
+        .setInteractive({ useHandCursor: true })
+        .setPadding(8, 8, 8, 8);
+      saveBtn.on('pointerdown', () => {
+        import('@managers/SaveManager').then(({ SaveManager }) => {
+          SaveManager.getInstance().save();
+          saveBtn.setAlpha(1);
+          this.time.delayedCall(600, () => saveBtn.setAlpha(0.5));
+        });
+      });
+    }
 
     // Show location name popup for interiors
     if (this.mapDef.isInterior && this.mapDef.displayName) {
@@ -798,11 +815,12 @@ export class OverworldScene extends Phaser.Scene {
       this.isCycling = false;
     }
 
-    // Running shoes: hold SHIFT or B button to run (requires flag or always available)
+    // Running shoes: hold SHIFT, B button, or double-tap joystick to run
     const shiftDown = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT, false, false).isDown;
     const hasRunningShoes = GameManager.getInstance().getFlag('runningShoes');
+    const touchRun = TouchControls.getInstance()?.isRunToggled() ?? false;
     // Cycling takes priority over running; they are mutually exclusive
-    const shouldRun = !this.isCycling && hasRunningShoes && shiftDown;
+    const shouldRun = !this.isCycling && hasRunningShoes && (shiftDown || touchRun);
     this.player.gridMovement.setRunning(shouldRun);
     this.player.gridMovement.setCycling(this.isCycling);
 

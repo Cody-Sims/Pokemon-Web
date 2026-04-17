@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
+import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
-import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile, MIN_TOUCH_TARGET } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
 
@@ -216,8 +217,9 @@ export class DialogueScene extends Phaser.Scene {
     this.choiceCursor = 0;
     this.advanceIndicator.setAlpha(0);
 
-    const choiceW = 150;
-    const choiceH = this.choices.length * 30 + 16;
+    const choiceRowH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 30) : 30;
+    const choiceW = isMobile() ? 180 : 150;
+    const choiceH = this.choices.length * choiceRowH + 16;
     const choiceX = layout.w - 100;
     const choiceY = layout.h - 120 - choiceH / 2;
 
@@ -231,10 +233,11 @@ export class DialogueScene extends Phaser.Scene {
 
     this.choiceTexts = this.choices.map((choice, i) => {
       const t = this.add.text(
-        choiceX, choiceY - choiceH / 2 + 16 + i * 30,
+        choiceX, choiceY - choiceH / 2 + 16 + i * choiceRowH,
         choice.text,
-        { ...FONTS.body, fontSize: '16px' },
+        { ...FONTS.body, fontSize: mobileFontSize(16) },
       ).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      t.setPadding(8, Math.max(0, (choiceRowH - 16) / 2), 8, Math.max(0, (choiceRowH - 16) / 2));
       t.on('pointerover', () => { this.choiceCursor = i; this.updateChoiceCursor(); });
       t.on('pointerdown', () => { this.choiceCursor = i; this.selectChoice(); });
       return t;

@@ -5,7 +5,7 @@ import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
 import { itemData } from '@data/item-data';
 import { ExperienceCalculator, getNatureMultiplier, getNatureDescription } from '@battle/calculation/ExperienceCalculator';
-import { COLORS, FONTS, SPACING, TYPE_COLORS, CATEGORY_COLORS, drawPanel, drawTypeBadge, drawHpBar, drawButton, hpColor } from '@ui/theme';
+import { COLORS, FONTS, SPACING, TYPE_COLORS, CATEGORY_COLORS, drawPanel, drawTypeBadge, drawHpBar, drawButton, hpColor, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
 
 type Tab = 'INFO' | 'STATS' | 'MOVES';
 
@@ -47,14 +47,15 @@ export class SummaryScene extends Phaser.Scene {
     }
 
     // Close button
-    drawButton(this, layout.w - 40, 25, '✕', () => this.scene.stop(), 40, 30);
+    drawButton(this, layout.w - 40, 25, '✕', () => this.scene.stop(), Math.max(MIN_TOUCH_TARGET, 40), Math.max(MIN_TOUCH_TARGET, 30));
 
     // Tabs
     const tabs: Tab[] = ['INFO', 'STATS', 'MOVES'];
     this.tabTexts = tabs.map((tab, i) => {
-      const t = this.add.text(120 + i * 240, 80, tab, { ...FONTS.body, color: COLORS.textGray })
+      const t = this.add.text(120 + i * 240, 80, tab, { ...FONTS.body, fontSize: mobileFontSize(16), color: COLORS.textGray })
         .setOrigin(0.5)
         .setInteractive({ useHandCursor: true });
+      t.setPadding(8, Math.max(0, (MIN_TOUCH_TARGET - 16) / 2), 8, Math.max(0, (MIN_TOUCH_TARGET - 16) / 2));
       t.on('pointerdown', () => { this.currentTab = tab; this.updateTabs(); this.drawContent(); });
       return t;
     });
@@ -74,6 +75,31 @@ export class SummaryScene extends Phaser.Scene {
       this.updateTabs(); this.drawContent();
     });
     this.input.keyboard!.on('keydown-ESC', () => this.scene.stop());
+
+    // Swipe left/right to navigate tabs on mobile
+    if (isMobile()) {
+      let swipeStartX = 0;
+      let swipeStartY = 0;
+      this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+        swipeStartX = pointer.x;
+        swipeStartY = pointer.y;
+      });
+      this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+        const dx = pointer.x - swipeStartX;
+        const dy = pointer.y - swipeStartY;
+        if (Math.abs(dx) > 50 && Math.abs(dy) < 30) {
+          const tabs: Tab[] = ['INFO', 'STATS', 'MOVES'];
+          const idx = tabs.indexOf(this.currentTab);
+          if (dx < 0 && idx < tabs.length - 1) {
+            this.currentTab = tabs[idx + 1];
+            this.updateTabs(); this.drawContent();
+          } else if (dx > 0 && idx > 0) {
+            this.currentTab = tabs[idx - 1];
+            this.updateTabs(); this.drawContent();
+          }
+        }
+      });
+    }
 
     this.updateTabs();
     this.drawContent();
@@ -119,7 +145,7 @@ export class SummaryScene extends Phaser.Scene {
       const label = this.add.text(spriteX, spriteY, `#${String(p.dataId).padStart(3, '0')}`, { ...FONTS.heading, color: COLORS.textDim }).setOrigin(0.5);
       this.contentGroup.add(label);
     }
-    const spriteHint = this.add.text(spriteX, 260, pData?.name ?? '', { ...FONTS.caption }).setOrigin(0.5);
+    const spriteHint = this.add.text(spriteX, 260, pData?.name ?? '', { ...FONTS.caption, fontSize: mobileFontSize(12) }).setOrigin(0.5);
     this.contentGroup.add(spriteHint);
 
     // Info rows
@@ -136,8 +162,8 @@ export class SummaryScene extends Phaser.Scene {
     ];
 
     rows.forEach(([label, value]) => {
-      const lbl = this.add.text(x, y, label, { fontSize: '15px', color: '#aaaaaa' });
-      const val = this.add.text(x + 180, y, value, { fontSize: '15px', color: '#ffffff' });
+      const lbl = this.add.text(x, y, label, { fontSize: mobileFontSize(15), color: '#aaaaaa' });
+      const val = this.add.text(x + 180, y, value, { fontSize: mobileFontSize(15), color: '#ffffff' });
       this.contentGroup.add(lbl);
       this.contentGroup.add(val);
       y += lineH;
@@ -161,7 +187,7 @@ export class SummaryScene extends Phaser.Scene {
     };
     const flavor = NATURE_FLAVORS[p.nature];
     if (flavor) {
-      const flavorText = this.add.text(x, y, `"${flavor}"`, { fontSize: '13px', color: '#88aa88', fontStyle: 'italic' });
+      const flavorText = this.add.text(x, y, `"${flavor}"`, { fontSize: mobileFontSize(13), color: '#88aa88', fontStyle: 'italic' });
       this.contentGroup.add(flavorText);
       y += lineH;
     }
@@ -192,15 +218,15 @@ export class SummaryScene extends Phaser.Scene {
     const bg = this.add.rectangle(x, y, barW, 12, 0x333333).setOrigin(0, 0.5);
     const pct = expRange > 0 ? Math.max(0, Math.min(1, expProgress / expRange)) : 1;
     const fill = this.add.rectangle(x, y, barW * pct, 12, 0x4488ff).setOrigin(0, 0.5);
-    const expLabel = this.add.text(x + barW + 10, y, `${expProgress}/${expRange}`, { fontSize: '12px', color: '#aaaaaa' }).setOrigin(0, 0.5);
+    const expLabel = this.add.text(x + barW + 10, y, `${expProgress}/${expRange}`, { fontSize: mobileFontSize(12), color: '#aaaaaa' }).setOrigin(0, 0.5);
     this.contentGroup.add(bg);
     this.contentGroup.add(fill);
     this.contentGroup.add(expLabel);
 
     // HP display
     y += 30;
-    const hpLbl = this.add.text(x, y, 'HP', { fontSize: '15px', color: '#aaaaaa' });
-    const hpVal = this.add.text(x + 180, y, `${p.currentHp} / ${p.stats.hp}`, { fontSize: '15px', color: '#ffffff' });
+    const hpLbl = this.add.text(x, y, 'HP', { fontSize: mobileFontSize(15), color: '#aaaaaa' });
+    const hpVal = this.add.text(x + 180, y, `${p.currentHp} / ${p.stats.hp}`, { fontSize: mobileFontSize(15), color: '#ffffff' });
     this.contentGroup.add(hpLbl);
     this.contentGroup.add(hpVal);
     y += 4;
@@ -230,12 +256,12 @@ export class SummaryScene extends Phaser.Scene {
     ];
 
     // Header
-    const hdr = this.add.text(x, y, 'Stat', { fontSize: '13px', color: '#888888' });
-    const hdr2 = this.add.text(x + 110, y, 'Value', { fontSize: '13px', color: '#888888' });
-    const hdr3 = this.add.text(x + 180, y, 'Base', { fontSize: '13px', color: '#888888' });
-    const hdr4 = this.add.text(x + 230, y, 'IV', { fontSize: '13px', color: '#888888' });
-    const hdr5 = this.add.text(x + 270, y, 'EV', { fontSize: '13px', color: '#888888' });
-    const hdr6 = this.add.text(x + 320, y, 'Bar', { fontSize: '13px', color: '#888888' });
+    const hdr = this.add.text(x, y, 'Stat', { fontSize: mobileFontSize(13), color: '#888888' });
+    const hdr2 = this.add.text(x + 110, y, 'Value', { fontSize: mobileFontSize(13), color: '#888888' });
+    const hdr3 = this.add.text(x + 180, y, 'Base', { fontSize: mobileFontSize(13), color: '#888888' });
+    const hdr4 = this.add.text(x + 230, y, 'IV', { fontSize: mobileFontSize(13), color: '#888888' });
+    const hdr5 = this.add.text(x + 270, y, 'EV', { fontSize: mobileFontSize(13), color: '#888888' });
+    const hdr6 = this.add.text(x + 320, y, 'Bar', { fontSize: mobileFontSize(13), color: '#888888' });
     this.contentGroup.add(hdr); this.contentGroup.add(hdr2); this.contentGroup.add(hdr3);
     this.contentGroup.add(hdr4); this.contentGroup.add(hdr5); this.contentGroup.add(hdr6);
     y += 28;
@@ -256,11 +282,11 @@ export class SummaryScene extends Phaser.Scene {
         else if (natMod < 1) labelColor = '#6688ff'; // lowered
       }
 
-      const lbl = this.add.text(x, y, label, { fontSize: '15px', color: labelColor });
-      const val = this.add.text(x + 110, y, `${statVal}`, { fontSize: '15px', color: '#ffffff', fontStyle: 'bold' });
-      const bv = this.add.text(x + 180, y, `${baseVal}`, { fontSize: '13px', color: '#aaaaaa' });
-      const iv = this.add.text(x + 230, y, `${ivVal}`, { fontSize: '13px', color: '#88cc88' });
-      const ev = this.add.text(x + 270, y, `${evVal}`, { fontSize: '13px', color: '#cccc88' });
+      const lbl = this.add.text(x, y, label, { fontSize: mobileFontSize(15), color: labelColor });
+      const val = this.add.text(x + 110, y, `${statVal}`, { fontSize: mobileFontSize(15), color: '#ffffff', fontStyle: 'bold' });
+      const bv = this.add.text(x + 180, y, `${baseVal}`, { fontSize: mobileFontSize(13), color: '#aaaaaa' });
+      const iv = this.add.text(x + 230, y, `${ivVal}`, { fontSize: mobileFontSize(13), color: '#88cc88' });
+      const ev = this.add.text(x + 270, y, `${evVal}`, { fontSize: mobileFontSize(13), color: '#cccc88' });
 
       // Stat bar
       const barW = 200;
@@ -278,18 +304,18 @@ export class SummaryScene extends Phaser.Scene {
     const totalStats = Object.values(p.stats).reduce((a, b) => a + b, 0);
     const totalIvs = Object.values(p.ivs).reduce((a, b) => a + b, 0);
     const totalEvs = Object.values(p.evs).reduce((a, b) => a + b, 0);
-    const totLine = this.add.text(x, y, `Total: ${totalStats}`, { fontSize: '15px', color: '#ffcc00', fontStyle: 'bold' });
-    const ivTot = this.add.text(x + 230, y, `${totalIvs}`, { fontSize: '13px', color: '#88cc88' });
-    const evTot = this.add.text(x + 270, y, `${totalEvs}/510`, { fontSize: '13px', color: '#cccc88' });
+    const totLine = this.add.text(x, y, `Total: ${totalStats}`, { fontSize: mobileFontSize(15), color: '#ffcc00', fontStyle: 'bold' });
+    const ivTot = this.add.text(x + 230, y, `${totalIvs}`, { fontSize: mobileFontSize(13), color: '#88cc88' });
+    const evTot = this.add.text(x + 270, y, `${totalEvs}/510`, { fontSize: mobileFontSize(13), color: '#cccc88' });
     this.contentGroup.add(totLine); this.contentGroup.add(ivTot); this.contentGroup.add(evTot);
 
     // Nature note
     y += 35;
     const natNote = this.add.text(x, y, `Nature: ${p.nature.charAt(0).toUpperCase() + p.nature.slice(1)} — ${getNatureDescription(p.nature)}`, {
-      fontSize: '13px', color: '#aaaaaa',
+      fontSize: mobileFontSize(13), color: '#aaaaaa',
     });
     this.contentGroup.add(natNote);
-    const natHint = this.add.text(x, y + 20, 'Red = boosted by nature   Blue = lowered by nature', { fontSize: '11px', color: '#666688' });
+    const natHint = this.add.text(x, y + 20, 'Red = boosted by nature   Blue = lowered by nature', { fontSize: mobileFontSize(11), color: '#666688' });
     this.contentGroup.add(natHint);
   }
 
@@ -301,7 +327,7 @@ export class SummaryScene extends Phaser.Scene {
     const layout = ui(this);
 
     if (p.moves.length === 0) {
-      const noMoves = this.add.text(layout.cx, layout.cy, 'No moves', { fontSize: '18px', color: '#888888' }).setOrigin(0.5);
+      const noMoves = this.add.text(layout.cx, layout.cy, 'No moves', { fontSize: mobileFontSize(18), color: '#888888' }).setOrigin(0.5);
       this.contentGroup.add(noMoves);
       return;
     }
@@ -320,16 +346,16 @@ export class SummaryScene extends Phaser.Scene {
 
       // Category badge
       const catBadge = this.add.rectangle(x + 115, y + 10, 70, 18, CATEGORY_COLORS[md.category] ?? 0x888899).setStrokeStyle(1, 0xffffff);
-      const catLabel = this.add.text(x + 115, y + 10, md.category.toUpperCase(), { ...FONTS.label, color: '#ffffff' }).setOrigin(0.5);
+      const catLabel = this.add.text(x + 115, y + 10, md.category.toUpperCase(), { ...FONTS.label, fontSize: mobileFontSize(11), color: '#ffffff' }).setOrigin(0.5);
       this.contentGroup.add(catBadge);
       this.contentGroup.add(catLabel);
 
       // Move name
-      const moveName = this.add.text(x + 170, y + 3, md.name, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
+      const moveName = this.add.text(x + 170, y + 3, md.name, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
       this.contentGroup.add(moveName);
 
       // PP
-      const pp = this.add.text(layout.w - 100, y + 3, `PP ${m.currentPp}/${md.pp}`, { fontSize: '14px', color: '#aaaaaa' });
+      const pp = this.add.text(layout.w - 100, y + 3, `PP ${m.currentPp}/${md.pp}`, { fontSize: mobileFontSize(14), color: '#aaaaaa' });
       this.contentGroup.add(pp);
 
       // Power / Accuracy
@@ -337,7 +363,7 @@ export class SummaryScene extends Phaser.Scene {
       if (md.power !== null) details.push(`Power: ${md.power}`);
       details.push(`Acc: ${md.accuracy}%`);
       if (md.priority && md.priority !== 0) details.push(`Priority: ${md.priority > 0 ? '+' : ''}${md.priority}`);
-      const detailText = this.add.text(x + 10, y + 30, details.join('   |   '), { fontSize: '12px', color: '#aaaaaa' });
+      const detailText = this.add.text(x + 10, y + 30, details.join('   |   '), { fontSize: mobileFontSize(12), color: '#aaaaaa' });
       this.contentGroup.add(detailText);
 
       // Effect description
@@ -354,7 +380,7 @@ export class SummaryScene extends Phaser.Scene {
           effectStr = `${md.effect.chance ?? 0}% flinch`;
         }
         if (effectStr) {
-          const eff = this.add.text(x + 10, y + 48, effectStr, { fontSize: '11px', color: '#888888' });
+          const eff = this.add.text(x + 10, y + 48, effectStr, { fontSize: mobileFontSize(11), color: '#888888' });
           this.contentGroup.add(eff);
         }
       }

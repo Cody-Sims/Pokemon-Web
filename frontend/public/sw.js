@@ -1,11 +1,16 @@
-// Service Worker v2 — enhanced caching for offline play
-const CACHE_VERSION = 2;
+// Service Worker v3 — enhanced caching for offline play
+const CACHE_VERSION = 3;
 const CACHE_NAME = `pokemon-web-v${CACHE_VERSION}`;
 
-// Core assets to precache at install
+// Core assets to precache at install — enough for the starter area to work offline
 const PRECACHE_URLS = [
   '/Pokemon-Web/',
   '/Pokemon-Web/index.html',
+  '/Pokemon-Web/assets/sprites/player/player.json',
+  '/Pokemon-Web/assets/sprites/player/player.png',
+  '/Pokemon-Web/assets/tilesets/overworld-tileset.png',
+  '/Pokemon-Web/assets/maps/pallet-town.json',
+  '/Pokemon-Web/assets/ui/icon-192.png',
 ];
 
 self.addEventListener('install', (event) => {
