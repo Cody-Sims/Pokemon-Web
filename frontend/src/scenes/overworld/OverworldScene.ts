@@ -187,9 +187,9 @@ export class OverworldScene extends Phaser.Scene {
 
     gm.setPlayerPosition({ x: spawnX, y: spawnY, direction: spawnDir });
 
-    // Spawn NPCs and Trainers from map data
-    this.spawnNPCs();
+    // Spawn Trainers first so NPC behaviors can see trainer positions for collision
     this.spawnTrainers();
+    this.spawnNPCs();
 
     // Build O(1) NPC position lookup
     this.rebuildNpcOccupiedTiles();
@@ -402,8 +402,8 @@ export class OverworldScene extends Phaser.Scene {
     for (const npc of this.npcs) npc.destroy();
     this.npcs = [];
     this.trainers = [];
-    this.spawnNPCs();
     this.spawnTrainers();
+    this.spawnNPCs();
   }
 
   private spawnTrainers(): void {

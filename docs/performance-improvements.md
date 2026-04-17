@@ -416,7 +416,7 @@ Object literal specifies `_escRaw` which isn't in the `InputState` type.
 | **Medium** | 2.6 | Performance | Heavy per-frame overworld effects | 1 hr | ✅ Done |
 | **Medium** | 6.3 | Tech Debt | Individual sprites instead of tilemaps | 8 hr | |
 | **Medium** | 1.2 | Bundle | No minification/compression config | 1 hr | ✅ Done |
-| **Medium** | 1.4 | Bundle | All Pokemon/move data eager | 2 hr | |
+| **Medium** | 1.4 | Bundle | All Pokemon/move data eager | 2 hr | — Low value (already chunked) |
 | **Medium** | 3.4 | Memory | AudioManager stale scene reference | 1 hr | ✅ Done |
 | **Medium** | 5.3 | Quality | Swallowed errors in theme.ts | 15 min | ✅ Done |
 | **Medium** | 5.4 | Quality | 13 stale import paths | Fixed by 6.1 | ✅ Done |
@@ -425,7 +425,7 @@ Object literal specifies `_escRaw` which isn't in the `InputState` type.
 | **Low** | 6.5 | Dead Code | Invalid rechargeOnly MoveEffect field | 15 min | N/A (already typed) |
 | **Low** | 6.6 | Dead Code | Undeclared _escRaw property | 15 min | N/A (already typed) |
 | **Low** | 4.5 | Architecture | Duplicated SPREAD_MOVES | 15 min | ✅ Done |
-| **Low** | 4.7 | Architecture | Trainer double-registration | 2 hr | |
+| **Low** | 4.7 | Architecture | Trainer double-registration | 2 hr | ✅ Done (spawn order) |
 | **Low** | 3.5 | Memory | Dual low-HP setInterval | 30 min | ✅ Done |
 | **Low** | 5.7 | Quality | Nature modifiers ignored | 30 min | ✅ Done |
 | **Low** | 1.5 | Bundle | Ineffective dynamic import | 15 min | ✅ Done |

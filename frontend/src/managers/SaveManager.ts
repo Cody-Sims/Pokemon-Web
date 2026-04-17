@@ -59,10 +59,10 @@ export class SaveManager {
     if (!data) return false;
     const gm = GameManager.getInstance();
     gm.reset(); // Clear stale state before loading
-    gm.loadFromSave(data as any);
+    gm.loadFromSave(data);
     // Restore achievements
-    if ((data as any).achievements) {
-      AchievementManager.getInstance().deserialize((data as any).achievements);
+    if (data.achievements && Array.isArray(data.achievements)) {
+      AchievementManager.getInstance().deserialize(data.achievements as string[]);
     }
     return true;
   }

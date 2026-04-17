@@ -62,7 +62,7 @@ export class HallOfFameScene extends Phaser.Scene {
 
   private drawPage(): void {
     // Remove old content (tagged as 'page-content') — BUG-086: copy array first
-    const toRemove = this.children.list.filter(c => (c as any).pageContent);
+    const toRemove = this.children.list.filter(c => c.getData('pageContent'));
     toRemove.forEach(c => c.destroy());
 
     const layout = ui(this);
@@ -144,7 +144,7 @@ export class HallOfFameScene extends Phaser.Scene {
   }
 
   private addTagged<T extends Phaser.GameObjects.GameObject>(obj: T): T {
-    (obj as any).pageContent = true;
+    obj.setData('pageContent', true);
     return obj;
   }
 

@@ -100,6 +100,7 @@ export interface SaveData {
   nuzlockeEncountered?: string[];
   player: {
     name: string;
+    gender?: 'boy' | 'girl';
     position: { mapKey: string; x: number; y: number; direction: string };
     party: PokemonInstance[];
     bag: { itemId: string; quantity: number }[];
@@ -111,6 +112,10 @@ export interface SaveData {
   flags: Record<string, boolean>;
   trainersDefeated: string[];
   boxes?: PokemonInstance[][];
+  gameStats?: Record<string, number>;
+  hallOfFame?: unknown[];
+  visitedMaps?: string[];
+  achievements?: unknown;
 }
 
 export interface DoubleBattleResult {

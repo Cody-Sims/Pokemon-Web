@@ -9,6 +9,9 @@ All notable changes to the Pokemon Web project.
 ## [2026-04-16]
 
 ### Fixed — Remaining Bug Sweep (28 bugs)
+- **Trainer spawn ordering (4.7)**: Trainers now spawn before NPCs so NPC behavior collision checks include trainer positions
+- **`as any` casts reduced from 19 to 4**: Expanded `SaveData` interface type, added `BerryGarden._clockTime` static property, used Phaser `setData()`/`getData()` in HallOfFameScene, removed unnecessary cast in BattleUIScene synthesis check
+- **Stale IntroScene.ts duplicate**: Removed lingering copy from scenes root
 - **BUG-017: EventManager listener cleanup** — Added `clearByTag()` and `onTagged()` methods for scene-scoped listener registration and bulk cleanup
 - **BUG-027: Dream Eater works on awake targets** — Added `requireSleep` field; MoveExecutor now fails Dream Eater if target is not asleep
 - **BUG-031: Thrash/Petal Dance no multi-turn lock** — Added `multi-turn-lock` effect type to both moves (3-turn lock)

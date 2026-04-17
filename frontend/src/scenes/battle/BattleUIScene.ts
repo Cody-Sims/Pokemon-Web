@@ -494,7 +494,7 @@ export class BattleUIScene extends Phaser.Scene {
     // Boss Synthesis: trigger on first turn if trainer data says so
     if (!this.bossSynthesisTriggered && b.isTrainerBattle) {
       const tData = b.trainerId ? trainerData[b.trainerId] : null;
-      if (tData && (tData as any).useSynthesis && enemy.dataId in SYNTHESIS_ELIGIBLE) {
+      if (tData && tData.useSynthesis && enemy.dataId in SYNTHESIS_ELIGIBLE) {
         this.bossSynthesisTriggered = true;
         this.state = 'animating';
         this.hideActions();

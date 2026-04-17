@@ -18,6 +18,7 @@ export interface BerryPlot {
  * Watering halves the remaining time for the current stage.
  */
 export class BerryGarden {
+  private static _clockTime = 0;
   private static readonly PLANTED_TO_GROWING = 120; // game-minutes
   private static readonly GROWING_TO_READY = 240;   // game-minutes
 
@@ -140,12 +141,12 @@ export class BerryGarden {
 
   private static getCurrentTime(): number {
     // Use a shared clock instance — OverworldScene sets this
-    return (BerryGarden as any)._clockTime ?? 0;
+    return BerryGarden._clockTime;
   }
 
   /** Set the current game clock time (called by OverworldScene). */
   static setClockTime(totalElapsed: number): void {
-    (BerryGarden as any)._clockTime = totalElapsed;
+    BerryGarden._clockTime = totalElapsed;
   }
 
   private static savePlots(all: Record<string, BerryPlot[]>): void {
