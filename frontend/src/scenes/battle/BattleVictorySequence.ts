@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
@@ -66,7 +66,8 @@ export function runVictorySequence(ctx: VictoryContext): void {
 function runLevelUpSequence(ctx: VictoryContext, name: string, _fromLevel: number, toLevel: number, newMoves: string[], moveIdx: number): void {
   const b = ctx.battle();
 
-  const flash = ctx.scene.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xffffff, 0.6);
+  const { w, h, cx, cy } = ui(ctx.scene);
+  const flash = ctx.scene.add.rectangle(cx, cy, w, h, 0xffffff, 0.6);
   ctx.scene.tweens.add({ targets: flash, alpha: 0, duration: 400, onComplete: () => flash.destroy() });
 
   ctx.msg(`${name} grew to Lv.${toLevel}!`);
@@ -121,7 +122,8 @@ function showMoveReplaceMenu(ctx: VictoryContext, newMoveId: string, newMoveName
   ctx.moveCursor = 0;
 
   ctx.hideActions();
-  ctx.moveMenuBg = scene.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, 0x1a1a2e, 0.95).setStrokeStyle(2, 0xffffff);
+  const { w: rw, h: rh, cx: rcx } = ui(scene);
+  ctx.moveMenuBg = scene.add.rectangle(rcx, rh - 60, rw - 20, 100, 0x1a1a2e, 0.95).setStrokeStyle(2, 0xffffff);
 
   const options = [
     ...player.moves.map(m => { const d = moveData[m.moveId]; return d ? d.name : m.moveId; }),
@@ -130,7 +132,7 @@ function showMoveReplaceMenu(ctx: VictoryContext, newMoveId: string, newMoveName
 
   ctx.moveTexts = options.map((label, i) => {
     const col = i % 2; const row = Math.floor(i / 2);
-    const t = scene.add.text(GAME_WIDTH / 2 - 120 + col * 240, GAME_HEIGHT - 90 + row * 28,
+    const t = scene.add.text(rcx - 120 + col * 240, rh - 90 + row * 28,
       label, { fontSize: '14px', color: '#ffffff' }
     ).setOrigin(0.5).setInteractive({ useHandCursor: true });
     t.on('pointerover', () => { ctx.moveCursor = i; updateReplaceCursor(ctx, options.length); });
@@ -219,7 +221,8 @@ function checkEvolutionThenEnd(ctx: VictoryContext): void {
     });
 
     ctx.scene.time.delayedCall(1400, () => {
-      const flash = ctx.scene.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0xffffff, 0.9);
+      const { w: ew, h: eh, cx: ecx, cy: ecy } = ui(ctx.scene);
+      const flash = ctx.scene.add.rectangle(ecx, ecy, ew, eh, 0xffffff, 0.9);
       ctx.scene.tweens.add({
         targets: flash,
         alpha: 0,

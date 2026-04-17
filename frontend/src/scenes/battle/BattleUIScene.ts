@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { MoveExecutor } from '@battle/execution/MoveExecutor';
@@ -59,21 +59,23 @@ export class BattleUIScene extends Phaser.Scene {
     this.weatherManager = this.battle().battleManager.getWeatherManager();
     this.synthesisHandler = new SynthesisHandler();
 
+    const { w, h, cx } = ui(this);
+
     // Weather indicator (top-center, hidden initially)
-    this.weatherText = this.add.text(GAME_WIDTH / 2, 12, '', {
+    this.weatherText = this.add.text(cx, 12, '', {
       ...FONTS.caption, fontSize: '12px', color: COLORS.textHighlight,
     }).setOrigin(0.5).setDepth(50);
 
     // Nine-patch message bar
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT - 120, GAME_WIDTH - 20, 30, {
+    new NinePatchPanel(this, cx, h - 120, w - 20, 30, {
       fillColor: 0x0a0a18, fillAlpha: 0.92, borderColor: COLORS.border, borderWidth: 1, cornerRadius: 4,
     });
-    this.messageText = this.add.text(30, GAME_HEIGHT - 132, 'What will you do?', { ...FONTS.body, fontSize: '16px' });
+    this.messageText = this.add.text(30, h - 132, 'What will you do?', { ...FONTS.body, fontSize: '16px' });
 
     // Nine-patch action menu
-    this.actionMenuBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, 0x1a1a2e, 0.95);
+    this.actionMenuBg = this.add.rectangle(cx, h - 60, w - 20, 100, 0x1a1a2e, 0.95);
     this.actionMenuBg.setStrokeStyle(2, COLORS.borderLight);
-    new NinePatchPanel(this, GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, {
+    new NinePatchPanel(this, cx, h - 60, w - 20, 100, {
       fillColor: COLORS.bgPanel, fillAlpha: 0.95, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 6,
     });
 
@@ -84,7 +86,7 @@ export class BattleUIScene extends Phaser.Scene {
       const col = i % 2;
       const row = Math.floor(i / 2);
       const t = this.add.text(
-        GAME_WIDTH / 2 - 80 + col * 160, GAME_HEIGHT - 85 + row * actionRowH,
+        cx - 80 + col * 160, h - 85 + row * actionRowH,
         action, { ...FONTS.menuItem, fontSize: actionFontSize }
       ).setOrigin(0.5).setInteractive({ useHandCursor: true });
       t.setPadding(12, 8, 12, 8);
@@ -97,7 +99,7 @@ export class BattleUIScene extends Phaser.Scene {
 
     // ── SYNTH button (conditionally shown) ──
     this.synthText = this.add.text(
-      GAME_WIDTH / 2, GAME_HEIGHT - 15,
+      cx, h - 15,
       'SYNTH', { ...FONTS.menuItem, fontSize: actionFontSize }
     ).setOrigin(0.5).setVisible(false).setInteractive({ useHandCursor: true });
     this.synthText.setPadding(12, 8, 12, 8);
@@ -311,12 +313,13 @@ export class BattleUIScene extends Phaser.Scene {
     const moveFontSize = mobileFontSize(15);
     const moveRowH = Math.round(35 * MOBILE_SCALE);
 
-    this.moveMenuBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 60, GAME_WIDTH - 20, 100, 0x1a1a2e, 0.95).setStrokeStyle(2, COLORS.borderLight);
+    const { w: mw, h: mh, cx: mcx } = ui(this);
+    this.moveMenuBg = this.add.rectangle(mcx, mh - 60, mw - 20, 100, 0x1a1a2e, 0.95).setStrokeStyle(2, COLORS.borderLight);
     this.moveTexts = moves.map((m, i) => {
       const md = moveData[m.moveId];
       const col = i % 2; const row = Math.floor(i / 2);
-      const x = GAME_WIDTH / 2 - 120 + col * 240;
-      const y = GAME_HEIGHT - 85 + row * moveRowH;
+      const x = mcx - 120 + col * 240;
+      const y = mh - 85 + row * moveRowH;
 
       // Move type color dot
       if (md) {
@@ -352,7 +355,7 @@ export class BattleUIScene extends Phaser.Scene {
       return t;
     });
     // Back button
-    const back = this.add.text(GAME_WIDTH - 60, GAME_HEIGHT - 115, '← Back', { ...FONTS.bodySmall, fontSize: mobileFontSize(14) })
+    const back = this.add.text(mw - 60, mh - 115, '← Back', { ...FONTS.bodySmall, fontSize: mobileFontSize(14) })
       .setInteractive({ useHandCursor: true });
     back.setPadding(8, 6, 8, 6);
     back.on('pointerdown', () => this.closeMoveMenu());

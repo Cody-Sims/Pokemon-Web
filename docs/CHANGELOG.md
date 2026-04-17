@@ -5,6 +5,18 @@ All notable changes to the Pokemon Web project.
 ---
 
 ## [Unreleased]
+
+## [2026-04-16]
+### Added — Mobile Landscape Experience
+- **Widescreen-aware resolution**: Game width now dynamically adapts to the device aspect ratio (clamped 4:3–21:9, height fixed at 600). Phones with 19.5:9 screens get a ~1300×600 canvas instead of letter-boxed 800×600, eliminating black bars in landscape.
+- **`ui()` layout helper** (`utils/ui-layout.ts`): Camera-relative positioning utility that returns viewport dimensions, center point, edges, and proportional coordinate functions. Replaces hardcoded `GAME_WIDTH`/`GAME_HEIGHT` constants in scene layouts.
+- **Orientation lock**: Attempts `screen.orientation.lock('landscape')` on first user interaction. On mobile, also requests fullscreen to maximize viewport and enable orientation lock.
+- **Rotate-to-landscape prompt**: Portrait mobile users see a full-screen overlay prompting them to rotate their device, with a "Continue Anyway" dismiss button. Automatically hides when the device enters landscape.
+- **Mobile improvements plan** (`docs/mobile-improvements-plan.md`): Comprehensive 7-phase plan covering widescreen resolution, responsive UI, touch polish, safe-area handling, performance, PWA, and accessibility.
+
+### Changed
+- **Battle scenes migrated to `ui()` helper**: `BattleScene`, `BattleUIScene`, `BattleVictorySequence`, and `BattleCatchHandler` now use camera-relative positioning instead of `GAME_WIDTH`/`GAME_HEIGHT` constants. All UI elements (menus, HP bars, message boxes) anchor to actual viewport edges.
+
 ### Changed — Architecture cleanup phases 2–7
 - **Reorganized `scenes/`** into 7 domain subdirectories: `boot/`, `title/`, `overworld/`, `battle/`, `menu/`, `pokemon/`, `minigame/` (25 files moved)
 - **Organized `battle/`** into 4 subdirectories: `core/`, `calculation/`, `effects/`, `execution/` (14 files moved, barrel index.ts added)

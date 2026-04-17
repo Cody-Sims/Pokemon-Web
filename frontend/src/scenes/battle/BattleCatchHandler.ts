@@ -7,7 +7,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX, BGM } from '@utils/audio-keys';
 import { FONTS, COLORS, isMobile } from '@ui/theme';
-import { GAME_WIDTH } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import type { PokemonInstance } from '@data/interfaces';
 import type { BattleScene } from './BattleScene';
 
@@ -182,10 +182,11 @@ function promptNickname(ctx: CatchContext, pokemon: PokemonInstance, speciesName
   ctx.setState('animating');
 
   const scene = ctx.scene;
-  const yesText = scene.add.text(GAME_WIDTH / 2 - 60, scene.scale.height - 60, 'YES', {
+  const { cx } = ui(scene);
+  const yesText = scene.add.text(cx - 60, scene.scale.height - 60, 'YES', {
     ...FONTS.menuItem, fontSize: '18px', color: COLORS.textHighlight,
   }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(200);
-  const noText = scene.add.text(GAME_WIDTH / 2 + 60, scene.scale.height - 60, 'NO', {
+  const noText = scene.add.text(cx + 60, scene.scale.height - 60, 'NO', {
     ...FONTS.menuItem, fontSize: '18px', color: COLORS.textWhite,
   }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(200);
 

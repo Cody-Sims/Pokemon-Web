@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
+import { ui } from '@utils/ui-layout';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { BattleManager, BattleConfig } from '@battle/core/BattleManager';
@@ -123,15 +123,17 @@ export class BattleScene extends Phaser.Scene {
     };
     this.battleManager = new BattleManager(config);
 
+    const { w, h, cx, cy } = ui(this);
+
     // ── Draw battle scene background ──
     const battleBg = data?.battleBg as string | undefined;
     if (battleBg && this.textures.exists(battleBg)) {
       // Use image-based battle background
-      const bg = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, battleBg);
-      bg.setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
+      const bg = this.add.image(cx, cy, battleBg);
+      bg.setDisplaySize(w, h);
     } else {
       // Fallback: procedural solid background
-      this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, COLORS.bgPanel);
+      this.add.rectangle(cx, cy, w, h, COLORS.bgPanel);
     }
 
     // Ground areas
@@ -142,12 +144,12 @@ export class BattleScene extends Phaser.Scene {
     const trainerSpriteKey = data?.trainerSpriteKey as string | undefined;
     if (this.isTrainerBattle && trainerSpriteKey && this.textures.exists(trainerSpriteKey)) {
       // Enemy trainer stands behind their Pokémon (upper-right, larger than pokemon)
-      const enemyTrainer = this.add.image(GAME_WIDTH + 100, 120, trainerSpriteKey, 0);
+      const enemyTrainer = this.add.image(w + 100, 120, trainerSpriteKey, 0);
       enemyTrainer.setScale(8).setAlpha(0.85).setDepth(0);
       this.tweens.add({ targets: enemyTrainer, x: 620, duration: 600, delay: 200, ease: 'Power2' });
     }
     // Enemy pokemon sprite (front view) — starts offscreen right, white tinted
-    this.enemySprite = this.add.image(GAME_WIDTH + 100, 150, enemyData.spriteKeys.front)
+    this.enemySprite = this.add.image(w + 100, 150, enemyData.spriteKeys.front)
       .setScale(2).setTint(0xffffff).setAlpha(0);
 
     // Player pokemon sprite (back view, larger) — starts offscreen left, white tinted
@@ -163,18 +165,18 @@ export class BattleScene extends Phaser.Scene {
     this.enemyStatusText = this.add.text(270, -80, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
 
     // ── Player info box (bottom-right) — starts below screen ──
-    const playerInfoBox = this.add.rectangle(GAME_WIDTH - 170, GAME_HEIGHT + 60, 300, 70, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
-    this.playerNameText = this.add.text(GAME_WIDTH - 310, GAME_HEIGHT + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
-    this.playerLevelText = this.add.text(GAME_WIDTH - 120, GAME_HEIGHT + 40, `Lv${this.playerPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
-    this.playerHpBg = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
-    this.playerHpBar = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
-    this.playerHpText = this.add.text(GAME_WIDTH - 122, GAME_HEIGHT + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: '12px', color: '#ffffff' });
-    this.playerStatusText = this.add.text(GAME_WIDTH - 310, GAME_HEIGHT + 85, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
+    const playerInfoBox = this.add.rectangle(w - 170, h + 60, 300, 70, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
+    this.playerNameText = this.add.text(w - 310, h + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
+    this.playerLevelText = this.add.text(w - 120, h + 40, `Lv${this.playerPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
+    this.playerHpBg = this.add.rectangle(w - 310, h + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
+    this.playerHpBar = this.add.rectangle(w - 310, h + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
+    this.playerHpText = this.add.text(w - 122, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: '12px', color: '#ffffff' });
+    this.playerStatusText = this.add.text(w - 310, h + 85, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
 
     // ── EXP bar (below player HP) ──
-    this.expBarBg = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 82, 180, 4, 0x222233).setOrigin(0, 0.5);
+    this.expBarBg = this.add.rectangle(w - 310, h + 82, 180, 4, 0x222233).setOrigin(0, 0.5);
     const expPct = this.getExpPercent();
-    this.expBarFill = this.add.rectangle(GAME_WIDTH - 310, GAME_HEIGHT + 82, 180 * expPct, 4, 0x4488ff).setOrigin(0, 0.5);
+    this.expBarFill = this.add.rectangle(w - 310, h + 82, 180 * expPct, 4, 0x4488ff).setOrigin(0, 0.5);
 
     // ── Slide-in animation ──
     const introDelay = 200;

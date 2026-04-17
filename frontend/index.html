@@ -50,9 +50,42 @@
     #btn-a { background: rgba(68,170,85,0.6); }
     #btn-b { background: rgba(170,68,68,0.6); }
     .action-btn.pressed { filter: brightness(1.5); }
+
+    /* Rotate-to-landscape prompt */
+    #rotate-prompt {
+      display: none; position: fixed; inset: 0;
+      flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.92); color: #fff; z-index: 9999;
+      font-family: monospace; text-align: center; gap: 20px;
+      padding: 24px; padding-top: calc(24px + env(safe-area-inset-top, 0px));
+    }
+    #rotate-prompt .rotate-icon {
+      font-size: 64px; animation: rotate-hint 2s ease-in-out infinite;
+    }
+    @keyframes rotate-hint {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-30deg); }
+      75% { transform: rotate(30deg); }
+    }
+    #rotate-prompt h2 { font-size: 20px; color: #ffcc00; }
+    #rotate-prompt p { font-size: 14px; color: #aaa; max-width: 280px; }
+    #rotate-prompt button {
+      margin-top: 8px; padding: 10px 28px; border: 1px solid #ffcc00;
+      background: transparent; color: #ffcc00; font-family: monospace;
+      font-size: 16px; border-radius: 6px; cursor: pointer;
+    }
+    #rotate-prompt button:active { background: rgba(255,204,0,0.15); }
   </style>
 </head>
 <body>
+  <!-- Portrait orientation prompt -->
+  <div id="rotate-prompt">
+    <div class="rotate-icon">📱</div>
+    <h2>Rotate Your Device</h2>
+    <p>This game is best played in landscape mode. Please rotate your phone horizontally.</p>
+    <button id="rotate-dismiss">Continue Anyway</button>
+  </div>
+
   <div id="mobile-controls">
     <div id="joystick-zone">
       <div id="joystick-base"></div>
@@ -72,6 +105,14 @@
     document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
     // Block context menu (long-press copy)
     document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    // Dismiss rotate prompt
+    var dismissBtn = document.getElementById('rotate-dismiss');
+    if (dismissBtn) {
+      dismissBtn.addEventListener('click', function() {
+        var overlay = document.getElementById('rotate-prompt');
+        if (overlay) overlay.style.display = 'none';
+      });
+    }
   </script>
   <script>
     if ('serviceWorker' in navigator) {
