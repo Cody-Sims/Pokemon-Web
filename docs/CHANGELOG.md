@@ -9,6 +9,9 @@ All notable changes to the Pokemon Web project.
 ### Fixed
 - **iOS Safari landscape fullscreen**: iPhone landscape mode now collapses Safari address/tab bars via scroll-to-minimize trick since iOS does not support the Fullscreen API. Added `viewport-fit=cover` to extend content behind safe areas, `position: fixed` + `100dvh` CSS for proper viewport sizing, `env(safe-area-inset-*)` padding, and auto-collapse on orientation change. PWA manifest changed from `standalone` to `fullscreen` for true chrome-free experience when installed to home screen.
 
+### Added
+- **iOS "Add to Home Screen" install banner**: On iOS Safari, a bottom banner prompts users to install the app via Share → Add to Home Screen for a fullscreen experience. Appears after 3 s delay, respects prior dismissal via localStorage, and auto-hides when already running as PWA.
+
 ## [2026-04-16]
 ### Added — Six Remaining Features from plan.md
 - **FlyMapScene** (`scenes/menu/FlyMapScene.ts`): Fly fast-travel scene showing visited towns on a list, badge-gated via OverworldAbilities. Accessible from pause menu when Fly is available.

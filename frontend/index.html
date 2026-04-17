@@ -77,6 +77,37 @@
       font-size: 16px; border-radius: 6px; cursor: pointer;
     }
     #rotate-prompt button:active { background: rgba(255,204,0,0.15); }
+
+    /* iOS install-to-home-screen banner */
+    #ios-install-prompt {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(15,15,26,0.96); color: #fff; z-index: 9998;
+      font-family: monospace; padding: 14px 16px;
+      padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid rgba(255,204,0,0.3);
+      flex-direction: column; align-items: center; gap: 8px;
+    }
+    #ios-install-prompt .install-title {
+      font-size: 15px; font-weight: bold; color: #ffcc00;
+    }
+    #ios-install-prompt .install-steps {
+      font-size: 13px; color: #ccc; text-align: center; line-height: 1.5;
+    }
+    #ios-install-prompt .install-steps .share-icon {
+      display: inline-block; font-size: 16px; vertical-align: middle;
+    }
+    #ios-install-prompt .install-actions {
+      display: flex; gap: 12px; margin-top: 4px;
+    }
+    #ios-install-prompt button {
+      padding: 8px 20px; border: 1px solid #ffcc00;
+      background: transparent; color: #ffcc00; font-family: monospace;
+      font-size: 14px; border-radius: 6px; cursor: pointer;
+    }
+    #ios-install-prompt button.install-dismiss {
+      border-color: #666; color: #999;
+    }
+    #ios-install-prompt button:active { background: rgba(255,204,0,0.15); }
   </style>
 </head>
 <body>
@@ -86,6 +117,18 @@
     <h2>Rotate Your Device</h2>
     <p>This game is best played in landscape mode. Please rotate your phone horizontally.</p>
     <button id="rotate-dismiss">Continue Anyway</button>
+  </div>
+
+  <!-- iOS install-to-home-screen banner -->
+  <div id="ios-install-prompt">
+    <div class="install-title">Install for Full Screen</div>
+    <div class="install-steps">
+      Tap <span class="share-icon">⬆</span> Share, then "Add to Home Screen"
+      for the best experience with no browser bars.
+    </div>
+    <div class="install-actions">
+      <button class="install-dismiss" id="ios-install-dismiss">Not Now</button>
+    </div>
   </div>
 
   <div id="mobile-controls">

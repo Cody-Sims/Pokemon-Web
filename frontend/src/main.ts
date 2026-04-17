@@ -77,6 +77,36 @@ window.addEventListener('orientationchange', () => {
   setTimeout(collapseIOSSafariChrome, 500);
 });
 
+// ── iOS "Add to Home Screen" install prompt ──
+function showIOSInstallPrompt(): void {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  // Only show in Safari (not in standalone/PWA mode)
+  const isStandalone = ('standalone' in navigator && (navigator as unknown as Record<string, boolean>).standalone) ||
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: fullscreen)').matches;
+  if (!isIOS || isStandalone) return;
+
+  // Check if user already dismissed
+  const dismissed = localStorage.getItem('ios-install-dismissed');
+  if (dismissed) return;
+
+  const banner = document.getElementById('ios-install-prompt');
+  if (!banner) return;
+  banner.style.display = 'flex';
+
+  const dismissBtn = document.getElementById('ios-install-dismiss');
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', () => {
+      banner.style.display = 'none';
+      localStorage.setItem('ios-install-dismissed', '1');
+    });
+  }
+}
+
+// Show after a short delay so it doesn't compete with the rotate prompt
+setTimeout(showIOSInstallPrompt, 3000);
+
 // ── Portrait orientation prompt ──
 function updateOrientationPrompt(): void {
   const overlay = document.getElementById('rotate-prompt');
