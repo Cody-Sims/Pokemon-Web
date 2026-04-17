@@ -7,31 +7,31 @@ const route5Ground = parseMap([
   'XXXXXXXXX.PP.XXXXXXXXX', // 0  north exit
   'X..........PP........X', // 1
   'X..4444....PP...444..X', // 2  dark grass
-  'X..4444....PP...444..X', // 3
-  'X..........PP........X', // 4
-  'X....PPPPPPPPPPPP....X', // 5
-  'X....PP..........44..X', // 6
+  'X..4444..¡.PP.¡.444..X', // 3  vines
+  'X...¢......PP........X', // 4  moss stone
+  'X....PPPPPPPPPPPP..£.X', // 5  giant root
+  'X..¡.PP..........44..X', // 6  vine
   'X....PP...4444...44..X', // 7
-  'X....PP...4444.......X', // 8
-  'X....PP..........44..X', // 9
+  'X..¡.PP...4444.......X', // 8
+  'X....PP.......¢..44..X', // 9  moss stone
   'X....PPPPPPPPPPPP44..X', // 10
-  'X..........PP........X', // 11
+  'X..¤.......PP........X', // 11 berry tree
   'X..444.....PP...444..X', // 12
-  'X..444.....PP...444..X', // 13
+  'X..444...¡.PP...444..X', // 13 vine
   'X..........PP........X', // 14
-  'X..........PP........X', // 15
-  'X....PPPPPPPPPPPP....X', // 16
-  'X....PP..........44..X', // 17
+  'X.....¡....PP........X', // 15 vine
+  'X....PPPPPPPPPPPP..£.X', // 16 giant root
+  'X..¡.PP..........44..X', // 17 vine
   'X....PP...4444...44..X', // 18
-  'X....PP...4444.......X', // 19
+  'X....PP...4444..¢....X', // 19 moss stone
   'X....PP..............X', // 20
   'X....PPPPPPPPPPPP....X', // 21
-  'X..........PP........X', // 22
-  'X..4444....PP...444..X', // 23
+  'X..¤.......PP........X', // 22 berry tree
+  'X..4444..¡.PP...444..X', // 23 vine
   'X..4444....PP...444..X', // 24
-  'X..........PP........X', // 25
+  'X..........PP..£.....X', // 25 giant root
   'X..f.......PP.....f..X', // 26
-  'X..........PP........X', // 27
+  'X.....¡....PP........X', // 27 vine
   'X..........PP........X', // 28
   'XXXXXXXXX.PP.XXXXXXXXX', // 29 south exit
 ]);
@@ -43,6 +43,7 @@ export const route5: MapDefinition = {
   ground: route5Ground,
   encounterTableKey: 'route-5',
   battleBg: 'bg-forest',
+  weather: 'rain',
   npcs: [
     {
       id: 'route5-sign',

@@ -1,38 +1,40 @@
 import { MapDefinition, parseMap } from '../shared';
 
-// Ironvale City — Town 4 (25 wide × 30 tall)
-// Industrial steel town. Gym 3 (Steel — Ferris), forge, mine entrance
+// Ironvale City — Town 4 (24 wide × 30 tall)
+// Industrial terraced mountain town. Gym 3 (Steel — Ferris), central forge, mine hint
+// Biome: CLIFF_FACE (^), CAVE_FLOOR (,), CAVE_WALL (;)
+//        METAL_FLOOR (Ʃ), METAL_WALL (Ɯ), PIPE (π), GEAR (Ω)
 const ironvaleGround = parseMap([
-  'TTTTTTTTTT.PP.TTTTTTTTTT', // 0  south exit to Route 4
-  'T..........PP..........T', // 1
-  'T.CCCCCCC..PP.RRRRRRR..T', // 2  center roof + house roof
-  'T.c$ccccc..PP.HH&HHHH..T', // 3
-  'T.ccecccc..PP.HHHDHHH..T', // 4
-  'T....PP.PPPPPP.........T', // 5
-  'T....PP................T', // 6
-  'T....PP..MMMMMM........T', // 7  mart
-  'T....PP..mm&mmm........T', // 8
-  'T....PP..mmnmmm........T', // 9
-  'T....PPPPPPPPPPPPPP....T', // 10
-  'T....PP................T', // 11
-  'T....PP................T', // 12
-  'T.f..PP.......f........T', // 13
-  'T....PP................T', // 14
-  'T....PP................T', // 15
-  'T....PPPPPPPPPPPPPP....T', // 16
-  'T....PP................T', // 17
-  'T.AAAAAAA..PP..........T', // 18 gym roof
-  'T.ggg&ggg..PP..........T', // 19 gym wall
-  'T.gggaggg..PP..........T', // 20 gym door
-  'T..........PP..........T', // 21
-  'T....PPPPPPPP..........T', // 22
-  'T....PP....PP..........T', // 23
-  'T.f..PP....PP..f.......T', // 24
-  'T....PP....PP..........T', // 25
-  'T....PP....PP..........T', // 26
-  'T....PP....PP..........T', // 27
-  'T....PP....PP..........T', // 28
-  'TTTTTTTTTT.PP.TTTTTTTTTT', // 29 north exit to Route 5
+  'T^^TTTTTTT.PP.TTTTTTT^^T', // 0  south exit → Route 4
+  '^..........PP..........^', // 1
+  '^.CCCCCCC..PP..RRRRRR..^', // 2  center roof (NW) + house roof (NE)
+  '^.c$ccccc..PP..HH&HHH..^', // 3  center wall + house wall
+  '^.ccecccc..PP..HHDHHH..^', // 4  center door (4) + house door (17)
+  '^..........PP..........^', // 5
+  '^..PPPPPPPPPP..........^', // 6  upper terrace path
+  '^....ƩΩƩƩƩƩPPƩƩƩƩΩπ....^', // 7  forge north: gears + pipe
+  '^....ƩƩƩƩƩƩPPƩƩƩƩƩπ....^', // 8  forge floor
+  '^....ƩπƩΩƩƩPPƩƩΩƩπƩ....^', // 9  forge south: pipes + gears
+  '^....ƩƩƩƩƩƩPPƩƩƩƩƩf....^', // 10 forge exit + flower
+  'T.PPPPPPPPPPPPPPPPPP.^^T', // 11 mid terrace path
+  '^.MMMMMM...PP..........^', // 12 mart roof (mid W)
+  '^.mm&mmm...PP..........^', // 13 mart wall
+  '^.mmnmmm...PP..........^', // 14 mart door (4)
+  '^..........PP..........^', // 15
+  '^..PPPPPPPPPP..........^', // 16 connecting path
+  '^..........PP.....,,;..^', // 17 mine hint NE
+  '^..........PP....,,,,;.^', // 18 cave floor + wall
+  '^..........PP.....,,;..^', // 19 mine hint
+  '^....ƩƩƩπƩƩPPƩƩπƩƩƩ....^', // 20 metal walkway
+  'T^^PPPPPPPPPPPPPPPP..^^T', // 21 lower terrace path
+  '^.AAAAAAA..PP..........^', // 22 gym roof (lower SW)
+  '^.ggg&ggg..PP..........^', // 23 gym wall
+  '^.gggaggg..PP..f.......^', // 24 gym door (5)
+  '^..........PP..........^', // 25
+  '^..PPPPPPPPPP..........^', // 26
+  '^..........PP..........^', // 27
+  '^..........PP..........^', // 28
+  'T^^TTTTTTT.PP.TTTTTTT^^T', // 29 north exit → Route 5
 ]);
 
 export const ironvaleCity: MapDefinition = {
@@ -54,7 +56,7 @@ export const ironvaleCity: MapDefinition = {
     },
     {
       id: 'ironvale-npc-1',
-      tileX: 18,
+      tileX: 16,
       tileY: 6,
       textureKey: 'npc-male-1',
       facing: 'left',
@@ -64,11 +66,11 @@ export const ironvaleCity: MapDefinition = {
         'Fire and Ground moves are your best bet.',
       ],
     },
-    // Miner Gil (side quest: Mine Clearance)
+    // Miner Gil (side quest: Mine Clearance) — near mine entrance
     {
       id: 'ironvale-gil',
       tileX: 18,
-      tileY: 15,
+      tileY: 17,
       textureKey: 'npc-hiker',
       facing: 'left',
       dialogue: [
@@ -94,15 +96,15 @@ export const ironvaleCity: MapDefinition = {
         },
       ],
     },
-    // Move Tutor
-    { id: 'tutor-ironvale', tileX: 8, tileY: 15, textureKey: 'npc-hiker', facing: 'right',
+    // Move Tutor — on forge terrace
+    { id: 'tutor-ironvale', tileX: 7, tileY: 10, textureKey: 'npc-hiker', facing: 'right',
       dialogue: ['Punch Tutor: I teach the elemental punches and more!', 'Punch Tutor: For a small fee, of course.'],
       interactionType: 'move-tutor', interactionData: 'tutor-ironvale' },
-    // Aldric hologram (story event)
+    // Aldric hologram (story event) — central forge area
     {
       id: 'ironvale-hologram',
-      tileX: 12,
-      tileY: 12,
+      tileX: 10,
+      tileY: 9,
       textureKey: 'generic-trainer',
       facing: 'down',
       dialogue: [
@@ -148,7 +150,7 @@ export const ironvaleCity: MapDefinition = {
     {
       id: 'ironvale-apprentice',
       tileX: 8,
-      tileY: 21,
+      tileY: 8,
       textureKey: 'npc-male-6',
       facing: 'right',
       dialogue: [
@@ -179,15 +181,17 @@ export const ironvaleCity: MapDefinition = {
     { tileX: 12, tileY: 29, targetMap: 'route-5', targetSpawnId: 'from-ironvale' },
     // Buildings
     { tileX: 4, tileY: 4, targetMap: 'ironvale-pokecenter', targetSpawnId: 'default' },
-    { tileX: 11, tileY: 9, targetMap: 'ironvale-pokemart', targetSpawnId: 'default' },
-    { tileX: 5, tileY: 20, targetMap: 'ironvale-gym', targetSpawnId: 'default' },
+    { tileX: 4, tileY: 14, targetMap: 'ironvale-pokemart', targetSpawnId: 'default' },
+    { tileX: 5, tileY: 24, targetMap: 'ironvale-gym', targetSpawnId: 'default' },
+    { tileX: 17, tileY: 4, targetMap: 'ironvale-city-house-1', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default':         { x: 12, y: 15, direction: 'up' },
     'from-route-4':    { x: 12, y: 1, direction: 'down' },
     'from-route-5':    { x: 12, y: 28, direction: 'up' },
     'from-pokecenter': { x: 4, y: 5, direction: 'down' },
-    'from-pokemart':   { x: 11, y: 10, direction: 'down' },
-    'from-gym':        { x: 5, y: 21, direction: 'down' },
+    'from-pokemart':   { x: 4, y: 15, direction: 'down' },
+    'from-gym':        { x: 5, y: 25, direction: 'down' },
+    'from-house':      { x: 17, y: 5, direction: 'down' },
   },
 };

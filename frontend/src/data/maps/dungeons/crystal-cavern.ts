@@ -5,7 +5,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Width: 20, Height: 30
 const floor1Ground = parseMap([
   // ═══ BACK CHAMBER: crystal shrine ═══
-  ';;;;;;;;;;;;;;;;;;;;', // 0  solid walls
+  ';;;;;;;;;,,;;;;;;;;;', // 0  solid walls
   ';,,,,,,,,,,,,,,,,,,;', // 1
   ';,÷÷,,,,,,,,,,,,,÷÷;', // 2  crystal veins along walls
   ';,÷÷,,,,,,,,,,,,,÷÷;', // 3  thick crystal formations

@@ -5,7 +5,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Fractured ground, crystalline growths, dead tree stumps, ruined structures.
 // Rook stands near a campfire, seeking redemption.
 const shoreGround = parseMap([
-  'WWWWWWWWWWWWWWWWWWWWWWWWW', // 0
+  'WWWWWWWWWWWssWWWWWWWWWWWW', // 0
   'WWWW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWW', // 1
   'WWW¬¬¬÷¬¬¬¬¬¬¬¬÷¬¬¬¬WWW', // 2
   'WW¬¬¬¬¬¬®®®¬¬¬¬¬¬¬¬¬WWW', // 3
@@ -45,6 +45,7 @@ export const shatteredIslesShore: MapDefinition = {
   encounterTableKey: 'shattered-isles-shore',
   battleBg: 'bg-ruins',
   displayName: 'Shattered Isles — Shore',
+  weather: 'rain',
   onEnterCutscene: 'fathers-journal-discovery',
   onEnterCutsceneRequireFlag: 'quest_fatherTrail_started',
   npcs: [

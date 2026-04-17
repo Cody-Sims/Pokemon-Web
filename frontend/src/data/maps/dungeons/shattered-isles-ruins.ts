@@ -5,7 +5,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Collapsed walls, exposed ley-lines, pillars leaning at angles.
 // Father's journal entries are found at 5 interactable points.
 const ruinsGround = parseMap([
-  '®®®®®®®®®®®®®®®®®®®®', // 0
+  '®®®®®®®®®‡‡®®®®®®®®®', // 0
   '®‡‡‡‡‡®‡‡‡‡‡‡®‡‡‡‡‡®', // 1
   '®‡‡©‡‡‡‡‡÷‡‡‡‡‡‡©‡‡®', // 2
   '®‡‡‡‡‡‡‡‡‡‡‡‡‡‡‡‡‡‡®', // 3

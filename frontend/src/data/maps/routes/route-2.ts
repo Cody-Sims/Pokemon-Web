@@ -2,38 +2,38 @@ import { MapDefinition, parseMap } from '../shared';
 
 const route2Ground = parseMap([
   // 01234567890123456789
-  'TTTTTTT.PP.TTTTTTTTT', // 0  north exit to Viridian Forest
+  '1TT1TTT.PP.TTTT1TT1T', // 0  north exit to Viridian Forest
   'T........PP........T', // 1
   // ═══ NORTH: forest-edge meadows ═══
-  'T.GGGGG..PP..GGGGG.T', // 2  dense grass both sides
-  'T.GGGGG..PP..GGGGG.T', // 3  contiguous meadow
-  'T..GGG...PP...GGG..T', // 4  tapers toward path
+  'T.GGGGG..PP..GGGGG.1', // 2  dense grass both sides
+  '1.GGGGG..PP..GGGGG.T', // 3  contiguous meadow
+  'T..GGG...PP...GGG..1', // 4  tapers toward path
   // ═══ CRYSTAL CAVERN: mountainside with dark mouth ═══
-  'T........PP...^^^^^T', // 5  mountain/cliff wall
+  'T..~.....PP...^^^^^T', // 5  rock near cliff area
   'T....PPPPPP..^^^^^^T', // 6  path branches east
   'T....PP..PPP.^^^^^^T', // 7  path leads to cliff face
-  'T....PP..PPP.^;;;^.T', // 8  dark cave mouth (3 wide)
-  'T....PP..PPP.^;;;^.T', // 9  entrance you walk into
+  'T....PP..PPP.P,,,^.T', // 8  dark cave mouth (3 wide)
+  'T....PP..PPP.^,,,^.T', // 9  entrance you walk into
   'T....PP..PPP.^^^^^^T', // 10 cliff below entrance
-  'T....PPPPPP...^^^^.T', // 11 path reconnects
+  'T..~.PPPPPP...^^^^.T', // 11 rock + path reconnects
   // ═══ MARINA CLEARING: open rival battle area ═══
-  'T........PP........T', // 12
+  'T..4.....PP.....4..T', // 12 dark grass flanks
   'T..ff....PP....ff..T', // 13 flowers frame the clearing
   'T.ffff...PP...ffff.T', // 14 lush flower beds
   'T..ff....PP....ff..T', // 15 symmetrical clearing
   'T........PP........T', // 16
   // ═══ SOUTH MEADOWS: grass blocks + ledge ═══
-  'T.GGGGG..PP........T', // 17 west meadow block
-  'T.GGGGG..PP........T', // 18 contiguous
-  'T.GGGGG..PP..GGGGG.T', // 19 east meadow joins
-  'T........PP..GGGGG.T', // 20 east meadow continues
-  'T........PP..GGGGG.T', // 21
+  '1.GGGGG..PP........T', // 17 west meadow block
+  'T.GGGGG..PP......%.T', // 18 bush near edge
+  '1.GGGGG..PP..GGGGG.T', // 19 east meadow joins
+  'T..4.....PP..GGGGG.T', // 20 dark grass patch
+  'T........PP..GGGGG.1', // 21 pine border
   'TJJJJJ...PP........T', // 22 ledge shortcut
-  'T........PP........T', // 23
+  'T.~......PP.......%T', // 23 rock + bush
   'T..%..~..PP........T', // 24 bush + rock accent
-  'T........PP........T', // 25
-  'T........PP........T', // 26
-  'T........PP........T', // 27
+  'T..4.....PP....4...T', // 25 dark grass
+  'T........PP.~......T', // 26 rock
+  'T......%.PP........T', // 27 bush
   'T........PP........T', // 28
   'FFFFFFFF.PP.FFFFFFFF', // 29 fence border to Viridian City
 ]);

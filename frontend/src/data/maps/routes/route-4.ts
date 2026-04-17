@@ -7,33 +7,33 @@ const W = 20;
 const pad = (s: string) => s.length < W ? s.slice(0, -1) + '.'.repeat(W - s.length) + s.slice(-1) : s.slice(0, W);
 const route4Ground = parseMap([
   'TTTTTTT.PP.TTTTTTTTT', // 0  north exit
-  'T........PP........T', // 1
-  'T..GGG...PP...GGG..T', // 2
-  'T..GGG...PP...GGG..T', // 3
-  'T........PP........T', // 4
+  'T..~.....PP........T', // 1  rock
+  'T..GGG...PP...4GG..T', // 2  dark grass mixed in
+  'T..GGG...PP...G4G..T', // 3
+  'T..Ø.....PP....Ø...T', // 4  lava rock patches
   'T....PPPPPPPPPP....T', // 5
-  'T....PP........^^..T', // 6  cliffs start
-  'T....PP......^^^^..T', // 7
-  'T....PP.....^^^^^..T', // 8
-  'T....PP..,,,,,,^^..T', // 9  cave floor starts
-  'T....PP..,,,,,,,^..T', // 10
-  'T....PPPP,,,,,,,,..T', // 11
+  '^..Ø.PP........^^..T', // 6  cliff border + lava rock
+  '^....PP......^^^^..T', // 7  cliff border
+  '^....PP.....^^^^^..T', // 8  cliff border
+  '^..«.PP..,,,,,,^^..T', // 9  ash ground + cliff border
+  '^....PP..,,,,,,,^..T', // 10 cliff border
+  '^....PPPP,,,,,,,,..T', // 11 cliff border
   'T........,;,,,,,,..T', // 12 cave walls
   'T..^^....,;;,,,,,..T', // 13
   'T..^^^...,;,,,,,,..T', // 14
   'T..^^....,,,,,;,,..T', // 15
   'T........,,,,,;;,..T', // 16
-  'T....PPPP,,,,,,,,..T', // 17
-  'T....PP..,,,,,,,^..T', // 18
-  'T....PP..,,,,,,^^..T', // 19
-  'T....PP.....^^^^^..T', // 20
-  'T....PP......^^^^..T', // 21
-  'T....PP........^^..T', // 22
+  '^....PPPP,,,,,,,,..T', // 17
+  '^....PP..,,,,,,,^..T', // 18
+  '^..«.PP..,,,,,,^^..T', // 19 ash ground + cliff border
+  '^....PP.....^^^^^..T', // 20 cliff border
+  '^....PP......^^^^..T', // 21 cliff border
+  '^..Ø.PP........^^..T', // 22 cliff border + lava rock
   'T....PPPPPPPPPP....T', // 23
-  'T........PP........T', // 24
-  'T..GGG...PP...GGG..T', // 25
-  'T..GGG...PP...GGG..T', // 26
-  'T........PP........T', // 27
+  'T..Ø.....PP....Ø...T', // 24 lava rock
+  'T..4GG...PP...44G..T', // 25 dark grass
+  'T..G4G...PP...GGG..T', // 26 dark grass mixed
+  'T..~.....PP.....~..T', // 27 rocks
   'T........PP........T', // 28
   'TTTTTTT.PP.TTTTTTTTT', // 29 south exit
 ]);
@@ -45,6 +45,7 @@ export const route4: MapDefinition = {
   ground: route4Ground,
   encounterTableKey: 'route-4',
   battleBg: 'bg-volcanic',
+  weather: 'sandstorm',
   npcs: [
     {
       id: 'route4-sign',

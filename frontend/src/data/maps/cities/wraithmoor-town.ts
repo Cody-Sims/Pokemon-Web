@@ -43,6 +43,7 @@ const wraithmoorGround = parseMap([
 export const wraithmoorTown: MapDefinition = {
   key: 'wraithmoor-town', width: 24, height: 25, ground: wraithmoorGround,
   encounterTableKey: '', battleBg: 'bg-ruins', displayName: 'Wraithmoor Town',
+  weather: 'fog',
   npcs: [
     { id: 'wraithmoor-sign', tileX: 10, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['WRAITHMOOR TOWN', '"Where Spirits Linger"'] },

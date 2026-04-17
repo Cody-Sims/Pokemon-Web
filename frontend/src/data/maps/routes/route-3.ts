@@ -9,31 +9,31 @@ const route3Ground = parseMap([
   'T..GGG...PP...GGG..T', // 2  grass near Pewter
   'T..GGG...PP...GGG..T', // 3
   'T........PP........T', // 4
-  'T.....PPPPP........T', // 5  path bends west toward coast
-  'T.....PP...........T', // 6
+  'T.5...PPPPP........T', // 5  light grass near coast
+  'T.5...PP.......%...T', // 6  light grass + bush inland
   'T.ss..PP...........T', // 7  sand appears near path
   'W67sssPP.....GGG...T', // 8  coast: water→tide→wetsand→sand
   'WW67ssPP.....GGG...T', // 9  deeper coast
-  'WW667sPP...........T', // 10 tide pool cluster at shore
+  'WW667sPP..........~T', // 10 tide pool cluster + rock
   'WW67ssPP.......~...T', // 11 rock inland
   'W67sssPP...3.......T', // 12 palm on sand
-  'T.ss..PP...........T', // 13 sand tapers off
-  'T.....PP...........T', // 14
+  'T.ss..PP.......%...T', // 13 sand tapers + bush
+  'T.5...PP...........T', // 14 light grass near coast
   'T.....PPPPPPPPP....T', // 15 path bends east  (inland meadow)
-  'T...........PP.....T', // 16
+  'T...........PP..~..T', // 16 rock inland
   'T..GGG..f...PP..%..T', // 17 grass, flowers, bush
   'T..GGG......PP.....T', // 18
   'T...........PP..~..T', // 19 rock
   'T.....PPPPPPPPP....T', // 20 path bends back west
-  'T.....PP...........T', // 21
-  'T.3s..PP...........T', // 22 second beach: palm + sand
+  'T.5...PP...........T', // 21 light grass
+  'T.3s..PP.......~...T', // 22 rock near coast
   'W67sssPP...........T', // 23 coastline resumes
   'WW67ssPP.....GGG...T', // 24
   'WW667sPP.....GGG...T', // 25 tide pools at shore
-  'WW67ssPP...........T', // 26
+  'WW67ssPP........%..T', // 26 bush inland
   'W67sssPP...3.......T', // 27 palm
-  'T.ss..PP...........T', // 28 sand ends
-  'T.....PP...........T', // 29
+  'T.ss..PP.......~...T', // 28 rock near coast
+  'T.5...PP...........T', // 29 light grass
   'T.....PPPPP........T', // 30 path jogs back to center
   'T........PP........T', // 31
   'T..f.....PP....f...T', // 32 flowers near Coral Harbor

@@ -6,22 +6,22 @@ const route1Ground = parseMap([
   'F........PP........F', // 1  open entry from Viridian
   'T.......PP.........T', // 2
   // ═══ NORTH ZONE: dense meadows flanking path ═══
-  'T.GGGGG.PP..GGGGGG.T', // 3  thick grass both sides
-  'T.GGGGG.PP..GGGGGG.T', // 4  contiguous meadow
+  'X.GGGGG.PP..GGGGGG.X', // 3  thick grass both sides
+  'X.GGGGG.PP..GGGGGG.X', // 4  contiguous meadow
   'T.GGGGG~PP..GGGGGG.T', // 5  rock marks west edge
   'T..GGG..PP...GGGGG.T', // 6  grass thins toward path
-  'T....PPPPP....GGG..T', // 7  path bends west
-  'T....PP...........%T', // 8  bush guards east edge
+  'T..f.PPPPP....GGG..T', // 7  path bends west + flower
+  'T....PP..........f%T', // 8  bush + flower east edge
   // ═══ LEDGE ZONE: shortcut + east meadow ═══
   'T....PP....JJJJJJ..T', // 9  ledge shortcut #1
   'T....PP............T', // 10
   'T..%.PP............T', // 11 bush flanks path
-  'T....PP...GGGGGG...T', // 12 east meadow starts
-  'T....PP...GGGGGG...T', // 13 contiguous block
-  'T....PP...GGGGGG...T', // 14 solid meadow
+  'X....PP...GGGGGG...X', // 12 east meadow starts
+  'T....PP...GGGGGG...X', // 13 contiguous block
+  'X....PP...GGGGGG...T', // 14 solid meadow
   'T....PPPPP..GGG....T', // 15 path bends east
   // ═══ FLOWER CLEARING: Rook rest area ═══
-  'T.......PP.........T', // 16
+  'T..f....PP.........T', // 16 leading flower
   'T..ff...PP.........T', // 17 wildflowers begin
   'T.ffff..PP...fff...T', // 18 flower beds both sides
   'T.ffff..PP..ffff...T', // 19 lush heart of clearing
@@ -29,20 +29,20 @@ const route1Ground = parseMap([
   'T.......PP.........T', // 21 open rest area
   'T.......PP.......~.T', // 22 lone rock
   // ═══ SOUTH MEADOWS: big meadow, second ledge ═══
-  'T.GGGGG.PP.........T', // 23 west meadow patch
-  'T.GGGGG.PP....GG...T', // 24 + small east grass
+  'X.GGGGG.PP.........T', // 23 west meadow patch
+  'X.GGGGG.PP....GG...T', // 24 + small east grass
   'T.......PPJJJJJJ...T', // 25 ledge shortcut #2
   'T...PPPPPP.........T', // 26 path bends west
   'T...PP.............T', // 27
-  'T...PP..GGGGGGG..%.T', // 28 large east meadow
-  'T...PP..GGGGGGG....T', // 29 contiguous block
-  'T...PP..GGGGGGG..~.T', // 30 rock at meadow corner
-  'T...PP..GGGGGGG....T', // 31
+  'T...PP..GGGGGGG..%.X', // 28 large east meadow
+  'X...PP..GGGGGGG....T', // 29 contiguous block
+  'T...PP..GGGGGGG..~.X', // 30 rock at meadow corner
+  'X...PP..GGGGGGG....T', // 31
   'T...PPPPPP.........T', // 32 path bends east
   // ═══ SOUTH: open approach to Pallet ═══
-  'T.......PP.........T', // 33
+  'T..f....PP.........T', // 33 leading flower
   'T..ff...PP.....f...T', // 34 sparse flowers
-  'T.......PP.........T', // 35
+  'T.......PP..f......T', // 35 scattered flower
   'T.......PP.........T', // 36
   'T.......PP.........T', // 37
   'T.......PP.........T', // 38

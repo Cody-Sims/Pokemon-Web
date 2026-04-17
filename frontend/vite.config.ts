@@ -24,19 +24,11 @@ export default defineConfig({
     cssMinify: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          phaser: ['phaser'],
-          battle: [
-            './src/battle/index.ts',
-          ],
-          data: [
-            './src/data/pokemon/index.ts',
-            './src/data/moves/index.ts',
-            './src/data/type-chart.ts',
-          ],
-          maps: [
-            './src/data/maps/index.ts',
-          ],
+        manualChunks(id: string) {
+          if (id.includes('node_modules/phaser')) return 'phaser';
+          if (id.includes('/src/battle/')) return 'battle';
+          if (id.includes('/src/data/pokemon/') || id.includes('/src/data/moves/') || id.includes('/src/data/type-chart')) return 'data';
+          if (id.includes('/src/data/maps/')) return 'maps';
         },
       },
     },

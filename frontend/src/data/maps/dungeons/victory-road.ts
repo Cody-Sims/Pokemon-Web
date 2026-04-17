@@ -12,7 +12,7 @@ const victoryRoadGround = parseMap([
   ';,,,,,,,,;;,,,,,,,,;',
   ';;,,,,,,,,,,,,,,,,,;',
   ';;,,,,q,,,,,,q,,,,;;',
-  ';,,,,,,,,,,,,,,,,,,;',
+  ',,,,,,,,,,,,,,,,,,,;',
   ';,,,,,,,,;;,,,,,,,,;',
   ';,,q,,,,,;;,,,q,,,,;',
   ';,,,,,,,,,,,,,,,,,,;',
@@ -32,6 +32,7 @@ const victoryRoadGround = parseMap([
 export const victoryRoad: MapDefinition = {
   key: 'victory-road', width: 20, height: 25, ground: victoryRoadGround,
   encounterTableKey: 'victory-road', battleBg: 'bg-cave', displayName: 'Victory Road',
+  weather: 'fog',
   npcs: [
     { id: 'victory-sign', tileX: 10, tileY: 23, textureKey: 'generic-trainer', facing: 'up',
       dialogue: ['VICTORY ROAD', 'Only trainers with 8 Badges may pass!'] },

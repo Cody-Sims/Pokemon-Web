@@ -1,38 +1,40 @@
 import { MapDefinition, parseMap } from '../shared';
 
-// Voltara City — Town 6 (25 wide × 30 tall)
-// Industrial/tech city. Gym 5 (Electric — Blitz), Power Plant
+// Voltara City — Town 6 (24 wide × 30 tall)
+// Neon-lit tech hub. Gym 5 (Electric — Blitz), Conduit network
+// Biome tiles: ¥=CONDUIT, ¦=ELECTRIC_PANEL, §=WIRE_FLOOR,
+//              Ʃ=METAL_FLOOR, Ɯ=METAL_WALL
 const voltaraGround = parseMap([
-  'TTTTTTTTTT.PP.TTTTTTTTTT', // 0  south exit
-  'T..........PP..........T', // 1
-  'T.CCCCCCC..PP.RRRRRRR..T', // 2  center + house
-  'T.c$ccccc..PP.HH&HHHH..T', // 3
-  'T.ccecccc..PP.HHHDHHH..T', // 4
-  'T....PP.PPPPPP.........T', // 5
-  'T....PP................T', // 6
-  'T....PP...MMMMMM.......T', // 7  mart
-  'T....PP...mm&mmm.......T', // 8
-  'T....PP...mmnmmm.......T', // 9
-  'T....PPPPPPPPPPPPPP....T', // 10
-  'T....PP................T', // 11
-  'T.f..PP.....f..........T', // 12
-  'T....PP................T', // 13
-  'T....PP................T', // 14
-  'T....PPPPPPPPPPPPPP....T', // 15
-  'T....PP................T', // 16
-  'T....PP................T', // 17
-  'T.AAAAAAA..PP..........T', // 18  gym
-  'T.ggg&ggg..PP..........T', // 19
-  'T.gggaggg..PP..........T', // 20
-  'T..........PP..........T', // 21
-  'T....PPPPPPPP..........T', // 22
-  'T....PP....PP..........T', // 23
-  'T.f..PP....PP..f.......T', // 24
-  'T....PP....PP..........T', // 25
-  'T....PP....PP..........T', // 26
-  'T....PP....PP..........T', // 27
-  'T....PP....PP..........T', // 28
-  'TTTTTTTTTT.PP.TTTTTTTTTT', // 29 north border
+  'ƜƜƜƜƜƜƜƜƜƜ¥PP¥ƜƜƜƜƜƜƜƜƜƜ', // 0  south exit
+  'Ɯ§§.......¥PP¥.......§§Ɯ', // 1  entry avenue
+  'Ɯ§.¦.....¥¥PP¥¥.....¦.§Ɯ', // 2  conduit approach + panels
+  'Ɯ.¥¥¥¥¥¥¥¥¥PP¥¥¥¥¥¥¥¥¥.Ɯ', // 3  east-west conduit channel
+  'Ɯ..§§§.§§§.PP.§§§.§§§..Ɯ', // 4  wire floor promenade
+  'Ɯ.CCCCCCC.¥PP¥.MMMMMM..Ɯ', // 5  PokéCenter (NW) + Mart (NE)
+  'Ɯ.c$ccccc.¥PP¥.mm&mmm..Ɯ', // 6  walls + windows
+  'Ɯ.ccecccc.¥PP¥.mmnmmm..Ɯ', // 7  doors (PC col4, Mart col17)
+  'Ɯ.f..¦§§§¥¥PP¥¥§§..¦.f.Ɯ', // 8  tech alley + panels
+  'Ɯ§.........PP.........§Ɯ', // 9  open transition
+  'Ɯ§.¦ƩƩƩƩƩƩƩƩƩƩƩƩƩƩƩƩ¦.§Ɯ', // 10 tech plaza north edge
+  'Ɯ.¥ƩƩƩ¥ƩƩƩ¥ƩƩ¥ƩƩƩ¥ƩƩƩ¥.Ɯ', // 11 conduit grid
+  'Ɯ.¥Ʃ¦ƩƩƩ¥¥¥ƩƩ¥¥¥ƩƩƩ¦Ʃ¥.Ɯ', // 12 conduit hub arms
+  'Ɯ.¥ƩƩƩ¥¥¥ƩƩƩƩƩƩ¥¥¥ƩƩƩ¥.Ɯ', // 13 hub center (open cross)
+  'Ɯ.¥Ʃ¦ƩƩƩ¥¥¥ƩƩ¥¥¥ƩƩƩ¦Ʃ¥.Ɯ', // 14 conduit hub arms
+  'Ɯ.¥ƩƩƩ¥ƩƩƩ¥ƩƩ¥ƩƩƩ¥ƩƩƩ¥.Ɯ', // 15 conduit grid
+  'Ɯ§.¦ƩƩƩƩƩƩƩƩƩƩƩƩƩƩƩƩ¦.§Ɯ', // 16 tech plaza south edge
+  'Ɯ§..§§....¥PP¥..RRRRRRRƜ', // 17 house roof (east)
+  'Ɯ§........¥PP¥..HH&HHHHƜ', // 18 house wall
+  'Ɯ.........¥PP¥..HHHDHHHƜ', // 19 house door (col19)
+  'Ɯ§.¦..§§..¥PP¥......¦.§Ɯ', // 20 transition + panels
+  'Ɯ¥¥¥¥¥¥¥¥¥¥PP¥¥¥¥¥¥¥¥¥¥Ɯ', // 21 conduit ring (gym approach)
+  'Ɯ¥.AAAAAAA.PP...§§§...¥Ɯ', // 22 gym roof (cols 3-9)
+  'Ɯ¥.ggg&ggg.PP...§§§...¥Ɯ', // 23 gym wall + window
+  'Ɯ¥.gggaggg.PP.¦..§..¦.¥Ɯ', // 24 gym door (col6)
+  'Ɯ¥¥¥¥¥¥¥¥¥¥PP¥¥.......¥Ɯ', // 25 conduit channel south
+  'Ɯ§..f.....¥PP¥.....f..§Ɯ', // 26 green pocket
+  'Ɯ§........¥PP¥........§Ɯ', // 27 north approach
+  'Ɯ§§.......¥PP¥.......§§Ɯ', // 28 north approach
+  'ƜƜƜƜƜƜƜƜƜƜ¥PP¥ƜƜƜƜƜƜƜƜƜƜ', // 29 north exit
 ]);
 
 export const voltaraCity: MapDefinition = {
@@ -46,7 +48,7 @@ export const voltaraCity: MapDefinition = {
   npcs: [
     {
       id: 'voltara-sign',
-      tileX: 13,
+      tileX: 14,
       tileY: 1,
       textureKey: 'generic-trainer',
       facing: 'down',
@@ -55,7 +57,7 @@ export const voltaraCity: MapDefinition = {
     {
       id: 'voltara-npc-1',
       tileX: 18,
-      tileY: 6,
+      tileY: 9,
       textureKey: 'npc-male-2',
       facing: 'left',
       dialogue: [
@@ -68,7 +70,7 @@ export const voltaraCity: MapDefinition = {
     {
       id: 'voltara-sparks',
       tileX: 18,
-      tileY: 14,
+      tileY: 12,
       textureKey: 'npc-scientist',
       facing: 'left',
       dialogue: [
@@ -100,8 +102,8 @@ export const voltaraCity: MapDefinition = {
     // Move Tutor Bolt
     {
       id: 'voltara-bolt',
-      tileX: 8,
-      tileY: 17,
+      tileX: 5,
+      tileY: 10,
       textureKey: 'npc-male-4',
       facing: 'right',
       dialogue: [
@@ -114,8 +116,8 @@ export const voltaraCity: MapDefinition = {
     // Story: Blitz discovers Collective is tapping the grid
     {
       id: 'voltara-blitz-story',
-      tileX: 12,
-      tileY: 12,
+      tileX: 11,
+      tileY: 13,
       textureKey: 'npc-gym-blitz',
       facing: 'down',
       dialogue: [
@@ -132,7 +134,7 @@ export const voltaraCity: MapDefinition = {
     {
       id: 'voltara-conduit-1',
       tileX: 6,
-      tileY: 20,
+      tileY: 25,
       textureKey: 'generic-trainer',
       facing: 'up',
       dialogue: ['The conduit crackles with unstable energy...', 'You repair the conduit! It hums steadily now.'],
@@ -142,7 +144,7 @@ export const voltaraCity: MapDefinition = {
     {
       id: 'voltara-conduit-2',
       tileX: 5,
-      tileY: 4,
+      tileY: 3,
       textureKey: 'generic-trainer',
       facing: 'up',
       dialogue: ['Sparks fly from the damaged conduit...', 'You reconnect the wiring! Power flows again.'],
@@ -151,8 +153,8 @@ export const voltaraCity: MapDefinition = {
     },
     {
       id: 'voltara-conduit-3',
-      tileX: 12,
-      tileY: 28,
+      tileX: 10,
+      tileY: 27,
       textureKey: 'generic-trainer',
       facing: 'up',
       dialogue: ['The north gate conduit is completely fried...', 'You replace the core component! It powers up.'],
@@ -162,8 +164,8 @@ export const voltaraCity: MapDefinition = {
     // Story: Professor Willow kidnapping
     {
       id: 'voltara-willow-kidnap',
-      tileX: 10,
-      tileY: 6,
+      tileX: 11,
+      tileY: 9,
       textureKey: 'npc-professor',
       facing: 'down',
       dialogue: [
@@ -179,26 +181,26 @@ export const voltaraCity: MapDefinition = {
   ],
   trainers: [],
   warps: [
-    // South exit → Verdantia Village (connected via short route)
+    // South exit → Verdantia Village
     { tileX: 11, tileY: 0, targetMap: 'verdantia-village', targetSpawnId: 'from-voltara' },
     { tileX: 12, tileY: 0, targetMap: 'verdantia-village', targetSpawnId: 'from-voltara' },
     // Buildings
-    { tileX: 4, tileY: 4, targetMap: 'voltara-pokecenter', targetSpawnId: 'default' },
-    { tileX: 12, tileY: 9, targetMap: 'voltara-pokemart', targetSpawnId: 'default' },
-    { tileX: 5, tileY: 20, targetMap: 'voltara-gym', targetSpawnId: 'default' },
+    { tileX: 4, tileY: 7, targetMap: 'voltara-pokecenter', targetSpawnId: 'default' },
+    { tileX: 17, tileY: 7, targetMap: 'voltara-pokemart', targetSpawnId: 'default' },
+    { tileX: 6, tileY: 24, targetMap: 'voltara-gym', targetSpawnId: 'default' },
     // North exit → Route 6
     { tileX: 11, tileY: 29, targetMap: 'route-6', targetSpawnId: 'from-voltara' },
     { tileX: 12, tileY: 29, targetMap: 'route-6', targetSpawnId: 'from-voltara' },
     // House interior
-    { tileX: 17, tileY: 4, targetMap: 'voltara-city-house-1', targetSpawnId: 'default' },
+    { tileX: 19, tileY: 19, targetMap: 'voltara-city-house-1', targetSpawnId: 'default' },
   ],
   spawnPoints: {
-    'default':          { x: 12, y: 15, direction: 'up' },
-    'from-verdantia':   { x: 12, y: 1, direction: 'down' },
-    'from-route-6':     { x: 12, y: 28, direction: 'up' },
-    'from-pokecenter':  { x: 4, y: 5, direction: 'down' },
-    'from-pokemart':    { x: 12, y: 10, direction: 'down' },
-    'from-gym':         { x: 5, y: 21, direction: 'down' },
-    'from-house-1':     { x: 17, y: 5, direction: 'down' },
+    'default':          { x: 11, y: 13, direction: 'up' },
+    'from-verdantia':   { x: 12, y: 1, direction: 'up' },
+    'from-route-6':     { x: 12, y: 28, direction: 'down' },
+    'from-pokecenter':  { x: 4, y: 8, direction: 'down' },
+    'from-pokemart':    { x: 17, y: 8, direction: 'down' },
+    'from-gym':         { x: 6, y: 25, direction: 'down' },
+    'from-house-1':     { x: 19, y: 20, direction: 'down' },
   },
 };

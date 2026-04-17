@@ -52,7 +52,7 @@ export const pokemonLeague: MapDefinition = {
 
 // ─── Elite Four #1: Nerida (Water/Ice) ───
 const neridaGround = parseMap([
-  'ŁŁŁŁŁŁŁŁŁŁŁŁ',
+  'ŁŁŁŁŁ××ŁŁŁŁŁ',
   'Łw××××××××wŁ',
   'Ł××××××××××Ł',
   'Ł××××××××××Ł',
@@ -94,7 +94,7 @@ export const pokemonLeagueNerida: MapDefinition = {
 
 // ─── Elite Four #2: Theron (Fighting/Rock) ───
 const theronGround = parseMap([
-  'ŁŁŁŁŁŁŁŁŁŁŁŁ',
+  'ŁŁŁŁŁ××ŁŁŁŁŁ',
   'Łw××××××××wŁ',
   'Ł××××××××××Ł',
   'Ł××××××××××Ł',
@@ -136,7 +136,7 @@ export const pokemonLeagueTheron: MapDefinition = {
 
 // ─── Elite Four #3: Lysandra (Psychic/Dark) ───
 const lysandraGround = parseMap([
-  'ŁŁŁŁŁŁŁŁŁŁŁŁ',
+  'ŁŁŁŁŁ××ŁŁŁŁŁ',
   'Łw××××××××wŁ',
   'Ł××××××××××Ł',
   'Ł××××××××××Ł',
@@ -178,7 +178,7 @@ export const pokemonLeagueLysandra: MapDefinition = {
 
 // ─── Elite Four #4: Ashborne (Fire/Dragon) ───
 const ashborneGround = parseMap([
-  'ŁŁŁŁŁŁŁŁŁŁŁŁ',
+  'ŁŁŁŁŁ××ŁŁŁŁŁ',
   'Łw××××××××wŁ',
   'Ł××××××××××Ł',
   'Ł××××××××××Ł',
@@ -220,7 +220,7 @@ export const pokemonLeagueAshborne: MapDefinition = {
 
 // ─── Champion: Aldric Maren ───
 const championGround = parseMap([
-  'ŁŁŁŁŁŁŁŁŁŁŁŁŁŁ',
+  'ŁŁŁŁŁŁ××ŁŁŁŁŁŁ',
   'ŁwƉ××××××××ƉwŁ',
   'ŁƉ××××ÝÝ××××ƉŁ',
   'ŁƉ××××××××××ƉŁ',

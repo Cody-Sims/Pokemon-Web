@@ -2,40 +2,38 @@ import { MapDefinition, parseMap } from '../shared';
 
 // Coral Harbor — Town 3 (25 wide × 30 tall)
 // A coastal port town. Gym 2 (Water — Coral), PokéCenter, PokéMart, docks
-const W = 25;
-const pad = (s: string) => s.length < W ? s.slice(0, -1) + '.'.repeat(W - s.length) + s.slice(-1) : s.slice(0, W);
 const coralGround = parseMap([
-  'TTTTTTTTTT.PP.TTTTTTTTTTTTTT', // 0
-  'T..........PP............T', // 1
-  'T.CCCCCCC..PP..RRRRRRR..T', // 2
-  'T.c$ccccc..PP..HH&HHHH..T', // 3
-  'T.cceccccPPPPPPHHHDHHH..T', // 4
-  'T....PP..PPPPP.........sT', // 5
-  'T....PP..............sssT', // 6
-  'T....PP..MMMMMM....sss.T', // 7
-  'T....PP..mm&mmm....ss7sT', // 8
-  'T....PP..mmnmmm....ss7sT', // 9
-  'T....PPPPPPPPPP..ssssssT', // 10
-  'T....PP......3..ss888WWT', // 11
-  'T.f..PP........s88888WWT', // 12
-  'T....PP.......s888888WWT', // 13
-  'T....PP.......sssssWWWWT', // 14
-  'T....PP...........WWWWWT', // 15
-  'T....PPPPPPPPP....WWWWWT', // 16
-  'T.........PP......WWWWWT', // 17
-  'T.AAAAAAA.PP......WWWWWT', // 18
-  'T.ggg&ggg.PP....sssWWWT', // 19
-  'T.gggaggg.PP...sssssWWT', // 20
-  'T..........PP..ssssssWWT', // 21
-  'T....PPPPPPPP.....sss.T', // 22
-  'T....PP..............ssT', // 23
-  'T.f..PP........3.....sT', // 24
-  'T....PP..............ssT', // 25
-  'T....PP...............sT', // 26
-  'T....PP...............sT', // 27
-  'T....PP...............sT', // 28
-  'TTTTTTTTTT.PP.TTTTTTTTTTTTTT', // 29
-].map(r => pad(r)));
+  'TTTTTTTTTT.PP.TTTTTTTTTTT', // 0  north exit
+  'T..........PP.........sT', // 1
+  'T.CCCCCCC..PP.......ssT', // 2  center roof
+  'T.c$ccccc..PP......sssT', // 3
+  'T.ccecccc..PP.....ss7sT', // 4  center door
+  'T....PPPPPPPPP...ss67sT', // 5
+  'T....PP........3.ss7ssT', // 6
+  'T.RRRRRRR.PP....sssssT', // 7  house roof
+  'T.HH&HHHH.PP...ssssssT', // 8
+  'T.HHHDHHH.PP..sssWWWWT', // 9  house door
+  'T....PPPPPPPP.ss88WWWT', // 10
+  'T....PP.....ss88888WWT', // 11 dock
+  'T.MMMMMM.PP.s888888WWT', // 12 mart roof
+  'T.mm&mmm.PP.s888888WWT', // 13
+  'T.mmnmmm.PP.ss8888WWWT', // 14 mart door
+  'T....PPPPPP..ssssWWWWT', // 15
+  'T....PP..........WWWWT', // 16
+  'T.f..PP..3.......WWWWT', // 17
+  'T....PP..........WWWWT', // 18
+  'T....PPPPPPP.....WWWWT', // 19
+  'T....PP....PP....WWWWT', // 20
+  'T.99999999.PP3.ssWWWWT', // 21 gym (coral)
+  'T.9ggg&gg9.PP.sssWWWT', // 22
+  'T.9gggagg9.PP.ssss.sT', // 23 gym door
+  'T.99999999.PP..ss3.sT', // 24
+  'T..........PP....sssT', // 25
+  'T.f........PP......sT', // 26
+  'T..........PP.......T', // 27
+  'T....PP....PP.......T', // 28
+  'TTTTTTTTTT.PP.TTTTTTTTTTT', // 29 south exit
+]);
 
 export const coralHarbor: MapDefinition = {
   key: 'coral-harbor',
@@ -45,6 +43,7 @@ export const coralHarbor: MapDefinition = {
   encounterTableKey: '',
   battleBg: 'bg-harbor',
   displayName: 'Coral Harbor',
+  weather: 'rain',
   npcs: [
     {
       id: 'coral-sign',
@@ -56,7 +55,7 @@ export const coralHarbor: MapDefinition = {
     },
     {
       id: 'coral-npc-1',
-      tileX: 22,
+      tileX: 8,
       tileY: 6,
       textureKey: 'npc-male-5',
       facing: 'left',
@@ -69,8 +68,8 @@ export const coralHarbor: MapDefinition = {
     // ─── Captain Stern (ferry quest) ───
     {
       id: 'coral-stern',
-      tileX: 22,
-      tileY: 12,
+      tileX: 14,
+      tileY: 10,
       textureKey: 'npc-sailor',
       facing: 'down',
       dialogue: [
@@ -100,8 +99,8 @@ export const coralHarbor: MapDefinition = {
     // ─── Diver Lena (Good Rod) ───
     {
       id: 'coral-lena',
-      tileX: 26,
-      tileY: 15,
+      tileX: 16,
+      tileY: 16,
       textureKey: 'npc-swimmer',
       facing: 'left',
       dialogue: [
@@ -116,7 +115,7 @@ export const coralHarbor: MapDefinition = {
     {
       id: 'coral-marco',
       tileX: 8,
-      tileY: 17,
+      tileY: 19,
       textureKey: 'npc-male-6',
       facing: 'right',
       dialogue: [
@@ -147,7 +146,7 @@ export const coralHarbor: MapDefinition = {
     {
       id: 'coral-zara-disguise',
       tileX: 10,
-      tileY: 5,
+      tileY: 17,
       textureKey: 'npc-female-6',
       facing: 'down',
       dialogue: [
@@ -161,8 +160,8 @@ export const coralHarbor: MapDefinition = {
   ],
   trainers: [
     // Stern Engine quest grunts (docks & beach)
-    { id: 'coral-stern-grunt-2', trainerId: 'stern-grunt-2', tileX: 20, tileY: 11, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 3, condition: '!stern-grunt-2' },
-    { id: 'coral-stern-grunt-3', trainerId: 'stern-grunt-3', tileX: 18, tileY: 20, textureKey: 'npc-grunt', facing: 'up', lineOfSight: 3, condition: '!stern-grunt-3' },
+    { id: 'coral-stern-grunt-2', trainerId: 'stern-grunt-2', tileX: 14, tileY: 11, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 3, condition: '!stern-grunt-2' },
+    { id: 'coral-stern-grunt-3', trainerId: 'stern-grunt-3', tileX: 8, tileY: 18, textureKey: 'npc-grunt', facing: 'up', lineOfSight: 3, condition: '!stern-grunt-3' },
   ],
   warps: [
     // North exit → Route 3
@@ -170,21 +169,23 @@ export const coralHarbor: MapDefinition = {
     { tileX: 12, tileY: 0, targetMap: 'route-3', targetSpawnId: 'from-coral' },
     // Building doors
     { tileX: 4, tileY: 4, targetMap: 'coral-pokecenter', targetSpawnId: 'default' },
-    { tileX: 11, tileY: 9, targetMap: 'coral-pokemart', targetSpawnId: 'default' },
-    { tileX: 5, tileY: 20, targetMap: 'coral-gym', targetSpawnId: 'default' },
+    { tileX: 3, tileY: 14, targetMap: 'coral-pokemart', targetSpawnId: 'default' },
+    { tileX: 5, tileY: 23, targetMap: 'coral-gym', targetSpawnId: 'default' },
+    { tileX: 4, tileY: 9, targetMap: 'coral-harbor-house-1', targetSpawnId: 'default' },
     // Ferry dock → Shattered Isles
-    { tileX: 22, tileY: 14, targetMap: 'shattered-isles-shore', targetSpawnId: 'from-coral-harbor', requireFlag: 'quest_sternEngine_complete' },
+    { tileX: 15, tileY: 11, targetMap: 'shattered-isles-shore', targetSpawnId: 'from-coral-harbor', requireFlag: 'quest_sternEngine_complete' },
     // South exit → Route 4
-    { tileX: 4, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },
     { tileX: 5, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },
+    { tileX: 6, tileY: 28, targetMap: 'route-4', targetSpawnId: 'from-coral' },
   ],
   spawnPoints: {
     'default':           { x: 11, y: 15, direction: 'down' },
     'from-route-3':      { x: 11, y: 1, direction: 'down' },
     'from-route-4':      { x: 5, y: 27, direction: 'up' },
     'from-pokecenter':   { x: 4, y: 5, direction: 'down' },
-    'from-pokemart':     { x: 11, y: 10, direction: 'down' },
-    'from-gym':          { x: 5, y: 21, direction: 'down' },
-    'from-shattered-isles': { x: 22, y: 13, direction: 'up' },
+    'from-pokemart':     { x: 3, y: 15, direction: 'down' },
+    'from-gym':          { x: 5, y: 24, direction: 'down' },
+    'from-house-1':      { x: 4, y: 10, direction: 'down' },
+    'from-shattered-isles': { x: 15, y: 10, direction: 'up' },
   },
 };

@@ -12,7 +12,7 @@ const pewterGround = parseMap([
   'T..PP........................T', // 7
   'T..PP....CCCCCC...MMMMMM.....T', // 8  PokéCenter + PokéMart
   'T..PP....cccccc...mmmmmm.....T', // 9  walls
-  'T..PP....cceccc...mmnmmm.....T', // 10 doors
+  'T..PP....cceccc...mmnnmm.....T', // 10 doors
   'T..PP......PP................T', // 11
   'T..PPPPPPPPPPPPPPPPPPPPPP....T', // 12 - mid road
   'T..PP........................T', // 13

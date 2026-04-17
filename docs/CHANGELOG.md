@@ -7,7 +7,21 @@ All notable changes to the Pokemon Web project.
 ## [Unreleased]
 
 ### Changed
-- **Wraithmoor Town map redesign** (`frontend/src/data/maps/cities/wraithmoor-town.ts`): Replaced generic grid layout with organic haunted ruins town. Added graveyard section with GRAVE_MARKERs, ruined cathedral/shrine area (east) using RUIN_WALL/RUIN_PILLAR/CRACKED_FLOOR, MIST overlay throughout, AUTUMN_TREE/DARK_GRASS biome theming, winding cracked stone paths. Buildings repositioned: PokéCenter (NW), PokéMart (W), Ghost Gym (SW among graves), House remnant (NE). All warps, spawns, and NPC coordinates updated and validated
+- **Route 1 biome polish**: Added DENSE_TREE borders, extra flowers near path for color on the starter route
+- **Route 2 biome polish**: Added PINE_TREE mixed borders, DARK_GRASS patches, ROCK/BUSH obstacles for forest-to-cave transition
+- **Route 3 biome polish**: Added LIGHT_GRASS and SAND near coast, PALM_TREE clusters, ROCK/BUSH inland for grassland-to-coastal feel
+- **Route 4 biome polish**: Added CLIFF_FACE borders, LAVA_ROCK patches, ASH_GROUND, DARK_GRASS for volcanic approach to Ironvale
+- **Route 5 biome polish**: Added VINE overlays, MOSS_STONE/GIANT_ROOT obstacles, BERRY_TREE interactables, DENSE_TREE canopy for thick jungle trail
+- **Route 8 biome polish**: Added CLIFF_FACE walls, ROCK/BOULDER obstacles, DARK_GRASS, CAVE_FLOOR patches for rugged mountain approach
+- **Weather-per-route**: Added `weather` property to 8 outdoor maps — Coral Harbor (rain), Cinderfall Town (sandstorm), Wraithmoor Town (fog), Route 4 (sandstorm), Route 5 (rain), Route 8 (fog), Shattered Isles Shore (rain), Victory Road (fog)
+- **Ironvale City map redesign**: Replaced generic grid with industrial terraced mountain town. Central forge area using METAL_FLOOR, PIPE, GEAR tiles. CLIFF_FACE terracing on borders. Mine entrance hint with CAVE_FLOOR/CAVE_WALL in NE corner. Buildings on terraces with metal walkways between levels
+- **Voltara City map redesign**: Replaced generic grid with neon-lit tech hub. METAL_WALL perimeter, CONDUIT channels running through streets, WIRE_FLOOR promenades, ELECTRIC_PANEL decorations, central METAL_FLOOR tech plaza with conduit hub. Buildings radially arranged around the plaza
+- **Cinderfall Town map redesign**: Replaced generic grid with volcanic caldera town. VOLCANIC_WALL border, ASH_GROUND primary walkable surface, EMBER_VENT/MAGMA_CRACK decorations, LAVA_ROCK terrain accents, HOT_SPRING pool area on east side
+- **Scalecrest Citadel map redesign**: Replaced generic grid with dragon fortress compound. FORTRESS_WALL perimeter, DRAGON_SCALE_FLOOR courtyard, DRAGON_STATUE flanking decorations, CLIFF_FACE east edge, gym moved to SE near cliffs
+- **Coral Harbor map redesign**: Replaced generic grid with organic coastal port town. Curved eastern shoreline, DOCK_PLANK pier and boardwalk, TIDE_POOL along beach, PALM_TREE clusters, CORAL_BLOCK gym building
+- **Wraithmoor Town map redesign**: Replaced generic grid with haunted ruins town. Graveyard with GRAVE_MARKERs, ruined cathedral using RUIN_WALL/RUIN_PILLAR/CRACKED_FLOOR, MIST overlay, AUTUMN_TREE/DARK_GRASS biome
+- **Route 6 biome polish**: Added tech-to-ruins gradient. North: CONDUIT/WIRE_FLOOR/METAL_FLOOR remnants. Middle: DARK_GRASS, AUTUMN_TREE, CRACKED_FLOOR transition. South: RUIN_PILLAR, MIST, full ruins atmosphere
+- **Route 7 biome polish**: Mountain pass redesign. CLIFF_FACE walls replacing trees, ROCK/BOULDER obstacles, CAVE_FLOOR overhangs, DARK_GRASS in sheltered areas
 
 ### Fixed
 - **Map dimension mismatches**: Corrected `width: 25` to `width: 24` in 6 city maps (ironvale-city, cinderfall-town, scalecrest-citadel, verdantia-village, voltara-city, wraithmoor-town) to match actual grid row lengths
