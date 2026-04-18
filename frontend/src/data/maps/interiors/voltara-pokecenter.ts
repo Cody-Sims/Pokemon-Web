@@ -1,22 +1,33 @@
 import { MapDefinition, parseMap } from '../shared';
 
 const g = parseMap([
-  '#########', '#w#OOO#w#', '#OOOKOO#O',
-  '#OOOOOOO#', '#OOOOOOO#', '#OOOOOOO#',
-  '#OOpOOhO#', '#OOvvvOO#',
+  '###########',
+  '#w__OOO__w#',
+  '#OKKKhKKKp#',
+  '#OOOOOOOOO#',
+  '#OOOOOOOOO#',
+  '#Ot_____tO#',
+  '#Oi_____iO#',
+  '#OOOvvvOOO#',
 ]);
 export const voltaraPokecenter: MapDefinition = {
-  key: 'voltara-pokecenter', width: 9, height: 8, ground: g,
+  key: 'voltara-pokecenter', width: 11, height: 8, ground: g,
   encounterTableKey: '', isInterior: true, displayName: 'Voltara Pokémon Center',
   npcs: [{
-    id: 'voltara-nurse', tileX: 4, tileY: 2, textureKey: 'npc-nurse',
+    id: 'voltara-nurse', tileX: 5, tileY: 2, textureKey: 'npc-nurse',
     facing: 'down', dialogue: ['Welcome! We\'ll heal your Pokémon!'], interactionType: 'heal',
+  }, {
+    id: 'voltara-pc', tileX: 9, tileY: 2, textureKey: 'generic-trainer',
+    facing: 'down', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc',
+  }, {
+    id: 'voltara-center-npc', tileX: 3, tileY: 5, textureKey: 'npc-male-1',
+    facing: 'right', dialogue: ['The conduit network keeps the center running even during power surges.'],
   }],
   trainers: [],
   warps: [
-    { tileX: 3, tileY: 7, targetMap: 'voltara-city', targetSpawnId: 'from-pokecenter' },
     { tileX: 4, tileY: 7, targetMap: 'voltara-city', targetSpawnId: 'from-pokecenter' },
     { tileX: 5, tileY: 7, targetMap: 'voltara-city', targetSpawnId: 'from-pokecenter' },
+    { tileX: 6, tileY: 7, targetMap: 'voltara-city', targetSpawnId: 'from-pokecenter' },
   ],
-  spawnPoints: { 'default': { x: 4, y: 6, direction: 'up' } },
+  spawnPoints: { 'default': { x: 5, y: 6, direction: 'up' } },
 };

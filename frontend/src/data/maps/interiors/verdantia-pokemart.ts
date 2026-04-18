@@ -1,22 +1,29 @@
 import { MapDefinition, parseMap } from '../shared';
 
 const g = parseMap([
-  '#########', '#w#III#w#', '#IIkIII#I',
-  '#IIIIIII#', '#IYIIYI##', '#IIIIIII#',
-  '#IYIIYI##', '#IIvvvII#',
+  '##########',
+  '#w______w#',
+  '#IkkkkkII#',
+  '#IIIIIIII#',
+  '#IYYIIYYI#',
+  '#IYYIIYYI#',
+  '#IIIIIIII#',
+  '#___vv___#',
 ]);
 export const verdantiaPokemart: MapDefinition = {
-  key: 'verdantia-pokemart', width: 9, height: 8, ground: g,
+  key: 'verdantia-pokemart', width: 10, height: 8, ground: g,
   encounterTableKey: '', isInterior: true, displayName: 'Verdantia Poké Mart',
   npcs: [{
-    id: 'verdantia-clerk', tileX: 3, tileY: 2, textureKey: 'generic-trainer',
+    id: 'verdantia-clerk', tileX: 5, tileY: 1, textureKey: 'generic-trainer',
     facing: 'down', dialogue: ['Welcome to the Poké Mart!'], interactionType: 'shop',
+  }, {
+    id: 'verdantia-shopper', tileX: 3, tileY: 5, textureKey: 'npc-female-1',
+    facing: 'right', dialogue: ['They sell Berry fertilizer here! Great for the gardens.'],
   }],
   trainers: [],
   warps: [
-    { tileX: 3, tileY: 7, targetMap: 'verdantia-village', targetSpawnId: 'from-pokemart' },
     { tileX: 4, tileY: 7, targetMap: 'verdantia-village', targetSpawnId: 'from-pokemart' },
     { tileX: 5, tileY: 7, targetMap: 'verdantia-village', targetSpawnId: 'from-pokemart' },
   ],
-  spawnPoints: { 'default': { x: 4, y: 6, direction: 'up' } },
+  spawnPoints: { 'default': { x: 5, y: 6, direction: 'up' } },
 };

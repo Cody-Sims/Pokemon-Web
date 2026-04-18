@@ -7,6 +7,10 @@ All notable changes to the Pokemon Web project.
 ## [2026-04-17]
 
 ### Changed
+- **PokéCenter layout variants**: Deduplicated 5 identical 9×8 PokéCenter interiors into 3 size tiers. Coral/Cinderfall keep small (9×8). Verdantia/Voltara/Wraithmoor upgraded to medium (11×8) with waiting benches, PC NPC, and local flavor NPC. Ironvale/Scalecrest upgraded to large (13×8) with grand layout, PC NPC, and local flavor NPC.
+- **PokéMart layout variants**: Deduplicated 6 identical 9×8 PokéMart interiors into 3 size tiers. Coral/Cinderfall/Wraithmoor keep small (9×8). Verdantia/Voltara upgraded to medium (10×8) with wider shelving and shopper NPC. Ironvale/Scalecrest upgraded to large (12×8) with expanded shelf variety and shopper NPC.
+- **House biome variants**: Added 4 house interior layouts (Standard, Coastal, Industrial, Haunted) with per-city assignments. Coral Harbor uses Coastal; Ironvale, Voltara, Cinderfall use Industrial; Wraithmoor, Scalecrest use Haunted; others keep Standard.
+- **TextBox NinePatchPanel upgrade**: Replaced plain rectangle background with NinePatchPanel for rounded-corner, shadow-styled dialogue boxes. Added transparent hitArea for touch-to-skip.
 - **Route 1 biome polish**: Added DENSE_TREE borders, extra flowers near path for color on the starter route
 - **Route 2 biome polish**: Added PINE_TREE mixed borders, DARK_GRASS patches, ROCK/BUSH obstacles for forest-to-cave transition
 - **Route 3 biome polish**: Added LIGHT_GRASS and SAND near coast, PALM_TREE clusters, ROCK/BUSH inland for grassland-to-coastal feel
