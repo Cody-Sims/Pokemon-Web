@@ -4,9 +4,32 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-18]
+
+### Fixed
+
+- **Map viewport centering**: Maps smaller than the game viewport (e.g. Pallet Town at 800px on a widescreen display) are now centered on both axes instead of showing void space on the right edge. Camera bounds expand to viewport dimensions and a dark background (`0x0f0f1a`) fills any area outside map content
+
+### Changed
+
+- **UI Improvement Plan updated**: Marked Sprints 1-5 as complete, Sprint 6 Step 1 as done, added camera centering section, updated all success criteria checkboxes to reflect current state
+
+## [2026-04-17] — UI Improvement Plan: Sprints 4-6
+
+### Changed
+
+- **Victory Road expansion**: Expanded from 20x25 to 25x35 with summit chamber, crystal cavern (AETHER_CRYSTAL clusters), winding cave passages, boulder puzzle section, and large entry chamber. Repositioned all trainers, NPCs, and vent interactables across the larger layout
+- **Ember Mines synthesis lab**: Added Synthesis Collective lab section in lower half (rows 16-24) using SYNTHESIS_FLOOR, SYNTHESIS_WALL, SYNTHESIS_DOOR, CONTAINMENT_POD, AETHER_CONDUIT, and TERMINAL tiles. Mine area preserved in upper half with transition zone
+- **PokéCenter deduplication**: Created 3 layout variants by city size — Small (9x8) for Coral/Cinderfall, Medium (11x8) for Verdantia/Voltara/Wraithmoor with waiting benches and PC, Large (13x8) for Ironvale/Scalecrest with full amenities and flavor NPCs
+- **PokéMart deduplication**: Created 3 layout variants — Small (9x8) for Coral/Cinderfall/Wraithmoor, Medium (10x8) for Verdantia/Voltara with expanded shelving, Large (12x8) for Ironvale/Scalecrest with multiple aisles and shopper NPCs
+- **House biome variants**: Replaced single generic house layout with 4 biome-specific variants — Standard (Pallet/Viridian/Pewter/Verdantia), Coastal (Coral Harbor), Industrial (Ironvale/Voltara/Cinderfall), Haunted (Wraithmoor/Scalecrest)
+- **TextBox visual upgrade**: Replaced plain rectangle background with NinePatchPanel for rounded corners, drop shadow, and styled border in all dialogue boxes
+
 ## [2026-04-17]
 
 ### Changed
+- **Victory Road expanded**: Grew map from 20x25 to 25x35 with 5 distinct sections: summit chamber, crystal cavern with AETHER_CRYSTAL clusters, winding cave passage, boulder puzzle section, and entry chamber. Repositioned all NPCs, trainers, warps, and spawn points for the larger layout. Added aether-sanctum side passage at row 16.
+- **Ember Mines synthesis lab**: Replaced lower mine section (rows 16-24) with a Synthesis Collective hidden lab using SYNTHESIS_FLOOR, SYNTHESIS_WALL, SYNTHESIS_DOOR, CONTAINMENT_POD, AETHER_CONDUIT, and TERMINAL tiles. Repositioned Dr. Vex, grunts, terminal, and cage NPCs into the lab section. Transition zone at rows 14-15 bridges cave and lab aesthetics.
 - **PokéCenter layout variants**: Deduplicated 5 identical 9×8 PokéCenter interiors into 3 size tiers. Coral/Cinderfall keep small (9×8). Verdantia/Voltara/Wraithmoor upgraded to medium (11×8) with waiting benches, PC NPC, and local flavor NPC. Ironvale/Scalecrest upgraded to large (13×8) with grand layout, PC NPC, and local flavor NPC.
 - **PokéMart layout variants**: Deduplicated 6 identical 9×8 PokéMart interiors into 3 size tiers. Coral/Cinderfall/Wraithmoor keep small (9×8). Verdantia/Voltara upgraded to medium (10×8) with wider shelving and shopper NPC. Ironvale/Scalecrest upgraded to large (12×8) with expanded shelf variety and shopper NPC.
 - **House biome variants**: Added 4 house interior layouts (Standard, Coastal, Industrial, Haunted) with per-city assignments. Coral Harbor uses Coastal; Ironvale, Voltara, Cinderfall use Industrial; Wraithmoor, Scalecrest use Haunted; others keep Standard.

@@ -18,17 +18,19 @@ const mineGround = parseMap([
   ';,,,,,,,,,,,,,,,,,;;', // 11
   ';,,,,,,,,,,,,,,,,,,;', // 12
   ';,,q,,,,,,,,,,,q,,,;', // 13
-  ';,,,,,,,,;;,,,,,,,,;', // 14
-  ';,,,,,,,,;;,,,,,,,,;', // 15
-  ';,,=,,,,,;;,,,=,,,,;', // 16
-  ';,,=,,,,,,,,,,=,,,,;', // 17
-  ';,,=,,,,,,,,,,=,,,,;', // 18
-  ';,,,,,,,,,,,,,,,,,,;', // 19
-  ';,,,,,,,,,,,,,,,,,,;', // 20
-  ';,,,q,,,,,,,,,q,,,,;', // 21
-  ';,,,,,,,,,,,,,,,,,,;', // 22
-  ';,,,,,,,,,,,,,,,,,,;', // 23
-  ';;;;;;,,,,,,,,;;;;;;', // 24 entrance
+  // Transition zone: mine → synthesis lab
+  ';,,,,,,,,ĦĦ,,,,,,,,;', // 14  cave walls give way to synthesis walls
+  ';,,,,,,,ĦŦŦ,,,,,,,,;', // 15  synthesis materials start appearing
+  // Rows 16-24: Synthesis Collective hidden lab
+  'ĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦ', // 16  lab outer wall
+  'ĦŦŦŦŦŦŦƫŦŦŦŦƫŦŦŦŦŦŦĦ', // 17  terminals on north wall
+  'ĦŦŦŊŦŦŦŦŦŦŦŦŦŦŊŦŦŦŦĦ', // 18  containment pods
+  'ĦŦŦŦŦŦƉŦŦŦŦŦƉŦŦŦŦŦŦĦ', // 19  aether conduits
+  'ĦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦĦ', // 20  central lab area (Dr. Vex)
+  'ĦŦŦŦŦŦƉŦŦŦŦŦƉŦŦŦŦŦŦĦ', // 21  aether conduits
+  'ĦŦŦŊŦŦŦŦŦŦŦŦŦŦŊŦŦŦŦĦ', // 22  containment pods
+  'ĦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦĦ', // 23
+  'ĦĦĦĦĦĦĦĦĐĐĐĐĦĦĦĦĦĦĦĦ', // 24  entrance doors from south
 ]);
 
 export const emberMines: MapDefinition = {
@@ -52,8 +54,8 @@ export const emberMines: MapDefinition = {
     // Story: Synthesis lab equipment
     {
       id: 'mines-terminal',
-      tileX: 8,
-      tileY: 2,
+      tileX: 7,
+      tileY: 17,
       textureKey: 'generic-trainer',
       facing: 'down',
       dialogue: [
@@ -70,11 +72,11 @@ export const emberMines: MapDefinition = {
         ]},
       ],
     },
-    // Caged Pokémon
+    // Caged Pokémon — near containment pods in lab
     {
       id: 'mines-cage',
-      tileX: 15,
-      tileY: 5,
+      tileX: 14,
+      tileY: 18,
       textureKey: 'generic-trainer',
       facing: 'down',
       dialogue: [
@@ -112,18 +114,18 @@ export const emberMines: MapDefinition = {
     {
       id: 'mines-grunt-2',
       trainerId: 'synthesis-grunt-3',
-      tileX: 14,
-      tileY: 15,
+      tileX: 10,
+      tileY: 14,
       textureKey: 'npc-grunt',
-      facing: 'left',
+      facing: 'down',
       lineOfSight: 3,
     },
-    // Dr. Vex boss battle #1
+    // Dr. Vex boss battle #1 — center of synthesis lab
     {
       id: 'mines-vex',
       trainerId: 'admin-vex-1',
       tileX: 10,
-      tileY: 3,
+      tileY: 20,
       textureKey: 'npc-admin-vex',
       facing: 'down',
       lineOfSight: 5,
@@ -132,14 +134,14 @@ export const emberMines: MapDefinition = {
       id: 'mines-grunt-3',
       trainerId: 'synthesis-grunt-5',
       tileX: 8,
-      tileY: 12,
+      tileY: 23,
       textureKey: 'npc-grunt',
       facing: 'up',
       lineOfSight: 4,
     },
   ],
   warps: [
-    // South exit → Route 4
+    // South exit → Route 4 (through synthesis doors)
     { tileX: 8, tileY: 24, targetMap: 'route-4', targetSpawnId: 'from-mines' },
     { tileX: 9, tileY: 24, targetMap: 'route-4', targetSpawnId: 'from-mines' },
     { tileX: 10, tileY: 24, targetMap: 'route-4', targetSpawnId: 'from-mines' },

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { TILE_SIZE } from '@utils/constants';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
+import { startFpsMonitor } from '@utils/perf-profile';
 import { Player } from '@entities/Player';
 import { NPC } from '@entities/NPC';
 import { Trainer } from '@entities/Trainer';
@@ -83,6 +84,8 @@ export class OverworldScene extends Phaser.Scene {
   private ambientSFX!: AmbientSFX;
   /** O(1) lookup set for NPC-occupied tile positions. */
   private npcOccupiedTiles = new Set<string>();
+  private hudText?: Phaser.GameObjects.Text;
+  private saveBtn?: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'OverworldScene' });
@@ -229,16 +232,23 @@ export class OverworldScene extends Phaser.Scene {
     const mapPixelH = mapH * TILE_SIZE;
     const layout = ui(this);
 
+    // Dark background for any void area outside the map bounds
+    this.cameras.main.setBackgroundColor(this.mapDef.isInterior ? 0x202020 : 0x0f0f1a);
+
     if (this.mapDef.isInterior && mapPixelW <= layout.w && mapPixelH <= layout.h) {
       // Small interior — center the map in the viewport, don't follow player
       this.cameras.main.stopFollow();
-      this.cameras.main.setBackgroundColor(0x202020);
-      // Position camera so map is centered in the game window
       this.cameras.main.scrollX = (mapPixelW - layout.w) / 2;
       this.cameras.main.scrollY = (mapPixelH - layout.h) / 2;
     } else {
+      // Center the map when it's smaller than the viewport on either axis.
+      // Expand bounds with padding so Phaser's built-in centering kicks in.
+      const boundsW = Math.max(mapPixelW, layout.w);
+      const boundsH = Math.max(mapPixelH, layout.h);
+      const boundsX = (mapPixelW - boundsW) / 2;
+      const boundsY = (mapPixelH - boundsH) / 2;
+      this.cameras.main.setBounds(boundsX, boundsY, boundsW, boundsH);
       this.cameras.main.startFollow(this.player, true);
-      this.cameras.main.setBounds(0, 0, mapPixelW, mapPixelH);
     }
 
     // Weather
@@ -291,36 +301,42 @@ export class OverworldScene extends Phaser.Scene {
     this.ambientSFX.setAmbient(this.mapDef.ambientSfx ?? 'none');
 
     // HUD label
-    const { width } = this.cameras.main;
     const mapLabel = this.mapDef.displayName
       ?? this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const hudHint = TouchControls.isTouchDevice()
       ? `${mapLabel}  |  Tap = Talk`
       : `${mapLabel}  |  SPACE = Talk  |  ESC = Menu`;
-    this.add.text(width / 2, 20, hudHint, {
+    this.hudText = this.add.text(this.cameras.main.width / 2, 20, hudHint, {
       fontSize: '14px',
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
 
     // Quick-save floating button (mobile only, top-right below menu button)
     if (TouchControls.isTouchDevice()) {
-      const saveBtn = this.add.text(width - 20, 60, '💾', {
+      this.saveBtn = this.add.text(this.cameras.main.width - 20, 60, '💾', {
         fontSize: '22px',
       }).setOrigin(1, 0).setScrollFactor(0).setDepth(100).setAlpha(0.5)
         .setInteractive({ useHandCursor: true })
         .setPadding(8, 8, 8, 8);
-      saveBtn.on('pointerdown', () => {
+      this.saveBtn.on('pointerdown', () => {
         import('@managers/SaveManager').then(({ SaveManager }) => {
           SaveManager.getInstance().save();
-          saveBtn.setAlpha(1);
-          this.time.delayedCall(600, () => saveBtn.setAlpha(0.5));
+          this.saveBtn?.setAlpha(1);
+          this.time.delayedCall(600, () => this.saveBtn?.setAlpha(0.5));
         });
       });
     }
 
+    // Re-layout HUD elements on resize / orientation change
+    layoutOn(this, () => {
+      const w = this.cameras.main.width;
+      this.hudText?.setX(w / 2);
+      this.saveBtn?.setX(w - 20);
+    });
+
     // Show location name popup for interiors
     if (this.mapDef.isInterior && this.mapDef.displayName) {
-      const namePopup = this.add.text(width / 2, 50, this.mapDef.displayName, {
+      const namePopup = this.add.text(this.cameras.main.width / 2, 50, this.mapDef.displayName, {
         fontSize: '16px',
         color: '#ffffff',
         backgroundColor: '#00000088',
@@ -359,6 +375,9 @@ export class OverworldScene extends Phaser.Scene {
         }
       }
     }
+
+    // Start FPS monitoring for auto-quality downgrade on low-end devices
+    startFpsMonitor();
   }
 
   // ── Map rendering (tileset-based) ──────────────────────────

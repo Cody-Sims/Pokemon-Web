@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
+import { NinePatchPanel } from './NinePatchPanel';
 
 /** Typewriter text display widget. */
 export class TextBox {
   private scene: Phaser.Scene;
-  private background: Phaser.GameObjects.Rectangle;
+  private panel: NinePatchPanel;
+  private hitArea: Phaser.GameObjects.Rectangle;
   private textObject: Phaser.GameObjects.Text;
   private fullText = '';
   private isTyping = false;
@@ -12,8 +14,14 @@ export class TextBox {
 
   constructor(scene: Phaser.Scene, x: number, y: number, width: number, height: number) {
     this.scene = scene;
-    this.background = scene.add.rectangle(x + width / 2, y + height / 2, width, height, 0x000000, 0.85);
-    this.background.setStrokeStyle(2, 0xffffff);
+    this.panel = new NinePatchPanel(scene, x + width / 2, y + height / 2, width, height, {
+      fillColor: 0x0a0a18,
+      fillAlpha: 0.92,
+      borderColor: 0x6a6aaa,
+      borderWidth: 2,
+      cornerRadius: 8,
+      shadowAlpha: 0.4,
+    });
     this.textObject = scene.add.text(x + 12, y + 10, '', {
       fontSize: '16px',
       color: '#ffffff',
@@ -21,8 +29,8 @@ export class TextBox {
     });
 
     // Touch-to-skip typewriter effect (BUG-081)
-    this.background.setInteractive();
-    this.background.on('pointerdown', () => this.skipToEnd());
+    this.hitArea = scene.add.rectangle(x + width / 2, y + height / 2, width, height, 0x000000, 0).setInteractive();
+    this.hitArea.on('pointerdown', () => this.skipToEnd());
   }
 
   /** Display text with typewriter effect. */
@@ -59,18 +67,21 @@ export class TextBox {
   getIsTyping(): boolean { return this.isTyping; }
 
   setVisible(visible: boolean): void {
-    this.background.setVisible(visible);
+    this.panel.setVisible(visible);
+    this.hitArea.setVisible(visible);
     this.textObject.setVisible(visible);
   }
 
   setDepth(depth: number): void {
-    this.background.setDepth(depth);
-    this.textObject.setDepth(depth);
+    this.panel.setDepth(depth);
+    this.hitArea.setDepth(depth + 1);
+    this.textObject.setDepth(depth + 1);
   }
 
   destroy(): void {
     this.typeTimer?.destroy();
-    this.background.destroy();
+    this.panel.destroy();
+    this.hitArea.destroy();
     this.textObject.destroy();
   }
 }
