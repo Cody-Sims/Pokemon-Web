@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
+import { layoutOn } from '@utils/layout-on';
 import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { MoveExecutor } from '@battle/execution/MoveExecutor';
@@ -131,6 +132,28 @@ export class BattleUIScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-ENTER', () => this.confirm());
     this.input.keyboard!.on('keydown-SPACE', () => this.confirm());
     this.input.keyboard!.on('keydown-ESC', () => this.cancel());
+
+    // Re-layout on resize / orientation change
+    layoutOn(this, () => {
+      const { w, h, cx } = ui(this);
+      const cpt = isMobile() && (window.innerHeight < 400 || h < 400);
+      const mH = cpt ? 50 : 100;
+      this.weatherText?.setPosition(cx, 12);
+      this.messageText.setPosition(30, h - (cpt ? 92 : 132));
+      this.actionMenuBg.setPosition(cx, h - mH / 2 - 10).setSize(w - 20, mH);
+      this.actionTexts.forEach((t, i) => {
+        if (cpt) {
+          const sp = w / 5;
+          t.setPosition(sp * (i + 1), h - mH / 2 - 10);
+        } else {
+          const col = i % 2;
+          const row = Math.floor(i / 2);
+          const rowH = Math.round(35 * MOBILE_SCALE);
+          t.setPosition(cx - 80 + col * 160, h - 85 + row * rowH);
+        }
+      });
+      this.synthText?.setPosition(cx, h - 15);
+    });
   }
 
   /** Poll touch A/B buttons each frame. */

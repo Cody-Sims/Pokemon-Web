@@ -15,6 +15,9 @@ export class MenuScene extends Phaser.Scene {
   private menuItems!: Phaser.GameObjects.Text[];
   private cursorIcon!: Phaser.GameObjects.Text;
   private menuLabels: string[] = [];
+  private overlay!: Phaser.GameObjects.Rectangle;
+  private menuPanel!: NinePatchPanel;
+  private moneyText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'MenuScene' });
@@ -31,7 +34,7 @@ export class MenuScene extends Phaser.Scene {
     const layout = ui(this);
 
     // Dim overlay
-    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgOverlay, 0.45);
+    this.overlay = this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgOverlay, 0.45);
 
     // Menu panel
     const rowH = Math.round(48 * MOBILE_SCALE);
@@ -39,7 +42,7 @@ export class MenuScene extends Phaser.Scene {
     const panelH = this.menuLabels.length * rowH + 32;
     const panelX = layout.w - panelW / 2 - 20;
     const panelY = layout.cy;
-    new NinePatchPanel(this, panelX, panelY, panelW, panelH, {
+    this.menuPanel = new NinePatchPanel(this, panelX, panelY, panelW, panelH, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
@@ -47,7 +50,7 @@ export class MenuScene extends Phaser.Scene {
 
     // Money display above menu panel
     const gm = GameManager.getInstance();
-    this.add.text(panelX, panelY - panelH / 2 - 16, `₽ ${gm.getMoney()}`, {
+    this.moneyText = this.add.text(panelX, panelY - panelH / 2 - 16, `₽ ${gm.getMoney()}`, {
       ...FONTS.bodySmall, color: COLORS.textHighlight,
     }).setOrigin(0.5);
 
@@ -81,6 +84,25 @@ export class MenuScene extends Phaser.Scene {
     });
     this.input.keyboard!.on('keydown-ENTER', () => this.selectOption());
     this.input.keyboard!.on('keydown-ESC', () => this.closeMenu());
+
+    // Re-layout on resize / orientation change
+    layoutOn(this, () => {
+      const l = ui(this);
+      const rH = Math.round(48 * MOBILE_SCALE);
+      const pW = Math.round(220 * MOBILE_SCALE);
+      const pH = this.menuLabels.length * rH + 32;
+      const pX = l.w - pW / 2 - 20;
+      const pY = l.cy;
+      this.overlay.setPosition(l.cx, l.cy).setSize(l.w, l.h);
+      this.menuPanel.destroy();
+      this.menuPanel = new NinePatchPanel(this, pX, pY, pW, pH, {
+        fillColor: COLORS.bgPanel, borderColor: COLORS.border, cornerRadius: 8,
+      });
+      this.moneyText.setPosition(pX, pY - pH / 2 - 16);
+      const sY = pY - pH / 2 + 32;
+      this.menuItems.forEach((item, i) => item.setPosition(pX + 10, sY + i * rH));
+      this.updateCursor();
+    });
   }
 
   private updateCursor(): void {

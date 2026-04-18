@@ -118,6 +118,28 @@ export class DialogueScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
+    // Re-layout on resize / orientation change
+    layoutOn(this, () => {
+      const l = ui(this);
+      // Reposition panel (destroy + recreate since NinePatchPanel lacks setPosition)
+      this.panel.destroy();
+      this.panel = new NinePatchPanel(this, l.cx, l.h - 60, l.w - 20, 100, {
+        fillColor: 0x0a0a18, fillAlpha: 0.92, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 8,
+      });
+      // Reposition text elements
+      this.dialogueText.setPosition(30, l.h - 100);
+      this.dialogueText.setWordWrapWidth(l.w - 60);
+      this.advanceIndicator.setPosition(l.w - 40, l.h - 22);
+      if (this.speakerText) this.speakerText.setY(l.h - 118);
+      if (this.speakerPanel) {
+        this.speakerPanel.destroy();
+        const sw = Math.max(100, (this.speaker?.length ?? 0) * 10 + 24);
+        this.speakerPanel = new NinePatchPanel(this, 70, l.h - 118, sw, 26, {
+          fillColor: COLORS.bgCard, fillAlpha: 0.95, borderColor: COLORS.borderHighlight, borderWidth: 1, cornerRadius: 4,
+        });
+      }
+    });
+
     this.showLine(this.queue[this.currentIndex]);
 
     // Input — keyboard

@@ -4,6 +4,7 @@ import { GameManager } from '@managers/GameManager';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
+import { ScrollContainer } from '@ui/widgets/ScrollContainer';
 import { COLORS, FONTS, TYPE_COLORS, drawTypeBadge, mobileFontSize, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
@@ -19,6 +20,7 @@ export class PokedexScene extends Phaser.Scene {
   private seenCount = 0;
   private caughtCount = 0;
   private countText?: Phaser.GameObjects.Text;
+  private scrollContainer?: ScrollContainer;
 
   constructor() {
     super({ key: 'PokedexScene' });
@@ -75,6 +77,21 @@ export class PokedexScene extends Phaser.Scene {
     this.scrollOffset = 0;
     this.cursor = 0;
     this.renderList();
+
+    // Touch drag-to-scroll for the Pokédex list area
+    const itemH = 28;
+    const listH = this.maxVisible * itemH;
+    this.scrollContainer = new ScrollContainer(this, {
+      x: 10, y: 72, width: 200, height: listH,
+      contentHeight: this.speciesList.length * itemH,
+      onScroll: (offset) => {
+        const newOffset = Math.round(offset / itemH);
+        if (newOffset !== this.scrollOffset) {
+          this.scrollOffset = Math.max(0, Math.min(newOffset, this.speciesList.length - this.maxVisible));
+          this.renderList();
+        }
+      },
+    });
 
     this.controller = new MenuController(this, {
       columns: 1,
@@ -146,12 +163,17 @@ export class PokedexScene extends Phaser.Scene {
   }
 
   private ensureVisible(idx: number): void {
+    let changed = false;
     if (idx < this.scrollOffset) {
       this.scrollOffset = idx;
-      this.renderList();
+      changed = true;
     } else if (idx >= this.scrollOffset + this.maxVisible) {
       this.scrollOffset = idx - this.maxVisible + 1;
+      changed = true;
+    }
+    if (changed) {
       this.renderList();
+      this.scrollContainer?.scrollTo(this.scrollOffset * 28);
     }
   }
 

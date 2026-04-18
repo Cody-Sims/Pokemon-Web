@@ -6,6 +6,7 @@ import { itemData } from '@data/item-data';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
+import { ScrollContainer } from '@ui/widgets/ScrollContainer';
 import { COLORS, FONTS, SPACING, mobileFontSize, isMobile } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import { tmData } from '@data/tm-data';
@@ -43,6 +44,7 @@ export class InventoryScene extends Phaser.Scene {
   private targetTexts: Phaser.GameObjects.Text[] = [];
   private targetPanel?: NinePatchPanel;
   private battleMode = false;
+  private scrollContainer?: ScrollContainer;
 
   constructor() {
     super({ key: 'InventoryScene' });
@@ -139,6 +141,7 @@ export class InventoryScene extends Phaser.Scene {
   private refreshItemList(): void {
     // Clean up
     this.itemController?.destroy();
+    this.scrollContainer?.destroy();
     this.itemListGroup.clear(true, true);
     this.itemTexts = [];
 
@@ -163,6 +166,22 @@ export class InventoryScene extends Phaser.Scene {
     }
 
     this.renderVisibleItems();
+
+    // Touch drag-to-scroll for the item list area
+    const itemH = 36;
+    const listH = this.maxVisible * itemH;
+    this.scrollContainer = new ScrollContainer(this, {
+      x: 10, y: 88, width: 280, height: listH,
+      contentHeight: this.filteredItems.length * itemH,
+      onScroll: (offset) => {
+        const newOffset = Math.round(offset / itemH);
+        if (newOffset !== this.scrollOffset) {
+          this.scrollOffset = Math.max(0, Math.min(newOffset, this.filteredItems.length - this.maxVisible));
+          this.renderVisibleItems();
+        }
+      },
+    });
+
     this.itemController = new MenuController(this, {
       columns: 1,
       itemCount: this.filteredItems.length,
@@ -209,12 +228,17 @@ export class InventoryScene extends Phaser.Scene {
   }
 
   private ensureVisible(idx: number): void {
+    let changed = false;
     if (idx < this.scrollOffset) {
       this.scrollOffset = idx;
-      this.renderVisibleItems();
+      changed = true;
     } else if (idx >= this.scrollOffset + this.maxVisible) {
       this.scrollOffset = idx - this.maxVisible + 1;
+      changed = true;
+    }
+    if (changed) {
       this.renderVisibleItems();
+      this.scrollContainer?.scrollTo(this.scrollOffset * 36);
     }
   }
 
