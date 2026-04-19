@@ -28,7 +28,9 @@ import { AchievementScene } from '@scenes/menu/AchievementScene';
 import { TrainerCardScene } from '@scenes/menu/TrainerCardScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
-const isMobile = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
+import { isMobile } from '@ui/theme';
+
+const mobile = isMobile();
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -39,8 +41,10 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     activePointers: 3, // Multi-touch: joystick + action buttons simultaneously
   },
   scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: isMobile ? Phaser.Scale.CENTER_HORIZONTALLY : Phaser.Scale.CENTER_BOTH,
+    // ENVELOP fills the viewport fully on mobile (no black bars); FIT preserves
+    // the aspect ratio on desktop (centred inside the desktop chrome frame).
+    mode: mobile ? Phaser.Scale.ENVELOP : Phaser.Scale.FIT,
+    autoCenter: mobile ? Phaser.Scale.NO_CENTER : Phaser.Scale.CENTER_BOTH,
   },
   physics: {
     default: 'arcade',

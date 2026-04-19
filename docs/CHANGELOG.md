@@ -4,6 +4,20 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-19]
+
+### Fixed
+
+- **Mobile viewport**: Switched Phaser scale mode from `FIT` to `ENVELOP` on mobile so the game canvas fills the full screen without black bars or letterboxing
+- **Body background**: Changed `background: #000` to `#0f0f1a` to match the game's dark blue theme, eliminating visible seams on any edge
+- **Mobile canvas sizing**: Added `width: 100%; height: 100%` CSS for canvas on coarse-pointer (touch) devices
+
+### Removed
+
+- **Legacy scene copies**: Deleted stale `frontend/src/scenes/TitleScene.ts` and `frontend/src/scenes/OverworldScene.ts` that duplicated the active copies in `title/` and `overworld/` subdirectories, eliminating 16 pre-existing TypeScript compilation errors
+
+---
+
 ## [2026-04-18]
 
 ### Fixed
