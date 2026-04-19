@@ -84,7 +84,7 @@ export class TrainerCardScene extends Phaser.Scene {
       g.strokeCircle(bx, rowY, 14);
       if (earned) {
         this.add.text(bx, rowY, '★', {
-          fontSize: '14px', color: '#ffffff', fontFamily: 'monospace',
+          fontSize: mobileFontSize(14), color: '#ffffff', fontFamily: 'monospace',
         }).setOrigin(0.5);
       }
     }

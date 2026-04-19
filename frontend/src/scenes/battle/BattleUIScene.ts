@@ -71,14 +71,14 @@ export class BattleUIScene extends Phaser.Scene {
 
     // Weather indicator (top-center, hidden initially)
     this.weatherText = this.add.text(cx, 12, '', {
-      ...FONTS.caption, fontSize: '12px', color: COLORS.textHighlight,
+      ...FONTS.caption, fontSize: mobileFontSize(12), color: COLORS.textHighlight,
     }).setOrigin(0.5).setDepth(50);
 
     // Nine-patch message bar
     new NinePatchPanel(this, cx, h - (compact ? 80 : 120), w - 20, 30, {
       fillColor: 0x0a0a18, fillAlpha: 0.92, borderColor: COLORS.border, borderWidth: 1, cornerRadius: 4,
     });
-    this.messageText = this.add.text(30, h - (compact ? 92 : 132), 'What will you do?', { ...FONTS.body, fontSize: '16px' });
+    this.messageText = this.add.text(30, h - (compact ? 92 : 132), 'What will you do?', { ...FONTS.body, fontSize: mobileFontSize(16) });
 
     // Nine-patch action menu
     this.actionMenuBg = this.add.rectangle(cx, h - menuH / 2 - 10, w - 20, menuH, 0x1a1a2e, 0.95);
@@ -390,7 +390,7 @@ export class BattleUIScene extends Phaser.Scene {
     this.clearTargetArrows();
     b.enemySprites.forEach((spr, i) => {
       const arrow = this.add.text(spr.x, spr.y - 40, '▼', {
-        fontSize: '24px', color: i === 0 ? COLORS.textHighlight : COLORS.textWhite,
+        fontSize: mobileFontSize(24), color: i === 0 ? COLORS.textHighlight : COLORS.textWhite,
         fontStyle: 'bold',
       }).setOrigin(0.5).setDepth(100);
       this.targetArrows.push(arrow);
@@ -458,7 +458,7 @@ export class BattleUIScene extends Phaser.Scene {
       if (md) {
         const catAbbr = md.category === 'physical' ? 'P' : md.category === 'special' ? 'S' : 'St';
         const catColor = CATEGORY_COLORS[md.category] ?? 0x888899;
-        const catText = this.add.text(x - btnW / 2 + 6, y + 4, catAbbr, { fontSize: '10px', color: `#${catColor.toString(16).padStart(6, '0')}`, fontFamily: 'monospace', fontStyle: 'bold' }).setDepth(10);
+        const catText = this.add.text(x - btnW / 2 + 6, y + 4, catAbbr, { fontSize: mobileFontSize(10), color: `#${catColor.toString(16).padStart(6, '0')}`, fontFamily: 'monospace', fontStyle: 'bold' }).setDepth(10);
         this.moveDecorations.push(catText);
       }
 
@@ -472,14 +472,14 @@ export class BattleUIScene extends Phaser.Scene {
 
       // PP text (right-aligned inside button)
       if (md) {
-        const ppText = this.add.text(x + btnW / 2 - 8, y + 4, `${m.currentPp}/${md.pp}`, { fontSize: '10px', color: ppColor }).setOrigin(1, 0).setDepth(10);
+        const ppText = this.add.text(x + btnW / 2 - 8, y + 4, `${m.currentPp}/${md.pp}`, { fontSize: mobileFontSize(10), color: ppColor }).setOrigin(1, 0).setDepth(10);
         this.moveDecorations.push(ppText);
       }
 
       // Move name text (bold, white, left-aligned inside button)
       const t = this.add.text(x - btnW / 2 + 8, y - 8,
         md ? md.name : m.moveId,
-        { ...FONTS.body, fontSize: '13px', color: '#ffffff', fontStyle: 'bold' }
+        { ...FONTS.body, fontSize: mobileFontSize(13), color: '#ffffff', fontStyle: 'bold' }
       ).setDepth(10).setInteractive({ useHandCursor: true });
       t.setPadding(2, 2, 2, 2);
 

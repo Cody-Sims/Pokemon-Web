@@ -6,7 +6,7 @@ import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX, BGM } from '@utils/audio-keys';
-import { isMobile } from '@ui/theme';
+import { isMobile, mobileFontSize } from '@ui/theme';
 import { processTrainerRewards, getContinueMessage } from './BattleRewardHandler';
 import { EventManager } from '@managers/EventManager';
 import type { PokemonInstance } from '@data/interfaces';
@@ -133,7 +133,7 @@ function showMoveReplaceMenu(ctx: VictoryContext, newMoveId: string, newMoveName
   ctx.moveTexts = options.map((label, i) => {
     const col = i % 2; const row = Math.floor(i / 2);
     const t = scene.add.text(rcx - 120 + col * 240, rh - 90 + row * 28,
-      label, { fontSize: '14px', color: '#ffffff' }
+      label, { fontSize: mobileFontSize(14), color: '#ffffff' }
     ).setOrigin(0.5).setInteractive({ useHandCursor: true });
     t.on('pointerover', () => { ctx.moveCursor = i; updateReplaceCursor(ctx, options.length); });
     t.on('pointerdown', () => {

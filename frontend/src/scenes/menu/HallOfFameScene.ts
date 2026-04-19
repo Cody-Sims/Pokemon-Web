@@ -129,14 +129,14 @@ export class HallOfFameScene extends Phaser.Scene {
         // Name
         this.addTagged(
           this.add.text(sx + 20, partyY, name, {
-            fontSize: '12px', color: '#ffffff',
+            fontSize: mobileFontSize(12), color: '#ffffff',
           }),
         );
 
         // Level
         this.addTagged(
           this.add.text(sx + 20, partyY + 16, `Lv${p.level}`, {
-            fontSize: '11px', color: '#aaaaaa',
+            fontSize: mobileFontSize(11), color: '#aaaaaa',
           }),
         );
       });

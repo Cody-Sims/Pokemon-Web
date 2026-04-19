@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { mobileFontSize } from '@ui/theme';
 
 /** Selectable vertical menu (cursor-driven). */
 export class MenuList {
@@ -18,7 +19,7 @@ export class MenuList {
     this.scene = scene;
     this.onSelect = onSelect;
 
-    const textStyle = style ?? { fontSize: '18px', color: '#ffffff' };
+    const textStyle = style ?? { fontSize: mobileFontSize(18), color: '#ffffff' };
 
     labels.forEach((label, i) => {
       const text = scene.add.text(x, y + i * 32, label, textStyle);

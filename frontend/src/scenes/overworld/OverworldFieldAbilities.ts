@@ -1,5 +1,6 @@
 import { Tile, SOLID_TILES, OVERLAY_BASE } from '@data/maps';
 import { TILE_SIZE } from '@utils/constants';
+import { mobileFontSize } from '@ui/theme';
 import type { Direction } from '@utils/type-helpers';
 
 /** Redraw a single tile after a field ability changes it. */
@@ -36,7 +37,7 @@ export function redrawTile(
 export function showFieldAbilityPopup(scene: Phaser.Scene, text: string): void {
   const { width } = scene.cameras.main;
   const popup = scene.add.text(width / 2, 80, text, {
-    fontSize: '18px',
+    fontSize: mobileFontSize(18),
     fontStyle: 'bold',
     color: '#ffffff',
     backgroundColor: '#00000088',

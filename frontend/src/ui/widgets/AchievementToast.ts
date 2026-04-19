@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { AchievementDef } from '@managers/AchievementManager';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 
 /** Slide-in toast notification for achievement unlocks. */
 export class AchievementToast {
@@ -24,14 +24,14 @@ export class AchievementToast {
 
     // Trophy + header
     const header = scene.add.text(0, 8, '🏆 Achievement Unlocked!', {
-      ...FONTS.caption, fontSize: '11px', color: COLORS.textHighlight,
+      ...FONTS.caption, fontSize: mobileFontSize(11), color: COLORS.textHighlight,
     }).setOrigin(0.5);
     container.add(header);
 
     // Achievement name with icon
     const icon = achievement.icon ?? '🏆';
     const nameText = scene.add.text(0, 30, `${icon} ${achievement.name}`, {
-      ...FONTS.body, fontSize: '15px', color: COLORS.textWhite,
+      ...FONTS.body, fontSize: mobileFontSize(15), color: COLORS.textWhite,
     }).setOrigin(0.5);
     container.add(nameText);
 

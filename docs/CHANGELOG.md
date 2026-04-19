@@ -8,6 +8,7 @@ All notable changes to the Pokemon Web project.
 
 ### Changed
 
+- **Mobile font scaling**: Migrated all remaining hard-coded `fontSize: 'NNpx'` strings to `mobileFontSize(NN)` across 22 files (scenes, UI widgets, battle subsystems, EmoteBubble, PreloadScene) for consistent mobile-responsive text
 - **Wraithmoor Gym**: Replaced template copy with Ghost-themed 12x14 layout featuring mist corridors, grave markers, wall pillars, gym guide NPC, and 2 medium trainers
 - **Scalecrest Gym**: Replaced template copy with Dragon-themed 12x14 layout featuring fortress walls, dragon statues, scale floor, gym guide NPC, and 2 ace trainers
 - **Cinderfall Gym**: Replaced template copy with Fire-themed 12x14 layout featuring volcanic walls, ember vents, lava rock, hot springs, gym guide NPC, and 2 kindler trainers

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { mobileFontSize } from '@ui/theme';
 
 export type EmoteType = 'exclamation' | 'question' | 'heart' | 'sweat' | 'music' | 'zzz';
 
@@ -9,12 +10,12 @@ interface EmoteStyle {
 }
 
 const EMOTE_STYLES: Record<EmoteType, EmoteStyle> = {
-  exclamation: { text: '!', color: '#ff0000', fontSize: '20px' },
-  question:    { text: '?', color: '#0066ff', fontSize: '20px' },
-  heart:       { text: '\u2665', color: '#ff0000', fontSize: '18px' },
-  sweat:       { text: '~', color: '#0088ff', fontSize: '16px' },
-  music:       { text: '\u266a', color: '#00cc00', fontSize: '18px' },
-  zzz:         { text: 'Z z z', color: '#888888', fontSize: '14px' },
+  exclamation: { text: '!', color: '#ff0000', fontSize: mobileFontSize(20) },
+  question:    { text: '?', color: '#0066ff', fontSize: mobileFontSize(20) },
+  heart:       { text: '\u2665', color: '#ff0000', fontSize: mobileFontSize(18) },
+  sweat:       { text: '~', color: '#0088ff', fontSize: mobileFontSize(16) },
+  music:       { text: '\u266a', color: '#00cc00', fontSize: mobileFontSize(18) },
+  zzz:         { text: 'Z z z', color: '#888888', fontSize: mobileFontSize(14) },
 };
 
 export class EmoteBubble {

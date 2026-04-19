@@ -50,12 +50,12 @@ export class PokedexScene extends Phaser.Scene {
     });
 
     // Title
-    this.add.text(layout.cx, 24, 'POKÉDEX', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
+    this.add.text(layout.cx, 24, 'POKÉDEX', { ...FONTS.heading, fontSize: mobileFontSize(24) }).setOrigin(0.5);
     this.add.rectangle(layout.cx, 42, 160, 2, COLORS.borderHighlight, 0.4);
 
     // Counters
     this.countText = this.add.text(layout.cx, 56, `Seen: ${this.seenCount}   Caught: ${this.caughtCount}`, {
-      ...FONTS.bodySmall, fontSize: '13px',
+      ...FONTS.bodySmall, fontSize: mobileFontSize(13),
     }).setOrigin(0.5);
 
     // Detail panel (right side)
@@ -131,12 +131,12 @@ export class PokedexScene extends Phaser.Scene {
       // Status icon
       const icon = caught ? '●' : seen ? '○' : ' ';
       const iconColor = caught ? COLORS.textSuccess : seen ? COLORS.textGray : COLORS.textDim;
-      const iconText = this.add.text(18, y, icon, { fontSize: '14px', color: iconColor, fontFamily: 'monospace' });
+      const iconText = this.add.text(18, y, icon, { fontSize: mobileFontSize(14), color: iconColor, fontFamily: 'monospace' });
       this.listGroup.add(iconText);
 
       // Number
       const numText = this.add.text(34, y, `#${String(id).padStart(3, '0')}`, {
-        fontSize: '13px', color: COLORS.textGray, fontFamily: 'monospace',
+        fontSize: mobileFontSize(13), color: COLORS.textGray, fontFamily: 'monospace',
       });
       this.listGroup.add(numText);
 
@@ -144,7 +144,7 @@ export class PokedexScene extends Phaser.Scene {
       const name = seen ? (data?.name ?? '???') : '----------';
       const nameColor = caught ? COLORS.textWhite : seen ? COLORS.textGray : COLORS.textDim;
       const nameText = this.add.text(85, y, name, {
-        fontSize: '13px', color: nameColor, fontFamily: 'monospace',
+        fontSize: mobileFontSize(13), color: nameColor, fontFamily: 'monospace',
       }).setInteractive({ useHandCursor: true });
       nameText.on('pointerover', () => this.controller?.hoverIndex(vi));
       nameText.on('pointerdown', () => this.controller?.clickIndex(vi));
@@ -229,7 +229,7 @@ export class PokedexScene extends Phaser.Scene {
 
     // Name
     const nameText = this.add.text(layout.w - 155, y, data.name, {
-      ...FONTS.body, fontStyle: 'bold', fontSize: '17px',
+      ...FONTS.body, fontStyle: 'bold', fontSize: mobileFontSize(17),
     }).setOrigin(0.5);
     this.detailGroup.add(nameText);
     y += 22;
@@ -266,7 +266,7 @@ export class PokedexScene extends Phaser.Scene {
       ];
       statLabels.forEach(([label, val]) => {
         const row = this.add.text(x, y, `${label}: ${val}`, {
-          fontSize: '12px', color: COLORS.textGray, fontFamily: 'monospace',
+          fontSize: mobileFontSize(12), color: COLORS.textGray, fontFamily: 'monospace',
         });
         this.detailGroup.add(row);
         y += 18;

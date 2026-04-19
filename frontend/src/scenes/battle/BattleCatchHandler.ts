@@ -6,7 +6,7 @@ import { pokemonData } from '@data/pokemon';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX, BGM } from '@utils/audio-keys';
-import { FONTS, COLORS, isMobile } from '@ui/theme';
+import { FONTS, COLORS, isMobile, mobileFontSize } from '@ui/theme';
 import { ui } from '@utils/ui-layout';
 import type { PokemonInstance } from '@data/interfaces';
 import type { BattleScene } from './BattleScene';
@@ -110,7 +110,7 @@ function onCatchSuccess(ctx: CatchContext): void {
   audio.playSFX(SFX.CATCH_SUCCESS);
 
   const sparkle = ctx.scene.add.text(b.enemySprite.x, b.enemySprite.y, '✦', {
-    fontSize: '32px', color: '#ffcc00',
+    fontSize: mobileFontSize(32), color: '#ffcc00',
   }).setOrigin(0.5).setDepth(100);
   ctx.scene.tweens.add({
     targets: sparkle,
@@ -184,10 +184,10 @@ function promptNickname(ctx: CatchContext, pokemon: PokemonInstance, speciesName
   const scene = ctx.scene;
   const { cx } = ui(scene);
   const yesText = scene.add.text(cx - 60, scene.scale.height - 60, 'YES', {
-    ...FONTS.menuItem, fontSize: '18px', color: COLORS.textHighlight,
+    ...FONTS.menuItem, fontSize: mobileFontSize(18), color: COLORS.textHighlight,
   }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(200);
   const noText = scene.add.text(cx + 60, scene.scale.height - 60, 'NO', {
-    ...FONTS.menuItem, fontSize: '18px', color: COLORS.textWhite,
+    ...FONTS.menuItem, fontSize: mobileFontSize(18), color: COLORS.textWhite,
   }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(200);
 
   let cursor = 0;

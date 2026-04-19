@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { pokemonData } from '@data/pokemon';
 import { BGM, SFX } from '@utils/audio-keys';
 import { AudioManager } from '@managers/AudioManager';
+import { mobileFontSize } from '@ui/theme';
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -18,7 +19,7 @@ export class PreloadScene extends Phaser.Scene {
     progressBox.fillRect(width / 2 - 160, height / 2 - 25, 320, 50);
 
     const loadingText = this.add.text(width / 2, height / 2 - 50, 'Loading...', {
-      fontSize: '20px',
+      fontSize: mobileFontSize(20),
       color: '#ffffff',
     }).setOrigin(0.5);
 

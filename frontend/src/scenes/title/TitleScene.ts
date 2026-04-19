@@ -54,10 +54,10 @@ export class TitleScene extends Phaser.Scene {
 
     // Title
     this.add.text(width / 2, height * 0.28, 'POKEMON', {
-      ...FONTS.title, fontSize: '52px',
+      ...FONTS.title, fontSize: mobileFontSize(52),
     }).setOrigin(0.5);
     this.add.text(width / 2, height * 0.38, 'W  E  B', {
-      ...FONTS.title, fontSize: '28px', color: COLORS.textHighlight,
+      ...FONTS.title, fontSize: mobileFontSize(28), color: COLORS.textHighlight,
     }).setOrigin(0.5);
 
     // Decorative divider
@@ -239,7 +239,7 @@ export class TitleScene extends Phaser.Scene {
 
     // Title
     const title = this.add.text(width / 2, height * 0.25, 'SELECT DIFFICULTY', {
-      ...FONTS.heading, fontSize: '24px',
+      ...FONTS.heading, fontSize: mobileFontSize(24),
     }).setOrigin(0.5).setDepth(51);
 
     // Difficulty options
@@ -247,7 +247,7 @@ export class TitleScene extends Phaser.Scene {
     const diffItems = modes.map((mode, i) => {
       const cfg = DIFFICULTY_CONFIGS[mode];
       const label = this.add.text(width / 2, height * 0.38 + i * 60, cfg.name, {
-        ...FONTS.menuItem, fontSize: '20px',
+        ...FONTS.menuItem, fontSize: mobileFontSize(20),
       }).setOrigin(0.5).setDepth(51).setInteractive({ useHandCursor: true });
 
       label.on('pointerover', () => { diffCursor = i; updateDiff(); });
@@ -256,11 +256,11 @@ export class TitleScene extends Phaser.Scene {
     });
 
     const desc = this.add.text(width / 2, height * 0.75, DIFFICULTY_CONFIGS[modes[0]].description, {
-      ...FONTS.caption, fontSize: '14px', color: COLORS.textDim, wordWrap: { width: 400 },
+      ...FONTS.caption, fontSize: mobileFontSize(14), color: COLORS.textDim, wordWrap: { width: 400 },
     }).setOrigin(0.5).setDepth(51);
 
     const diffArrow = this.add.text(0, 0, '▸', {
-      ...FONTS.menuItem, fontSize: '20px', color: COLORS.textHighlight,
+      ...FONTS.menuItem, fontSize: mobileFontSize(20), color: COLORS.textHighlight,
     }).setDepth(51);
 
     const updateDiff = () => {

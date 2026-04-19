@@ -47,7 +47,7 @@ export class QuestJournalScene extends Phaser.Scene {
     });
 
     // Title
-    this.add.text(layout.cx, 24, 'QUEST JOURNAL', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
+    this.add.text(layout.cx, 24, 'QUEST JOURNAL', { ...FONTS.heading, fontSize: mobileFontSize(24) }).setOrigin(0.5);
     this.add.rectangle(layout.cx, 42, 200, 2, COLORS.borderHighlight, 0.4);
 
     // Tabs
@@ -185,7 +185,7 @@ export class QuestJournalScene extends Phaser.Scene {
       // Cursor icon
       if (isSel) {
         const arrow = this.add.text(this.listLeft + 12, y, '▸', {
-          fontSize: '14px', color: COLORS.textHighlight, fontFamily: 'monospace',
+          fontSize: mobileFontSize(14), color: COLORS.textHighlight, fontFamily: 'monospace',
         });
         this.listGroup.add(arrow);
       }
@@ -198,14 +198,14 @@ export class QuestJournalScene extends Phaser.Scene {
         : `[${currentStep}/${quest.steps.length}]`;
 
       const progressText = this.add.text(this.listLeft + 26, y, progress, {
-        fontSize: '12px', color: isComplete ? COLORS.textSuccess : COLORS.textGray, fontFamily: 'monospace',
+        fontSize: mobileFontSize(12), color: isComplete ? COLORS.textSuccess : COLORS.textGray, fontFamily: 'monospace',
       });
       this.listGroup.add(progressText);
 
       // Quest name
       const nameColor = isSel ? COLORS.textHighlight : COLORS.textWhite;
       const nameText = this.add.text(this.listLeft + 76, y, quest.name, {
-        fontSize: '13px', color: nameColor, fontFamily: 'monospace',
+        fontSize: mobileFontSize(13), color: nameColor, fontFamily: 'monospace',
       }).setInteractive({ useHandCursor: true });
       nameText.on('pointerdown', () => {
         this.cursor = vi;
@@ -249,7 +249,7 @@ export class QuestJournalScene extends Phaser.Scene {
 
     // Quest name
     const nameText = this.add.text(cx, y, quest.name, {
-      ...FONTS.body, fontStyle: 'bold', fontSize: '16px',
+      ...FONTS.body, fontStyle: 'bold', fontSize: mobileFontSize(16),
     }).setOrigin(0.5);
     this.detailGroup.add(nameText);
     y += 24;
@@ -265,7 +265,7 @@ export class QuestJournalScene extends Phaser.Scene {
 
     // Description
     const descText = this.add.text(leftPad, y, quest.description, {
-      ...FONTS.bodySmall, fontSize: '13px', color: COLORS.textGray,
+      ...FONTS.bodySmall, fontSize: mobileFontSize(13), color: COLORS.textGray,
       wordWrap: { width: this.detailRight - this.detailLeft - 32 },
     });
     this.detailGroup.add(descText);
@@ -278,7 +278,7 @@ export class QuestJournalScene extends Phaser.Scene {
 
     // Steps header
     const stepsHeader = this.add.text(leftPad, y, 'Steps:', {
-      ...FONTS.bodySmall, fontStyle: 'bold', color: COLORS.textWhite, fontSize: '13px',
+      ...FONTS.bodySmall, fontStyle: 'bold', color: COLORS.textWhite, fontSize: mobileFontSize(13),
     });
     this.detailGroup.add(stepsHeader);
     y += 20;
@@ -304,12 +304,12 @@ export class QuestJournalScene extends Phaser.Scene {
       }
 
       const iconText = this.add.text(leftPad, y, icon, {
-        fontSize: '13px', color: iconColor, fontFamily: 'monospace',
+        fontSize: mobileFontSize(13), color: iconColor, fontFamily: 'monospace',
       });
       this.detailGroup.add(iconText);
 
       const stepText = this.add.text(leftPad + 20, y, step.description, {
-        fontSize: '12px', color: textColor, fontFamily: 'monospace',
+        fontSize: mobileFontSize(12), color: textColor, fontFamily: 'monospace',
         wordWrap: { width: this.detailRight - this.detailLeft - 60 },
       });
       this.detailGroup.add(stepText);
@@ -324,14 +324,14 @@ export class QuestJournalScene extends Phaser.Scene {
       y += 12;
 
       const rewardHeader = this.add.text(leftPad, y, 'Rewards:', {
-        ...FONTS.bodySmall, fontStyle: 'bold', color: COLORS.textWhite, fontSize: '13px',
+        ...FONTS.bodySmall, fontStyle: 'bold', color: COLORS.textWhite, fontSize: mobileFontSize(13),
       });
       this.detailGroup.add(rewardHeader);
       y += 20;
 
       if (quest.rewardMoney > 0) {
         const moneyText = this.add.text(leftPad + 8, y, `₽ ${quest.rewardMoney}`, {
-          fontSize: '12px', color: COLORS.textHighlight, fontFamily: 'monospace',
+          fontSize: mobileFontSize(12), color: COLORS.textHighlight, fontFamily: 'monospace',
         });
         this.detailGroup.add(moneyText);
         y += 18;
@@ -339,7 +339,7 @@ export class QuestJournalScene extends Phaser.Scene {
 
       quest.rewards.forEach(r => {
         const rewardText = this.add.text(leftPad + 8, y, `${r.itemId} × ${r.quantity}`, {
-          fontSize: '12px', color: COLORS.textGray, fontFamily: 'monospace',
+          fontSize: mobileFontSize(12), color: COLORS.textGray, fontFamily: 'monospace',
         });
         this.detailGroup.add(rewardText);
         y += 18;

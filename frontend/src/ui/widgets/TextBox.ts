@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { NinePatchPanel } from './NinePatchPanel';
+import { mobileFontSize } from '@ui/theme';
 
 /** Typewriter text display widget. */
 export class TextBox {
@@ -23,7 +24,7 @@ export class TextBox {
       shadowAlpha: 0.4,
     });
     this.textObject = scene.add.text(x + 12, y + 10, '', {
-      fontSize: '16px',
+      fontSize: mobileFontSize(16),
       color: '#ffffff',
       wordWrap: { width: width - 24 },
     });

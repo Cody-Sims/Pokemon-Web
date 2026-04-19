@@ -65,13 +65,13 @@ export class InventoryScene extends Phaser.Scene {
     });
 
     // Title
-    this.add.text(layout.cx, 28, 'BAG', { ...FONTS.heading, fontSize: '24px' }).setOrigin(0.5);
+    this.add.text(layout.cx, 28, 'BAG', { ...FONTS.heading, fontSize: mobileFontSize(24) }).setOrigin(0.5);
     this.add.rectangle(layout.cx, 46, 160, 2, COLORS.borderHighlight, 0.4);
 
     // Category tabs
     this.tabTexts = CATEGORY_LABELS.map((cat, i) => {
       const t = this.add.text(20 + i * 155, 58, cat.label, {
-        ...FONTS.bodySmall, fontSize: '13px',
+        ...FONTS.bodySmall, fontSize: mobileFontSize(13),
       }).setInteractive({ useHandCursor: true });
       t.on('pointerdown', () => { this.categoryIndex = i; this.switchCategory(); });
       return t;
@@ -206,7 +206,7 @@ export class InventoryScene extends Phaser.Scene {
     for (let vi = this.scrollOffset; vi < endIdx; vi++) {
       const entry = this.filteredItems[vi];
       const y = startY + (vi - this.scrollOffset) * itemH;
-      const t = this.add.text(30, y, `${entry.item.name}`, { ...FONTS.body, fontSize: '15px' })
+      const t = this.add.text(30, y, `${entry.item.name}`, { ...FONTS.body, fontSize: mobileFontSize(15) })
         .setInteractive({ useHandCursor: true });
       const qty = this.add.text(260, y, `x${entry.qty}`, { ...FONTS.bodySmall });
       t.on('pointerover', () => this.itemController?.hoverIndex(vi));
@@ -258,7 +258,7 @@ export class InventoryScene extends Phaser.Scene {
     const x = layout.w - 280;
     let y = 110;
 
-    const name = this.add.text(x, y, entry.item.name, { ...FONTS.body, fontStyle: 'bold', fontSize: '17px' });
+    const name = this.add.text(x, y, entry.item.name, { ...FONTS.body, fontStyle: 'bold', fontSize: mobileFontSize(17) });
     this.detailGroup.add(name);
     y += 28;
 
@@ -306,7 +306,7 @@ export class InventoryScene extends Phaser.Scene {
 
     this.actionTexts = actions.map((label, i) => {
       return this.add.text(200, layout.cy - ((actions.length - 1) * 17) + i * 34, label, {
-        ...FONTS.body, fontSize: '16px',
+        ...FONTS.body, fontSize: mobileFontSize(16),
       }).setOrigin(0.5);
     });
 
@@ -404,7 +404,7 @@ export class InventoryScene extends Phaser.Scene {
       const name = p.nickname ?? pData?.name ?? '???';
       const label = `${name}  Lv.${p.level}  HP:${p.currentHp}/${p.stats.hp}`;
       return this.add.text(layout.cx, layout.cy - ((party.length - 1) * 20) + i * 40, label, {
-        ...FONTS.body, fontSize: '14px',
+        ...FONTS.body, fontSize: mobileFontSize(14),
       }).setOrigin(0.5);
     });
 
@@ -531,7 +531,7 @@ export class InventoryScene extends Phaser.Scene {
   private showMessage(text: string): void {
     const layout = ui(this);
     const msg = this.add.text(layout.cx, layout.h - 55, text, {
-      ...FONTS.body, color: COLORS.textSuccess, fontSize: '15px',
+      ...FONTS.body, color: COLORS.textSuccess, fontSize: mobileFontSize(15),
     }).setOrigin(0.5).setDepth(100);
     this.tweens.add({
       targets: msg,

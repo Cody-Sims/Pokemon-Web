@@ -5,7 +5,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
-import { COLORS, FONTS } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import { setRenderQuality, type RenderQuality } from '@utils/perf-profile';
 import { syncAccessibilitySettings, colorblindFilter } from '@utils/accessibility';
@@ -66,7 +66,7 @@ export class SettingsScene extends Phaser.Scene {
     });
 
     // Title
-    this.add.text(layout.cx, 50, 'SETTINGS', { ...FONTS.heading, fontSize: '26px' }).setOrigin(0.5);
+    this.add.text(layout.cx, 50, 'SETTINGS', { ...FONTS.heading, fontSize: mobileFontSize(26) }).setOrigin(0.5);
     this.add.rectangle(layout.cx, 70, 180, 2, COLORS.borderHighlight, 0.4);
 
     // Settings rows
@@ -77,25 +77,25 @@ export class SettingsScene extends Phaser.Scene {
 
     SETTING_DEFS.forEach((def, i) => {
       const y = startY + i * rowH;
-      const label = this.add.text(100, y, def.label, { ...FONTS.body, fontSize: '17px' });
+      const label = this.add.text(100, y, def.label, { ...FONTS.body, fontSize: mobileFontSize(17) });
       const currentVal = gm.getSetting(def.key);
       const displayVal = this.formatValue(def, currentVal);
 
       // Tappable left arrow — enforce MIN_TOUCH_TARGET
       const leftArrow = this.add.text(layout.w - 210, y, '◀', {
-        ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
+        ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
       }).setInteractive({ useHandCursor: true });
       leftArrow.setPadding(14, 14, 14, 14);
       leftArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(-1); });
 
       // Value display
       const value = this.add.text(layout.w - 150, y, displayVal, {
-        ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
+        ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
       }).setOrigin(0.5, 0);
 
       // Tappable right arrow — enforce MIN_TOUCH_TARGET
       const rightArrow = this.add.text(layout.w - 95, y, '▶', {
-        ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
+        ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
       }).setInteractive({ useHandCursor: true });
       rightArrow.setPadding(14, 14, 14, 14);
       rightArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(1); });
@@ -111,22 +111,22 @@ export class SettingsScene extends Phaser.Scene {
 
     // Fullscreen row
     const fsY = startY + SETTING_DEFS.length * rowH;
-    const fsLabel = this.add.text(100, fsY, 'Fullscreen', { ...FONTS.body, fontSize: '17px' });
+    const fsLabel = this.add.text(100, fsY, 'Fullscreen', { ...FONTS.body, fontSize: mobileFontSize(17) });
     this.isFullscreen = this.scale.isFullscreen;
     const fsState = this.isFullscreen ? 'ON' : 'OFF';
 
     const fsLeftArrow = this.add.text(layout.w - 210, fsY, '◀', {
-      ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
+      ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
     }).setInteractive({ useHandCursor: true });
     fsLeftArrow.setPadding(14, 14, 14, 14);
     fsLeftArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(-1); });
 
     const fsValue = this.add.text(layout.w - 150, fsY, fsState, {
-      ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
+      ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
     }).setOrigin(0.5, 0);
 
     const fsRightArrow = this.add.text(layout.w - 95, fsY, '▶', {
-      ...FONTS.body, fontSize: '17px', color: COLORS.textHighlight,
+      ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
     }).setInteractive({ useHandCursor: true });
     fsRightArrow.setPadding(14, 14, 14, 14);
     fsRightArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(1); });
@@ -140,7 +140,7 @@ export class SettingsScene extends Phaser.Scene {
 
     // Back button (visible for touch users, always works)
     const backBtn = this.add.text(layout.cx, layout.h - 70, '[ Back ]', {
-      ...FONTS.body, fontSize: '20px', color: COLORS.textHighlight,
+      ...FONTS.body, fontSize: mobileFontSize(20), color: COLORS.textHighlight,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     backBtn.on('pointerdown', () => this.closeSettings());
     backBtn.on('pointerover', () => backBtn.setColor(COLORS.textWhite));

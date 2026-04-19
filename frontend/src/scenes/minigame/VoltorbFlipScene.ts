@@ -180,7 +180,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
         container.add(bg);
 
         const label = this.add.text(0, 0, '?', {
-          fontSize: '28px', color: COLORS.textWhite, fontFamily: 'monospace', fontStyle: 'bold',
+          fontSize: mobileFontSize(28), color: COLORS.textWhite, fontFamily: 'monospace', fontStyle: 'bold',
         }).setOrigin(0.5);
         container.add(label);
 
@@ -208,10 +208,10 @@ export class VoltorbFlipScene extends Phaser.Scene {
       const x = this.GRID_X + 5 * this.CELL_SIZE + 30;
       const y = this.GRID_Y + r * this.CELL_SIZE + this.CELL_SIZE / 2;
       this.add.text(x, y, `${this.rowHints[r].sum}`, {
-        ...FONTS.body, fontSize: '16px', color: COLORS.textWhite,
+        ...FONTS.body, fontSize: mobileFontSize(16), color: COLORS.textWhite,
       }).setOrigin(0.5);
       this.add.text(x, y + 16, `💣${this.rowHints[r].voltorbs}`, {
-        fontSize: '12px', color: COLORS.textDanger, fontFamily: 'monospace',
+        fontSize: mobileFontSize(12), color: COLORS.textDanger, fontFamily: 'monospace',
       }).setOrigin(0.5);
     }
     // Column hints (below grid)
@@ -219,10 +219,10 @@ export class VoltorbFlipScene extends Phaser.Scene {
       const x = this.GRID_X + c * this.CELL_SIZE + this.CELL_SIZE / 2;
       const y = this.GRID_Y + 5 * this.CELL_SIZE + 16;
       this.add.text(x, y, `${this.colHints[c].sum}`, {
-        ...FONTS.body, fontSize: '16px', color: COLORS.textWhite,
+        ...FONTS.body, fontSize: mobileFontSize(16), color: COLORS.textWhite,
       }).setOrigin(0.5);
       this.add.text(x, y + 16, `💣${this.colHints[c].voltorbs}`, {
-        fontSize: '12px', color: COLORS.textDanger, fontFamily: 'monospace',
+        fontSize: mobileFontSize(12), color: COLORS.textDanger, fontFamily: 'monospace',
       }).setOrigin(0.5);
     }
   }
@@ -265,7 +265,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
       bg.strokeRoundedRect(-30, -30, 60, 60, 6);
       container.add(bg);
       container.add(this.add.text(0, 0, 'V', {
-        fontSize: '32px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
+        fontSize: mobileFontSize(32), color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
       }).setOrigin(0.5));
 
       AudioManager.getInstance().playSFX(SFX.ERROR);
@@ -285,7 +285,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
       bg.strokeRoundedRect(-30, -30, 60, 60, 6);
       container.add(bg);
       container.add(this.add.text(0, 0, String(val), {
-        fontSize: '32px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
+        fontSize: mobileFontSize(32), color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
       }).setOrigin(0.5));
 
       this.roundScore *= val;

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { mobileFontSize } from '@ui/theme';
 
 /** Yes/No confirmation prompt. */
 export class ConfirmBox {
@@ -24,9 +25,9 @@ export class ConfirmBox {
     this.background = scene.add.rectangle(x + 60, y + 40, 140, 90, 0x222222, 0.95);
     this.background.setStrokeStyle(2, 0xffffff);
 
-    this.promptText = scene.add.text(x + 10, y + 5, prompt, { fontSize: '14px', color: '#ffffff' });
-    this.yesText = scene.add.text(x + 25, y + 30, '▶ YES', { fontSize: '16px', color: '#ffcc00' });
-    this.noText = scene.add.text(x + 25, y + 55, '  NO', { fontSize: '16px', color: '#ffffff' });
+    this.promptText = scene.add.text(x + 10, y + 5, prompt, { fontSize: mobileFontSize(14), color: '#ffffff' });
+    this.yesText = scene.add.text(x + 25, y + 30, '▶ YES', { fontSize: mobileFontSize(16), color: '#ffcc00' });
+    this.noText = scene.add.text(x + 25, y + 55, '  NO', { fontSize: mobileFontSize(16), color: '#ffffff' });
 
     // Keyboard input (BUG-083: guard with active flag)
     scene.input.keyboard!.on('keydown-UP', this.moveUp, this);

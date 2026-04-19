@@ -1,3 +1,5 @@
+import { mobileFontSize } from '@ui/theme';
+
 /** Show a floating damage number that rises and fades. */
 export function showDamagePopup(
   scene: Phaser.Scene,
@@ -13,7 +15,7 @@ export function showDamagePopup(
   else if (effectiveness === 0) color = '#666666';
 
   const popup = scene.add.text(x, y, `-${damage}`, {
-    fontSize: '22px', color, fontFamily: 'monospace', fontStyle: 'bold',
+    fontSize: mobileFontSize(22), color, fontFamily: 'monospace', fontStyle: 'bold',
     stroke: '#000000', strokeThickness: 3,
   }).setOrigin(0.5).setDepth(100);
 

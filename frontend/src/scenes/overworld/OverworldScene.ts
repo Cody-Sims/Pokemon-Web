@@ -322,7 +322,7 @@ export class OverworldScene extends Phaser.Scene {
     const period = this.gameClock.getTimePeriod();
     const clockStr = `${periodEmoji[period] ?? '☀️'} ${this.gameClock.getClockString()}`;
     this.clockText = this.add.text(8, 8, clockStr, {
-      fontSize: '11px',
+      fontSize: mobileFontSize(11),
       color: '#ffcc00',
       fontFamily: 'monospace',
       backgroundColor: '#0f0f1abb',
@@ -332,7 +332,7 @@ export class OverworldScene extends Phaser.Scene {
     // Quick-save floating button (mobile only, top-right below menu button)
     if (TouchControls.isTouchDevice()) {
       this.saveBtn = this.add.text(this.cameras.main.width - 20, 60, '💾', {
-        fontSize: '22px',
+        fontSize: mobileFontSize(22),
       }).setOrigin(1, 0).setScrollFactor(0).setDepth(100).setAlpha(0.5)
         .setInteractive({ useHandCursor: true })
         .setPadding(8, 8, 8, 8);
@@ -368,7 +368,7 @@ export class OverworldScene extends Phaser.Scene {
       bannerBg.setY(bannerY);
 
       const bannerText = this.add.text(bannerX, bannerY + bannerH / 2, this.mapDef.displayName, {
-        fontSize: '13px',
+        fontSize: mobileFontSize(13),
         color: '#ffcc00',
         fontFamily: 'monospace',
         fontStyle: 'bold',
@@ -627,7 +627,7 @@ export class OverworldScene extends Phaser.Scene {
 
     // Exclamation mark above trainer
     const excl = this.add.text(trainer.x, trainer.y - 30, '!', {
-      fontSize: '24px', color: '#ff0000', fontStyle: 'bold',
+      fontSize: mobileFontSize(24), color: '#ff0000', fontStyle: 'bold',
     }).setOrigin(0.5).setDepth(10);
 
     // After a brief pause, trainer walks toward the player
@@ -945,7 +945,7 @@ export class OverworldScene extends Phaser.Scene {
       if (!this.interactPrompt) {
         const label = TouchControls.isTouchDevice() ? 'Tap' : 'Z';
         this.interactPrompt = this.add.text(0, 0, label, {
-          fontSize: '11px',
+          fontSize: mobileFontSize(11),
           color: '#ffcc00',
           fontFamily: 'monospace',
           fontStyle: 'bold',

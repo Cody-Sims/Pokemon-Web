@@ -8,7 +8,7 @@ import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM } from '@utils/audio-keys';
 import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
-import { COLORS, STATUS_BADGE_FRAMES } from '@ui/theme';
+import { COLORS, STATUS_BADGE_FRAMES, mobileFontSize } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 
 export class BattleScene extends Phaser.Scene {
@@ -178,8 +178,8 @@ export class BattleScene extends Phaser.Scene {
       shadowAlpha: 0.3,
     });
     const enemyInfoBox = enemyInfoPanel.getGraphics();
-    this.enemyNameText = this.add.text(40, -80, `${this.enemyPokemon.nickname ?? enemyData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
-    const enemyLvlText = this.add.text(240, -80, `Lv${this.enemyPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
+    this.enemyNameText = this.add.text(40, -80, `${this.enemyPokemon.nickname ?? enemyData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
+    const enemyLvlText = this.add.text(240, -80, `Lv${this.enemyPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
     this.enemyHpBg = this.add.rectangle(40, -55, 220, 10, 0x333333).setOrigin(0, 0.5);
     this.enemyHpBar = this.add.rectangle(40, -55, 220, 10, 0x4caf50).setOrigin(0, 0.5);
     this.enemyStatusImg = this.add.image(270, -80, 'status-badges', 0).setScale(2).setVisible(false);
@@ -194,11 +194,11 @@ export class BattleScene extends Phaser.Scene {
       shadowAlpha: 0.3,
     });
     const playerInfoBox = playerInfoPanel.getGraphics();
-    this.playerNameText = this.add.text(w - 310, h + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' });
-    this.playerLevelText = this.add.text(w - 120, h + 40, `Lv${this.playerPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
+    this.playerNameText = this.add.text(w - 310, h + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
+    this.playerLevelText = this.add.text(w - 120, h + 40, `Lv${this.playerPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
     this.playerHpBg = this.add.rectangle(w - 310, h + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
     this.playerHpBar = this.add.rectangle(w - 310, h + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
-    this.playerHpText = this.add.text(w - 122, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: '12px', color: '#ffffff' });
+    this.playerHpText = this.add.text(w - 122, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: mobileFontSize(12), color: '#ffffff' });
     this.playerStatusImg = this.add.image(w - 310, h + 85, 'status-badges', 0).setScale(2).setVisible(false);
 
     // ── EXP bar (below player HP) ──
@@ -306,7 +306,7 @@ export class BattleScene extends Phaser.Scene {
         sprite.x + Math.cos(angle) * dist,
         sprite.y + Math.sin(angle) * dist,
         sparkles[i % sparkles.length],
-        { fontSize: '16px', color: '#ffee44' },
+        { fontSize: mobileFontSize(16), color: '#ffee44' },
       ).setOrigin(0.5).setDepth(50);
       this.tweens.add({
         targets: s,
