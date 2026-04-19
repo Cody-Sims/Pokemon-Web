@@ -262,13 +262,16 @@ export class DoubleBattleManager {
             this.weatherManager,
           );
 
-          // BUG-048: Apply spread move reduction BEFORE damage is final
+          // AUDIT-009: Apply spread move reduction BEFORE damage is final
           // MoveExecutor already applied full damage, so we add back the difference
+          // But never revive a fainted Pokemon: cap restored HP at 0 minimum
           if (targets.length > 1 && result.damage.damage > 0) {
             const reduced = Math.floor(result.damage.damage * 0.75);
             const diff = result.damage.damage - reduced;
-            // Restore the over-dealt damage
-            defender.currentHp = Math.min(defender.currentHp + diff, defender.stats.hp);
+            // Only restore over-dealt damage if defender is still alive
+            if (defender.currentHp > 0) {
+              defender.currentHp = Math.min(defender.currentHp + diff, defender.stats.hp);
+            }
             result.damage = { ...result.damage, damage: reduced };
           }
 
@@ -280,6 +283,11 @@ export class DoubleBattleManager {
 
     // End-of-turn effects for all active
     const endOfTurnMessages: string[] = [];
+
+    // AUDIT-008: Tick weather and apply end-of-turn weather damage in doubles
+    const weatherTickMsgs = this.weatherManager.tickTurn();
+    endOfTurnMessages.push(...weatherTickMsgs);
+
     const refreshedActive = this.getActiveBattlers();
     for (let i = 0; i < 4; i++) {
       const pokemon = refreshedActive[i];
@@ -291,6 +299,12 @@ export class DoubleBattleManager {
       if (opponent && opponent.currentHp > 0) {
         const eot = this.statusHandler.applyEndOfTurn(pokemon, opponent);
         endOfTurnMessages.push(...eot.messages);
+      }
+
+      // AUDIT-008: Apply weather chip damage (sandstorm/hail) to each active Pokemon
+      if (pokemon.currentHp > 0) {
+        const weatherDmg = this.weatherManager.applyEndOfTurn(pokemon);
+        if (weatherDmg) endOfTurnMessages.push(...weatherDmg.messages);
       }
     }
 

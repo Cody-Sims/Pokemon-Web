@@ -29,6 +29,8 @@ export interface StatStages {
   spAttack: number;
   spDefense: number;
   speed: number;
+  accuracy: number;
+  evasion: number;
 }
 
 // Move effect types
@@ -57,11 +59,12 @@ export type WeatherCondition = 'sun' | 'rain' | 'sandstorm' | 'hail';
 
 // Item effect types
 export interface ItemEffect {
-  type: 'heal-hp' | 'heal-status' | 'capture' | 'boost-stat' | 'key' | 'teach-move';
+  type: 'heal-hp' | 'heal-status' | 'capture' | 'boost-stat' | 'key' | 'teach-move' | 'full-restore' | 'level-up' | 'held-passive';
   amount?: number;
   status?: StatusCondition | 'all';
   catchRateMultiplier?: number;
   moveId?: string;
+  held?: string;
 }
 
 // Stats interface

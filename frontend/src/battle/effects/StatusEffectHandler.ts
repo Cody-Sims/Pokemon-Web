@@ -46,6 +46,7 @@ const STAGE_MULTIPLIERS: Record<number, number> = {
 const STAT_NAMES: Record<keyof StatStages, string> = {
   attack: 'Attack', defense: 'Defense',
   spAttack: 'Sp. Atk', spDefense: 'Sp. Def', speed: 'Speed',
+  accuracy: 'Accuracy', evasion: 'Evasion',
 };
 
 // ── Helper to get a pokemon display name ───────────────────────
@@ -66,7 +67,7 @@ export class StatusEffectHandler {
   /** Call once per pokemon when entering battle. */
   initPokemon(pokemon: PokemonInstance): void {
     this.states.set(pokemon, {
-      statStages: { attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
+      statStages: { attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0, accuracy: 0, evasion: 0 },
       volatileStatuses: new Set(),
       confusionTurns: 0,
       trapTurns: 0,
@@ -534,20 +535,25 @@ export class StatusEffectHandler {
 
   resetAllStages(): void {
     for (const [, state] of this.states) {
-      state.statStages = { attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 };
+      state.statStages = { attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0, accuracy: 0, evasion: 0 };
     }
   }
 
   // ── Protect ─────────────────────────────────────────────────
 
-  /** Check if a Pokémon is protected this turn. Clears protect after check. */
+  /** Check if a Pokémon is protected this turn.
+   *  AUDIT-029: Don't consume protect on check — it persists for the full turn.
+   *  Call clearProtectAll() at end of turn instead. */
   isProtected(pokemon: PokemonInstance): boolean {
     const state = this.getState(pokemon);
-    if (state.volatileStatuses.has('protect')) {
+    return state.volatileStatuses.has('protect');
+  }
+
+  /** Clear protect for all Pokemon at end of turn. */
+  clearProtectAll(): void {
+    for (const state of this.states.values()) {
       state.volatileStatuses.delete('protect');
-      return true;
     }
-    return false;
   }
 
   /** Reset protect success rate (call when a non-protect move is used). */

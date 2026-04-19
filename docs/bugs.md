@@ -1,7 +1,7 @@
 # Bug Report — Pokemon Web (Consolidated)
 
-> **Last updated:** 2026-04-18
-> **Status:** Full codebase audit. 108 of 110 historical bugs resolved. 55 new bugs identified, 30 fixed.
+> **Last updated:** 2026-04-19
+> **Status:** Full codebase audit. 108 of 110 historical bugs resolved. 55 new bugs identified, 41 fixed.
 
 ---
 
@@ -10,10 +10,10 @@
 | Severity | Open Count | Fixed |
 |----------|------------|-------|
 | Critical | 0          | 5     |
-| High     | 3          | 11    |
-| Medium   | 14         | 12    |
-| Low      | 10         | 2     |
-| **Total**| **27**     | **30**|
+| High     | 0          | 14    |
+| Medium   | 7          | 19    |
+| Low      | 7          | 5     |
+| **Total**| **14**     | **43**|
 
 *Includes 2 previously known open bugs (BUG-039, NEW-006).*
 
@@ -57,24 +57,24 @@
 
 ### ~~AUDIT-007: Weather never ticks or deals damage (single battles)~~ FIXED
 
-### AUDIT-008: Weather never ticks or deals damage (double battles)
+### ~~AUDIT-008: Weather never ticks or deals damage (double battles)~~ FIXED
 
 - **File:** `frontend/src/battle/core/DoubleBattleManager.ts`
 - **Description:** Same as AUDIT-007 but for double battles.
 
-### AUDIT-009: Spread move damage can revive fainted Pokemon
+### ~~AUDIT-009: Spread move damage can revive fainted Pokemon~~ FIXED
 
 - **File:** `frontend/src/battle/core/DoubleBattleManager.ts` (line ~258)
 - **Description:** Spread move damage reduction retroactively adds HP back after full damage was dealt. If the target fainted from the full hit, the HP addition can bring them above 0, reviving them.
 - **Fix:** Apply the spread reduction multiplier before dealing damage, not after.
 
-### AUDIT-010: Rain/Sun weather type multipliers never apply
+### ~~AUDIT-010: Rain/Sun weather type multipliers never apply~~ FIXED
 
 - **File:** `frontend/src/battle/execution/MoveExecutor.ts` (line ~250)
 - **Description:** `weatherManager` is never passed to `DamageCalculator.calculate()`, so rain boosting Water and sun boosting Fire never take effect.
 - **Fix:** Pass `this.weatherManager` through to the damage calculator.
 
-### AUDIT-011: Post-damage ability/item hooks never fire
+### ~~AUDIT-011: Post-damage ability/item hooks never fire~~ FIXED
 
 - **File:** `frontend/src/battle/execution/MoveExecutor.ts`
 - **Description:** `AbilityHandler.onAfterDamage()`, `HeldItemHandler.onAfterDamage()`, `onAttackLanded()`, and `checkHPThreshold()` are never called. This means Static, Flame Body, Focus Sash, Life Orb recoil, and Sitrus Berry are all nonfunctional.
@@ -112,7 +112,7 @@
 
 ### ~~AUDIT-025: Kinesis reduces attack instead of accuracy~~ FIXED
 
-### AUDIT-026: No accuracy/evasion stat in the system (root cause of AUDIT-020 through AUDIT-025)
+### ~~AUDIT-026: No accuracy/evasion stat in the system (root cause of AUDIT-020 through AUDIT-025)~~ FIXED
 
 - **Files:** `frontend/src/data/interfaces.ts`, `frontend/src/battle/effects/StatusEffectHandler.ts`
 - **Description:** The stat-change system only supports attack, defense, spAttack, spDefense, speed. There is no accuracy or evasion stat. Six moves are assigned wrong stats as a workaround.
@@ -122,7 +122,7 @@
 
 ### ~~AUDIT-028: Partner AI uses Tackle as fallback instead of Struggle~~ FIXED
 
-### AUDIT-029: Protect only blocks one attack per turn in doubles
+### ~~AUDIT-029: Protect only blocks one attack per turn in doubles~~ FIXED
 
 - **File:** `frontend/src/battle/effects/StatusEffectHandler.ts` (line ~464)
 - **Description:** Protect flag is consumed after the first hit check. In doubles, the second attacker's move hits through Protect.
@@ -155,12 +155,12 @@
 - **File:** `frontend/src/scenes/battle/BattleVictorySequence.ts` (line ~140)
 - **Description:** Move replacement keyboard listeners are added but not tied to scene lifecycle and not cleaned up on scene shutdown.
 
-### AUDIT-038: AudioManager.setScene kills non-audio tweens
+### ~~AUDIT-038: AudioManager.setScene kills non-audio tweens~~ FIXED
 
 - **File:** `frontend/src/managers/AudioManager.ts` (line ~38)
 - **Description:** `setScene()` calls `tweens.killAll()` on the old scene, which kills all tweens — not just audio-related ones.
 
-### AUDIT-039: Low-HP timer fires on stale scene reference
+### ~~AUDIT-039: Low-HP timer fires on stale scene reference~~ FIXED
 
 - **File:** `frontend/src/managers/AudioManager.ts` (line ~312)
 - **Description:** Low-HP warning timer is created on the old scene's clock. After `setScene()`, the timer fires with a stale reference causing potential errors.
@@ -194,17 +194,17 @@
 - **File:** `frontend/src/battle/execution/MoveExecutor.ts`
 - **Description:** When a Pokemon levels up mid-battle (from EXP), `currentHp` is not increased by the HP stat gain. The Pokemon appears to lose HP on level-up.
 
-### AUDIT-048: AchievementManager.reset() doesn't clear onUnlockCallback
+### ~~AUDIT-048: AchievementManager.reset() doesn't clear onUnlockCallback~~ FIXED
 
 - **File:** `frontend/src/managers/AchievementManager.ts` (line ~73)
 - **Description:** `reset()` doesn't clear `onUnlockCallback`. The callback may reference a destroyed scene's UI, causing errors on the next unlock.
 
-### AUDIT-049: AudioManager has no reset() method
+### ~~AUDIT-049: AudioManager has no reset() method~~ FIXED
 
 - **File:** `frontend/src/managers/AudioManager.ts`
 - **Description:** `pendingBGM`, `lowHpActive`, `bgmPaused` state bleeds between game sessions since there's no reset.
 
-### AUDIT-050: Pointer listeners leak in MenuController
+### ~~AUDIT-050: Pointer listeners leak in MenuController~~ FIXED
 
 - **File:** `frontend/src/ui/controls/MenuController.ts`
 - **Description:** `bindInteractive()` pointer listeners are not cleaned up in `destroy()`.
@@ -239,7 +239,7 @@
 - **File:** `frontend/src/scenes/battle/BattleCatchHandler.ts` (line ~150)
 - **Description:** Keyboard listeners added during pokemon nickname prompt are not cleaned up if the scene shuts down mid-prompt.
 
-### AUDIT-057: BattleScene missing shutdown cleanup
+### ~~AUDIT-057: BattleScene missing shutdown cleanup~~ FIXED
 
 - **File:** `frontend/src/scenes/battle/BattleScene.ts`
 - **Description:** No explicit `shutdown()` method. Tweens, timers, and event listeners created during battle are not cleaned up when the scene ends.

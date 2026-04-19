@@ -31,9 +31,9 @@ export class AudioManager {
 
   /** Bind to the active scene's sound manager. Call when entering a new scene. */
   setScene(scene: Phaser.Scene): void {
-    // Cancel any in-flight crossfade tweens from the old scene
-    if (this.scene && this.scene.tweens) {
-      try { this.scene.tweens.killAll(); } catch { /* scene may already be destroyed */ }
+    // AUDIT-038: Only kill audio-related tweens, not all scene tweens
+    if (this.scene && this.scene.tweens && this.currentBGM) {
+      try { this.scene.tweens.killTweensOf(this.currentBGM); } catch { /* scene may already be destroyed */ }
     }
     this.scene = scene;
     this.handleAutoplayPolicy();
@@ -308,11 +308,12 @@ export class AudioManager {
 
   /** Start the low-HP warning beep loop. Plays the LOW_HP SFX every 1 second. */
   startLowHpWarning(): void {
-    if (this.lowHpActive || this.muted || !this.scene) return;
+    if (this.lowHpActive || this.muted || !this.isSceneActive()) return;
     this.lowHpActive = true;
     // Play immediately, then repeat
     this.playSFX('sfx-low-hp');
-    this.lowHpTimer = this.scene.time.addEvent({
+    // AUDIT-039: Create timer on current scene to avoid stale reference
+    this.lowHpTimer = this.scene!.time.addEvent({
       delay: 1500,
       callback: () => { this.playSFX('sfx-low-hp'); },
       loop: true,
@@ -355,4 +356,14 @@ export class AudioManager {
     }
   }
   isMuted(): boolean { return this.muted; }
+
+  /** AUDIT-049: Reset all transient audio state for a new game session. */
+  reset(): void {
+    this.stopBGM();
+    this.stopLowHpWarning();
+    this.pendingBGM = undefined;
+    this.bgmPaused = false;
+    this.previousBGMKey = '';
+    this.priorBGMKey = '';
+  }
 }

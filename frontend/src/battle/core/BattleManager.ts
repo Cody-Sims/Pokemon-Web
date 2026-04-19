@@ -195,6 +195,9 @@ export class BattleManager {
       if (weatherDmg) endOfTurnMessages.push(...weatherDmg.messages);
     }
 
+    // AUDIT-029: Clear protect at end of turn so it doesn't persist
+    this.statusHandler.clearProtectAll();
+
     this.fsm.transition('CHECK_FAINT');
 
     const playerFirst = turnOrder[0].isPlayer;

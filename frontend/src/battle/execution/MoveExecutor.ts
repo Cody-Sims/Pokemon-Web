@@ -4,6 +4,8 @@ import { pokemonData } from '@data/pokemon';
 import { getCombinedEffectiveness } from '@data/type-chart';
 import { DamageCalculator, DamageResult } from '../calculation/DamageCalculator';
 import { StatusEffectHandler, EffectResult } from '../effects/StatusEffectHandler';
+import { AbilityHandler } from '../effects/AbilityHandler';
+import { HeldItemHandler } from '../effects/HeldItemHandler';
 import { WeatherManager } from '../effects/WeatherManager';
 import { randomInt } from '@utils/math-helpers';
 import { PokemonType } from '@utils/type-helpers';
@@ -164,8 +166,8 @@ export class MoveExecutor {
       }
     }
 
-    // Check accuracy
-    if (!DamageCalculator.doesMoveHit(move)) {
+    // Check accuracy (AUDIT-026: pass attacker/defender for accuracy/evasion stages)
+    if (!DamageCalculator.doesMoveHit(move, attacker, defender, statusHandler)) {
       // BUG-051: Jump Kick / High Jump Kick crash damage on miss
       if (moveId === 'jump-kick' || moveId === 'high-jump-kick') {
         const crashDmg = Math.max(1, Math.floor(attacker.stats.hp / 2));
@@ -300,8 +302,22 @@ export class MoveExecutor {
     }
 
     // ── Standard damage calculation ──
-    const damage = DamageCalculator.calculate(attacker, defender, move, statusHandler);
+    const hpBeforeHit = defender.currentHp;
+    const damage = DamageCalculator.calculate(attacker, defender, move, statusHandler, weatherManager);
     defender.currentHp = Math.max(0, defender.currentHp - damage.damage);
+
+    // ── AUDIT-011: Post-damage ability hooks (Static, Flame Body, etc.) ──
+    const abilityAfterDmg = AbilityHandler.onAfterDamage(attacker, defender, move, damage.damage);
+
+    // ── AUDIT-011: Post-damage item hooks (Focus Sash) ──
+    const itemAfterDmg = HeldItemHandler.onAfterDamage(defender, attacker, damage.damage, hpBeforeHit);
+
+    // ── AUDIT-011: Attacker item hooks (Life Orb recoil) ──
+    const attackLanded = damage.damage > 0 ? HeldItemHandler.onAttackLanded(attacker, damage.damage) : { messages: [], recoilDamage: 0 };
+
+    // ── AUDIT-011: HP threshold checks (Sitrus Berry, Oran Berry) ──
+    const defenderThreshold = HeldItemHandler.checkHPThreshold(defender);
+    const attackerThreshold = HeldItemHandler.checkHPThreshold(attacker);
 
     // ── Apply secondary effects via StatusEffectHandler ──
     let effectResult: EffectResult = { messages: [] };
@@ -321,9 +337,17 @@ export class MoveExecutor {
       moveName: move.name,
       attackerName,
       defenderName,
-      effectMessages: [...thawMessages, ...effectResult.messages],
+      effectMessages: [
+        ...thawMessages,
+        ...abilityAfterDmg.messages,
+        ...itemAfterDmg.messages,
+        ...attackLanded.messages,
+        ...defenderThreshold.messages,
+        ...attackerThreshold.messages,
+        ...effectResult.messages,
+      ],
       healedHp: effectResult.healedHp,
-      recoilDamage: effectResult.recoilDamage,
+      recoilDamage: (effectResult.recoilDamage ?? 0) + attackLanded.recoilDamage,
       selfDestruct: effectResult.selfDestruct,
     };
   }

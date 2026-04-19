@@ -159,12 +159,15 @@ export class MenuController {
     this.confirm();
   }
 
+  private boundElements: Phaser.GameObjects.GameObject[] = [];
+
   /**
    * Wire up pointer events on interactive game objects.
    * Each element maps to an item index — pointerover triggers hoverIndex,
    * pointerdown triggers clickIndex.
    */
   bindInteractive(elements: Phaser.GameObjects.GameObject[]): void {
+    this.boundElements = elements;
     elements.forEach((el, i) => {
       if ('setInteractive' in el && typeof (el as Phaser.GameObjects.Text).setInteractive === 'function') {
         (el as Phaser.GameObjects.Text).setInteractive({ useHandCursor: true });
@@ -182,5 +185,11 @@ export class MenuController {
       }
     }
     this.keyHandlers = [];
+    // AUDIT-050: Clean up pointer listeners from bound elements
+    for (const el of this.boundElements) {
+      el.off('pointerover');
+      el.off('pointerdown');
+    }
+    this.boundElements = [];
   }
 }

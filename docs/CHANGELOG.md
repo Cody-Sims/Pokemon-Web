@@ -8,6 +8,17 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **AUDIT-008**: Weather never ticks in double battles — wired `tickTurn()` and `applyEndOfTurn()` into DoubleBattleManager
+- **AUDIT-009**: Spread move damage can revive fainted Pokemon — capped HP restoration to only apply when defender is still alive
+- **AUDIT-010/011**: Post-damage ability/item hooks never fire — wired AbilityHandler.onAfterDamage, HeldItemHandler.onAfterDamage/onAttackLanded/checkHPThreshold into MoveExecutor standard damage path; Static, Flame Body, Focus Sash, Life Orb, Sitrus Berry now functional
+- **AUDIT-026**: No accuracy/evasion stats — added `accuracy` and `evasion` to StatStages interface, STAT_NAMES, and state initialization; DamageCalculator.doesMoveHit now applies accuracy/evasion stage multipliers
+- **AUDIT-029**: Protect consumed after first check in doubles — Protect now persists for the full turn with `clearProtectAll()` at end of turn
+- **AUDIT-038**: AudioManager.setScene kills non-audio tweens — changed `tweens.killAll()` to `tweens.killTweensOf(currentBGM)`
+- **AUDIT-039**: Low-HP timer fires on stale scene — added `isSceneActive()` guard before creating timer
+- **AUDIT-048**: AchievementManager.reset() doesn't clear onUnlockCallback — now clears it
+- **AUDIT-049**: AudioManager has no reset() method — added `reset()` to clear `pendingBGM`, `lowHpActive`, `bgmPaused`
+- **AUDIT-050**: MenuController pointer listeners leak — `destroy()` now cleans up pointerover/pointerdown listeners
+- **AUDIT-057**: BattleScene missing shutdown — added `shutdown()` with `tweens.killAll()` and `time.removeAllEvents()`
 - **Mobile viewport**: Switched Phaser scale mode from `FIT` to `ENVELOP` on mobile so the game canvas fills the full screen without black bars or letterboxing
 - **Body background**: Changed `background: #000` to `#0f0f1a` to match the game's dark blue theme, eliminating visible seams on any edge
 - **Mobile canvas sizing**: Added `width: 100%; height: 100%` CSS for canvas on coarse-pointer (touch) devices

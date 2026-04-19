@@ -73,5 +73,7 @@ export class AchievementManager {
 
   reset(): void {
     this.unlocked.clear();
+    // AUDIT-048: Clear callback to avoid referencing destroyed scene UI
+    this.onUnlockCallback = undefined;
   }
 }

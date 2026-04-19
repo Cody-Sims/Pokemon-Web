@@ -510,4 +510,10 @@ export class BattleScene extends Phaser.Scene {
       }
     }
   }
+
+  /** AUDIT-057: Clean up tweens and event listeners on scene shutdown. */
+  shutdown(): void {
+    this.tweens.killAll();
+    this.time.removeAllEvents();
+  }
 }
