@@ -139,9 +139,17 @@ export class BattleScene extends Phaser.Scene {
       this.add.rectangle(cx, cy, w, h, COLORS.bgPanel);
     }
 
-    // Ground areas
-    this.add.ellipse(550, 200, 200, 50, 0x2d4a22);
-    this.add.ellipse(200, 420, 240, 60, 0x2d4a22);
+    // Enemy battle platform (layered pixel-art style)
+    this.add.ellipse(550, 203, 200, 50, 0x1a2e14, 0.5); // shadow
+    this.add.ellipse(550, 200, 200, 50, 0x2d4a22);       // base
+    this.add.ellipse(550, 198, 180, 40, 0x3a6030, 0.6);   // mid highlight
+    this.add.ellipse(550, 195, 140, 25, 0x4a7a3e, 0.3);   // top highlight
+
+    // Player battle platform (layered pixel-art style)
+    this.add.ellipse(200, 423, 240, 60, 0x1a2e14, 0.5); // shadow
+    this.add.ellipse(200, 420, 240, 60, 0x2d4a22);       // base
+    this.add.ellipse(200, 418, 220, 48, 0x3a6030, 0.6);   // mid highlight
+    this.add.ellipse(200, 415, 170, 30, 0x4a7a3e, 0.3);   // top highlight
 
     // ── Trainer sprites behind Pokémon (trainer battles only) ──
     const trainerSpriteKey = data?.trainerSpriteKey as string | undefined;

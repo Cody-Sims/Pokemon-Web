@@ -442,34 +442,49 @@ export class BattleUIScene extends Phaser.Scene {
         y = mh - 85 + row * moveRowH;
       }
 
-      // Move type color dot
+      // Type-colored button background
+      const typeCol = md ? (TYPE_COLORS[md.type] ?? 0x888888) : 0x888888;
+      const btnW = compactMoves ? 120 : 180;
+      const btnH = compactMoves ? 30 : 40;
+      const bg = this.add.graphics();
+      bg.fillStyle(typeCol, 0.25);
+      bg.fillRoundedRect(x - btnW / 2, y - btnH / 2, btnW, btnH, 4);
+      bg.lineStyle(1, typeCol, 0.6);
+      bg.strokeRoundedRect(x - btnW / 2, y - btnH / 2, btnW, btnH, 4);
+      bg.setDepth(9);
+      this.moveDecorations.push(bg);
+
+      // Category indicator (P/S/St)
       if (md) {
-        const typeColor = TYPE_COLORS[md.type] ?? 0x888888;
-        const dot = this.add.circle(x - 80, y, 5, typeColor).setDepth(10);
-        this.moveDecorations.push(dot);
-        // Category indicator (P/S/St)
         const catAbbr = md.category === 'physical' ? 'P' : md.category === 'special' ? 'S' : 'St';
         const catColor = CATEGORY_COLORS[md.category] ?? 0x888899;
-        const catText = this.add.text(x - 68, y - 5, catAbbr, { fontSize: '10px', color: `#${catColor.toString(16).padStart(6, '0')}`, fontFamily: 'monospace', fontStyle: 'bold' }).setDepth(10);
+        const catText = this.add.text(x - btnW / 2 + 6, y + 4, catAbbr, { fontSize: '10px', color: `#${catColor.toString(16).padStart(6, '0')}`, fontFamily: 'monospace', fontStyle: 'bold' }).setDepth(10);
         this.moveDecorations.push(catText);
       }
 
       // PP coloring: normal=white, low (<=25%)=yellow, empty=red
-      let ppColor: string = COLORS.textWhite;
+      let ppColor: string = '#aaaaaa';
       if (md) {
         const ppPct = m.currentPp / md.pp;
         if (ppPct <= 0) ppColor = COLORS.textDanger;
         else if (ppPct <= 0.25) ppColor = COLORS.textHighlight;
       }
 
-      const t = this.add.text(x, y,
-        md ? `${md.name}  ${m.currentPp}/${md.pp}` : m.moveId,
-        { ...FONTS.body, fontSize: moveFontSize }
-      ).setOrigin(0.5).setInteractive({ useHandCursor: true });
-      t.setPadding(10, 6, 10, 6);
+      // PP text (right-aligned inside button)
+      if (md) {
+        const ppText = this.add.text(x + btnW / 2 - 8, y + 4, `${m.currentPp}/${md.pp}`, { fontSize: '10px', color: ppColor }).setOrigin(1, 0).setDepth(10);
+        this.moveDecorations.push(ppText);
+      }
 
-      // Apply PP color to the PP portion by coloring the whole text based on PP status
-      if (ppColor !== COLORS.textWhite) t.setColor(ppColor);
+      // Move name text (bold, white, left-aligned inside button)
+      const t = this.add.text(x - btnW / 2 + 8, y - 8,
+        md ? md.name : m.moveId,
+        { ...FONTS.body, fontSize: '13px', color: '#ffffff', fontStyle: 'bold' }
+      ).setDepth(10).setInteractive({ useHandCursor: true });
+      t.setPadding(2, 2, 2, 2);
+
+      // Expand the hit area to cover the full button
+      t.setInteractive(new Phaser.Geom.Rectangle(-2, -6, btnW, btnH), Phaser.Geom.Rectangle.Contains);
 
       t.on('pointerover', () => { if (this.state === 'moves') { this.moveCursor = i; this.updateMoveCursor(); } });
       t.on('pointerdown', () => { if (this.state === 'moves') { this.moveCursor = i; this.selectMove(); } });

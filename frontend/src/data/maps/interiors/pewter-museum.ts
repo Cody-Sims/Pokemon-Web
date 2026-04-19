@@ -1,67 +1,124 @@
 import { MapDefinition, parseMap } from '../shared';
 
 const ground = parseMap([
-  // 01234567890123
-  '##############', // 0  - north wall
-  '#w__________w#', // 1  - windows
-  '#__dddddddd__#', // 2  - display cases
-  '#____________#', // 3
-  '#__dddddddd__#', // 4  - display cases
-  '#____________#', // 5
-  '#__j______j__#', // 6  - fossils
-  '#____________#', // 7
-  '#__dddddddd__#', // 8  - display cases
-  '#______v_____#', // 9  - exit mat
+  // 0123456789012345
+  '################', // 0  - north wall
+  '#w____d_d____w#', // 1  - windows + display cases
+  '#_j__d___d__j__#', // 2  - fossils + cases
+  '#______________#', // 3  - open hall
+  '#_d__________d_#', // 4  - side exhibits
+  '#______________#', // 5  - center aisle
+  '#_d__________d_#', // 6  - side exhibits
+  '#______________#', // 7  - open area
+  '#_j___kkkk__j__#', // 8  - fossils + counter
+  '#______kk______#', // 9  - counter
+  '#______________#', // 10 - lobby
+  '####__vv__######', // 11 - exit
 ]);
 
 export const pewterMuseum: MapDefinition = {
   key: 'pewter-museum',
-  width: 14,
-  height: 10,
+  width: 16,
+  height: 12,
   ground,
   encounterTableKey: '',
   isInterior: true,
   displayName: 'Pewter Museum of Science',
   npcs: [
+    // ─── Museum Guide ───
     {
       id: 'museum-guide',
-      tileX: 6,
+      tileX: 4,
       tileY: 5,
-      textureKey: 'generic-trainer',
-      facing: 'down',
+      textureKey: 'npc-female-3',
+      facing: 'right',
       dialogue: [
         'Welcome to the Pewter Museum of Science!',
-        'We have fossils of ancient Pokémon on display.',
+        'We have fossils from the ancient Kanto age!',
+        'And a special Aether research exhibit on the upper floor.',
       ],
     },
+    // ─── Fossil Scientist ───
     {
-      id: 'museum-scientist',
-      tileX: 10,
-      tileY: 3,
-      textureKey: 'generic-trainer',
+      id: 'museum-fossil-scientist',
+      tileX: 12,
+      tileY: 2,
+      textureKey: 'npc-scientist',
+      facing: 'down',
+      dialogue: [
+        'This Helix Fossil is over 300 million years old.',
+        'We believe Pokémon like Omanyte were once abundant here.',
+        'Modern Pokémon are descendants of these ancient creatures.',
+      ],
+    },
+    // ─── Aether Researcher ───
+    {
+      id: 'museum-aether-researcher',
+      tileX: 8,
+      tileY: 5,
+      textureKey: 'npc-scientist',
       facing: 'left',
       dialogue: [
-        'This fossil is from an ancient Pokémon called Aerodactyl.',
-        "It's said to have ruled the skies millions of years ago!",
+        "I'm studying the connection between fossils and Aether energy.",
+        'Ancient Pokémon may have drawn power directly from ley lines.',
+        'The Synthesis Collective claims to have rediscovered this ability...',
+      ],
+      setsFlag: 'museum_aether_lore',
+      flagDialogue: [
+        {
+          flag: 'saw_aldric_hologram',
+          dialogue: [
+            "You've seen Aldric's work firsthand?",
+            'His methods are dangerous. The ancient Pokémon perished for a reason.',
+            "The Aether isn't meant to be concentrated like that.",
+          ],
+        },
       ],
     },
+    // ─── Fossil Revival NPC ───
+    {
+      id: 'museum-fossil-revival',
+      tileX: 8,
+      tileY: 9,
+      textureKey: 'npc-male-3',
+      facing: 'up',
+      dialogue: [
+        'I can revive fossils into living Pokémon!',
+        'Bring me a Helix Fossil, Dome Fossil, or Old Amber.',
+        'The process takes just a moment!',
+      ],
+      requireFlag: 'defeatedBrock',
+      flagDialogue: [
+        {
+          flag: '!defeatedBrock',
+          dialogue: [
+            'This machine can revive fossils...',
+            "But I need the Gym Leader's approval first.",
+            "Come back after you've proven yourself to Brock!",
+          ],
+        },
+      ],
+    },
+    // ─── Museum Visitor ───
     {
       id: 'museum-visitor',
       tileX: 3,
-      tileY: 7,
-      textureKey: 'generic-trainer',
+      tileY: 8,
+      textureKey: 'npc-male-1',
       facing: 'right',
       dialogue: [
-        'These fossils are incredible!',
-        'I wonder if we could revive them someday...',
+        'These fossils remind me of my childhood...',
+        'My grandfather was a paleontologist in Sinnoh.',
       ],
+      behavior: { type: 'look-around' },
     },
   ],
   trainers: [],
   warps: [
-    { tileX: 7, tileY: 9, targetMap: 'pewter-city', targetSpawnId: 'from-museum' },
+    { tileX: 6, tileY: 11, targetMap: 'pewter-city', targetSpawnId: 'from-museum' },
+    { tileX: 7, tileY: 11, targetMap: 'pewter-city', targetSpawnId: 'from-museum' },
   ],
   spawnPoints: {
-    'default': { x: 7, y: 7, direction: 'up' },
+    'default': { x: 7, y: 10, direction: 'up' },
   },
 };

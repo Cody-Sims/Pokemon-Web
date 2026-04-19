@@ -6,6 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-18]
 
+### Changed
+
+- **Battle platforms**: Replaced single-color ellipses with layered pixel-art platforms (shadow, base, mid-highlight, top-highlight) beneath both Pokémon
+- **Move selection grid**: Upgraded text+dot move menu to type-colored rounded-rect button panels with bold move name, right-aligned PP, and category indicator
+- **Pewter Museum expansion**: Expanded from 14x10 to 16x12 with themed exhibit areas, 5 NPCs (guide, fossil scientist, Aether researcher, fossil revival NPC, visitor), flag-gated lore dialogue, and display case layout
+
 ### Fixed
 
 - **Pewter City unwired houses**: Added warps for west house (tileX:5) and east house (tileX:23) and extra PokéMart double-door warp (tileX:20); added `from-house-1` and `from-house-2` spawn points
