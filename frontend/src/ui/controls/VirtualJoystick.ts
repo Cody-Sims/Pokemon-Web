@@ -12,7 +12,14 @@ function getJoystickPreset(): { radius: number; thumb: number; deadZone: number 
     const raw = localStorage.getItem('pokemon_settings');
     if (raw) {
       const s = JSON.parse(raw);
-      if (s.joystickSize && JOYSTICK_PRESETS[s.joystickSize]) return JOYSTICK_PRESETS[s.joystickSize];
+      const preset = (s.joystickSize && JOYSTICK_PRESETS[s.joystickSize])
+        ? { ...JOYSTICK_PRESETS[s.joystickSize] }
+        : { ...JOYSTICK_PRESETS.medium };
+      // Override dead zone from slider setting (0.05–0.4 = fraction of radius)
+      if (typeof s.deadZone === 'number' && s.deadZone > 0) {
+        preset.deadZone = Math.round(preset.radius * s.deadZone);
+      }
+      return preset;
     }
   } catch { /* ignore */ }
   return JOYSTICK_PRESETS.medium;
@@ -44,14 +51,25 @@ export class VirtualJoystick {
     this.joystickRadius = preset.radius;
     this.deadZone = preset.deadZone;
 
+    // High-visibility controls setting
+    let highVis = false;
+    try {
+      const raw = localStorage.getItem('pokemon_settings');
+      if (raw) { highVis = JSON.parse(raw).highVisControls === 'true'; }
+    } catch { /* ignore */ }
+    const baseAlpha = highVis ? 0.7 : 0.35;
+    const thumbAlpha = highVis ? 0.9 : 0.6;
+    const strokeAlpha = highVis ? 0.9 : 0.5;
+    const strokeWidth = highVis ? 3 : 2;
+
     this.container = scene.add.container(0, 0).setDepth(999).setScrollFactor(0).setVisible(false);
 
     // Outer ring
-    this.base = scene.add.circle(0, 0, preset.radius, 0x334466, 0.35);
-    this.base.setStrokeStyle(2, 0x5577aa, 0.5);
+    this.base = scene.add.circle(0, 0, preset.radius, 0x334466, baseAlpha);
+    this.base.setStrokeStyle(strokeWidth, 0x5577aa, strokeAlpha);
 
     // Inner thumb
-    this.thumb = scene.add.circle(0, 0, preset.thumb, 0x5599cc, 0.6);
+    this.thumb = scene.add.circle(0, 0, preset.thumb, 0x5599cc, thumbAlpha);
 
     this.container.add([this.base, this.thumb]);
 

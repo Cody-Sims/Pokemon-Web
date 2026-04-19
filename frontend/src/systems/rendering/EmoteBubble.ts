@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { mobileFontSize } from '@ui/theme';
+import { isReducedMotion } from '@utils/accessibility';
 
 export type EmoteType = 'exclamation' | 'question' | 'heart' | 'sweat' | 'music' | 'zzz';
 
@@ -36,6 +37,15 @@ export class EmoteBubble {
     });
     text.setOrigin(0.5, 1);
     text.setDepth(10);
+
+    if (isReducedMotion()) {
+      text.setScale(1);
+      scene.time.delayedCall(duration, () => {
+        text.destroy();
+      });
+      return;
+    }
+
     text.setScale(0);
 
     // Pop-in

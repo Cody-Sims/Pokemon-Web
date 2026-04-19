@@ -6,6 +6,11 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-18]
 
+### Changed
+
+- **Reduced motion cascade**: Wired `isReducedMotion()` into TransitionManager (instant scene transitions), EmoteBubble (skip bounce tweens), and WeatherRenderer (skip particle emitters) so the Settings toggle actually takes effect
+- **Touch controls accessibility**: Wired `swapAB` (swap A/B button positions and actions), `highVisControls` (fully opaque buttons with thick outlines), `oneHandedMode` (left/right button placement), and `deadZone` slider (custom joystick sensitivity) settings into TouchControls and VirtualJoystick
+
 ### Added
 
 - **Gym trainer teams**: 10 trainer data entries for gym support trainers — engineers (Voltara), mediums (Wraithmoor), dragon tamers (Scalecrest), kindlers (Cinderfall), cooltrainers (Viridian) with type-appropriate teams scaled to gym progression

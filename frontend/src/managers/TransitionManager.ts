@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { isReducedMotion } from '@utils/accessibility';
 
 /** Helper for screen wipe/fade transitions between scenes. */
 export class TransitionManager {
@@ -15,6 +16,10 @@ export class TransitionManager {
 
   /** Fade the camera to black, run callback, then fade back in. */
   fadeTransition(scene: Phaser.Scene, callback: () => void, duration = 500): void {
+    if (isReducedMotion()) {
+      callback();
+      return;
+    }
     scene.cameras.main.fadeOut(duration / 2, 0, 0, 0);
     scene.cameras.main.once('camerafadeoutcomplete', () => {
       callback();

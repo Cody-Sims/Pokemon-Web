@@ -396,7 +396,13 @@ export class TouchControls {
 
   private layout(): void {
     const { width, height } = this.scene.cameras.main;
-    this.buttonContainer.setPosition(width - this.padding - this.btnSize / 2 - 8, height - this.padding - this.btnSize - 40);
+    const oneHanded = this.readSetting('oneHandedMode') ?? 'off';
+    if (oneHanded === 'left') {
+      // Buttons on the left side for one-handed left grip
+      this.buttonContainer.setPosition(this.padding + this.btnSize / 2 + 8, height - this.padding - this.btnSize - 40);
+    } else {
+      this.buttonContainer.setPosition(width - this.padding - this.btnSize / 2 - 8, height - this.padding - this.btnSize - 40);
+    }
     this.recalcButtonPositions();
   }
 
@@ -491,21 +497,40 @@ export class TouchControls {
   }
 
   private createButtons(): void {
-    const aBtn = this.makeActionButton(0, -48, 'A', 0x44aa55, 'confirm');
-    const bBtn = this.makeActionButton(0, 48, 'B', 0xaa4444, 'cancel');
+    const swapped = this.readSetting('swapAB') === 'true';
+    const highVis = this.readSetting('highVisControls') === 'true';
+    const aAction: 'confirm' | 'cancel' = swapped ? 'cancel' : 'confirm';
+    const bAction: 'confirm' | 'cancel' = swapped ? 'confirm' : 'cancel';
+    const alpha = highVis ? 0.85 : 0.5;
+    const stroke = highVis ? 3 : 0;
+    const aBtn = this.makeActionButton(0, -48, swapped ? 'B' : 'A', 0x44aa55, aAction, alpha, stroke);
+    const bBtn = this.makeActionButton(0, 48, swapped ? 'A' : 'B', 0xaa4444, bAction, alpha, stroke);
     this.buttonContainer.add([aBtn, bBtn]);
   }
 
-  private makeActionButton(x: number, y: number, label: string, color: number, action: 'confirm' | 'cancel'): Phaser.GameObjects.Container {
+  private makeActionButton(x: number, y: number, label: string, color: number, action: 'confirm' | 'cancel', alpha = 0.5, strokeWidth = 0): Phaser.GameObjects.Container {
     const c = this.scene.add.container(x, y);
     const radius = this.btnSize * 0.48;
-    const bg = this.scene.add.circle(0, 0, radius, color, 0.5);
+    const bg = this.scene.add.circle(0, 0, radius, color, alpha);
+    if (strokeWidth > 0) bg.setStrokeStyle(strokeWidth, 0xffffff, 0.9);
     const txt = this.scene.add.text(0, 0, label, {
       fontSize: '26px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5);
     c.add([bg, txt]);
     this.buttons.push({ cx: 0, cy: 0, radius, action, bg });
     return c;
+  }
+
+  /** Read a setting from localStorage (same key GameManager uses). */
+  private readSetting(key: string): string | undefined {
+    try {
+      const raw = localStorage.getItem('pokemon_settings');
+      if (raw) {
+        const s = JSON.parse(raw);
+        return s[key] != null ? String(s[key]) : undefined;
+      }
+    } catch { /* ignore */ }
+    return undefined;
   }
 
   /** Check if a client-coordinate point hits the menu button area. */

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { particleMultiplier, maxParticleMultiplier } from '@utils/perf-profile';
+import { isReducedMotion } from '@utils/accessibility';
 
 export type OverworldWeather = 'none' | 'rain' | 'sandstorm' | 'snow' | 'fog' | 'sunshine';
 
@@ -47,6 +48,8 @@ export class WeatherRenderer {
     if (weather === 'none') return;
 
     this.createTintOverlay(weather);
+
+    if (isReducedMotion()) return;
 
     switch (weather) {
       case 'rain':      this.createRain(); break;
