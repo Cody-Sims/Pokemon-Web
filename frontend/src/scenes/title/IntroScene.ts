@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
+import { hintText } from '@utils/hint-text';
 
 /**
  * IntroScene — "Welcome to the world of Pokémon!" professor intro,
@@ -102,8 +103,7 @@ export class IntroScene extends Phaser.Scene {
     }).setOrigin(0.5, 0).setAlpha(0);
 
     // Hint text
-    const hintText = TouchControls.isTouchDevice() ? 'Tap to continue' : 'Press Enter to continue';
-    this.add.text(width / 2, height - 20, hintText, {
+    this.add.text(width / 2, height - 20, hintText('advance'), {
       ...FONTS.caption,
       color: COLORS.textDim,
     }).setOrigin(0.5);
@@ -261,10 +261,10 @@ export class IntroScene extends Phaser.Scene {
     });
 
     // Hint
-    const hintText = TouchControls.isTouchDevice()
+    const nameHint = isMobile()
       ? 'Type a name or tap a preset, then tap DONE'
       : 'Type your name and press Enter';
-    this.add.text(width / 2, height * 0.73, hintText, {
+    this.add.text(width / 2, height * 0.73, nameHint, {
       ...FONTS.caption,
       color: COLORS.textDim,
     }).setOrigin(0.5);
@@ -422,8 +422,8 @@ export class IntroScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-ENTER', () => this.confirmAppearance());
 
     // Hint
-    const hint = TouchControls.isTouchDevice() ? 'Tap to select, then DONE' : 'Use ← → and Enter';
-    this.add.text(width / 2, height * 0.88, hint, {
+    const appearanceHint = isMobile() ? 'Tap to select, then DONE' : 'Use ← → and Enter';
+    this.add.text(width / 2, height * 0.88, appearanceHint, {
       ...FONTS.caption, color: COLORS.textDim,
     }).setOrigin(0.5);
   }

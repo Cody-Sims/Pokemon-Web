@@ -377,7 +377,7 @@ export class MoveTutorScene extends Phaser.Scene {
     const startY = layout.cy - panelH / 2 + 60;
     this.replaceTexts = options.map((label, i) => {
       const t = this.add.text(layout.cx, startY + i * 40, label, {
-        ...FONTS.body, fontSize: '14px',
+        ...FONTS.body, fontSize: mobileFontSize(14),
       }).setOrigin(0.5);
       this.replaceGroup.add(t);
       return t;
@@ -466,7 +466,7 @@ export class MoveTutorScene extends Phaser.Scene {
     });
 
     const msgText = this.add.text(layout.cx, layout.h - 60, text, {
-      ...FONTS.body, fontSize: '15px', color: COLORS.textSuccess,
+      ...FONTS.body, fontSize: mobileFontSize(15), color: COLORS.textSuccess,
       wordWrap: { width: layout.w - 100 },
     }).setOrigin(0.5);
 
@@ -484,6 +484,7 @@ export class MoveTutorScene extends Phaser.Scene {
     this.input.keyboard!.once('keydown-ENTER', dismiss);
     this.input.keyboard!.once('keydown-SPACE', dismiss);
     this.input.keyboard!.once('keydown-ESC', dismiss);
+    this.input.once('pointerdown', dismiss);
   }
 
   private handleCancel(): void {

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
@@ -123,7 +123,8 @@ export class TrainerCardScene extends Phaser.Scene {
     }
 
     // Close hint
-    this.add.text(cx, cy + cardH / 2 - 20, 'Press ESC or ENTER to close', {
+    const closeHint = isMobile() ? 'Tap to close' : 'Press ESC or ENTER to close';
+    this.add.text(cx, cy + cardH / 2 - 20, closeHint, {
       ...FONTS.caption,
     }).setOrigin(0.5);
 

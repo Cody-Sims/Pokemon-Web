@@ -205,8 +205,8 @@ export class SummaryScene extends Phaser.Scene {
       ['To Next Lv.', `${Math.max(0, expToNext)}`],
     ];
     expRows.forEach(([label, value]) => {
-      const lbl = this.add.text(x, y, label, { fontSize: '15px', color: '#aaaaaa' });
-      const val = this.add.text(x + 180, y, value, { fontSize: '15px', color: '#ffffff' });
+      const lbl = this.add.text(x, y, label, { fontSize: mobileFontSize(15), color: '#aaaaaa' });
+      const val = this.add.text(x + 180, y, value, { fontSize: mobileFontSize(15), color: '#ffffff' });
       this.contentGroup.add(lbl);
       this.contentGroup.add(val);
       y += lineH;

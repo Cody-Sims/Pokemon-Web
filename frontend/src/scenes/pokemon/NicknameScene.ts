@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
@@ -67,10 +67,10 @@ export class NicknameScene extends Phaser.Scene {
     });
 
     // Hint
-    const hintText = TouchControls.isTouchDevice()
+    const nicknameHint = isMobile()
       ? 'Type a name, then tap DONE (or SKIP)'
       : 'Type a nickname and press Enter (ESC to skip)';
-    this.add.text(width / 2, height * 0.52, hintText, {
+    this.add.text(width / 2, height * 0.52, nicknameHint, {
       ...FONTS.caption,
       color: COLORS.textDim,
     }).setOrigin(0.5);

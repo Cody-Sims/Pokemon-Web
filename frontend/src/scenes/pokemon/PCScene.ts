@@ -294,8 +294,15 @@ export class PCScene extends Phaser.Scene {
       const y = startY + row * cellH + cellH / 2;
 
       const slot = this.add.rectangle(x, y, cellW - 4, cellH - 4, COLORS.bgCard, 0.6)
-        .setStrokeStyle(1, COLORS.border);
+        .setStrokeStyle(1, COLORS.border)
+        .setInteractive({ useHandCursor: true });
       slot.setData('highlighted', false);
+      slot.on('pointerdown', () => {
+        this.mode = 'box';
+        this.boxCursor = i;
+        this.updateSelection();
+        this.confirmAction();
+      });
       this.boxGroup.add(slot);
       this.boxSlots.push(slot);
 
@@ -303,11 +310,11 @@ export class PCScene extends Phaser.Scene {
       if (pokemon) {
         const pData = pokemonData[pokemon.dataId];
         const name = pokemon.nickname ?? pData?.name ?? '???';
-        const label = this.add.text(x, y - 10, name, { ...FONTS.caption, fontSize: '10px' }).setOrigin(0.5);
+        const label = this.add.text(x, y - 10, name, { ...FONTS.caption, fontSize: mobileFontSize(10) }).setOrigin(0.5);
         this.boxGroup.add(label);
         this.boxLabels.push(label);
 
-        const lvl = this.add.text(x, y + 8, `Lv.${pokemon.level}`, { ...FONTS.label, fontSize: '10px' }).setOrigin(0.5);
+        const lvl = this.add.text(x, y + 8, `Lv.${pokemon.level}`, { ...FONTS.label, fontSize: mobileFontSize(10) }).setOrigin(0.5);
         this.boxGroup.add(lvl);
 
         // Type dot
@@ -350,8 +357,17 @@ export class PCScene extends Phaser.Scene {
 
       const slot = this.add.rectangle(startX, y + slotH / 2 - 4, 140, slotH - 8,
         pokemon ? COLORS.bgCard : COLORS.bgDark, pokemon ? 0.8 : 0.4)
-        .setStrokeStyle(1, pokemon ? COLORS.border : 0x2a2a3a);
+        .setStrokeStyle(1, pokemon ? COLORS.border : 0x2a2a3a)
+        .setInteractive({ useHandCursor: !!pokemon });
       slot.setData('highlighted', false);
+      const slotIdx = i;
+      slot.on('pointerdown', () => {
+        if (!gm.getParty()[slotIdx]) return;
+        this.mode = 'party';
+        this.partyCursor = slotIdx;
+        this.updateSelection();
+        this.confirmAction();
+      });
       this.partyGroup.add(slot);
       this.partySlots.push(slot);
 
@@ -359,7 +375,7 @@ export class PCScene extends Phaser.Scene {
         const pData = pokemonData[pokemon.dataId];
         const name = pokemon.nickname ?? pData?.name ?? '???';
 
-        const nameText = this.add.text(startX - 60, y + 8, name, { ...FONTS.caption, fontSize: '11px' });
+        const nameText = this.add.text(startX - 60, y + 8, name, { ...FONTS.caption, fontSize: mobileFontSize(11) });
         this.partyGroup.add(nameText);
         this.partyLabels.push(nameText);
 
@@ -368,7 +384,7 @@ export class PCScene extends Phaser.Scene {
 
         // HP fraction
         const hp = this.add.text(startX + 30, y + 8, `${pokemon.currentHp}/${pokemon.stats.hp}`, {
-          ...FONTS.label, fontSize: '10px',
+          ...FONTS.label, fontSize: mobileFontSize(10),
         });
         this.partyGroup.add(hp);
 

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE, TYPE_COLORS } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE, TYPE_COLORS, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager, HallOfFameEntry } from '@managers/GameManager';
 import { pokemonData } from '@data/pokemon';
@@ -46,8 +46,8 @@ export class HallOfFameScene extends Phaser.Scene {
 
     // Navigation hint
     const navHint = this.entries.length > this.entriesPerPage
-      ? 'LEFT/RIGHT to browse  •  ESC to close'
-      : 'Press ESC to close';
+      ? (isMobile() ? 'Swipe to browse  •  Tap to close' : 'LEFT/RIGHT to browse  •  ESC to close')
+      : (isMobile() ? 'Tap to close' : 'Press ESC to close');
     const closeBtn = this.add.text(layout.cx, layout.h - 25, `[ ${navHint} ]`, {
       ...FONTS.caption, color: COLORS.textDim,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });

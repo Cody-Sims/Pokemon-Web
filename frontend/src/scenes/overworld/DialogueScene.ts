@@ -93,7 +93,7 @@ export class DialogueScene extends Phaser.Scene {
         cornerRadius: 4,
       });
       this.speakerText = this.add.text(70, layout.h - 118, this.speaker, {
-        ...FONTS.caption, color: COLORS.textHighlight, fontStyle: 'bold', fontSize: '13px',
+        ...FONTS.caption, color: COLORS.textHighlight, fontStyle: 'bold', fontSize: mobileFontSize(13),
       }).setOrigin(0.5);
     }
 
@@ -107,7 +107,7 @@ export class DialogueScene extends Phaser.Scene {
 
     // Animated advance indicator (bouncing arrow)
     this.advanceIndicator = this.add.text(layout.w - 40, layout.h - 22, '▼', {
-      fontSize: '14px', color: COLORS.textHighlight,
+      fontSize: mobileFontSize(14), color: COLORS.textHighlight,
     }).setOrigin(0.5).setAlpha(0);
     this.indicatorTween = this.tweens.add({
       targets: this.advanceIndicator,

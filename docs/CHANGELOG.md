@@ -8,6 +8,11 @@ All notable changes to the Pokemon Web project.
 
 ### Changed
 
+- **Mobile font scaling**: Replaced hard-coded font sizes with `mobileFontSize()` in PCScene (4 instances), SummaryScene (2 EXP rows), MoveTutorScene (move-replace + message), and DialogueScene (speaker label + advance indicator)
+- **Hint text migration**: Replaced inline `TouchControls.isTouchDevice()` ternaries with `hintText()` utility or `isMobile()` checks in TitleScene, IntroScene, OverworldScene, TrainerCardScene, HallOfFameScene, NicknameScene, and VoltorbFlipScene for consistent mobile-aware hint strings
+- **PCScene tap interactivity**: Added `pointerdown` handlers to box grid cells and party slots so mobile users can tap to select/pick up Pokémon
+- **MoveTutorScene tap dismiss**: Added tap-to-dismiss for message panel overlay
+- **OverworldScene HUD**: Scaled HUD hint font with `mobileFontSize(14)` and wired `hintText('interact')` for input-aware interaction label
 - **Battle platforms**: Replaced single-color ellipses with layered pixel-art platforms (shadow, base, mid-highlight, top-highlight) beneath both Pokémon
 - **Move selection grid**: Upgraded text+dot move menu to type-colored rounded-rect button panels with bold move name, right-aligned PP, and category indicator
 - **Pewter Museum expansion**: Expanded from 14x10 to 16x12 with themed exhibit areas, 5 NPCs (guide, fossil scientist, Aether researcher, fossil revival NPC, visitor), flag-gated lore dialogue, and display case layout

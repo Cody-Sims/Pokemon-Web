@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
@@ -274,7 +274,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
       this.gameOver = true;
       this.revealAll();
       this.time.delayedCall(2000, () => {
-        this.messageText.setText('Press ENTER to try again, ESC to quit.');
+        this.messageText.setText(isMobile() ? 'Tap to try again, or tap QUIT.' : 'Press ENTER to try again, ESC to quit.');
       });
     } else {
       // Number card
@@ -302,7 +302,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
         this.level++;
         this.revealAll();
         this.time.delayedCall(2000, () => {
-          this.messageText.setText('Press ENTER for next level, ESC to quit.');
+          this.messageText.setText(isMobile() ? 'Tap to continue, or tap QUIT.' : 'Press ENTER for next level, ESC to quit.');
         });
       }
     }
