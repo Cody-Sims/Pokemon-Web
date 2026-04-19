@@ -595,4 +595,136 @@ export const routeTrainers: Record<string, TrainerData> = {
     },
     rewardMoney: 14000,
   },
+
+  // ─── Voltara Gym (Electric, Gym 5, levels ~30-33) ───
+  'engineer-voltara-1': {
+    id: 'engineer-voltara-1', name: 'Engineer Watts', spriteKey: 'npc-scientist',
+    party: [
+      { pokemonId: 81, level: 30, moves: ['thunder-shock', 'sonic-boom', 'supersonic'] },
+      { pokemonId: 100, level: 31, moves: ['thunderbolt', 'self-destruct', 'screech'] },
+    ],
+    dialogue: {
+      before: ['The gym\'s circuits are live!', 'Hope you\'re grounded!'],
+      after: ['Short-circuited...'],
+    },
+    rewardMoney: 700,
+  },
+  'engineer-voltara-2': {
+    id: 'engineer-voltara-2', name: 'Engineer Spark', spriteKey: 'npc-scientist',
+    party: [
+      { pokemonId: 25, level: 31, moves: ['thunderbolt', 'quick-attack', 'double-team'] },
+      { pokemonId: 82, level: 32, moves: ['thunder-shock', 'tri-attack', 'sonic-boom'] },
+    ],
+    dialogue: {
+      before: ['I rewired this floor myself!', 'Let\'s see if you can navigate it!'],
+      after: ['Guess you found the right path...'],
+    },
+    rewardMoney: 720,
+  },
+
+  // ─── Wraithmoor Gym (Ghost, Gym 6, levels ~36-39) ───
+  'medium-wraithmoor-1': {
+    id: 'medium-wraithmoor-1', name: 'Medium Elara', spriteKey: 'npc-psychic',
+    party: [
+      { pokemonId: 92, level: 36, moves: ['lick', 'confuse-ray', 'night-shade', 'hypnosis'] },
+      { pokemonId: 93, level: 37, moves: ['lick', 'hypnosis', 'dream-eater', 'night-shade'] },
+    ],
+    dialogue: {
+      before: ['The spirits sense your presence...', 'They are not pleased.'],
+      after: ['The spirits... they accept you.'],
+    },
+    rewardMoney: 800,
+  },
+  'medium-wraithmoor-2': {
+    id: 'medium-wraithmoor-2', name: 'Medium Dorian', spriteKey: 'npc-psychic',
+    party: [
+      { pokemonId: 104, level: 37, moves: ['bone-club', 'headbutt', 'leer', 'bonemerang'] },
+      { pokemonId: 93, level: 38, moves: ['night-shade', 'confuse-ray', 'dream-eater', 'lick'] },
+    ],
+    dialogue: {
+      before: ['I commune with those who have passed...', 'Your Pokémon\'s spirits burn bright.'],
+      after: ['Such... vitality. The mist parts for you.'],
+    },
+    rewardMoney: 820,
+  },
+
+  // ─── Scalecrest Gym (Dragon, Gym 7, levels ~40-43) ───
+  'ace-scalecrest-1': {
+    id: 'ace-scalecrest-1', name: 'Dragon Tamer Ryuu', spriteKey: 'npc-ace-trainer',
+    party: [
+      { pokemonId: 147, level: 40, moves: ['dragon-rage', 'slam', 'thunder-wave', 'wrap'] },
+      { pokemonId: 130, level: 41, moves: ['hydro-pump', 'bite', 'dragon-rage'] },
+    ],
+    dialogue: {
+      before: ['The dragons test all who enter!', 'Only the worthy face Drake!'],
+      after: ['You have the heart of a dragon tamer.'],
+    },
+    rewardMoney: 900,
+  },
+  'ace-scalecrest-2': {
+    id: 'ace-scalecrest-2', name: 'Dragon Tamer Kira', spriteKey: 'npc-ace-trainer-f',
+    party: [
+      { pokemonId: 148, level: 41, moves: ['dragon-rage', 'slam', 'agility', 'thunder-wave'] },
+      { pokemonId: 117, level: 41, moves: ['water-gun', 'ice-beam', 'smokescreen', 'hydro-pump'] },
+    ],
+    dialogue: {
+      before: ['I\'ve trained here since childhood!', 'My dragons won\'t go easy on you!'],
+      after: ['You\'ve earned your place before Drake.'],
+    },
+    rewardMoney: 920,
+  },
+
+  // ─── Cinderfall Gym (Fire, Gym 8, levels ~42-45) ───
+  'kindler-cinderfall-1': {
+    id: 'kindler-cinderfall-1', name: 'Kindler Ash', spriteKey: 'npc-hiker',
+    party: [
+      { pokemonId: 77, level: 42, moves: ['fire-spin', 'stomp', 'agility'] },
+      { pokemonId: 58, level: 43, moves: ['flamethrower', 'bite', 'take-down'] },
+    ],
+    dialogue: {
+      before: ['The heat in here is nothing!', 'Wait till you feel my Pokémon\'s flames!'],
+      after: ['You didn\'t even break a sweat...'],
+    },
+    rewardMoney: 950,
+  },
+  'kindler-cinderfall-2': {
+    id: 'kindler-cinderfall-2', name: 'Kindler Ember', spriteKey: 'npc-ace-trainer-f',
+    party: [
+      { pokemonId: 126, level: 43, moves: ['flamethrower', 'fire-punch', 'smokescreen'] },
+      { pokemonId: 78, level: 44, moves: ['fire-spin', 'stomp', 'fire-blast'] },
+    ],
+    dialogue: {
+      before: ['Solara taught me everything I know!', 'Her fire burns in all of us!'],
+      after: ['Even Solara\'s training wasn\'t enough...'],
+    },
+    rewardMoney: 980,
+  },
+
+  // ─── Viridian Gym (Ground, Gym 9, levels ~48-50) ───
+  'cooltrainer-viridian-1': {
+    id: 'cooltrainer-viridian-1', name: 'Cooltrainer Rex', spriteKey: 'npc-ace-trainer',
+    party: [
+      { pokemonId: 51, level: 48, moves: ['earthquake', 'slash', 'sand-attack', 'dig'] },
+      { pokemonId: 31, level: 48, moves: ['earthquake', 'body-slam', 'poison-sting', 'bite'] },
+      { pokemonId: 76, level: 49, moves: ['earthquake', 'rock-throw', 'self-destruct', 'defense-curl'] },
+    ],
+    dialogue: {
+      before: ['Giovanni doesn\'t accept weak challengers.', 'Let me see what you\'re made of!'],
+      after: ['You\'re the real deal. Giovanni awaits.'],
+    },
+    rewardMoney: 1100,
+  },
+  'cooltrainer-viridian-2': {
+    id: 'cooltrainer-viridian-2', name: 'Cooltrainer Luna', spriteKey: 'npc-ace-trainer-f',
+    party: [
+      { pokemonId: 28, level: 48, moves: ['earthquake', 'slash', 'sand-attack', 'fury-swipes'] },
+      { pokemonId: 105, level: 49, moves: ['bonemerang', 'bone-club', 'headbutt', 'leer'] },
+      { pokemonId: 34, level: 50, moves: ['earthquake', 'horn-drill', 'poison-sting', 'thrash'] },
+    ],
+    dialogue: {
+      before: ['Only the strongest can stand before the final Gym Leader.', 'Prove your worth!'],
+      after: ['Incredible power... Giovanni will be interested.'],
+    },
+    rewardMoney: 1150,
+  },
 };

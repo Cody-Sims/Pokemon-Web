@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-18]
 
+### Added
+
+- **Gym trainer teams**: 10 trainer data entries for gym support trainers — engineers (Voltara), mediums (Wraithmoor), dragon tamers (Scalecrest), kindlers (Cinderfall), cooltrainers (Viridian) with type-appropriate teams scaled to gym progression
+- **Giovanni gym leader data**: Ground-type team (Rhyhorn, Dugtrio, Nidoqueen, Rhydon, Nidoking) at levels 50-55 with Earth Badge reward and `defeatedGiovanni` victory flag
+- **Giovanni trainer battle**: Moved Giovanni from NPC dialogue to trainer array with line-of-sight trigger for proper gym battle flow
+- **NPC idle behaviors**: Added `look-around` behavior to house residents (all cities via buildHouse), museum NPCs, and gym guides (Pewter, Viridian, Wraithmoor, Scalecrest, Cinderfall, Voltara) for ambient animation
+
 ### Changed
 
 - **Mobile font scaling**: Migrated all remaining hard-coded `fontSize: 'NNpx'` strings to `mobileFontSize(NN)` across 22 files (scenes, UI widgets, battle subsystems, EmoteBubble, PreloadScene) for consistent mobile-responsive text

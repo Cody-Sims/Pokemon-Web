@@ -45,6 +45,7 @@ export const pewterGym: MapDefinition = {
           ],
         },
       ],
+      behavior: { type: 'look-around' },
     },
   ],
   trainers: [

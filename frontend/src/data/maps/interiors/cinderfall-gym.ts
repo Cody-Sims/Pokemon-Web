@@ -47,6 +47,7 @@ export const cinderfallGym: MapDefinition = {
           ],
         },
       ],
+      behavior: { type: 'look-around' },
     },
   ],
   trainers: [

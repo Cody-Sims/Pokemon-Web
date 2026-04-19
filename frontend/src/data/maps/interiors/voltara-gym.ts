@@ -47,6 +47,7 @@ export const voltaraGym: MapDefinition = {
           ],
         },
       ],
+      behavior: { type: 'look-around' },
     },
   ],
   trainers: [

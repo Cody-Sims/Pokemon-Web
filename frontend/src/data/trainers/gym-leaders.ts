@@ -191,4 +191,33 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
     victoryFlag: 'defeatedSolara',
     badgeReward: 'ember',
   },
+
+  // ─── Gym 9: Giovanni (Ground-type Gym Leader) ───
+  'gym-giovanni': {
+    id: 'gym-giovanni', name: 'Gym Leader Giovanni', spriteKey: 'generic-trainer',
+    party: [
+      { pokemonId: 111, level: 50, moves: ['earthquake', 'horn-drill', 'stomp', 'fury-attack'] },
+      { pokemonId: 51, level: 50, moves: ['earthquake', 'slash', 'sand-attack', 'dig'] },
+      { pokemonId: 31, level: 52, moves: ['earthquake', 'body-slam', 'poison-sting', 'thunder'] },
+      { pokemonId: 112, level: 53, moves: ['earthquake', 'horn-drill', 'rock-slide', 'surf'] },
+      { pokemonId: 34, level: 55, moves: ['earthquake', 'thunder', 'surf', 'horn-drill'] },
+    ],
+    dialogue: {
+      before: [
+        'Giovanni: So, you\'ve finally arrived.',
+        'Giovanni: I am the Leader of this Gym... and of the Synthesis Collective.',
+        'Giovanni: Everything I\'ve done was to free Pokémon from weakness.',
+        'Giovanni: But you keep interfering. Very well — I\'ll crush you myself!',
+      ],
+      after: [
+        'Giovanni: ...You are truly a remarkable trainer.',
+        'Giovanni: Perhaps the Aether was never ours to control.',
+        'Giovanni: Take the Earth Badge. You\'ve earned it.',
+        'Giovanni: The Pokémon League awaits you. I\'m disbanding the Collective.',
+      ],
+    },
+    rewardMoney: 5500,
+    victoryFlag: 'defeatedGiovanni',
+    badgeReward: 'earth',
+  },
 };

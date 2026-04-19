@@ -25,30 +25,6 @@ export const viridianGym: MapDefinition = {
   displayName: 'Viridian City Gym',
   npcs: [
     {
-      id: 'viridian-gym-leader',
-      tileX: 7,
-      tileY: 2,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      dialogue: [
-        'Giovanni: So, you\'ve finally arrived.',
-        'Giovanni: I am the Leader of this Gym... and of the Synthesis Collective.',
-        'Giovanni: You\'ve been a thorn in our side for too long.',
-        'Giovanni: Let\'s settle this with a battle!',
-      ],
-      flagDialogue: [
-        {
-          flag: 'defeatedGiovanni',
-          dialogue: [
-            'Giovanni: ...You are truly a remarkable trainer.',
-            'Giovanni: Perhaps I was wrong about the Aether.',
-            'Giovanni: Take the Earth Badge. You\'ve earned it.',
-            'Giovanni: The Pokémon League awaits you.',
-          ],
-        },
-      ],
-    },
-    {
       id: 'viridian-gym-guide',
       tileX: 3,
       tileY: 9,
@@ -68,9 +44,11 @@ export const viridianGym: MapDefinition = {
           ],
         },
       ],
+      behavior: { type: 'look-around' },
     },
   ],
   trainers: [
+    { id: 'viridian-gym-leader', trainerId: 'gym-giovanni', tileX: 7, tileY: 2, textureKey: 'generic-trainer', facing: 'down', lineOfSight: 4 },
     {
       id: 'viridian-trainer-1',
       trainerId: 'cooltrainer-viridian-1',

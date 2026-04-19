@@ -37,6 +37,7 @@ export const pewterMuseum: MapDefinition = {
         'We have fossils from the ancient Kanto age!',
         'And a special Aether research exhibit on the upper floor.',
       ],
+      behavior: { type: 'look-around' },
     },
     // ─── Fossil Scientist ───
     {
@@ -50,6 +51,7 @@ export const pewterMuseum: MapDefinition = {
         'We believe Pokémon like Omanyte were once abundant here.',
         'Modern Pokémon are descendants of these ancient creatures.',
       ],
+      behavior: { type: 'look-around' },
     },
     // ─── Aether Researcher ───
     {

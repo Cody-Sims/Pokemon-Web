@@ -47,6 +47,7 @@ export const scalecrestGym: MapDefinition = {
           ],
         },
       ],
+      behavior: { type: 'look-around' },
     },
   ],
   trainers: [

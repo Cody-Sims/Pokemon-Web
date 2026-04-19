@@ -47,6 +47,7 @@ export const wraithmoorGym: MapDefinition = {
           ],
         },
       ],
+      behavior: { type: 'look-around' },
     },
   ],
   trainers: [
