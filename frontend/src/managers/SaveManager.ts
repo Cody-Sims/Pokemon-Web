@@ -28,7 +28,11 @@ export class SaveManager {
       ...serialized,
       achievements: am.serialize(),
     };
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.error('[SaveManager] Failed to save — storage may be full:', e);
+    }
   }
 
   load(): SaveData | null {
@@ -59,7 +63,8 @@ export class SaveManager {
     if (!data) return false;
     const gm = GameManager.getInstance();
     gm.reset(); // Clear stale state before loading
-    gm.loadFromSave(data);
+    // AUDIT-001: Use deserialize() which handles the flat save format from serialize()
+    gm.deserialize(data as unknown as ReturnType<typeof gm.serialize>);
     // Restore achievements
     if (data.achievements && Array.isArray(data.achievements)) {
       AchievementManager.getInstance().deserialize(data.achievements as string[]);

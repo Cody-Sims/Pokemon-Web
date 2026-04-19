@@ -277,6 +277,8 @@ export class InventoryScene extends Phaser.Scene {
     let effectStr = '';
     if (eff.type === 'heal-hp') effectStr = eff.amount === -1 ? 'Revives to half HP' : `Heals ${eff.amount} HP`;
     else if (eff.type === 'heal-status') effectStr = `Cures: ${eff.status}`;
+    else if (eff.type === 'full-restore') effectStr = 'Heals HP + cures status';
+    else if (eff.type === 'level-up') effectStr = 'Raises level by 1';
     else if (eff.type === 'capture') effectStr = `Catch rate: x${eff.catchRateMultiplier}`;
     else if (eff.type === 'key') effectStr = 'Key item';
     if (effectStr) {
@@ -367,7 +369,7 @@ export class InventoryScene extends Phaser.Scene {
       }
     }
 
-    if (eff.type === 'heal-hp' || eff.type === 'heal-status') {
+    if (eff.type === 'heal-hp' || eff.type === 'heal-status' || eff.type === 'full-restore' || eff.type === 'level-up') {
       this.openTargetPicker(idx);
     } else if (eff.type === 'capture') {
       if (this.battleMode) {
@@ -493,6 +495,45 @@ export class InventoryScene extends Phaser.Scene {
         message = `${target.nickname ?? pokemonData[target.dataId]?.name} was cured!`;
       } else {
         message = "It won't have any effect.";
+      }
+    } else if (eff.type === 'full-restore') {
+      // AUDIT-013: Full Restore heals HP and cures status
+      const pName = target.nickname ?? pokemonData[target.dataId]?.name ?? '???';
+      if (target.currentHp >= target.stats.hp && !target.status) {
+        message = `${pName} is already at full HP!`;
+      } else {
+        target.currentHp = target.stats.hp;
+        if (target.status) {
+          target.status = null;
+          target.statusTurns = undefined;
+        }
+        used = true;
+        message = `${pName} was fully restored!`;
+      }
+    } else if (eff.type === 'level-up') {
+      // AUDIT-012: Rare Candy levels up the Pokemon
+      const pName = target.nickname ?? pokemonData[target.dataId]?.name ?? '???';
+      if (target.level >= 100) {
+        message = `${pName} is already at max level!`;
+      } else {
+        target.level += 1;
+        // Recalculate stats for the new level
+        const pData = pokemonData[target.dataId];
+        if (pData) {
+          const oldMaxHp = target.stats.hp;
+          target.stats = {
+            hp: Math.floor(((pData.baseStats.hp * 2) * target.level) / 100) + target.level + 10,
+            attack: Math.floor(((pData.baseStats.attack * 2) * target.level) / 100) + 5,
+            defense: Math.floor(((pData.baseStats.defense * 2) * target.level) / 100) + 5,
+            spAttack: Math.floor(((pData.baseStats.spAttack * 2) * target.level) / 100) + 5,
+            spDefense: Math.floor(((pData.baseStats.spDefense * 2) * target.level) / 100) + 5,
+            speed: Math.floor(((pData.baseStats.speed * 2) * target.level) / 100) + 5,
+          };
+          // Increase currentHp by the HP gain
+          target.currentHp += target.stats.hp - oldMaxHp;
+        }
+        used = true;
+        message = `${pName} grew to Lv. ${target.level}!`;
       }
     }
 

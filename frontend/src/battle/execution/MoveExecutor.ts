@@ -1,9 +1,12 @@
 import { PokemonInstance } from '@data/interfaces';
 import { moveData } from '@data/moves';
+import { pokemonData } from '@data/pokemon';
+import { getCombinedEffectiveness } from '@data/type-chart';
 import { DamageCalculator, DamageResult } from '../calculation/DamageCalculator';
 import { StatusEffectHandler, EffectResult } from '../effects/StatusEffectHandler';
 import { WeatherManager } from '../effects/WeatherManager';
 import { randomInt } from '@utils/math-helpers';
+import { PokemonType } from '@utils/type-helpers';
 
 export interface MoveExecutionResult {
   damage: DamageResult;
@@ -152,8 +155,13 @@ export class MoveExecutor {
 
     // Deduct PP before accuracy check (PP is spent on attempt, not on hit)
     const moveInstance = attacker.moves.find(m => m.moveId === moveId);
-    if (moveInstance && moveInstance.currentPp > 0) {
-      moveInstance.currentPp--;
+    if (moveInstance) {
+      if (moveInstance.currentPp > 0) {
+        moveInstance.currentPp--;
+      } else if (moveId !== 'struggle') {
+        // AUDIT-032: Block execution of moves with 0 PP (except Struggle)
+        return miss();
+      }
     }
 
     // Check accuracy
@@ -194,6 +202,24 @@ export class MoveExecutor {
 
     // OHKO moves
     if (move.effect?.type === 'ohko') {
+      // AUDIT-031: Check type immunity before applying OHKO
+      const defData = pokemonData[defender.dataId];
+      if (defData) {
+        const eff = getCombinedEffectiveness(
+          move.type as PokemonType,
+          defData.types as [PokemonType] | [PokemonType, PokemonType]
+        );
+        if (eff === 0) {
+          return {
+            damage: { damage: 0, effectiveness: 0, isCritical: false, isSTAB: false },
+            moveHit: false,
+            moveName: move.name,
+            attackerName,
+            defenderName,
+            effectMessages: [`It doesn't affect ${defenderName}...`],
+          };
+        }
+      }
       const dmg = defender.currentHp;
       defender.currentHp = 0;
       return {

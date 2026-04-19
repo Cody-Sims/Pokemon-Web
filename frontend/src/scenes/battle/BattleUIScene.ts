@@ -57,6 +57,7 @@ export class BattleUIScene extends Phaser.Scene {
 
   create(): void {
     this.state = 'actions';
+    this.fleeAttempts = 0;
 
     // Use the StatusEffectHandler from BattleManager (single source of truth)
     this.statusHandler = this.battle().battleManager.getStatusHandler();

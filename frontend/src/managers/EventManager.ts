@@ -85,6 +85,8 @@ export class EventManager {
       this.listeners.delete(event);
     } else {
       this.listeners.clear();
+      // AUDIT-040: Also clear tagged listeners to prevent memory leak
+      this.taggedListeners.clear();
     }
   }
 }

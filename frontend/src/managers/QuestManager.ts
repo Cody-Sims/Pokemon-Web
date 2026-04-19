@@ -107,6 +107,11 @@ export class QuestManager {
 
   private automationInitialized = false;
 
+  /** Reset automation flag so listeners can be re-registered after EventManager clear. */
+  resetAutomation(): void {
+    this.automationInitialized = false;
+  }
+
   /** Initialize quest automation — call once on game start. Guards against duplicate registration. */
   initAutomation(): void {
     if (this.automationInitialized) return;

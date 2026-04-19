@@ -18,7 +18,7 @@ export class CatchCalculator {
     const data = pokemonData[pokemon.dataId];
     if (!data) return { caught: false, shakes: 0 };
 
-    const maxHp = pokemon.stats.hp;
+    const maxHp = Math.max(1, pokemon.stats.hp);
     const currentHp = pokemon.currentHp;
     const catchRate = data.catchRate;
 

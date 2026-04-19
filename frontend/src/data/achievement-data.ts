@@ -4,13 +4,13 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   // ── Story (10) ──
   { id: 'first-pokemon', name: 'First Partner', description: 'Get your first Pokémon', category: 'story', icon: '🥚' },
   { id: 'badge-1', name: 'Boulder Badge', description: 'Earn the Boulder Badge', category: 'story', icon: '🪨' },
-  { id: 'badge-2', name: 'Cascade Badge', description: 'Earn the Cascade Badge', category: 'story', icon: '💧' },
-  { id: 'badge-3', name: 'Thunder Badge', description: 'Earn the Thunder Badge', category: 'story', icon: '⚡' },
-  { id: 'badge-4', name: 'Rainbow Badge', description: 'Earn the Rainbow Badge', category: 'story', icon: '🌈' },
-  { id: 'badge-5', name: 'Soul Badge', description: 'Earn the Soul Badge', category: 'story', icon: '💜' },
-  { id: 'badge-6', name: 'Marsh Badge', description: 'Earn the Marsh Badge', category: 'story', icon: '🔮' },
-  { id: 'badge-7', name: 'Volcano Badge', description: 'Earn the Volcano Badge', category: 'story', icon: '🌋' },
-  { id: 'badge-8', name: 'Earth Badge', description: 'Earn the Earth Badge', category: 'story', icon: '🌍' },
+  { id: 'badge-2', name: 'Tide Badge', description: 'Earn the Tide Badge', category: 'story', icon: '💧' },
+  { id: 'badge-3', name: 'Anvil Badge', description: 'Earn the Anvil Badge', category: 'story', icon: '⚡' },
+  { id: 'badge-4', name: 'Canopy Badge', description: 'Earn the Canopy Badge', category: 'story', icon: '🌈' },
+  { id: 'badge-5', name: 'Circuit Badge', description: 'Earn the Circuit Badge', category: 'story', icon: '💜' },
+  { id: 'badge-6', name: 'Phantom Badge', description: 'Earn the Phantom Badge', category: 'story', icon: '🔮' },
+  { id: 'badge-7', name: 'Scale Badge', description: 'Earn the Scale Badge', category: 'story', icon: '🌋' },
+  { id: 'badge-8', name: 'Ember Badge', description: 'Earn the Ember Badge', category: 'story', icon: '🌍' },
   { id: 'champion', name: 'Champion', description: 'Become the Champion', category: 'story', icon: '👑' },
 
   // ── Collection (10) ──

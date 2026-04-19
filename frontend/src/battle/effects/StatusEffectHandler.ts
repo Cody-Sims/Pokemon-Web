@@ -287,7 +287,7 @@ export class StatusEffectHandler {
         if (target.status) break; // already has a status
         target.status = status;
         if (status === 'sleep') {
-          target.statusTurns = randomInt(1, 3);
+          target.statusTurns = randomInt(2, 4);
         } else if (status === 'bad-poison') {
           target.statusTurns = 1; // toxic counter
         }

@@ -6,6 +6,34 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-18]
 
+### Fixed
+
+- **AUDIT-001**: Save/load crash — `loadAndApply()` now uses `deserialize()` which matches the flat save format from `serialize()`, fixing TypeError on Continue
+- **AUDIT-002**: Division by zero in DamageCalculator — defense stat floored at 1
+- **AUDIT-003**: Division by zero in CatchCalculator — maxHp floored at 1
+- **AUDIT-004/005**: Duplicate scene files — stale top-level `OverworldScene.ts` and `TitleScene.ts` converted to re-exports
+- **AUDIT-006**: Enemy replacement sends out fainted Pokemon — now uses `findIndex(p => p.currentHp > 0)` like player side
+- **AUDIT-007**: Weather never ticks in single battles — added `tickTurn()` and `applyEndOfTurn()` calls to BattleManager
+- **AUDIT-012**: Rare Candy does nothing — added `level-up` effect type with stat recalculation
+- **AUDIT-013**: Full Restore doesn't cure status — added `full-restore` effect type that heals HP and clears status
+- **AUDIT-014/015**: Softlock on blocked warp and no-starter dialogue — added DialogueScene shutdown listeners to resume OverworldScene
+- **AUDIT-016**: Surf never activates — `surfing` is now set to `true` after showing popup
+- **AUDIT-017**: Poison Heal applies on top of poison damage — now undoes poison damage before healing
+- **AUDIT-018**: localStorage save crash on quota exceeded — wrapped in try/catch
+- **AUDIT-019**: QuestManager automation dies after EventManager clear — added `resetAutomation()` method
+- **AUDIT-020–025**: Smokescreen, Double Team, Minimize, Focus Energy, Flash, Kinesis all targeted wrong stats — remapped to speed (closest available proxy for accuracy/evasion)
+- **AUDIT-027**: Always-hit moves (Swift etc.) always miss — `doesMoveHit` now returns true for null accuracy
+- **AUDIT-028**: PartnerAI uses Tackle instead of Struggle when out of PP — fixed to 'struggle'
+- **AUDIT-030**: Sleep with 1 turn wakes and acts immediately — minimum sleep turns changed from 1-3 to 2-4
+- **AUDIT-031**: OHKO moves ignore type immunity — Fissure now checks type effectiveness before applying
+- **AUDIT-032**: Moves with 0 PP still execute — added PP guard before execution
+- **AUDIT-036**: fleeAttempts not reset between battles — reset to 0 in `BattleUIScene.create()`
+- **AUDIT-040**: EventManager.clear() leaks tagged listeners — now clears `taggedListeners` map too
+- **AUDIT-041**: GameManager.reset() doesn't reset berryPlots/gameClockMinutes — added to reset
+- **AUDIT-042**: stepCount lost on save/load — added to `serialize()`
+- **AUDIT-044**: Encounters only check tall grass — now also checks dark grass
+- **AUDIT-045**: Badge achievement names don't match actual badges and are never unlocked — renamed to match gym badge IDs and added unlock trigger in BattleRewardHandler
+
 ### Changed
 
 - **Reduced motion cascade**: Wired `isReducedMotion()` into TransitionManager (instant scene transitions), EmoteBubble (skip bounce tweens), and WeatherRenderer (skip particle emitters) so the Settings toggle actually takes effect

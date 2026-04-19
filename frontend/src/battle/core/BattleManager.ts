@@ -60,12 +60,15 @@ export class BattleManager {
     this.fsm.registerState('CHECK_FAINT', {
       enter: () => {
         if (this.enemyActive.currentHp <= 0) {
-          // Enemy fainted
-          this.enemyActiveIndex++;
-          if (this.enemyActiveIndex >= this.config.enemyParty.length) {
+          // Enemy fainted — search for next alive Pokemon (AUDIT-006)
+          const nextAlive = this.config.enemyParty.findIndex(
+            (p, i) => i !== this.enemyActiveIndex && p.currentHp > 0
+          );
+          if (nextAlive === -1) {
             this.fsm.transition('VICTORY');
           } else {
-            this.enemyActive = this.config.enemyParty[this.enemyActiveIndex];
+            this.enemyActiveIndex = nextAlive;
+            this.enemyActive = this.config.enemyParty[nextAlive];
             // Initialize status tracking and fire switch-in abilities
             this.statusHandler.initPokemon(this.enemyActive);
             const switchResult = AbilityHandler.onSwitchIn(this.enemyActive, this.playerActive, this.statusHandler);
@@ -168,6 +171,11 @@ export class BattleManager {
 
     // End-of-turn effects
     const endOfTurnMessages: string[] = [];
+
+    // AUDIT-007: Tick weather and apply end-of-turn weather damage
+    const weatherTickMsgs = this.weatherManager.tickTurn();
+    endOfTurnMessages.push(...weatherTickMsgs);
+
     if (this.playerActive.currentHp > 0) {
       const eot = this.statusHandler.applyEndOfTurn(this.playerActive, this.enemyActive);
       endOfTurnMessages.push(...eot.messages);
@@ -175,6 +183,16 @@ export class BattleManager {
     if (this.enemyActive.currentHp > 0) {
       const eot = this.statusHandler.applyEndOfTurn(this.enemyActive, this.playerActive);
       endOfTurnMessages.push(...eot.messages);
+    }
+
+    // AUDIT-007: Apply weather chip damage (sandstorm/hail)
+    if (this.playerActive.currentHp > 0) {
+      const weatherDmg = this.weatherManager.applyEndOfTurn(this.playerActive);
+      if (weatherDmg) endOfTurnMessages.push(...weatherDmg.messages);
+    }
+    if (this.enemyActive.currentHp > 0) {
+      const weatherDmg = this.weatherManager.applyEndOfTurn(this.enemyActive);
+      if (weatherDmg) endOfTurnMessages.push(...weatherDmg.messages);
     }
 
     this.fsm.transition('CHECK_FAINT');

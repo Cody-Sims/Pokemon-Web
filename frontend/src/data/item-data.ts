@@ -72,7 +72,7 @@ export const itemData: Record<string, ItemData> = {
     id: 'full-restore', name: 'Full Restore', category: 'medicine',
     description: 'Fully restores HP and cures all status conditions.',
     buyPrice: 3000,
-    effect: { type: 'heal-hp', amount: 9999 },
+    effect: { type: 'full-restore', amount: 9999 },
   },
   'max-revive': {
     id: 'max-revive', name: 'Max Revive', category: 'medicine',
@@ -253,7 +253,7 @@ export const itemData: Record<string, ItemData> = {
   'rare-candy': {
     id: 'rare-candy', name: 'Rare Candy', category: 'medicine',
     description: 'Raises the level of a single Pokémon by one.',
-    effect: { type: 'heal-hp', amount: 0 },
+    effect: { type: 'level-up', amount: 1 },
   },
   'master-ball': {
     id: 'master-ball', name: 'Master Ball', category: 'pokeball',

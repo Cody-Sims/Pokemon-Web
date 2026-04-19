@@ -1,6 +1,7 @@
 import { trainerData } from '@data/trainer-data';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
+import { AchievementManager } from '@managers/AchievementManager';
 import { isMobile } from '@ui/theme';
 
 export interface RewardResult {
@@ -28,6 +29,9 @@ export function processTrainerRewards(trainerId: string, victoryFlag?: string): 
       gm.addBadge(tData.badgeReward);
       const badgeName = tData.badgeReward.charAt(0).toUpperCase() + tData.badgeReward.slice(1);
       messages.push(`You received the ${badgeName} Badge!`);
+      // AUDIT-045: Unlock badge achievement
+      const badgeCount = gm.getBadges().length;
+      AchievementManager.getInstance().unlock(`badge-${badgeCount}`);
     }
     if (tData.dialogue.after.length > 0) {
       messages.push(...tData.dialogue.after);

@@ -1,62 +1,13 @@
-import Phaser from 'phaser';
-import { TILE_SIZE } from '@utils/constants';
-import { ui } from '@utils/ui-layout';
-import { layoutOn } from '@utils/layout-on';
-import { startFpsMonitor } from '@utils/perf-profile';
-import { Player } from '@entities/Player';
-import { NPC } from '@entities/NPC';
-import { Trainer } from '@entities/Trainer';
-import { AnimationHelper } from '@systems/rendering/AnimationHelper';
-import { InputManager } from '@systems/engine/InputManager';
-import { TouchControls } from '@ui/controls/TouchControls';
-import { Direction } from '@utils/type-helpers';
-import { GameManager } from '@managers/GameManager';
-import { EncounterSystem } from '@systems/overworld/EncounterSystem';
-import { GameClock } from '@systems/engine/GameClock';
-import { WeatherRenderer } from '@systems/rendering/WeatherRenderer';
-import { TransitionManager } from '@managers/TransitionManager';
-import { PokemonInstance, SaveData } from '@data/interfaces';
-import { trainerData } from '@data/trainer-data';
-import { pokemonData } from '@data/pokemon';
-import { moveData } from '@data/moves';
-import {
-  mapRegistry,
-  MapDefinition,
-  NpcSpawn,
-  Tile,
-  SOLID_TILES,
-  OVERLAY_BASE,
-  FOREGROUND_TILES,
-  LEDGE_TILES,
-} from '@data/maps';
-import { AudioManager } from '@managers/AudioManager';
-import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
-import { mobileFontSize } from '@ui/theme';
-import { hintText } from '@utils/hint-text';
-import { MapPreloader } from '@systems/engine/MapPreloader';
-import { EventManager } from '@managers/EventManager';
-import { QuestManager } from '@managers/QuestManager';
-import { NPCBehaviorController } from '@systems/overworld/NPCBehavior';
-import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
-import { LightingSystem } from '@systems/rendering/LightingSystem';
-import { AmbientSFX } from '@systems/audio/AmbientSFX';
-import { CutsceneEngine } from '@systems/engine/CutsceneEngine';
-import { cutsceneData } from '@data/cutscene-data';
-import { AchievementManager } from '@managers/AchievementManager';
-import { AchievementToast } from '@ui/widgets/AchievementToast';
-import {
-  spawnNPCs as spawnNPCsHelper,
-  spawnTrainers as spawnTrainersHelper,
-} from './OverworldNPCSpawner';
-import {
-  redrawTile as redrawTileHelper,
+// AUDIT-004: Re-export from canonical location to prevent stale duplicate
+export { OverworldScene } from './overworld/OverworldScene';
+
   showFieldAbilityPopup as showPopup,
   pushBoulder as pushBoulderHelper,
-} from './OverworldFieldAbilities';
-import { getBestRod, attemptFish } from './OverworldFishing';
-import { healParty as healPartyHelper } from './OverworldHealing';
-import { getFootstepSFX as getFootstepSFXHelper } from './OverworldFootsteps';
-import { tryInteract as tryInteractHelper, InteractionContext } from './OverworldInteraction';
+} from './overworld/OverworldFieldAbilities';
+import { getBestRod, attemptFish } from './overworld/OverworldFishing';
+import { healParty as healPartyHelper } from './overworld/OverworldHealing';
+import { getFootstepSFX as getFootstepSFXHelper } from './overworld/OverworldFootsteps';
+import { tryInteract as tryInteractHelper, InteractionContext } from './overworld/OverworldInteraction';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
@@ -84,41 +35,29 @@ export class OverworldScene extends Phaser.Scene {
   private lavaTileSprites: Phaser.GameObjects.Image[] = [];
   private tileAnimFrame = 0;
   private ambientSFX!: AmbientSFX;
-  /** O(1) lookup set for NPC-occupied tile positions. */
-  private npcOccupiedTiles = new Set<string>();
-  private hudText?: Phaser.GameObjects.Text;
-  private clockText?: Phaser.GameObjects.Text;
-  private saveBtn?: Phaser.GameObjects.Text;
-  private interactPrompt?: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'OverworldScene' });
   }
 
-  init(data?: { mapKey?: string; spawnId?: string; saveData?: SaveData; flyTo?: string }): void {
+  init(data?: { mapKey?: string; spawnId?: string; saveData?: SaveData }): void {
     // Restore from save data if provided
     if (data?.saveData) {
       const gm = GameManager.getInstance();
       gm.loadFromSave(data.saveData);
       this.mapKey = gm.getCurrentMap();
       this.spawnId = '__resume';
-    } else if (data?.flyTo) {
-      this.mapKey = data.flyTo;
-      this.spawnId = data.spawnId ?? 'default';
     } else {
       this.mapKey = data?.mapKey ?? GameManager.getInstance().getCurrentMap();
       this.spawnId = data?.spawnId ?? 'default';
     }
     this.transitioning = false;
     this.surfing = false;
-    this.isCycling = false;
     this.npcs = [];
     this.trainers = [];
     this.npcBehaviors = [];
     this.lastAnimKey = '';
     this.lastFlipX = false;
-    this.interactPrompt?.destroy();
-    this.interactPrompt = undefined;
     this.waterTileSprites = [];
     this.tallGrassTileSprites = [];
     this.lavaTileSprites = [];
@@ -131,7 +70,7 @@ export class OverworldScene extends Phaser.Scene {
     QuestManager.getInstance().initAutomation();
 
     // Launch quest tracker HUD overlay
-    if (!this.scene.isActive('QuestTrackerScene') && !this.scene.isSleeping('QuestTrackerScene')) {
+    if (!this.scene.isActive('QuestTrackerScene')) {
       this.scene.launch('QuestTrackerScene');
     }
 
@@ -150,7 +89,6 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     gm.setCurrentMap(this.mapKey);
-    gm.markMapVisited(this.mapKey);
     EventManager.getInstance().emit('map-entered', this.mapKey);
 
     const mapW = this.mapDef.width;
@@ -166,7 +104,7 @@ export class OverworldScene extends Phaser.Scene {
 
     // Init encounter system
     this.encounterSystem = new EncounterSystem();
-    this.gameClock = new GameClock(GameManager.getInstance().getGameClockMinutes());
+    this.gameClock = new GameClock();
 
     // Register player animations and create player
     AnimationHelper.registerPlayerAnimations(this);
@@ -197,12 +135,9 @@ export class OverworldScene extends Phaser.Scene {
 
     gm.setPlayerPosition({ x: spawnX, y: spawnY, direction: spawnDir });
 
-    // Spawn Trainers first so NPC behaviors can see trainer positions for collision
-    this.spawnTrainers();
+    // Spawn NPCs and Trainers from map data
     this.spawnNPCs();
-
-    // Build O(1) NPC position lookup
-    this.rebuildNpcOccupiedTiles();
+    this.spawnTrainers();
 
     // Set up collision: solid tiles + NPC positions
     this.player.gridMovement.setCollisionCheck((tx, ty) => {
@@ -219,8 +154,12 @@ export class OverworldScene extends Phaser.Scene {
       } else if (SOLID_TILES.has(groundTile)) {
         return true;
       }
-      // Block NPC/Trainer tiles (O(1) lookup)
-      if (this.npcOccupiedTiles.has(`${tx},${ty}`)) return true;
+      // Block NPC/Trainer tiles
+      for (const npc of this.npcs) {
+        const npcTX = Math.floor(npc.x / TILE_SIZE);
+        const npcTY = Math.floor(npc.y / TILE_SIZE);
+        if (npcTX === tx && npcTY === ty) return true;
+      }
       return false;
     });
 
@@ -236,25 +175,18 @@ export class OverworldScene extends Phaser.Scene {
     // Camera
     const mapPixelW = mapW * TILE_SIZE;
     const mapPixelH = mapH * TILE_SIZE;
+
     const layout = ui(this);
-
-    // Dark background for any void area outside the map bounds
-    this.cameras.main.setBackgroundColor(this.mapDef.isInterior ? 0x202020 : 0x0f0f1a);
-
     if (this.mapDef.isInterior && mapPixelW <= layout.w && mapPixelH <= layout.h) {
       // Small interior — center the map in the viewport, don't follow player
       this.cameras.main.stopFollow();
+      this.cameras.main.setBackgroundColor(0x202020);
+      // Position camera so map is centered in the game window
       this.cameras.main.scrollX = (mapPixelW - layout.w) / 2;
       this.cameras.main.scrollY = (mapPixelH - layout.h) / 2;
     } else {
-      // Center the map when it's smaller than the viewport on either axis.
-      // Expand bounds with padding so Phaser's built-in centering kicks in.
-      const boundsW = Math.max(mapPixelW, layout.w);
-      const boundsH = Math.max(mapPixelH, layout.h);
-      const boundsX = (mapPixelW - boundsW) / 2;
-      const boundsY = (mapPixelH - boundsH) / 2;
-      this.cameras.main.setBounds(boundsX, boundsY, boundsW, boundsH);
       this.cameras.main.startFollow(this.player, true);
+      this.cameras.main.setBounds(0, 0, mapPixelW, mapPixelH);
     }
 
     // Weather
@@ -307,92 +239,33 @@ export class OverworldScene extends Phaser.Scene {
     this.ambientSFX.setAmbient(this.mapDef.ambientSfx ?? 'none');
 
     // HUD label
+    const { width } = this.cameras.main;
     const mapLabel = this.mapDef.displayName
       ?? this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const hudHint = TouchControls.isTouchDevice()
       ? `${mapLabel}  |  ${hintText('interact')}`
       : `${mapLabel}  |  ${hintText('interact')}  |  ESC = Menu`;
-    this.hudText = this.add.text(this.cameras.main.width / 2, 20, hudHint, {
+    this.add.text(width / 2, 20, hudHint, {
       fontSize: mobileFontSize(14),
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
 
-    // Clock widget (top-left)
-    const periodEmoji: Record<string, string> = { morning: '🌅', day: '☀️', evening: '🌆', night: '🌙' };
-    const period = this.gameClock.getTimePeriod();
-    const clockStr = `${periodEmoji[period] ?? '☀️'} ${this.gameClock.getClockString()}`;
-    this.clockText = this.add.text(8, 8, clockStr, {
-      fontSize: mobileFontSize(11),
-      color: '#ffcc00',
-      fontFamily: 'monospace',
-      backgroundColor: '#0f0f1abb',
-      padding: { x: 6, y: 3 },
-    }).setScrollFactor(0).setDepth(100);
+    // Show location name popup for interiors
+    if (this.mapDef.isInterior && this.mapDef.displayName) {
+      const namePopup = this.add.text(width / 2, 50, this.mapDef.displayName, {
+        fontSize: '16px',
+        color: '#ffffff',
+        backgroundColor: '#00000088',
+        padding: { x: 12, y: 6 },
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(100).setAlpha(0);
 
-    // Quick-save floating button (mobile only, top-right below menu button)
-    if (TouchControls.isTouchDevice()) {
-      this.saveBtn = this.add.text(this.cameras.main.width - 20, 60, '💾', {
-        fontSize: mobileFontSize(22),
-      }).setOrigin(1, 0).setScrollFactor(0).setDepth(100).setAlpha(0.5)
-        .setInteractive({ useHandCursor: true })
-        .setPadding(8, 8, 8, 8);
-      this.saveBtn.on('pointerdown', () => {
-        import('@managers/SaveManager').then(({ SaveManager }) => {
-          SaveManager.getInstance().save();
-          this.saveBtn?.setAlpha(1);
-          this.time.delayedCall(600, () => this.saveBtn?.setAlpha(0.5));
-        });
-      });
-    }
-
-    // Re-layout HUD elements on resize / orientation change
-    layoutOn(this, () => {
-      const w = this.cameras.main.width;
-      this.hudText?.setX(w / 2);
-      this.saveBtn?.setX(w - 20);
-      this.clockText?.setPosition(8, 8);
-    });
-
-    // Slide-in area name banner
-    if (this.mapDef.displayName) {
-      const bannerW = 200;
-      const bannerH = 28;
-      const bannerX = this.cameras.main.width / 2;
-      const bannerY = -bannerH;
-
-      const bannerBg = this.add.graphics().setScrollFactor(0).setDepth(100);
-      bannerBg.fillStyle(0x0f0f1a, 0.88);
-      bannerBg.fillRoundedRect(bannerX - bannerW / 2, 0, bannerW, bannerH, 4);
-      bannerBg.lineStyle(1, 0xffcc00, 0.6);
-      bannerBg.strokeRoundedRect(bannerX - bannerW / 2, 0, bannerW, bannerH, 4);
-      bannerBg.setY(bannerY);
-
-      const bannerText = this.add.text(bannerX, bannerY + bannerH / 2, this.mapDef.displayName, {
-        fontSize: mobileFontSize(13),
-        color: '#ffcc00',
-        fontFamily: 'monospace',
-        fontStyle: 'bold',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(101);
-
-      // Slide in from top
       this.tweens.add({
-        targets: [bannerBg, bannerText],
-        y: '+=38',
-        duration: 350,
-        ease: 'Back.easeOut',
-        onComplete: () => {
-          // Hold, then slide out
-          this.time.delayedCall(1800, () => {
-            this.tweens.add({
-              targets: [bannerBg, bannerText],
-              y: '-=38',
-              alpha: 0,
-              duration: 250,
-              ease: 'Cubic.easeIn',
-              onComplete: () => { bannerBg.destroy(); bannerText.destroy(); },
-            });
-          });
-        },
+        targets: namePopup,
+        alpha: { from: 0, to: 1 },
+        duration: 300,
+        yoyo: true,
+        hold: 1500,
+        onComplete: () => namePopup.destroy(),
       });
     }
 
@@ -418,9 +291,6 @@ export class OverworldScene extends Phaser.Scene {
         }
       }
     }
-
-    // Start FPS monitoring for auto-quality downgrade on low-end devices
-    startFpsMonitor();
   }
 
   // ── Map rendering (tileset-based) ──────────────────────────
@@ -481,8 +351,8 @@ export class OverworldScene extends Phaser.Scene {
     for (const npc of this.npcs) npc.destroy();
     this.npcs = [];
     this.trainers = [];
-    this.spawnTrainers();
     this.spawnNPCs();
+    this.spawnTrainers();
   }
 
   private spawnTrainers(): void {
@@ -539,10 +409,6 @@ export class OverworldScene extends Phaser.Scene {
             this.scene.launch('DialogueScene', {
               dialogue: ['The way ahead is blocked...'],
             });
-            // AUDIT-014: Resume when dialogue ends to prevent softlock
-            this.scene.get('DialogueScene').events.once('shutdown', () => {
-              this.scene.resume();
-            });
             return;
           }
         }
@@ -551,11 +417,7 @@ export class OverworldScene extends Phaser.Scene {
         if (gm.getParty().length === 0 && !targetDef?.isInterior) {
           this.scene.pause();
           this.scene.launch('DialogueScene', {
-            dialogue: ['You should go see Prof. Willow first!'],
-          });
-          // AUDIT-015: Resume when dialogue ends to prevent softlock
-          this.scene.get('DialogueScene').events.once('shutdown', () => {
-            this.scene.resume();
+            dialogue: ['You should go see Prof. Oak first!'],
           });
           return;
         }
@@ -575,11 +437,10 @@ export class OverworldScene extends Phaser.Scene {
       }
     }
 
-    // Wild encounters in tall grass or dark grass
+    // Wild encounters in tall grass
     if (
       this.mapDef.encounterTableKey &&
-      (this.mapDef.ground[ty]?.[tx] === Tile.TALL_GRASS ||
-       this.mapDef.ground[ty]?.[tx] === Tile.DARK_GRASS)
+      this.mapDef.ground[ty]?.[tx] === Tile.TALL_GRASS
     ) {
       // Running increases encounter rate; cycling is normal
       const encounterMultiplier = this.player.gridMovement.isRunning() ? 1.5 : 1;
@@ -636,16 +497,11 @@ export class OverworldScene extends Phaser.Scene {
 
     // Exclamation mark above trainer
     const excl = this.add.text(trainer.x, trainer.y - 30, '!', {
-      fontSize: mobileFontSize(24), color: '#ff0000', fontStyle: 'bold',
+      fontSize: '24px', color: '#ff0000', fontStyle: 'bold',
     }).setOrigin(0.5).setDepth(10);
 
     // After a brief pause, trainer walks toward the player
     this.time.delayedCall(600, () => {
-      // NEW-012: Guard against scene/sprite destruction during delay
-      if (!this.scene.isActive() || !trainer.active) {
-        excl.destroy();
-        return;
-      }
       excl.destroy();
 
       // Trainer walks toward the player (stops 1 tile away)
@@ -747,15 +603,15 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     this.scene.pause();
-    this.scene.launch('DialogueScene', { dialogue: ['...', '...!'], callingScene: 'OverworldScene' });
+    this.scene.launch('DialogueScene', { dialogue: ['...', '...!'] });
     this.scene.get('DialogueScene').events.once('shutdown', () => {
       const pokemon = attemptFish(this.mapKey, rod);
       if (pokemon) {
         this.scene.resume();
         this.triggerWildEncounter(pokemon);
       } else {
-        this.scene.launch('DialogueScene', { dialogue: ['Not even a nibble...'], callingScene: 'OverworldScene' });
-        // NEW-008: Don't add extra resume — DialogueScene handles it via callingScene
+        this.scene.launch('DialogueScene', { dialogue: ['Not even a nibble...'] });
+        this.scene.get('DialogueScene').events.once('shutdown', () => this.scene.resume());
       }
     });
   }
@@ -814,18 +670,7 @@ export class OverworldScene extends Phaser.Scene {
       controller.update(delta);
     }
 
-    // Refresh NPC occupied tile positions after behavior updates
-    this.rebuildNpcOccupiedTiles();
-
-    // Update clock display
-    if (this.clockText) {
-      const periodEmoji: Record<string, string> = { morning: '🌅', day: '☀️', evening: '🌆', night: '🌙' };
-      const period = this.gameClock.getTimePeriod();
-      this.clockText.setText(`${periodEmoji[period] ?? '☀️'} ${this.gameClock.getClockString()}`);
-      GameManager.getInstance().setGameClockMinutes(this.gameClock.getTotalElapsed());
-    }
-
-    // Animated tile effects (throttled: water/lava every 30 frames, grass every 60)
+    // Animated tile effects (run every frame, even while player moves)
     this.tileAnimFrame++;
     if (this.tileAnimFrame % 30 === 0) {
       const waterTints = [0x3090e0, 0x40a0f0, 0x2080d0];
@@ -834,7 +679,7 @@ export class OverworldScene extends Phaser.Scene {
       for (const s of this.waterTileSprites) s.setTint(waterTints[idx]);
       for (const s of this.lavaTileSprites) s.setTint(lavaTints[idx]);
     }
-    if (this.tileAnimFrame % 60 === 0) {
+    if (this.tileAnimFrame % 15 === 0) {
       for (const s of this.tallGrassTileSprites) {
         s.setAlpha(0.85 + Math.random() * 0.15);
       }
@@ -843,13 +688,7 @@ export class OverworldScene extends Phaser.Scene {
     // Update ambient SFX
     if (this.ambientSFX) this.ambientSFX.update();
 
-    if (this.player.isMoving()) {
-      if (this.interactPrompt) this.interactPrompt.setVisible(false);
-      return;
-    }
-
-    // Update interaction prompt while standing
-    this.updateInteractPrompt();
+    if (this.player.isMoving()) return;
 
     // Update lighting overlay
     this.lightingSystem.update(this.player.x, this.player.y);
@@ -900,12 +739,11 @@ export class OverworldScene extends Phaser.Scene {
       this.isCycling = false;
     }
 
-    // Running shoes: hold SHIFT, B button, or double-tap joystick to run
+    // Running shoes: hold SHIFT or B button to run (requires flag or always available)
     const shiftDown = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT, false, false).isDown;
     const hasRunningShoes = GameManager.getInstance().getFlag('runningShoes');
-    const touchRun = TouchControls.getInstance()?.isRunToggled() ?? false;
     // Cycling takes priority over running; they are mutually exclusive
-    const shouldRun = !this.isCycling && hasRunningShoes && (shiftDown || touchRun);
+    const shouldRun = !this.isCycling && hasRunningShoes && shiftDown;
     this.player.gridMovement.setRunning(shouldRun);
     this.player.gridMovement.setCycling(this.isCycling);
 
@@ -914,79 +752,25 @@ export class OverworldScene extends Phaser.Scene {
     this.player.move(input.direction);
   }
 
-  private updateInteractPrompt(): void {
-    const facing = this.player.getFacing();
-    const px = this.player.gridMovement.getTileX();
-    const py = this.player.gridMovement.getTileY();
-    const dx = facing === 'left' ? -1 : facing === 'right' ? 1 : 0;
-    const dy = facing === 'up' ? -1 : facing === 'down' ? 1 : 0;
-    const targetX = px + dx;
-    const targetY = py + dy;
-
-    let showPrompt = false;
-    let promptWorldX = 0;
-    let promptWorldY = 0;
-
-    for (const npc of this.npcs) {
-      const ntx = Math.floor(npc.x / TILE_SIZE);
-      const nty = Math.floor(npc.y / TILE_SIZE);
-      if (ntx === targetX && nty === targetY) {
-        showPrompt = true;
-        promptWorldX = ntx * TILE_SIZE + TILE_SIZE / 2;
-        promptWorldY = nty * TILE_SIZE - 8;
-        break;
+  /**
+   * Crop the bottom portion of entities standing on tall grass tiles
+   * so they appear partially hidden in the grass (classic Pokémon effect).
+   */
+  private updateGrassCrop(): void {
+    const entities: Phaser.GameObjects.Sprite[] = [this.player, ...this.npcs];
+    for (const entity of entities) {
+      if (!entity.active) continue;
+      const tx = Math.floor(entity.x / TILE_SIZE);
+      const ty = Math.floor(entity.y / TILE_SIZE);
+      const tile = this.mapDef.ground[ty]?.[tx];
+      if (tile === Tile.TALL_GRASS) {
+        // Hide bottom ~35% of sprite to simulate wading through grass
+        const frame = entity.frame;
+        const cropH = Math.floor(frame.height * 0.65);
+        entity.setCrop(0, 0, frame.width, cropH);
+      } else {
+        entity.setCrop();
       }
     }
-    if (!showPrompt) {
-      for (const trainer of this.trainers) {
-        const ttx = Math.floor(trainer.x / TILE_SIZE);
-        const tty = Math.floor(trainer.y / TILE_SIZE);
-        if (ttx === targetX && tty === targetY) {
-          showPrompt = true;
-          promptWorldX = ttx * TILE_SIZE + TILE_SIZE / 2;
-          promptWorldY = tty * TILE_SIZE - 8;
-          break;
-        }
-      }
-    }
-
-    if (showPrompt && !this.player.isMoving()) {
-      if (!this.interactPrompt) {
-        const label = TouchControls.isTouchDevice() ? 'Tap' : 'Z';
-        this.interactPrompt = this.add.text(0, 0, label, {
-          fontSize: mobileFontSize(11),
-          color: '#ffcc00',
-          fontFamily: 'monospace',
-          fontStyle: 'bold',
-          backgroundColor: '#0f0f1a',
-          padding: { x: 4, y: 2 },
-        }).setOrigin(0.5, 1).setDepth(10);
-      }
-      this.interactPrompt.setPosition(promptWorldX, promptWorldY).setVisible(true);
-    } else if (this.interactPrompt) {
-      this.interactPrompt.setVisible(false);
-    }
   }
-
-  /** Rebuild the O(1) NPC occupied tile set from current NPC positions. */
-  private rebuildNpcOccupiedTiles(): void {
-    this.npcOccupiedTiles.clear();
-    for (const npc of this.npcs) {
-      const tx = Math.floor(npc.x / TILE_SIZE);
-      const ty = Math.floor(npc.y / TILE_SIZE);
-      this.npcOccupiedTiles.add(`${tx},${ty}`);
-    }
-  }
-
-  shutdown(): void {
-    this.input.keyboard?.removeAllListeners();
-    this.lightingSystem?.destroy();
-    this.ambientSFX?.destroy();
-    this.weatherRenderer?.destroy();
-    this.npcBehaviors = [];
-    this.npcOccupiedTiles.clear();
-    this.interactPrompt?.destroy();
-    this.interactPrompt = undefined;
-  }
-
 }

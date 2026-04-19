@@ -24,7 +24,7 @@ export class PartnerAI {
     ally: PokemonInstance | null,
   ): { moveId: string; targetSlot: number } {
     const availableMoves = pokemon.moves.filter(m => m.currentPp > 0);
-    if (availableMoves.length === 0) return { moveId: 'tackle', targetSlot: 2 };
+    if (availableMoves.length === 0) return { moveId: 'struggle', targetSlot: 2 };
 
     const selfData = pokemonData[pokemon.dataId];
 

@@ -40,9 +40,11 @@ export function collectEndOfTurnEffects(
   // Poison Heal: skip normal poison damage and heal instead
   const ability = AbilityHandler.getAbility(pokemon);
   if (ability === 'poison-heal' && (pokemon.status === 'poison' || pokemon.status === 'bad-poison')) {
-    // Undo the poison damage that was just applied by statusHandler
+    // AUDIT-017: Undo the poison damage that was just applied by statusHandler
     // and heal 1/8 max HP instead
     const pokeName = pokemon.nickname ?? pokemonData[pokemon.dataId]?.name ?? '???';
+    const poisonDmg = Math.max(1, Math.floor(pokemon.stats.hp / (pokemon.status === 'bad-poison' ? 16 : 8)));
+    pokemon.currentHp = Math.min(pokemon.stats.hp, pokemon.currentHp + poisonDmg); // undo poison damage
     const heal = Math.max(1, Math.floor(pokemon.stats.hp / 8));
     pokemon.currentHp = Math.min(pokemon.stats.hp, pokemon.currentHp + heal);
     messages.push(`${pokeName} restored HP with Poison Heal!`);

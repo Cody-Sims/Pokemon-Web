@@ -15,5 +15,5 @@ export const psychicMoves: Record<string, MoveData> = {
   'reflect':      { id: 'reflect', name: 'Reflect', type: 'psychic', category: 'status', power: null, accuracy: 100, pp: 20, effect: { type: 'stat-change', target: 'self', stat: 'defense', stages: 1 } },
   'rest':         { id: 'rest', name: 'Rest', type: 'psychic', category: 'status', power: null, accuracy: 100, pp: 10, effect: { type: 'heal', target: 'self', amount: 100 } },
   'teleport':     { id: 'teleport', name: 'Teleport', type: 'psychic', category: 'status', power: null, accuracy: 100, pp: 20 },
-  'kinesis':      { id: 'kinesis', name: 'Kinesis', type: 'psychic', category: 'status', power: null, accuracy: 80, pp: 15, effect: { type: 'stat-change', target: 'enemy', stat: 'attack', stages: -1 } },
+  'kinesis':      { id: 'kinesis', name: 'Kinesis', type: 'psychic', category: 'status', power: null, accuracy: 80, pp: 15, effect: { type: 'stat-change', target: 'enemy', stat: 'speed', stages: -1 } },
 };

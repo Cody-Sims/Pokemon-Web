@@ -111,6 +111,8 @@ export class GameManager {
     this.gameStats = defaultStats();
     this.hallOfFame = [];
     this.visitedMaps = new Set(['pallet-town']);
+    this.berryPlots = {};
+    this.gameClockMinutes = 0;
   }
 
   // Party
@@ -329,6 +331,7 @@ export class GameManager {
       visitedMaps: [...this.visitedMaps],
       berryPlots: this.berryPlots,
       gameClockMinutes: this.gameClockMinutes,
+      stepCount: this.stepCount,
     };
   }
 

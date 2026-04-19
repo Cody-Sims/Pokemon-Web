@@ -354,6 +354,8 @@ export function tryInteract(ctx: InteractionContext): void {
     // Surf: start surfing on water
     if (tile === Tile.WATER && !ctx.surfing && OverworldAbilities.canUse('surf')) {
       ctx.showFieldAbilityPopup('SURF!');
+      // AUDIT-016: Actually enable surfing
+      (ctx as unknown as { surfing: boolean }).surfing = true;
       return;
     }
 

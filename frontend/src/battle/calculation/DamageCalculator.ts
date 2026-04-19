@@ -61,6 +61,9 @@ export class DamageCalculator {
       D = move.category === 'physical' ? defender.stats.defense : defender.stats.spDefense;
     }
 
+    // AUDIT-002: Floor defense at 1 to prevent division by zero
+    D = Math.max(1, D);
+
     // Base damage
     let damage = ((2 * level / 5 + 2) * power * A / D) / 50 + 2;
 
@@ -107,6 +110,8 @@ export class DamageCalculator {
 
   /** Check if a move hits based on accuracy. */
   static doesMoveHit(move: MoveData): boolean {
+    // AUDIT-027: null accuracy means the move never misses (e.g. Swift)
+    if (move.accuracy === null || move.accuracy === undefined) return true;
     return Math.random() * 100 < move.accuracy;
   }
 }
