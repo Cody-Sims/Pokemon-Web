@@ -8,6 +8,16 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **Pewter City unwired houses**: Added warps for west house (tileX:5) and east house (tileX:23) and extra PokéMart double-door warp (tileX:20); added `from-house-1` and `from-house-2` spawn points
+- **Viridian City unwired houses**: Added warps for west house (tileX:5) and east house (tileX:26); added `from-house-1` and `from-house-2` spawn points
+- **Verdantia Village unwired house**: Added warp for NE house (tileX:16) and `from-house-1` spawn point
+- **Ironvale City spawn mismatch**: Renamed `from-house` to `from-house-1` to match generic house exit warp
+
+### Added
+
+- **Pewter City house 2** (`pewterHouse2`): East side resident with museum lore dialogue
+- **Viridian City house 2** (`viridianHouse2`): East side resident with mysterious pond Pokémon dialogue
+
 - **Map viewport centering**: Maps smaller than the game viewport (e.g. Pallet Town at 800px on a widescreen display) are now centered on both axes instead of showing void space on the right edge. Camera bounds expand to viewport dimensions and a dark background (`0x0f0f1a`) fills any area outside map content
 
 ### Changed

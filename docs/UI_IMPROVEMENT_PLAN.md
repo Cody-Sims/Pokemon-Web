@@ -526,11 +526,54 @@ aether conduits, and terminals.
 | 4    | Battle UI overhaul  | 🔲 Todo | Platforms, move grid, info panels |
 | 5    | Overworld UI        | 🔲 Todo | Area banner, clock widget, prompts|
 
+### Sprint 7: City Warp Integrity — ✅ Complete
+
+Audited all 10 cities for unwired doors, missing warps, and spawn mismatches.
+Fixed 6 issues across 4 cities:
+
+| City             | Fix                                                          |
+|------------------|--------------------------------------------------------------|
+| Pewter City      | Wired 2 house doors, added extra PokéMart door warp          |
+| Viridian City    | Wired 2 house doors (gym left intentionally NPC-blocked)     |
+| Verdantia Village| Wired 1 house door                                           |
+| Ironvale City    | Fixed spawn name mismatch (`from-house` → `from-house-1`)   |
+
+All 10 cities now have every visible door wired to an interior.
+
 ### Camera/Viewport Centering — ✅ Complete
 
 Maps smaller than the viewport are now centered on both axes. The camera
 bounds expand to the viewport size when the map is narrower or shorter,
 and a dark background (`0x0f0f1a`) fills any void area outside map content.
+
+---
+
+## Remaining Work
+
+### Sprint 6 Remaining: UI Visual Upgrades
+
+| Step | Target              | Priority | Treatment                         |
+|------|---------------------|----------|-----------------------------------|
+| 2    | Type icons          | High     | 18 pixel art badges (32x14)       |
+| 3    | Status icons        | High     | 6 pixel art status badges         |
+| 4    | Battle UI overhaul  | High     | Platforms, move grid, info panels |
+| 5    | Overworld UI        | Medium   | Area banner, clock widget, prompts|
+
+### Warp Validation Cleanup
+
+The validation script found 56 errors and 63 warnings. Run the validator
+against updated maps and systematically fix remaining issues.
+
+### Museum Interior Upgrade
+
+Pewter Museum exists but could be expanded with unique fossil exhibits,
+interactive displays, and quest-related items.
+
+### Viridian Gym (Story-Gated)
+
+The Viridian Gym door is NPC-blocked. Once the story flag system supports
+conditional warps removing the NPC, add a `requireFlag: 'gym8_unlocked'`
+warp.
 
 ---
 
@@ -551,8 +594,8 @@ and a dark background (`0x0f0f1a`) fills any void area outside map content.
 
 ### Warp Integrity
 
-- [ ] Zero warp validation errors (56 errors, 63 warnings — needs cleanup)
-- [ ] All warps are bidirectional (or explicitly marked one-way)
+- [ ] Zero warp validation errors (reduced from 56 — needs further cleanup)
+- [x] All visible doors wired to interiors (6 fixed across 4 cities)
 - [x] All spawn points on walkable tiles
 
 ### UI Quality

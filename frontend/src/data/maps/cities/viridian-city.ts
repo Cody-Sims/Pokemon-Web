@@ -172,6 +172,9 @@ export const viridianCity: MapDefinition = {
     // Building doors
     { tileX: 11, tileY: 10, targetMap: 'viridian-pokecenter', targetSpawnId: 'default' },
     { tileX: 21, tileY: 10, targetMap: 'viridian-pokemart', targetSpawnId: 'default' },
+    // House doors
+    { tileX: 5, tileY: 4, targetMap: 'viridian-city-house-1', targetSpawnId: 'default' },
+    { tileX: 26, tileY: 4, targetMap: 'viridian-city-house-2', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default':         { x: 14, y: 13, direction: 'up' },
@@ -179,5 +182,7 @@ export const viridianCity: MapDefinition = {
     'from-route-2':    { x: 14, y: 1,  direction: 'down' },
     'from-pokecenter': { x: 11, y: 11, direction: 'down' },
     'from-pokemart':   { x: 21, y: 11, direction: 'down' },
+    'from-house-1':    { x: 5, y: 5, direction: 'down' },
+    'from-house-2':    { x: 26, y: 5, direction: 'down' },
   },
 };

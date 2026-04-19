@@ -192,6 +192,6 @@ export const ironvaleCity: MapDefinition = {
     'from-pokecenter': { x: 4, y: 5, direction: 'down' },
     'from-pokemart':   { x: 4, y: 15, direction: 'down' },
     'from-gym':        { x: 5, y: 25, direction: 'down' },
-    'from-house':      { x: 17, y: 5, direction: 'down' },
+    'from-house-1':    { x: 17, y: 5, direction: 'down' },
   },
 };

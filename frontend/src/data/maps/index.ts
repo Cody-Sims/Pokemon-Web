@@ -87,7 +87,7 @@ import { shatteredIslesRuins } from './dungeons/shattered-isles-ruins';
 import { shatteredIslesTemple } from './dungeons/shattered-isles-temple';
 import { route8 } from './routes/route-8';
 import {
-  palletHouse1, viridianHouse1, pewterHouse1, coralHouse1,
+  palletHouse1, viridianHouse1, viridianHouse2, pewterHouse1, pewterHouse2, coralHouse1,
   ironvaleHouse1, verdantiaHouse1, voltaraHouse1,
   wraithmoorHouse1, scalecrestHouse1, cinderfallHouse1,
 } from './interiors/generic-house';
@@ -173,7 +173,9 @@ export const mapRegistry: Record<string, MapDefinition> = {
   // Generic house interiors
   'pallet-town-house-1': palletHouse1,
   'viridian-city-house-1': viridianHouse1,
+  'viridian-city-house-2': viridianHouse2,
   'pewter-city-house-1': pewterHouse1,
+  'pewter-city-house-2': pewterHouse2,
   'coral-harbor-house-1': coralHouse1,
   'ironvale-city-house-1': ironvaleHouse1,
   'verdantia-village-house-1': verdantiaHouse1,

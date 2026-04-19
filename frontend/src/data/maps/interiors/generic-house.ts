@@ -116,9 +116,19 @@ export const viridianHouse1 = createStandardHouse('viridian-city', 1, [
   'Now we see strange people in dark uniforms every other day...',
 ]);
 
+export const viridianHouse2 = createStandardHouse('viridian-city', 2, [
+  'I heard someone spotted a strange Pokémon near the pond.',
+  'It only comes out at night... maybe you could find it?',
+]);
+
 export const pewterHouse1 = createStandardHouse('pewter-city', 1, [
   'Did you visit the museum? They have amazing fossils!',
   'My kid wants to be a rock collector when they grow up.',
+]);
+
+export const pewterHouse2 = createStandardHouse('pewter-city', 2, [
+  'Pewter is so peaceful... except when trainers stomp through at all hours.',
+  'My neighbor works at the museum. She says they found something incredible!',
 ]);
 
 export const coralHouse1 = createCoastalHouse('coral-harbor', 1, [

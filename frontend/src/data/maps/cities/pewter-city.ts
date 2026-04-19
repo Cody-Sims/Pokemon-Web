@@ -163,8 +163,12 @@ export const pewterCity: MapDefinition = {
     // Building doors
     { tileX: 11, tileY: 10, targetMap: 'pewter-pokecenter', targetSpawnId: 'default' },
     { tileX: 21, tileY: 10, targetMap: 'pewter-pokemart', targetSpawnId: 'default' },
+    { tileX: 20, tileY: 10, targetMap: 'pewter-pokemart', targetSpawnId: 'default' },
     { tileX: 15, tileY: 16, targetMap: 'pewter-gym', targetSpawnId: 'default' },
     { tileX: 12, tileY: 27, targetMap: 'pewter-museum', targetSpawnId: 'default' },
+    // House doors
+    { tileX: 5, tileY: 4, targetMap: 'pewter-city-house-1', targetSpawnId: 'default' },
+    { tileX: 23, tileY: 4, targetMap: 'pewter-city-house-2', targetSpawnId: 'default' },
     // East exit → Route 3
     { tileX: 29, tileY: 18, targetMap: 'route-3', targetSpawnId: 'from-pewter' },
     { tileX: 29, tileY: 19, targetMap: 'route-3', targetSpawnId: 'from-pewter' },
@@ -177,5 +181,7 @@ export const pewterCity: MapDefinition = {
     'from-gym':        { x: 15, y: 17, direction: 'down' },
     'from-museum':     { x: 12, y: 28, direction: 'down' },
     'from-route-3':    { x: 28, y: 18, direction: 'left' },
+    'from-house-1':    { x: 5, y: 5, direction: 'down' },
+    'from-house-2':    { x: 23, y: 5, direction: 'down' },
   },
 };
