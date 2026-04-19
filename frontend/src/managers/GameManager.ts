@@ -381,6 +381,7 @@ export class GameManager {
     gameStats?: Record<string, number>;
     hallOfFame?: unknown[];
     visitedMaps?: string[];
+    gameClockMinutes?: number;
   }): void {
     this.party = save.player.party;
     this.bag = save.player.bag;
@@ -405,5 +406,6 @@ export class GameManager {
     if (save.gameStats) this.gameStats = { ...defaultStats(), ...save.gameStats };
     if (save.hallOfFame) this.hallOfFame = save.hallOfFame as typeof this.hallOfFame;
     if (save.visitedMaps) this.visitedMaps = new Set(save.visitedMaps);
+    if (save.gameClockMinutes != null) this.gameClockMinutes = save.gameClockMinutes;
   }
 }

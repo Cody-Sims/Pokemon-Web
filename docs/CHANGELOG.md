@@ -8,6 +8,11 @@ All notable changes to the Pokemon Web project.
 
 ### Changed
 
+- **Wraithmoor Gym**: Replaced template copy with Ghost-themed 12x14 layout featuring mist corridors, grave markers, wall pillars, gym guide NPC, and 2 medium trainers
+- **Scalecrest Gym**: Replaced template copy with Dragon-themed 12x14 layout featuring fortress walls, dragon statues, scale floor, gym guide NPC, and 2 ace trainers
+- **Cinderfall Gym**: Replaced template copy with Fire-themed 12x14 layout featuring volcanic walls, ember vents, lava rock, hot springs, gym guide NPC, and 2 kindler trainers
+- **Voltara Gym**: Replaced empty Electric gym with 12x14 layout featuring metal walls, wire floor, conduit paths, electric panels, gym guide NPC, and 2 engineer trainers
+- **Clock persistence**: GameClock elapsed minutes now persist across save/load sessions via `gameClockMinutes` field in SaveData; OverworldScene restores clock from save and syncs back on each update
 - **Mobile font scaling**: Replaced hard-coded font sizes with `mobileFontSize()` in PCScene (4 instances), SummaryScene (2 EXP rows), MoveTutorScene (move-replace + message), and DialogueScene (speaker label + advance indicator)
 - **Hint text migration**: Replaced inline `TouchControls.isTouchDevice()` ternaries with `hintText()` utility or `isMobile()` checks in TitleScene, IntroScene, OverworldScene, TrainerCardScene, HallOfFameScene, NicknameScene, and VoltorbFlipScene for consistent mobile-aware hint strings
 - **PCScene tap interactivity**: Added `pointerdown` handlers to box grid cells and party slots so mobile users can tap to select/pick up Pokémon

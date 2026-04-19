@@ -116,6 +116,7 @@ export interface SaveData {
   hallOfFame?: unknown[];
   visitedMaps?: string[];
   achievements?: unknown;
+  gameClockMinutes?: number;
 }
 
 export interface DoubleBattleResult {

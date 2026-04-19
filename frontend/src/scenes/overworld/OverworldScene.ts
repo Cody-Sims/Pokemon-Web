@@ -31,6 +31,8 @@ import {
 } from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
+import { mobileFontSize } from '@ui/theme';
+import { hintText } from '@utils/hint-text';
 import { MapPreloader } from '@systems/engine/MapPreloader';
 import { EventManager } from '@managers/EventManager';
 import { QuestManager } from '@managers/QuestManager';
@@ -164,7 +166,7 @@ export class OverworldScene extends Phaser.Scene {
 
     // Init encounter system
     this.encounterSystem = new EncounterSystem();
-    this.gameClock = new GameClock();
+    this.gameClock = new GameClock(GameManager.getInstance().getGameClockMinutes());
 
     // Register player animations and create player
     AnimationHelper.registerPlayerAnimations(this);
@@ -308,10 +310,10 @@ export class OverworldScene extends Phaser.Scene {
     const mapLabel = this.mapDef.displayName
       ?? this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const hudHint = TouchControls.isTouchDevice()
-      ? `${mapLabel}  |  Tap = Talk`
-      : `${mapLabel}  |  SPACE = Talk  |  ESC = Menu`;
+      ? `${mapLabel}  |  ${hintText('interact')}`
+      : `${mapLabel}  |  ${hintText('interact')}  |  ESC = Menu`;
     this.hudText = this.add.text(this.cameras.main.width / 2, 20, hudHint, {
-      fontSize: '14px',
+      fontSize: mobileFontSize(14),
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
 
@@ -811,6 +813,7 @@ export class OverworldScene extends Phaser.Scene {
       const periodEmoji: Record<string, string> = { morning: '🌅', day: '☀️', evening: '🌆', night: '🌙' };
       const period = this.gameClock.getTimePeriod();
       this.clockText.setText(`${periodEmoji[period] ?? '☀️'} ${this.gameClock.getClockString()}`);
+      GameManager.getInstance().setGameClockMinutes(this.gameClock.getTotalElapsed());
     }
 
     // Animated tile effects (throttled: water/lava every 30 frames, grass every 60)
