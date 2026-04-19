@@ -60,6 +60,7 @@ import { scalecrestGym } from './interiors/scalecrest-gym';
 import { cinderfallPokecenter } from './interiors/cinderfall-pokecenter';
 import { cinderfallPokemart } from './interiors/cinderfall-pokemart';
 import { cinderfallGym } from './interiors/cinderfall-gym';
+import { viridianGym } from './interiors/viridian-gym';
 import {
   pokemonLeague,
   pokemonLeagueNerida,
@@ -105,6 +106,7 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'pallet-oak-lab': palletOakLab,
   'viridian-pokecenter': viridianPokecenter,
   'viridian-pokemart': viridianPokemart,
+  'viridian-gym': viridianGym,
   'pewter-pokecenter': pewterPokecenter,
   'pewter-pokemart': pewterPokemart,
   'pewter-gym': pewterGym,

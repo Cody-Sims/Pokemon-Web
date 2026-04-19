@@ -67,6 +67,7 @@ export const viridianCity: MapDefinition = {
       tileY: 18,
       textureKey: 'generic-trainer',
       facing: 'up',
+      requireFlag: '!badge_7',
       dialogue: ['The Viridian Gym is closed right now.', 'The leader is away on business.'],
     },
     {
@@ -175,6 +176,8 @@ export const viridianCity: MapDefinition = {
     // House doors
     { tileX: 5, tileY: 4, targetMap: 'viridian-city-house-1', targetSpawnId: 'default' },
     { tileX: 26, tileY: 4, targetMap: 'viridian-city-house-2', targetSpawnId: 'default' },
+    // Viridian Gym door (requires 7 badges)
+    { tileX: 11, tileY: 17, targetMap: 'viridian-gym', targetSpawnId: 'default', requireFlag: 'badge_7' },
   ],
   spawnPoints: {
     'default':         { x: 14, y: 13, direction: 'up' },
@@ -184,5 +187,6 @@ export const viridianCity: MapDefinition = {
     'from-pokemart':   { x: 21, y: 11, direction: 'down' },
     'from-house-1':    { x: 5, y: 5, direction: 'down' },
     'from-house-2':    { x: 26, y: 5, direction: 'down' },
+    'from-gym':        { x: 11, y: 18, direction: 'down' },
   },
 };

@@ -11,6 +11,12 @@ All notable changes to the Pokemon Web project.
 - **Battle platforms**: Replaced single-color ellipses with layered pixel-art platforms (shadow, base, mid-highlight, top-highlight) beneath both Pokémon
 - **Move selection grid**: Upgraded text+dot move menu to type-colored rounded-rect button panels with bold move name, right-aligned PP, and category indicator
 - **Pewter Museum expansion**: Expanded from 14x10 to 16x12 with themed exhibit areas, 5 NPCs (guide, fossil scientist, Aether researcher, fossil revival NPC, visitor), flag-gated lore dialogue, and display case layout
+- **Battle info panels**: Replaced plain rectangle info boxes with NinePatchPanel frames (rounded corners, shadow, highlight) around both enemy and player HP/name displays
+
+### Added
+
+- **Viridian Gym**: New 14x12 Ground-type gym interior with Giovanni as leader, guide NPC, two CoolTrainer opponents, arena marks and boulders; story-gated warp (`badge_7` flag) replaces NPC blocker
+- **Overworld clock widget**: Top-left corner display showing game time (HH:MM) with day/night period emoji indicator (sunrise/sun/sunset/moon), updates every frame
 
 ### Fixed
 

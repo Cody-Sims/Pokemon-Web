@@ -85,6 +85,7 @@ export class OverworldScene extends Phaser.Scene {
   /** O(1) lookup set for NPC-occupied tile positions. */
   private npcOccupiedTiles = new Set<string>();
   private hudText?: Phaser.GameObjects.Text;
+  private clockText?: Phaser.GameObjects.Text;
   private saveBtn?: Phaser.GameObjects.Text;
   private interactPrompt?: Phaser.GameObjects.Text;
 
@@ -314,6 +315,18 @@ export class OverworldScene extends Phaser.Scene {
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
 
+    // Clock widget (top-left)
+    const periodEmoji: Record<string, string> = { morning: '🌅', day: '☀️', evening: '🌆', night: '🌙' };
+    const period = this.gameClock.getTimePeriod();
+    const clockStr = `${periodEmoji[period] ?? '☀️'} ${this.gameClock.getClockString()}`;
+    this.clockText = this.add.text(8, 8, clockStr, {
+      fontSize: '11px',
+      color: '#ffcc00',
+      fontFamily: 'monospace',
+      backgroundColor: '#0f0f1abb',
+      padding: { x: 6, y: 3 },
+    }).setScrollFactor(0).setDepth(100);
+
     // Quick-save floating button (mobile only, top-right below menu button)
     if (TouchControls.isTouchDevice()) {
       this.saveBtn = this.add.text(this.cameras.main.width - 20, 60, '💾', {
@@ -335,6 +348,7 @@ export class OverworldScene extends Phaser.Scene {
       const w = this.cameras.main.width;
       this.hudText?.setX(w / 2);
       this.saveBtn?.setX(w - 20);
+      this.clockText?.setPosition(8, 8);
     });
 
     // Slide-in area name banner
@@ -791,6 +805,13 @@ export class OverworldScene extends Phaser.Scene {
 
     // Refresh NPC occupied tile positions after behavior updates
     this.rebuildNpcOccupiedTiles();
+
+    // Update clock display
+    if (this.clockText) {
+      const periodEmoji: Record<string, string> = { morning: '🌅', day: '☀️', evening: '🌆', night: '🌙' };
+      const period = this.gameClock.getTimePeriod();
+      this.clockText.setText(`${periodEmoji[period] ?? '☀️'} ${this.gameClock.getClockString()}`);
+    }
 
     // Animated tile effects (throttled: water/lava every 30 frames, grass every 60)
     this.tileAnimFrame++;
