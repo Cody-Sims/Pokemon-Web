@@ -516,15 +516,16 @@ aether conduits, and terminals.
 | Gyms (×8)          | Already unique per type                                      |
 | Generic houses     | 4 biome variants: standard, coastal, industrial, haunted     |
 
-### Sprint 6: UI Visual Upgrade — ⏳ In Progress
+### Sprint 6: UI Visual Upgrade — ✅ Complete
 
-| Step | Target              | Status  | Treatment                         |
-|------|---------------------|---------|-----------------------------------|
-| 1    | Dialog/menu frames  | ✅ Done | TextBox uses NinePatchPanel        |
-| 2    | Type icons          | ✅ Done | 18 pixel-art badges (spritesheet) |
-| 3    | Status icons        | ✅ Done | 6 pixel-art status badges         |
-| 4    | Battle UI overhaul  | 🔲 Todo | Platforms, move grid, info panels |
-| 5    | Overworld UI        | 🔲 Todo | Area banner, clock widget, prompts|
+| Step | Target              | Status  | Treatment                                    |
+|------|---------------------|---------|----------------------------------------------|
+| 1    | Dialog/menu frames  | ✅ Done | TextBox uses NinePatchPanel                   |
+| 2    | Type icons          | ✅ Done | 18 pixel-art badges (spritesheet)            |
+| 3    | Status icons        | ✅ Done | 6 pixel-art status badges in battle + party  |
+| 4    | Battle status       | ✅ Done | Sprite-based status indicators in BattleScene |
+| 5    | Area name banner    | ✅ Done | Slide-in gold banner on all map entries       |
+| 6    | Interaction prompt  | ✅ Done | Floating "Z"/"Tap" prompt near NPCs/trainers |
 
 ### Sprint 7: City Warp Integrity — ✅ Complete
 

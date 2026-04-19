@@ -22,6 +22,12 @@ All notable changes to the Pokemon Web project.
 - **Status badge sprite sheet** (`assets/ui/status-badges.png`): 6 pixel-art status condition badges (BRN, PAR, PSN, SLP, FRZ, TOX) with `drawStatusBadge` helper in theme.ts
 - **Badge sprite loading**: PreloadScene loads both spritesheets; `drawTypeBadge` upgraded to prefer sprites with rectangle fallback; PartyScene status rendering uses `drawStatusBadge`
 
+### Changed
+
+- **BattleScene status indicators**: Replaced text-based status labels with sprite-based `status-badges` images using `STATUS_BADGE_FRAMES` lookup; status now renders as pixel-art badges instead of colored text
+- **Area name banner**: Replaced interior-only text popup with styled slide-in/slide-out banner (dark background, gold text, gold border) that shows on ALL maps with a `displayName`
+- **Interaction prompt**: Added floating "Z" (desktop) / "Tap" (touch) prompt that appears above NPCs and trainers when the player is adjacent and facing them
+
 - **Map viewport centering**: Maps smaller than the game viewport (e.g. Pallet Town at 800px on a widescreen display) are now centered on both axes instead of showing void space on the right edge. Camera bounds expand to viewport dimensions and a dark background (`0x0f0f1a`) fills any area outside map content
 
 ### Changed

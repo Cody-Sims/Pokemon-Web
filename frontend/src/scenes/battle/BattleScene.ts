@@ -8,7 +8,7 @@ import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM } from '@utils/audio-keys';
 import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
-import { COLORS } from '@ui/theme';
+import { COLORS, STATUS_BADGE_FRAMES } from '@ui/theme';
 
 export class BattleScene extends Phaser.Scene {
   public battleManager!: BattleManager;
@@ -31,8 +31,8 @@ export class BattleScene extends Phaser.Scene {
   public returnData: Record<string, unknown> = {};
   public isTrainerBattle = false;
   public trainerId = '';
-  public enemyStatusText!: Phaser.GameObjects.Text;
-  public playerStatusText!: Phaser.GameObjects.Text;
+  public enemyStatusImg!: Phaser.GameObjects.Image;
+  public playerStatusImg!: Phaser.GameObjects.Image;
   public expBarBg!: Phaser.GameObjects.Rectangle;
   public expBarFill!: Phaser.GameObjects.Rectangle;
 
@@ -165,7 +165,7 @@ export class BattleScene extends Phaser.Scene {
     const enemyLvlText = this.add.text(240, -80, `Lv${this.enemyPokemon.level}`, { fontSize: '14px', color: '#ffffff' });
     this.enemyHpBg = this.add.rectangle(40, -55, 220, 10, 0x333333).setOrigin(0, 0.5);
     this.enemyHpBar = this.add.rectangle(40, -55, 220, 10, 0x4caf50).setOrigin(0, 0.5);
-    this.enemyStatusText = this.add.text(270, -80, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
+    this.enemyStatusImg = this.add.image(270, -80, 'status-badges', 0).setScale(2).setVisible(false);
 
     // ── Player info box (bottom-right) — starts below screen ──
     const playerInfoBox = this.add.rectangle(w - 170, h + 60, 300, 70, COLORS.bgCard, 0.9).setStrokeStyle(1, COLORS.border);
@@ -174,7 +174,7 @@ export class BattleScene extends Phaser.Scene {
     this.playerHpBg = this.add.rectangle(w - 310, h + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
     this.playerHpBar = this.add.rectangle(w - 310, h + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
     this.playerHpText = this.add.text(w - 122, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: '12px', color: '#ffffff' });
-    this.playerStatusText = this.add.text(w - 310, h + 85, '', { fontSize: '12px', color: '#ff6666', fontStyle: 'bold' });
+    this.playerStatusImg = this.add.image(w - 310, h + 85, 'status-badges', 0).setScale(2).setVisible(false);
 
     // ── EXP bar (below player HP) ──
     this.expBarBg = this.add.rectangle(w - 310, h + 82, 180, 4, 0x222233).setOrigin(0, 0.5);
@@ -214,9 +214,9 @@ export class BattleScene extends Phaser.Scene {
     });
 
     // Enemy info slides down from top
-    const enemyInfoTargets = [enemyInfoBox, this.enemyNameText, enemyLvlText, this.enemyHpBg, this.enemyHpBar, this.enemyStatusText];
+    const enemyInfoTargets = [enemyInfoBox, this.enemyNameText, enemyLvlText, this.enemyHpBg, this.enemyHpBar, this.enemyStatusImg];
     this.tweens.add({ targets: enemyInfoBox, y: 55, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: [this.enemyNameText, enemyLvlText, this.enemyStatusText], y: 35, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: [this.enemyNameText, enemyLvlText, this.enemyStatusImg], y: 35, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
     this.tweens.add({ targets: [this.enemyHpBg, this.enemyHpBar], y: 62, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
 
     // Player info slides up from bottom
@@ -224,7 +224,7 @@ export class BattleScene extends Phaser.Scene {
     this.tweens.add({ targets: [this.playerNameText, this.playerLevelText], y: 285, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
     this.tweens.add({ targets: [this.playerHpBg, this.playerHpBar], y: 315, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
     this.tweens.add({ targets: this.playerHpText, y: 309, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: this.playerStatusText, y: 330, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: this.playerStatusImg, y: 330, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
     this.tweens.add({ targets: this.expBarBg, y: 328, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
     this.tweens.add({ targets: this.expBarFill, y: 328, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
 
@@ -312,29 +312,20 @@ export class BattleScene extends Phaser.Scene {
 
   /** Update status condition labels shown next to HP bars. */
   updateStatusIndicators(): void {
-    const STATUS_LABELS: Record<string, { text: string; color: string }> = {
-      burn:        { text: 'BRN', color: '#ff6633' },
-      paralysis:   { text: 'PAR', color: '#ffcc00' },
-      poison:      { text: 'PSN', color: '#aa55aa' },
-      'bad-poison':{ text: 'PSN', color: '#aa55aa' },
-      sleep:       { text: 'SLP', color: '#999999' },
-      freeze:      { text: 'FRZ', color: '#66ccff' },
-    };
-
     const playerStatus = this.playerPokemon.status;
-    if (playerStatus && STATUS_LABELS[playerStatus]) {
-      const s = STATUS_LABELS[playerStatus];
-      this.playerStatusText.setText(s.text).setColor(s.color);
+    const playerFrame = playerStatus ? STATUS_BADGE_FRAMES[playerStatus] : undefined;
+    if (playerFrame !== undefined) {
+      this.playerStatusImg.setFrame(playerFrame).setVisible(true);
     } else {
-      this.playerStatusText.setText('');
+      this.playerStatusImg.setVisible(false);
     }
 
     const enemyStatus = this.enemyPokemon.status;
-    if (enemyStatus && STATUS_LABELS[enemyStatus]) {
-      const s = STATUS_LABELS[enemyStatus];
-      this.enemyStatusText.setText(s.text).setColor(s.color);
+    const enemyFrame = enemyStatus ? STATUS_BADGE_FRAMES[enemyStatus] : undefined;
+    if (enemyFrame !== undefined) {
+      this.enemyStatusImg.setFrame(enemyFrame).setVisible(true);
     } else {
-      this.enemyStatusText.setText('');
+      this.enemyStatusImg.setVisible(false);
     }
   }
 

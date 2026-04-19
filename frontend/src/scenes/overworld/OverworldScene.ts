@@ -86,6 +86,7 @@ export class OverworldScene extends Phaser.Scene {
   private npcOccupiedTiles = new Set<string>();
   private hudText?: Phaser.GameObjects.Text;
   private saveBtn?: Phaser.GameObjects.Text;
+  private interactPrompt?: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'OverworldScene' });
@@ -113,6 +114,8 @@ export class OverworldScene extends Phaser.Scene {
     this.npcBehaviors = [];
     this.lastAnimKey = '';
     this.lastFlipX = false;
+    this.interactPrompt?.destroy();
+    this.interactPrompt = undefined;
     this.waterTileSprites = [];
     this.tallGrassTileSprites = [];
     this.lavaTileSprites = [];
@@ -334,22 +337,46 @@ export class OverworldScene extends Phaser.Scene {
       this.saveBtn?.setX(w - 20);
     });
 
-    // Show location name popup for interiors
-    if (this.mapDef.isInterior && this.mapDef.displayName) {
-      const namePopup = this.add.text(this.cameras.main.width / 2, 50, this.mapDef.displayName, {
-        fontSize: '16px',
-        color: '#ffffff',
-        backgroundColor: '#00000088',
-        padding: { x: 12, y: 6 },
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(100).setAlpha(0);
+    // Slide-in area name banner
+    if (this.mapDef.displayName) {
+      const bannerW = 200;
+      const bannerH = 28;
+      const bannerX = this.cameras.main.width / 2;
+      const bannerY = -bannerH;
 
+      const bannerBg = this.add.graphics().setScrollFactor(0).setDepth(100);
+      bannerBg.fillStyle(0x0f0f1a, 0.88);
+      bannerBg.fillRoundedRect(bannerX - bannerW / 2, 0, bannerW, bannerH, 4);
+      bannerBg.lineStyle(1, 0xffcc00, 0.6);
+      bannerBg.strokeRoundedRect(bannerX - bannerW / 2, 0, bannerW, bannerH, 4);
+      bannerBg.setY(bannerY);
+
+      const bannerText = this.add.text(bannerX, bannerY + bannerH / 2, this.mapDef.displayName, {
+        fontSize: '13px',
+        color: '#ffcc00',
+        fontFamily: 'monospace',
+        fontStyle: 'bold',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(101);
+
+      // Slide in from top
       this.tweens.add({
-        targets: namePopup,
-        alpha: { from: 0, to: 1 },
-        duration: 300,
-        yoyo: true,
-        hold: 1500,
-        onComplete: () => namePopup.destroy(),
+        targets: [bannerBg, bannerText],
+        y: '+=38',
+        duration: 350,
+        ease: 'Back.easeOut',
+        onComplete: () => {
+          // Hold, then slide out
+          this.time.delayedCall(1800, () => {
+            this.tweens.add({
+              targets: [bannerBg, bannerText],
+              y: '-=38',
+              alpha: 0,
+              duration: 250,
+              ease: 'Cubic.easeIn',
+              onComplete: () => { bannerBg.destroy(); bannerText.destroy(); },
+            });
+          });
+        },
       });
     }
 
@@ -783,7 +810,13 @@ export class OverworldScene extends Phaser.Scene {
     // Update ambient SFX
     if (this.ambientSFX) this.ambientSFX.update();
 
-    if (this.player.isMoving()) return;
+    if (this.player.isMoving()) {
+      if (this.interactPrompt) this.interactPrompt.setVisible(false);
+      return;
+    }
+
+    // Update interaction prompt while standing
+    this.updateInteractPrompt();
 
     // Update lighting overlay
     this.lightingSystem.update(this.player.x, this.player.y);
@@ -848,6 +881,60 @@ export class OverworldScene extends Phaser.Scene {
     this.player.move(input.direction);
   }
 
+  private updateInteractPrompt(): void {
+    const facing = this.player.getFacing();
+    const px = this.player.gridMovement.getTileX();
+    const py = this.player.gridMovement.getTileY();
+    const dx = facing === 'left' ? -1 : facing === 'right' ? 1 : 0;
+    const dy = facing === 'up' ? -1 : facing === 'down' ? 1 : 0;
+    const targetX = px + dx;
+    const targetY = py + dy;
+
+    let showPrompt = false;
+    let promptWorldX = 0;
+    let promptWorldY = 0;
+
+    for (const npc of this.npcs) {
+      const ntx = Math.floor(npc.x / TILE_SIZE);
+      const nty = Math.floor(npc.y / TILE_SIZE);
+      if (ntx === targetX && nty === targetY) {
+        showPrompt = true;
+        promptWorldX = ntx * TILE_SIZE + TILE_SIZE / 2;
+        promptWorldY = nty * TILE_SIZE - 8;
+        break;
+      }
+    }
+    if (!showPrompt) {
+      for (const trainer of this.trainers) {
+        const ttx = Math.floor(trainer.x / TILE_SIZE);
+        const tty = Math.floor(trainer.y / TILE_SIZE);
+        if (ttx === targetX && tty === targetY) {
+          showPrompt = true;
+          promptWorldX = ttx * TILE_SIZE + TILE_SIZE / 2;
+          promptWorldY = tty * TILE_SIZE - 8;
+          break;
+        }
+      }
+    }
+
+    if (showPrompt && !this.player.isMoving()) {
+      if (!this.interactPrompt) {
+        const label = TouchControls.isTouchDevice() ? 'Tap' : 'Z';
+        this.interactPrompt = this.add.text(0, 0, label, {
+          fontSize: '11px',
+          color: '#ffcc00',
+          fontFamily: 'monospace',
+          fontStyle: 'bold',
+          backgroundColor: '#0f0f1a',
+          padding: { x: 4, y: 2 },
+        }).setOrigin(0.5, 1).setDepth(10);
+      }
+      this.interactPrompt.setPosition(promptWorldX, promptWorldY).setVisible(true);
+    } else if (this.interactPrompt) {
+      this.interactPrompt.setVisible(false);
+    }
+  }
+
   /** Rebuild the O(1) NPC occupied tile set from current NPC positions. */
   private rebuildNpcOccupiedTiles(): void {
     this.npcOccupiedTiles.clear();
@@ -865,6 +952,8 @@ export class OverworldScene extends Phaser.Scene {
     this.weatherRenderer?.destroy();
     this.npcBehaviors = [];
     this.npcOccupiedTiles.clear();
+    this.interactPrompt?.destroy();
+    this.interactPrompt = undefined;
   }
 
 }
