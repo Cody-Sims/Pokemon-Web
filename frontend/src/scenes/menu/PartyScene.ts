@@ -3,7 +3,7 @@ import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
-import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawHpBar, drawButton, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
+import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawStatusBadge, drawHpBar, drawButton, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { SFX } from '@utils/audio-keys';
@@ -93,9 +93,7 @@ export class PartyScene extends Phaser.Scene {
 
       // Status condition badge
       if (p.status) {
-        const col = STATUS_COLORS[p.status] ?? 0x888899;
-        this.add.rectangle(layout.w - 90, slotY, 64, 20, col).setStrokeStyle(1, 0xffffff);
-        this.add.text(layout.w - 90, slotY, p.status.toUpperCase(), { ...FONTS.label, fontSize: mobileFontSize(11), color: '#ffffff' }).setOrigin(0.5);
+        drawStatusBadge(this, layout.w - 90, slotY, p.status);
       }
 
       // Fainted indicator

@@ -104,6 +104,18 @@ export const STATUS_COLORS: Record<string, number> = {
   freeze: 0x98d8d8,
 };
 
+/** Frame indices for type-badges.png spritesheet. */
+export const TYPE_BADGE_FRAMES: Record<string, number> = {
+  normal: 0, fire: 1, water: 2, electric: 3, grass: 4, ice: 5,
+  fighting: 6, poison: 7, ground: 8, flying: 9, psychic: 10, bug: 11,
+  rock: 12, ghost: 13, dragon: 14, dark: 15, steel: 16, fairy: 17,
+};
+
+/** Frame indices for status-badges.png spritesheet. */
+export const STATUS_BADGE_FRAMES: Record<string, number> = {
+  burn: 0, paralysis: 1, poison: 2, sleep: 3, freeze: 4, 'bad-poison': 5,
+};
+
 // ─── Helper functions ───
 
 /** Whether the device is a touch/mobile phone or tablet (not a touchscreen laptop). */
@@ -151,12 +163,35 @@ export function drawPanel(scene: Phaser.Scene, x: number, y: number, w: number, 
   return panel;
 }
 
-/** Create a type badge. */
+/** Create a type badge using the sprite sheet if loaded, rectangle fallback otherwise. */
 export function drawTypeBadge(scene: Phaser.Scene, x: number, y: number, type: string): Phaser.GameObjects.Container {
   const container = scene.add.container(x, y);
-  const bg = scene.add.rectangle(0, 0, 64, 20, TYPE_COLORS[type] ?? 0x888888).setStrokeStyle(1, 0xffffff);
-  const text = scene.add.text(0, 0, type.toUpperCase(), { fontSize: '10px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold' }).setOrigin(0.5);
-  container.add([bg, text]);
+  const frame = TYPE_BADGE_FRAMES[type];
+  if (frame !== undefined && scene.textures.exists('type-badges')) {
+    const sprite = scene.add.image(0, 0, 'type-badges', frame).setScale(2);
+    container.add(sprite);
+  } else {
+    const bg = scene.add.rectangle(0, 0, 64, 20, TYPE_COLORS[type] ?? 0x888888).setStrokeStyle(1, 0xffffff);
+    const text = scene.add.text(0, 0, type.toUpperCase(), { fontSize: '10px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold' }).setOrigin(0.5);
+    container.add([bg, text]);
+  }
+  return container;
+}
+
+/** Create a status condition badge using the sprite sheet. */
+export function drawStatusBadge(scene: Phaser.Scene, x: number, y: number, status: string): Phaser.GameObjects.Container {
+  const container = scene.add.container(x, y);
+  const frame = STATUS_BADGE_FRAMES[status];
+  if (frame !== undefined && scene.textures.exists('status-badges')) {
+    const sprite = scene.add.image(0, 0, 'status-badges', frame).setScale(2);
+    container.add(sprite);
+  } else {
+    const col = STATUS_COLORS[status] ?? 0x888899;
+    const bg = scene.add.rectangle(0, 0, 64, 20, col).setStrokeStyle(1, 0xffffff);
+    const label = status === 'bad-poison' ? 'TOX' : status.substring(0, 3).toUpperCase();
+    const text = scene.add.text(0, 0, label, { fontSize: '10px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold' }).setOrigin(0.5);
+    container.add([bg, text]);
+  }
   return container;
 }
 

@@ -76,7 +76,15 @@ export class PreloadScene extends Phaser.Scene {
     for (const key of npcSprites) {
       this.load.atlas(key, `assets/sprites/npcs/${key}.png`, `assets/sprites/npcs/${key}.json`);
     }
-
+    // UI badge spritesheets
+    this.load.spritesheet('type-badges', 'assets/ui/type-badges.png', {
+      frameWidth: 32,
+      frameHeight: 14,
+    });
+    this.load.spritesheet('status-badges', 'assets/ui/status-badges.png', {
+      frameWidth: 32,
+      frameHeight: 14,
+    });
     // ── Audio: BGM ──
     for (const key of Object.values(BGM)) {
       this.load.audio(key, `assets/audio/bgm/${key}.wav`);

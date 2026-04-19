@@ -12,11 +12,15 @@ All notable changes to the Pokemon Web project.
 - **Viridian City unwired houses**: Added warps for west house (tileX:5) and east house (tileX:26); added `from-house-1` and `from-house-2` spawn points
 - **Verdantia Village unwired house**: Added warp for NE house (tileX:16) and `from-house-1` spawn point
 - **Ironvale City spawn mismatch**: Renamed `from-house` to `from-house-1` to match generic house exit warp
+- **Warp validation cleanup (17 errors fixed)**: Missing `from-abyssal-spire` spawn in route-8; 8 warps on solid tiles in Abyssal Spire F1-F4; 3 misaligned warps in Coral Harbor (PokéMart, Gym, House doors); Verdantia lab entrance on DENSE_TREE; Victory Road north exit on CAVE_WALL
 
 ### Added
 
 - **Pewter City house 2** (`pewterHouse2`): East side resident with museum lore dialogue
 - **Viridian City house 2** (`viridianHouse2`): East side resident with mysterious pond Pokémon dialogue
+- **Type badge sprite sheet** (`assets/ui/type-badges.png`): 18 pixel-art type badges (32x14 each) replacing rectangle-based `drawTypeBadge` across SummaryScene, PartyScene, PokedexScene
+- **Status badge sprite sheet** (`assets/ui/status-badges.png`): 6 pixel-art status condition badges (BRN, PAR, PSN, SLP, FRZ, TOX) with `drawStatusBadge` helper in theme.ts
+- **Badge sprite loading**: PreloadScene loads both spritesheets; `drawTypeBadge` upgraded to prefer sprites with rectangle fallback; PartyScene status rendering uses `drawStatusBadge`
 
 - **Map viewport centering**: Maps smaller than the game viewport (e.g. Pallet Town at 800px on a widescreen display) are now centered on both axes instead of showing void space on the right edge. Camera bounds expand to viewport dimensions and a dark background (`0x0f0f1a`) fills any area outside map content
 

@@ -4,7 +4,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Ancient temple revealed — cracked floors, ruin pillars, aether crystals
 // Synthesis equipment parasitically grafted onto the ancient structure
 const spireF4Ground = parseMap([
-  '®®®®®®®®®®®®®®®', // 0
+  '®®®®®®®‡‡®®®®®®', // 0
   '®‡‡‡‡÷‡‡‡‡÷‡‡‡®', // 1
   '®‡©‡‡‡‡‡‡‡‡‡©‡®', // 2  ruin pillars
   '®‡‡‡‡÷‡‡÷‡‡‡‡‡®', // 3  aether crystals

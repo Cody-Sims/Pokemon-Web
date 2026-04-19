@@ -67,5 +67,6 @@ export const route8: MapDefinition = {
     'default': { x: 9, y: 15, direction: 'down' },
     'from-cinderfall': { x: 9, y: 1, direction: 'down' },
     'from-victory-road': { x: 9, y: 28, direction: 'up' },
+    'from-abyssal-spire': { x: 10, y: 1, direction: 'down' },
   },
 };

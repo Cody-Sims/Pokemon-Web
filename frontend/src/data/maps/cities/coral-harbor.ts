@@ -169,9 +169,9 @@ export const coralHarbor: MapDefinition = {
     { tileX: 12, tileY: 0, targetMap: 'route-3', targetSpawnId: 'from-coral' },
     // Building doors
     { tileX: 4, tileY: 4, targetMap: 'coral-pokecenter', targetSpawnId: 'default' },
-    { tileX: 3, tileY: 14, targetMap: 'coral-pokemart', targetSpawnId: 'default' },
-    { tileX: 5, tileY: 23, targetMap: 'coral-gym', targetSpawnId: 'default' },
-    { tileX: 4, tileY: 9, targetMap: 'coral-harbor-house-1', targetSpawnId: 'default' },
+    { tileX: 4, tileY: 14, targetMap: 'coral-pokemart', targetSpawnId: 'default' },
+    { tileX: 6, tileY: 23, targetMap: 'coral-gym', targetSpawnId: 'default' },
+    { tileX: 5, tileY: 9, targetMap: 'coral-harbor-house-1', targetSpawnId: 'default' },
     // Ferry dock → Shattered Isles
     { tileX: 15, tileY: 11, targetMap: 'shattered-isles-shore', targetSpawnId: 'from-coral-harbor', requireFlag: 'quest_sternEngine_complete' },
     // South exit → Route 4
@@ -184,7 +184,7 @@ export const coralHarbor: MapDefinition = {
     'from-route-4':      { x: 5, y: 27, direction: 'up' },
     'from-pokecenter':   { x: 4, y: 5, direction: 'down' },
     'from-pokemart':     { x: 3, y: 15, direction: 'down' },
-    'from-gym':          { x: 5, y: 24, direction: 'down' },
+    'from-gym':          { x: 5, y: 25, direction: 'down' },
     'from-house-1':      { x: 4, y: 10, direction: 'down' },
     'from-shattered-isles': { x: 15, y: 10, direction: 'up' },
   },

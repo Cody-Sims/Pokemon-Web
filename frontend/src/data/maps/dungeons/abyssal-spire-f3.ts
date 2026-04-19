@@ -3,7 +3,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Abyssal Spire — Floor 3: Command Center
 // Operations room with terminals and electric panels
 const spireF3Ground = parseMap([
-  'ĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦ', // 0
+  'ĦĦĦĦĦĦĦĦŦŦĦĦĦĦĦĦĦĦ', // 0
   'ĦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦĦ', // 1
   'ĦŦƫŦŦŦ¦ŦŦŦŦ¦ŦŦŦƫŦĦ', // 2  terminals & panels
   'ĦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦŦĦ', // 3

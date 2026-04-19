@@ -518,11 +518,11 @@ aether conduits, and terminals.
 
 ### Sprint 6: UI Visual Upgrade — ⏳ In Progress
 
-| Step | Target              | Status | Treatment                         |
-|------|---------------------|--------|-----------------------------------|
+| Step | Target              | Status  | Treatment                         |
+|------|---------------------|---------|-----------------------------------|
 | 1    | Dialog/menu frames  | ✅ Done | TextBox uses NinePatchPanel        |
-| 2    | Type icons          | 🔲 Todo | 18 pixel art badges               |
-| 3    | Status icons        | 🔲 Todo | 6 pixel art status badges         |
+| 2    | Type icons          | ✅ Done | 18 pixel-art badges (spritesheet) |
+| 3    | Status icons        | ✅ Done | 6 pixel-art status badges         |
 | 4    | Battle UI overhaul  | 🔲 Todo | Platforms, move grid, info panels |
 | 5    | Overworld UI        | 🔲 Todo | Area banner, clock widget, prompts|
 
@@ -594,14 +594,15 @@ warp.
 
 ### Warp Integrity
 
-- [ ] Zero warp validation errors (reduced from 56 — needs further cleanup)
+- [ ] Zero warp validation errors (reduced from 56 to 8, all remaining are parser false positives)
 - [x] All visible doors wired to interiors (6 fixed across 4 cities)
 - [x] All spawn points on walkable tiles
 
 ### UI Quality
 
 - [x] Dialog boxes use NinePatchPanel frames
-- [ ] Type icons are sprite-based, not text
+- [x] Type icons are sprite-based (18-badge spritesheet)
+- [x] Status icons are sprite-based (6-badge spritesheet)
 - [ ] Battle UI uses sprite frames for HP, info panels
 - [x] All UI colors sourced from theme.ts
 - [x] Maps centered in viewport when smaller than screen

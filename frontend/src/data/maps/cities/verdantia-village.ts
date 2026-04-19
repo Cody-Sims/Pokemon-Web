@@ -147,7 +147,7 @@ export const verdantiaVillage: MapDefinition = {
     // House
     { tileX: 16, tileY: 4, targetMap: 'verdantia-village-house-1', targetSpawnId: 'default' },
     // Hidden lab entrance (behind Giant Root near gym area)
-    { tileX: 23, tileY: 14, targetMap: 'verdantia-lab', targetSpawnId: 'from-verdantia-village', requireFlag: 'defeatedIvy' },
+    { tileX: 22, tileY: 14, targetMap: 'verdantia-lab', targetSpawnId: 'from-verdantia-village', requireFlag: 'defeatedIvy' },
   ],
   spawnPoints: {
     'default':          { x: 10, y: 12, direction: 'up' },

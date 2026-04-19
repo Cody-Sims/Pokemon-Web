@@ -3,7 +3,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Abyssal Spire — Floor 2: Lab Wing
 // Full Synthesis Collective laboratory with containment pods and terminals
 const spireF2Ground = parseMap([
-  'ĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦ', // 0
+  'ĦĦĦĦĦĦĦĦĦŦŦĦĦĦĦĦĦĦĦĦ', // 0
   'ĦŦŦŦŦŦĦŦŦŦŦŦŦĦŦŦŦŦŦĦ', // 1
   'ĦŦŊŦŊŦĦŦƫŦŦƫŦĦŦŊŦŊŦĦ', // 2  containment pods & terminals
   'ĦŦŦŦŦŦĦŦŦŦŦŦŦĦŦŦŦŦŦĦ', // 3

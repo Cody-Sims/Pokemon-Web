@@ -4,7 +4,7 @@ import { MapDefinition, parseMap } from '../shared';
 // 25 wide x 35 tall cave with boulder puzzles, crystal caverns, and winding corridors
 const victoryRoadGround = parseMap([
   // Row 0-1: Summit chamber — exit north to Pokémon League
-  ';;;;;;;;;;;;,,,,;;;;;;;;;', // 0  (25)
+  ';;;;;;;;;;;,,,,,;;;;;;;;;', // 0  (25)
   ';,,,,,,,,,,,,,,,,,,,,,,,;', // 1  (25)
   ';,,÷,,,,,,,,,,,,,,,÷,,,,;', // 2  (25) crystals flanking summit
   ';,,,,,,;,,,,,,,,,;,,,,,,;', // 3  (25) pillars in summit room

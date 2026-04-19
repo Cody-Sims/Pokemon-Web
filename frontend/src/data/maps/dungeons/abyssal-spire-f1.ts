@@ -4,7 +4,7 @@ import { MapDefinition, parseMap } from '../shared';
 // Ancient temple being repurposed by the Synthesis Collective
 // Mix of ruins transitioning to Synthesis lab infrastructure
 const spireF1Ground = parseMap([
-  '®®®®®®®®®®®®®®®®®®®®', // 0
+  '®®®®®®®®®‡‡®®®®®®®®®', // 0
   '®‡‡‡‡®®ĦŦŦŦŦĦĦ®‡‡‡‡®', // 1
   '®‡°°‡®®ĦŦŦŦŦŦĦĦĦŧŦŦ®', // 2
   '®‡°°‡‡‡ĦŦŦŦŦŦŦĦ‡‡ŦŦ®', // 3
