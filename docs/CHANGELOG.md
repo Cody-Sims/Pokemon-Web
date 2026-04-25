@@ -8,6 +8,7 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **Battle scene layout**: Converted all hard-coded battle positions (sprites, platforms, info panels, animations) from absolute pixel values to viewport-relative proportions using `ui()`. Enemy at 65% x / 30% y, player at 25% x / 65% y, trainer sprite at 78% x. Info panels, HP bars, and slide-in animations all scale correctly at any resolution
 - **Title screen tap input broken**: Switched Phaser scale mode from `ENVELOP` to `FIT` — ENVELOP causes touch coordinate misalignment where taps don't register on the correct elements (menus unresponsive on mobile)
 - **Game tiny on landscape mobile**: `computeGameWidth()` now always uses landscape orientation (larger dimension as width) so the game doesn't boot with a portrait aspect ratio and appear as a tiny centered square
 - **Faster viewport resize**: Reduced resize debounce from 150ms to 50ms and added immediate resize on `game.events.once('ready')` so the game fills the screen on first load even if orientation changes during boot

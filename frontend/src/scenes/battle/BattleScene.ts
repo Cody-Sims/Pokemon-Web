@@ -129,6 +129,14 @@ export class BattleScene extends Phaser.Scene {
 
     const { w, h, cx, cy } = ui(this);
 
+    // ── Proportional battle positions ──
+    // Enemy side: upper-right area; Player side: lower-left area
+    const enemyX = Math.round(w * 0.65);
+    const enemyY = Math.round(h * 0.30);
+    const playerX = Math.round(w * 0.25);
+    const playerY = Math.round(h * 0.65);
+    const platformYOffset = Math.round(h * 0.05); // platform sits slightly below sprite
+
     // ── Draw battle scene background ──
     const battleBg = data?.battleBg as string | undefined;
     if (battleBg && this.textures.exists(battleBg)) {
@@ -141,35 +149,37 @@ export class BattleScene extends Phaser.Scene {
     }
 
     // Enemy battle platform (layered pixel-art style)
-    this.add.ellipse(550, 203, 200, 50, 0x1a2e14, 0.5); // shadow
-    this.add.ellipse(550, 200, 200, 50, 0x2d4a22);       // base
-    this.add.ellipse(550, 198, 180, 40, 0x3a6030, 0.6);   // mid highlight
-    this.add.ellipse(550, 195, 140, 25, 0x4a7a3e, 0.3);   // top highlight
+    this.add.ellipse(enemyX, enemyY + platformYOffset + 3, 200, 50, 0x1a2e14, 0.5);
+    this.add.ellipse(enemyX, enemyY + platformYOffset, 200, 50, 0x2d4a22);
+    this.add.ellipse(enemyX, enemyY + platformYOffset - 2, 180, 40, 0x3a6030, 0.6);
+    this.add.ellipse(enemyX, enemyY + platformYOffset - 5, 140, 25, 0x4a7a3e, 0.3);
 
     // Player battle platform (layered pixel-art style)
-    this.add.ellipse(200, 423, 240, 60, 0x1a2e14, 0.5); // shadow
-    this.add.ellipse(200, 420, 240, 60, 0x2d4a22);       // base
-    this.add.ellipse(200, 418, 220, 48, 0x3a6030, 0.6);   // mid highlight
-    this.add.ellipse(200, 415, 170, 30, 0x4a7a3e, 0.3);   // top highlight
+    this.add.ellipse(playerX, playerY + platformYOffset + 3, 240, 60, 0x1a2e14, 0.5);
+    this.add.ellipse(playerX, playerY + platformYOffset, 240, 60, 0x2d4a22);
+    this.add.ellipse(playerX, playerY + platformYOffset - 2, 220, 48, 0x3a6030, 0.6);
+    this.add.ellipse(playerX, playerY + platformYOffset - 5, 170, 30, 0x4a7a3e, 0.3);
 
     // ── Trainer sprites behind Pokémon (trainer battles only) ──
     const trainerSpriteKey = data?.trainerSpriteKey as string | undefined;
     if (this.isTrainerBattle && trainerSpriteKey && this.textures.exists(trainerSpriteKey)) {
-      // Enemy trainer stands behind their Pokémon (upper-right, larger than pokemon)
-      const enemyTrainer = this.add.image(w + 100, 120, trainerSpriteKey, 0);
+      // Enemy trainer stands behind their Pokémon (further right, behind enemy)
+      const trainerX = Math.round(w * 0.78);
+      const enemyTrainer = this.add.image(w + 100, enemyY - 30, trainerSpriteKey, 0);
       enemyTrainer.setScale(8).setAlpha(0.85).setDepth(0);
-      this.tweens.add({ targets: enemyTrainer, x: 620, duration: 600, delay: 200, ease: 'Power2' });
+      this.tweens.add({ targets: enemyTrainer, x: trainerX, duration: 600, delay: 200, ease: 'Power2' });
     }
     // Enemy pokemon sprite (front view) — starts offscreen right, white tinted
-    this.enemySprite = this.add.image(w + 100, 150, enemyData.spriteKeys.front)
+    this.enemySprite = this.add.image(w + 100, enemyY - 20, enemyData.spriteKeys.front)
       .setScale(2).setTint(0xffffff).setAlpha(0);
 
     // Player pokemon sprite (back view, larger) — starts offscreen left, white tinted
-    this.playerSprite = this.add.image(-100, 370, playerData.spriteKeys.back)
+    this.playerSprite = this.add.image(-100, playerY - 20, playerData.spriteKeys.back)
       .setScale(4).setTint(0xffffff).setAlpha(0);
 
     // ── Enemy info box (top-left) — starts above screen ──
-    const enemyInfoPanel = new NinePatchPanel(this, 170, -60, 300, 60, {
+    const enemyInfoX = Math.round(w * 0.18);
+    const enemyInfoPanel = new NinePatchPanel(this, enemyInfoX, -60, 300, 60, {
       fillColor: COLORS.bgCard,
       fillAlpha: 0.92,
       borderColor: COLORS.borderLight,
@@ -178,14 +188,15 @@ export class BattleScene extends Phaser.Scene {
       shadowAlpha: 0.3,
     });
     const enemyInfoBox = enemyInfoPanel.getGraphics();
-    this.enemyNameText = this.add.text(40, -80, `${this.enemyPokemon.nickname ?? enemyData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
-    const enemyLvlText = this.add.text(240, -80, `Lv${this.enemyPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
-    this.enemyHpBg = this.add.rectangle(40, -55, 220, 10, 0x333333).setOrigin(0, 0.5);
-    this.enemyHpBar = this.add.rectangle(40, -55, 220, 10, 0x4caf50).setOrigin(0, 0.5);
-    this.enemyStatusImg = this.add.image(270, -80, 'status-badges', 0).setScale(2).setVisible(false);
+    this.enemyNameText = this.add.text(enemyInfoX - 130, -80, `${this.enemyPokemon.nickname ?? enemyData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
+    const enemyLvlText = this.add.text(enemyInfoX + 70, -80, `Lv${this.enemyPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
+    this.enemyHpBg = this.add.rectangle(enemyInfoX - 130, -55, 220, 10, 0x333333).setOrigin(0, 0.5);
+    this.enemyHpBar = this.add.rectangle(enemyInfoX - 130, -55, 220, 10, 0x4caf50).setOrigin(0, 0.5);
+    this.enemyStatusImg = this.add.image(enemyInfoX + 100, -80, 'status-badges', 0).setScale(2).setVisible(false);
 
     // ── Player info box (bottom-right) — starts below screen ──
-    const playerInfoPanel = new NinePatchPanel(this, w - 170, h + 60, 300, 70, {
+    const playerInfoX = Math.round(w * 0.78);
+    const playerInfoPanel = new NinePatchPanel(this, playerInfoX, h + 60, 300, 70, {
       fillColor: COLORS.bgCard,
       fillAlpha: 0.92,
       borderColor: COLORS.borderLight,
@@ -194,17 +205,17 @@ export class BattleScene extends Phaser.Scene {
       shadowAlpha: 0.3,
     });
     const playerInfoBox = playerInfoPanel.getGraphics();
-    this.playerNameText = this.add.text(w - 310, h + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
-    this.playerLevelText = this.add.text(w - 120, h + 40, `Lv${this.playerPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
-    this.playerHpBg = this.add.rectangle(w - 310, h + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
-    this.playerHpBar = this.add.rectangle(w - 310, h + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
-    this.playerHpText = this.add.text(w - 122, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: mobileFontSize(12), color: '#ffffff' });
-    this.playerStatusImg = this.add.image(w - 310, h + 85, 'status-badges', 0).setScale(2).setVisible(false);
+    this.playerNameText = this.add.text(playerInfoX - 140, h + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
+    this.playerLevelText = this.add.text(playerInfoX + 90, h + 40, `Lv${this.playerPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
+    this.playerHpBg = this.add.rectangle(playerInfoX - 140, h + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
+    this.playerHpBar = this.add.rectangle(playerInfoX - 140, h + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
+    this.playerHpText = this.add.text(playerInfoX + 48, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: mobileFontSize(12), color: '#ffffff' });
+    this.playerStatusImg = this.add.image(playerInfoX - 140, h + 85, 'status-badges', 0).setScale(2).setVisible(false);
 
     // ── EXP bar (below player HP) ──
-    this.expBarBg = this.add.rectangle(w - 310, h + 82, 180, 4, 0x222233).setOrigin(0, 0.5);
+    this.expBarBg = this.add.rectangle(playerInfoX - 140, h + 82, 180, 4, 0x222233).setOrigin(0, 0.5);
     const expPct = this.getExpPercent();
-    this.expBarFill = this.add.rectangle(w - 310, h + 82, 180 * expPct, 4, 0x4488ff).setOrigin(0, 0.5);
+    this.expBarFill = this.add.rectangle(playerInfoX - 140, h + 82, 180 * expPct, 4, 0x4488ff).setOrigin(0, 0.5);
 
     // ── Slide-in animation ──
     const introDelay = 200;
@@ -213,7 +224,7 @@ export class BattleScene extends Phaser.Scene {
     // Enemy sprite slides in from right + emerge from ball
     this.tweens.add({
       targets: this.enemySprite,
-      x: 550,
+      x: enemyX,
       alpha: 1,
       duration: slideDuration,
       delay: introDelay,
@@ -227,7 +238,7 @@ export class BattleScene extends Phaser.Scene {
     // Player sprite slides in from left + emerge from ball
     this.tweens.add({
       targets: this.playerSprite,
-      x: 200,
+      x: playerX,
       alpha: 1,
       duration: slideDuration,
       delay: introDelay + 100,
@@ -238,20 +249,28 @@ export class BattleScene extends Phaser.Scene {
       },
     });
 
-    // Enemy info slides down from top
-    const enemyInfoTargets = [enemyInfoBox, this.enemyNameText, enemyLvlText, this.enemyHpBg, this.enemyHpBar, this.enemyStatusImg];
-    this.tweens.add({ targets: enemyInfoBox, y: 55, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: [this.enemyNameText, enemyLvlText, this.enemyStatusImg], y: 35, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: [this.enemyHpBg, this.enemyHpBar], y: 62, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
+    // Enemy info slides down — target Y positions proportional to viewport
+    const enemyInfoY = Math.round(h * 0.09);
+    const enemyNameY = enemyInfoY - 20;
+    const enemyHpY = enemyInfoY + 7;
+    this.tweens.add({ targets: enemyInfoBox, y: enemyInfoY, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: [this.enemyNameText, enemyLvlText, this.enemyStatusImg], y: enemyNameY, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: [this.enemyHpBg, this.enemyHpBar], y: enemyHpY, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
 
-    // Player info slides up from bottom
-    this.tweens.add({ targets: playerInfoBox, y: 310, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: [this.playerNameText, this.playerLevelText], y: 285, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: [this.playerHpBg, this.playerHpBar], y: 315, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: this.playerHpText, y: 309, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: this.playerStatusImg, y: 330, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: this.expBarBg, y: 328, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: this.expBarFill, y: 328, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    // Player info slides up — target Y positions proportional to viewport
+    const playerInfoY = Math.round(h * 0.52);
+    const playerNameY = playerInfoY - 25;
+    const playerHpY = playerInfoY + 5;
+    const playerHpTextY = playerHpY - 6;
+    const playerStatusY = playerInfoY + 20;
+    const playerExpY = playerInfoY + 18;
+    this.tweens.add({ targets: playerInfoBox, y: playerInfoY, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: [this.playerNameText, this.playerLevelText], y: playerNameY, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: [this.playerHpBg, this.playerHpBar], y: playerHpY, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: this.playerHpText, y: playerHpTextY, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: this.playerStatusImg, y: playerStatusY, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: this.expBarBg, y: playerExpY, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: this.expBarFill, y: playerExpY, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
 
     // ── Audio: play battle BGM ──
     const audio = AudioManager.getInstance();
