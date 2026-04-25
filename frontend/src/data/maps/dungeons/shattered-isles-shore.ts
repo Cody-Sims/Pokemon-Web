@@ -6,35 +6,35 @@ import { MapDefinition, parseMap } from '../shared';
 // Rook stands near a campfire, seeking redemption.
 const shoreGround = parseMap([
   'WWWWWWWWWWWssWWWWWWWWWWWW', // 0
-  'WWWW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWW', // 1
-  'WWW¬¬¬÷¬¬¬¬¬¬¬¬÷¬¬¬¬WWW', // 2
-  'WW¬¬¬¬¬¬®®®¬¬¬¬¬¬¬¬¬WWW', // 3
-  'WW¬¬÷¬¬¬®¬®¬¬T¬¬¬÷¬¬WWW', // 4
-  'WW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWW', // 5
-  'WW¬¬¬¬T¬¬¬¬¬¬÷¬¬¬¬¬¬WWW', // 6
-  'WW¬¬¬¬¬¬¬¬¬¬¬¬¬¬T¬¬¬WWW', // 7
-  'WW¬÷¬¬¬¬¬¬¬¬¬¬¬¬¬¬÷WWWW', // 8
-  'WW¬¬¬¬®®®®¬¬¬¬¬¬¬¬¬WWWW', // 9
-  'WW¬¬¬¬®¬¬®¬¬÷¬¬¬¬¬¬WWWW', // 10
-  'WW¬¬¬¬®¬¬®¬¬¬¬¬T¬¬¬WWWW', // 11
-  'WW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWWW', // 12
-  'WW¬÷¬¬¬¬¬¬¬¬¬¬¬¬÷¬¬WWWW', // 13
-  'WW¬¬¬¬T¬¬¬¬¬¬¬¬¬¬¬¬WWWW', // 14
-  'WW¬¬¬¬¬¬¬÷¬¬¬¬¬¬¬¬¬WWWW', // 15
-  'WW¬¬¬¬¬¬¬¬¬¬¬¬T¬¬¬¬WWWW', // 16
-  'WW¬÷¬¬¬¬¬¬¬¬¬¬¬¬÷¬¬WWWW', // 17
-  'WW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWWW', // 18
-  'WW¬¬¬¬®®¬¬¬¬÷¬¬¬¬¬¬WWWW', // 19
-  'WW¬¬¬¬®¬¬¬¬¬¬¬¬T¬¬¬WWWW', // 20
-  'WW¬¬÷¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWWW', // 21
-  'WW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬÷¬WWWW', // 22
-  'WWs¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWWW', // 23
-  'WWss¬¬¬¬¬¬¬¬¬¬¬¬¬¬ssWWWW', // 24
-  'WWsss¬¬¬¬¬¬¬¬¬¬¬¬sssWWWW', // 25
-  'WWssss¬¬¬¬¬¬¬¬¬¬ssssWWWW', // 26
-  'WWWssssss¬¬¬¬¬sssssWWWWW', // 27
-  'WWWWssssss¬¬¬¬ssssWWWWWW', // 28
-  'WWWWWWWWss¬¬ssWWWWWWWWWW', // 29
+  'WWWW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWWWW', // 1
+  'WWW¬¬¬÷¬¬¬¬¬¬¬¬÷¬¬¬¬WWWWW', // 2
+  'WW¬¬¬¬¬¬®®®¬¬¬¬¬¬¬¬¬WWWWW', // 3
+  'WW¬¬÷¬¬¬®¬®¬¬T¬¬¬÷¬¬WWWWW', // 4
+  'WW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWWWW', // 5
+  'WW¬¬¬¬T¬¬¬¬¬¬÷¬¬¬¬¬¬WWWWW', // 6
+  'WW¬¬¬¬¬¬¬¬¬¬¬¬¬¬T¬¬¬WWWWW', // 7
+  'WW¬÷¬¬¬¬¬¬¬¬¬¬¬¬¬¬÷WWWWWW', // 8
+  'WW¬¬¬¬®®®®¬¬¬¬¬¬¬¬¬WWWWWW', // 9
+  'WW¬¬¬¬®¬¬®¬¬÷¬¬¬¬¬¬WWWWWW', // 10
+  'WW¬¬¬¬®¬¬®¬¬¬¬¬T¬¬¬WWWWWW', // 11
+  'WW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWWWWW', // 12
+  'WW¬÷¬¬¬¬¬¬¬¬¬¬¬¬÷¬¬WWWWWW', // 13
+  'WW¬¬¬¬T¬¬¬¬¬¬¬¬¬¬¬¬WWWWWW', // 14
+  'WW¬¬¬¬¬¬¬÷¬¬¬¬¬¬¬¬¬WWWWWW', // 15
+  'WW¬¬¬¬¬¬¬¬¬¬¬¬T¬¬¬¬WWWWWW', // 16
+  'WW¬÷¬¬¬¬¬¬¬¬¬¬¬¬÷¬¬WWWWWW', // 17
+  'WW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWWWWW', // 18
+  'WW¬¬¬¬®®¬¬¬¬÷¬¬¬¬¬¬WWWWWW', // 19
+  'WW¬¬¬¬®¬¬¬¬¬¬¬¬T¬¬¬WWWWWW', // 20
+  'WW¬¬÷¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWWWWW', // 21
+  'WW¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬÷¬WWWWWW', // 22
+  'WWs¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬WWWWWW', // 23
+  'WWss¬¬¬¬¬¬¬¬¬¬¬¬¬¬ssWWWWW', // 24
+  'WWsss¬¬¬¬¬¬¬¬¬¬¬¬sssWWWWW', // 25
+  'WWssss¬¬¬¬¬¬¬¬¬¬ssssWWWWW', // 26
+  'WWWssssss¬¬¬¬¬sssssWWWWWW', // 27
+  'WWWWssssss¬¬¬¬ssssWWWWWWW', // 28
+  'WWWWWWWWss¬¬ssWWWWWWWWWWW', // 29
 ]);
 
 export const shatteredIslesShore: MapDefinition = {

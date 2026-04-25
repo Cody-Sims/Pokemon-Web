@@ -4,34 +4,34 @@ import { MapDefinition, parseMap } from '../shared';
 // A coastal port town. Gym 2 (Water — Coral), PokéCenter, PokéMart, docks
 const coralGround = parseMap([
   'TTTTTTTTTT.PP.TTTTTTTTTTT', // 0  north exit
-  'T..........PP.........sT', // 1
-  'T.CCCCCCC..PP.......ssT', // 2  center roof
-  'T.c$ccccc..PP......sssT', // 3
-  'T.ccecccc..PP.....ss7sT', // 4  center door
-  'T....PPPPPPPPP...ss67sT', // 5
-  'T....PP........3.ss7ssT', // 6
-  'T.RRRRRRR.PP....sssssT', // 7  house roof
-  'T.HH&HHHH.PP...ssssssT', // 8
-  'T.HHHDHHH.PP..sssWWWWT', // 9  house door
-  'T....PPPPPPPP.ss88WWWT', // 10
-  'T....PP.....ss88888WWT', // 11 dock
-  'T.MMMMMM.PP.s888888WWT', // 12 mart roof
-  'T.mm&mmm.PP.s888888WWT', // 13
-  'T.mmnmmm.PP.ss8888WWWT', // 14 mart door
-  'T....PPPPPP..ssssWWWWT', // 15
-  'T....PP..........WWWWT', // 16
-  'T.f..PP..3.......WWWWT', // 17
-  'T....PP..........WWWWT', // 18
-  'T....PPPPPPP.....WWWWT', // 19
-  'T....PP....PP....WWWWT', // 20
-  'T.99999999.PP3.ssWWWWT', // 21 gym (coral)
-  'T.9ggg&gg9.PP.sssWWWT', // 22
-  'T.9gggagg9.PP.ssss.sT', // 23 gym door
-  'T.99999999.PP..ss3.sT', // 24
-  'T..........PP....sssT', // 25
-  'T.f........PP......sT', // 26
-  'T..........PP.......T', // 27
-  'T....PP....PP.......T', // 28
+  'T..........PP..........sT', // 1
+  'T.CCCCCCC..PP.........ssT', // 2  center roof
+  'T.c$ccccc..PP........sssT', // 3
+  'T.ccecccc..PP.......ss7sT', // 4  center door
+  'T....PPPPPPPPP.....ss67sT', // 5
+  'T....PP..........3.ss7ssT', // 6
+  'T.RRRRRRR.PP.......sssssT', // 7  house roof
+  'T.HH&HHHH.PP......ssssssT', // 8
+  'T.HHHDHHH.PP.....sssWWWWT', // 9  house door
+  'T....PPPPPPPP....ss88WWWT', // 10
+  'T....PP........ss88888WWT', // 11 dock
+  'T.MMMMMM.PP....s888888WWT', // 12 mart roof
+  'T.mm&mmm.PP....s888888WWT', // 13
+  'T.mmnmmm.PP....ss8888WWWT', // 14 mart door
+  'T....PPPPPP.....ssssWWWWT', // 15
+  'T....PP.............WWWWT', // 16
+  'T.f..PP.....3.......WWWWT', // 17
+  'T....PP.............WWWWT', // 18
+  'T....PPPPPPP........WWWWT', // 19
+  'T....PP....PP.......WWWWT', // 20
+  'T.99999999.PP...3.ssWWWWT', // 21 gym (coral)
+  'T.9ggg&gg9.PP.....sssWWWT', // 22
+  'T.9gggagg9.PP.....ssss.sT', // 23 gym door
+  'T.99999999.PP......ss3.sT', // 24
+  'T..........PP........sssT', // 25
+  'T.f........PP..........sT', // 26
+  'T..........PP...........T', // 27
+  'T....PP....PP...........T', // 28
   'TTTTTTTTTT.PP.TTTTTTTTTTT', // 29 south exit
 ]);
 
