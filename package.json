@@ -15,6 +15,11 @@
     "test:fuzz": "npx playwright test --config tests/e2e/playwright.config.ts tests/fuzz/",
     "test:coverage": "vitest run --config tests/vitest.config.ts --coverage",
     "test:all": "npm run test && npm run test:e2e",
+    "map:validate": "npx tsx temp/scripts/map-gen/cli.ts validate",
+    "map:preview": "npx tsx temp/scripts/map-gen/cli.ts preview",
+    "map:preview-all": "npx tsx temp/scripts/map-gen/cli.ts preview --all",
+    "map:gen": "npx tsx temp/scripts/map-gen/cli.ts",
+    "map:compose": "npx tsx temp/scripts/map-gen/cli.ts compose",
     "deploy": "npm run build && npx gh-pages -d dist"
   },
   "keywords": [],

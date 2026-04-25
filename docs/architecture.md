@@ -467,6 +467,44 @@ SaveManager (on explicit Save → localStorage)
 
 ---
 
+## Map Generation Toolchain
+
+A comprehensive map creation pipeline located at `temp/scripts/map-gen/`:
+
+| Component | Path | Purpose |
+|-----------|------|---------|
+| CLI | `temp/scripts/map-gen/cli.ts` | Unified entry point for all map tools |
+| Grid | `core/grid.ts` | Bounds-safe 2D grid with stamp, fill, neighbor ops |
+| Flood Fill | `core/flood-fill.ts` | Connectivity checking, region labeling |
+| Pathfinding | `core/pathfind.ts` | A* pathfinding and path carving |
+| Seeded RNG | `core/rng.ts` | Deterministic PRNG (mulberry32) |
+| Biome Themes | `core/biome-themes.ts` | 10 biome substitution tables |
+| BSP Dungeon | `algorithms/bsp-dungeon.ts` | Rooms + corridors + maze fill |
+| Cellular Cave | `algorithms/cellular-cave.ts` | Organic cave shapes via automata |
+| Route Carver | `algorithms/route-carver.ts` | Overworld routes with features |
+| Maze | `algorithms/maze-generator.ts` | Growing tree with sparsification |
+| Template Loader | `compose/template-loader.ts` | Reads .txt template fragments |
+| Map Composer | `compose/map-composer.ts` | Stamps templates onto canvas |
+| Path Connector | `compose/path-connector.ts` | Auto-routes roads to doors |
+| Validator | `validate/map-validator.ts` | 8-check validation pipeline |
+| Preview | `validate/preview-renderer.ts` | PPM image renderer |
+| Char Export | `export/to-charmap.ts` | Grid → character string rows |
+| TS Export | `export/to-typescript.ts` | Grid → full MapDefinition .ts file |
+
+Template library at `temp/map-templates/` with 17 reusable fragments (buildings, terrain, paths, interiors).
+
+### npm Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `npm run map:validate` | Validate all maps (or `-- --map <key>` for one) |
+| `npm run map:preview` | Render map preview (or `-- --map <key>`) |
+| `npm run map:preview-all` | Render all map previews |
+| `npm run map:gen <cmd>` | Run generators (dungeon, cave, route, maze) |
+| `npm run map:compose <file>` | Compose map from JSON template descriptor |
+
+---
+
 ## Tilemap Layer Convention (Tiled)
 
 Each Tiled map should have these layers (bottom → top):

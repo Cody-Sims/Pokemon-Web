@@ -8,6 +8,16 @@ All notable changes to the Pokemon Web project.
 
 ### Added
 
+- **Map generation toolchain**: Full map creation pipeline at `temp/scripts/map-gen/` with CLI, validation, preview, procedural generators, and template composition system
+  - Core utilities: Grid class, flood-fill connectivity, A* pathfinding, seeded PRNG
+  - 4 procedural generators: BSP dungeon (rooms + corridors), cellular automata caves, route carver, maze generator (growing tree with sparsification)
+  - Template composition: 17 reusable building/terrain/path/interior templates in `temp/map-templates/`; template loader, map composer, and auto path-connector
+  - 10 biome themes with character substitution (standard, volcanic, coastal, forest, ghost, dragon, mine, electric, synthesis, cave)
+  - Map validator with 8 checks (dimension consistency, character validity, border integrity, warp reachability, NPC placement, spawn validity, connectivity)
+  - PPM preview renderer with warp/NPC/trainer/spawn markers and optional grid overlay
+  - TypeScript exporter for generating complete MapDefinition .ts files
+  - CLI entry point: `npm run map:validate`, `map:preview`, `map:preview-all`, `map:gen`, `map:compose`
+- **Map generation instructions**: `.github/instructions/map-generation.instructions.md` with workflow rules, CHAR_TO_TILE reference, and generator parameters
 - **Tileset expansion**: Expanded tileset.png from 10x11 (110 frames) to 10x12 (120 frames), fixing tile overflow for IDs 110-114
 - **Field ability tile art**: Drew pixel art for CUT_TREE (110), CRACKED_ROCK (111), STRENGTH_BOULDER (112), LEDGE_LEFT (113), LEDGE_RIGHT (114) — previously rendered as blank frames
 - **Tile validation script**: `temp/scripts/tileset/validate_tiles.py` checks color count, lighting model, depth borders, and isolated pixels against quality rules
