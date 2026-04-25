@@ -456,7 +456,7 @@ export class TouchControls {
       };
     };
 
-    const handleDown = (clientX: number, clientY: number) => {
+    const handleDown = (clientX: number, clientY: number, touchId = -1) => {
       if (!this.container.visible) return;
       const { x: px, y: py } = getGameCoords(clientX, clientY);
       for (const btn of this.buttons) {
@@ -466,30 +466,46 @@ export class TouchControls {
           if (btn.action === 'confirm') {
             this.confirmPressed = true;
             hapticTap();
-            btn.bg.fillAlpha = 0.9;
           } else if (btn.action === 'cancel') {
             this.cancelPressed = true;
             hapticTap();
-            btn.bg.fillAlpha = 0.9;
           }
+          btn.bg.fillAlpha = 0.9;
+          if (touchId >= 0) this.activeButtonTouches.set(touchId, btn);
           return;
         }
       }
     };
 
-    const handleUp = () => {
-      for (const btn of this.buttons) {
-        btn.bg.fillAlpha = 0.5;
+    const handleUp = (touchId = -1) => {
+      if (touchId >= 0) {
+        const btn = this.activeButtonTouches.get(touchId);
+        if (btn) {
+          btn.bg.fillAlpha = this.baseAlpha;
+          this.activeButtonTouches.delete(touchId);
+        }
+      } else {
+        // Mouse: reset all
+        for (const btn of this.buttons) {
+          btn.bg.fillAlpha = this.baseAlpha;
+        }
+        this.activeButtonTouches.clear();
       }
     };
 
     const onActionTouchStart = (e: Event) => {
       const te = e as TouchEvent;
       for (let i = 0; i < te.changedTouches.length; i++) {
-        handleDown(te.changedTouches[i].clientX, te.changedTouches[i].clientY);
+        const t = te.changedTouches[i];
+        handleDown(t.clientX, t.clientY, t.identifier);
       }
     };
-    const onActionTouchEnd = () => handleUp();
+    const onActionTouchEnd = (e: Event) => {
+      const te = e as TouchEvent;
+      for (let i = 0; i < te.changedTouches.length; i++) {
+        handleUp(te.changedTouches[i].identifier);
+      }
+    };
     const onActionMouseDown = (e: Event) => { const me = e as MouseEvent; handleDown(me.clientX, me.clientY); };
     const onActionMouseUp = () => handleUp();
 
