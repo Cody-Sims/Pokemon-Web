@@ -17,11 +17,6 @@
       padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
     canvas { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; display: block; }
 
-    /* ── Mobile: canvas fills the entire viewport ── */
-    @media (pointer: coarse) {
-      canvas { width: 100% !important; height: 100% !important; }
-    }
-
     /* ── Desktop chrome: background, frame, controls ── */
     @media (hover: hover) and (pointer: fine) {
       html, body {

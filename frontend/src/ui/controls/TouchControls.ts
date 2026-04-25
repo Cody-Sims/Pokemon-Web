@@ -524,7 +524,7 @@ export class TouchControls {
   /** Read a setting from localStorage (same key GameManager uses). */
   private readSetting(key: string): string | undefined {
     try {
-      const raw = localStorage.getItem('pokemon_settings');
+      const raw = localStorage.getItem('pokemon-web-settings');
       if (raw) {
         const s = JSON.parse(raw);
         return s[key] != null ? String(s[key]) : undefined;

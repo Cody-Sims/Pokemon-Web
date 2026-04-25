@@ -9,7 +9,7 @@ const JOYSTICK_PRESETS: Record<string, { radius: number; thumb: number; deadZone
 
 function getJoystickPreset(): { radius: number; thumb: number; deadZone: number } {
   try {
-    const raw = localStorage.getItem('pokemon_settings');
+    const raw = localStorage.getItem('pokemon-web-settings');
     if (raw) {
       const s = JSON.parse(raw);
       const preset = (s.joystickSize && JOYSTICK_PRESETS[s.joystickSize])
@@ -54,7 +54,7 @@ export class VirtualJoystick {
     // High-visibility controls setting
     let highVis = false;
     try {
-      const raw = localStorage.getItem('pokemon_settings');
+      const raw = localStorage.getItem('pokemon-web-settings');
       if (raw) { highVis = JSON.parse(raw).highVisControls === 'true'; }
     } catch { /* ignore */ }
     const baseAlpha = highVis ? 0.7 : 0.35;

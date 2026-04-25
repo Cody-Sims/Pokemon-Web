@@ -8,6 +8,9 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **Mobile viewport distortion**: Replaced `ENVELOP` scale mode + CSS `width/height: 100% !important` with `FIT` + `CENTER_BOTH` on all devices. The CSS override was stretching the 4:3 game canvas to fill portrait viewports, causing severe aspect ratio distortion. FIT preserves correct proportions and `computeGameWidth()` ensures landscape phones get near-100% fill
+- **Settings key mismatch**: TouchControls and VirtualJoystick were reading from `localStorage('pokemon_settings')` but SettingsScene/GameManager write to `'pokemon-web-settings'` — all touch settings (joystick size, dead zone, swapAB, highVis, oneHandedMode) were silently ignored
+- **Phaser backgroundColor**: Added `backgroundColor: '#0f0f1a'` to game config so the canvas background matches the HTML body, eliminating visible seams on any device
 - **Dialogue box visibility**: Moved dialog box 20px higher so text is no longer hidden behind the desktop keyboard hints overlay
 - **Speaker name panel clipping**: Repositioned the speaker name tag (e.g. "Prof. Willow") to anchor relative to the dialog box top edge with proper left-margin so it stays inside the viewport
 - **Controls overlapping dialog**: Desktop keyboard hints (`#desktop-hints`) are now hidden while DiaglogueScene is active and restored when dialog closes

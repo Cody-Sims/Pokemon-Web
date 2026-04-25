@@ -28,23 +28,21 @@ import { AchievementScene } from '@scenes/menu/AchievementScene';
 import { TrainerCardScene } from '@scenes/menu/TrainerCardScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
-import { isMobile } from '@ui/theme';
-
-const mobile = isMobile();
-
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   pixelArt: true,
+  backgroundColor: '#0f0f1a',
   input: {
     activePointers: 3, // Multi-touch: joystick + action buttons simultaneously
   },
   scale: {
-    // ENVELOP fills the viewport fully on mobile (no black bars); FIT preserves
-    // the aspect ratio on desktop (centred inside the desktop chrome frame).
-    mode: mobile ? Phaser.Scale.ENVELOP : Phaser.Scale.FIT,
-    autoCenter: mobile ? Phaser.Scale.NO_CENTER : Phaser.Scale.CENTER_BOTH,
+    // FIT preserves aspect ratio on all devices. The game width is dynamically
+    // computed from the viewport aspect ratio (see computeGameWidth), so FIT
+    // fills the screen with minimal bars. On resize, main.ts recalculates width.
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   physics: {
     default: 'arcade',
