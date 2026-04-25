@@ -8,6 +8,10 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **Title screen tap input broken**: Switched Phaser scale mode from `ENVELOP` to `FIT` — ENVELOP causes touch coordinate misalignment where taps don't register on the correct elements (menus unresponsive on mobile)
+- **Game tiny on landscape mobile**: `computeGameWidth()` now always uses landscape orientation (larger dimension as width) so the game doesn't boot with a portrait aspect ratio and appear as a tiny centered square
+- **Faster viewport resize**: Reduced resize debounce from 150ms to 50ms and added immediate resize on `game.events.once('ready')` so the game fills the screen on first load even if orientation changes during boot
+- **Tiles too small on phones**: Added adaptive `GAME_HEIGHT` — phones (short side ≤500px) use 420px logical height instead of 600px, making tiles ~43% larger and more playable on small screens
 - **Purple void background**: Changed camera background from `0x0f0f1a` (purple-tinted navy) to `0x000000` (pure black) for exterior maps, and matched HTML body + Phaser config backgroundColor to `#000000` so void areas blend seamlessly
 - **Save/menu icon overlap**: Moved quick-save button from `y: 60` to `y: 100` to prevent it overlapping with the 36px menu button in the top-right corner
 - **Touch button release bug**: Fixed `handleUp` which reset ALL button visual states on any `touchend` event (including joystick lifts). Now tracks individual touch IDs per button and only resets the matching button on release
