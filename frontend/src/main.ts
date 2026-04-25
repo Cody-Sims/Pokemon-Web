@@ -115,12 +115,15 @@ function handleViewportResize(): void {
   if (resizeTimer) clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
     const newWidth = computeGameWidth();
+    // Recompute height for phone vs tablet/desktop
+    const shortSide = Math.min(window.innerWidth, window.innerHeight);
+    const newHeight = shortSide <= 500 ? 420 : 600;
     const current = game.scale.gameSize;
-    if (current.width !== newWidth || current.height !== GAME_HEIGHT) {
-      game.scale.resize(newWidth, GAME_HEIGHT);
+    if (current.width !== newWidth || current.height !== newHeight) {
+      game.scale.resize(newWidth, newHeight);
     }
     game.scale.refresh();
-  }, 50); // short delay so viewport settles
+  }, 50);
 }
 // Also resize immediately once the game is ready (in case it booted in portrait)
 game.events.once('ready', () => {
@@ -128,8 +131,10 @@ game.events.once('ready', () => {
 });
 window.addEventListener('resize', handleViewportResize);
 window.addEventListener('orientationchange', () => {
-  // Delay a bit longer for orientation — the viewport needs time to settle
+  // Fire multiple times as viewport settles during rotation animation
+  setTimeout(handleViewportResize, 100);
   setTimeout(handleViewportResize, 300);
+  setTimeout(handleViewportResize, 600);
 });
 
 // ── iOS "Add to Home Screen" install prompt ──

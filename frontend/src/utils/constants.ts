@@ -31,18 +31,26 @@ function computeGameHeight(): number {
 }
 export const GAME_HEIGHT = computeGameHeight();
 
-/** Compute a game width that matches the device aspect ratio (clamped 4:3 – 21:9).
- *  Always uses landscape orientation (wider dimension) so the game starts correctly
- *  even if the page loads in portrait (phone before rotating). */
+/** Compute game width for the CURRENT viewport (not forced landscape).
+ *  In landscape: matches device aspect ratio (clamped 4:3 – 21:9).
+ *  In portrait: matches viewport width so the game fills the screen width. */
 export function computeGameWidth(): number {
-  if (typeof window === 'undefined') return 800; // SSR / test fallback
-  // Use the larger dimension as width to always get a landscape aspect ratio
-  const w = Math.max(window.innerWidth, window.innerHeight);
-  const h = Math.min(window.innerWidth, window.innerHeight);
-  const aspect = w / h;
-  // Clamp between 4:3 (1.333) and 21:9 (2.333)
+  if (typeof window === 'undefined') return 800;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const isPortrait = vh > vw;
+
+  if (isPortrait) {
+    // Portrait: game width = viewport width scaled to game height
+    // This makes the game fill the full screen width in portrait
+    const aspect = vw / vh;
+    const clamped = Math.max(0.4, Math.min(1.0, aspect)); // portrait range
+    return Math.round((GAME_HEIGHT * clamped) / 2) * 2;
+  }
+
+  // Landscape: use actual viewport aspect ratio
+  const aspect = vw / vh;
   const clamped = Math.max(4 / 3, Math.min(21 / 9, aspect));
-  // Round to nearest even number for pixel-art rendering
   return Math.round((GAME_HEIGHT * clamped) / 2) * 2;
 }
 

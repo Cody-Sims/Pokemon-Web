@@ -24,6 +24,7 @@ export class IntroScene extends Phaser.Scene {
   private phase: 'intro' | 'naming' | 'appearance' | 'confirm' = 'intro';
   private selectedAppearance = 0; // 0 = boy, 1 = girl
   private difficultyMode: import('@data/difficulty').DifficultyMode = 'classic';
+  private hiddenInput?: HTMLInputElement;
 
   // Pre-built intro slides
   private readonly slides = [
@@ -278,7 +279,52 @@ export class IntroScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     doneBtn.on('pointerdown', () => this.confirmName());
 
-    // Keyboard input for typing
+    // SKIP button
+    const skipBtn = this.add.text(width / 2, height * 0.92, '[ SKIP ]', {
+      ...FONTS.caption,
+      fontSize: mobileFontSize(14),
+      color: COLORS.textDim,
+      padding: { x: 12, y: 6 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    skipBtn.on('pointerdown', () => {
+      this.nameInput = 'Red';
+      this.confirmName();
+    });
+
+    // ── Mobile: hidden DOM input to trigger soft keyboard ──
+    if (isMobile()) {
+      this.hiddenInput = document.createElement('input');
+      this.hiddenInput.type = 'text';
+      this.hiddenInput.maxLength = 10;
+      this.hiddenInput.autocomplete = 'off';
+      this.hiddenInput.autocapitalize = 'words';
+      Object.assign(this.hiddenInput.style, {
+        position: 'fixed', left: '50%', top: '40%', transform: 'translate(-50%, -50%)',
+        width: '200px', fontSize: '16px', // 16px prevents iOS auto-zoom
+        opacity: '0', zIndex: '9999', pointerEvents: 'none',
+      });
+      document.body.appendChild(this.hiddenInput);
+
+      // Tap on the name display area or text input box → focus the hidden input
+      const inputZone = this.add.rectangle(width / 2, height * 0.48, width * 0.7, 50, 0x000000, 0)
+        .setInteractive({ useHandCursor: true });
+      inputZone.on('pointerdown', () => {
+        this.hiddenInput!.style.pointerEvents = 'auto';
+        this.hiddenInput!.focus();
+        // Re-hide pointer events after keyboard opens
+        setTimeout(() => { if (this.hiddenInput) this.hiddenInput.style.pointerEvents = 'none'; }, 500);
+      });
+
+      // Sync hidden input value → game
+      this.hiddenInput.addEventListener('input', () => {
+        const val = this.hiddenInput!.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+        this.hiddenInput!.value = val;
+        this.nameInput = val;
+        this.updateNameDisplay();
+      });
+    }
+
+    // Keyboard input for typing (desktop / hardware keyboard)
     this.input.keyboard!.on('keydown', (event: KeyboardEvent) => {
       if (event.key === 'Enter') {
         this.confirmName();
@@ -310,6 +356,13 @@ export class IntroScene extends Phaser.Scene {
   }
 
   private confirmName(): void {
+    // Remove hidden mobile input
+    if (this.hiddenInput) {
+      this.hiddenInput.blur();
+      this.hiddenInput.remove();
+      this.hiddenInput = undefined;
+    }
+
     const name = this.nameInput.trim() || 'Red';
     this.nameInput = name;
 

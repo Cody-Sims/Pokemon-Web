@@ -18,6 +18,7 @@ export class NicknameScene extends Phaser.Scene {
   private nameInput = '';
   private nameDisplay!: Phaser.GameObjects.Text;
   private nameCursor!: Phaser.GameObjects.Rectangle;
+  private hiddenInput?: HTMLInputElement;
 
   constructor() {
     super({ key: 'NicknameScene' });
@@ -92,6 +93,43 @@ export class NicknameScene extends Phaser.Scene {
       padding: { x: 12, y: 8 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     skipBtn.on('pointerdown', () => this.scene.stop());
+
+    // ── Mobile: hidden DOM input to trigger soft keyboard ──
+    if (isMobile()) {
+      this.hiddenInput = document.createElement('input');
+      this.hiddenInput.type = 'text';
+      this.hiddenInput.maxLength = 10;
+      this.hiddenInput.autocomplete = 'off';
+      this.hiddenInput.autocapitalize = 'words';
+      Object.assign(this.hiddenInput.style, {
+        position: 'fixed', left: '50%', top: '35%', transform: 'translate(-50%, -50%)',
+        width: '200px', fontSize: '16px',
+        opacity: '0', zIndex: '9999', pointerEvents: 'none',
+      });
+      document.body.appendChild(this.hiddenInput);
+
+      // Tap on the name display area → focus the hidden input
+      const inputZone = this.add.rectangle(width / 2, height * 0.38, width * 0.7, 50, 0x000000, 0)
+        .setInteractive({ useHandCursor: true });
+      inputZone.on('pointerdown', () => {
+        this.hiddenInput!.style.pointerEvents = 'auto';
+        this.hiddenInput!.focus();
+        setTimeout(() => { if (this.hiddenInput) this.hiddenInput.style.pointerEvents = 'none'; }, 500);
+      });
+
+      this.hiddenInput.addEventListener('input', () => {
+        const val = this.hiddenInput!.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+        this.hiddenInput!.value = val;
+        this.nameInput = val;
+        this.updateNameDisplay();
+      });
+
+      // Clean up on scene shutdown
+      this.events.once('shutdown', () => {
+        this.hiddenInput?.remove();
+        this.hiddenInput = undefined;
+      });
+    }
 
     // Keyboard input
     this.input.keyboard!.on('keydown', (event: KeyboardEvent) => {

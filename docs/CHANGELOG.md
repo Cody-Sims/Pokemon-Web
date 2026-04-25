@@ -6,6 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-25]
 
+### Fixed
+
+- **Portrait mode width**: `computeGameWidth()` now adapts to actual viewport orientation — in portrait, game fills screen width with proportional height instead of forcing landscape ratio that leaves huge top/bottom bars
+- **Rotation not adjusting**: Orientation change handler now fires at 100ms, 300ms, and 600ms intervals to catch viewport settling, and recomputes both width and height dynamically
+- **Mobile name input**: Added hidden DOM `<input>` element in IntroScene and NicknameScene that focuses on tap to trigger the mobile soft keyboard; input value syncs to the game's name field in real-time
+
 ### Added
 
 - **NPC and trainer display names**: Added `name` field to all NPC and trainer spawn objects across all map files (cities, interiors, dungeons, routes). Names follow role-based conventions: story characters use their actual names, gym leaders use their name, generic NPCs get role titles (Townsperson, Nurse Joy, Clerk, etc.), and grunts are labeled Synthesis Grunt. Signs, items, and interactive objects are intentionally left unnamed.
