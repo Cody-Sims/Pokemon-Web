@@ -83,7 +83,10 @@ export class OverworldScene extends Phaser.Scene {
   private waterTileSprites: Phaser.GameObjects.Image[] = [];
   private tallGrassTileSprites: Phaser.GameObjects.Image[] = [];
   private lavaTileSprites: Phaser.GameObjects.Image[] = [];
+  /** Lookup tall grass sprites by "tileX,tileY" for rustle effects. */
+  private grassSpriteByTile = new Map<string, Phaser.GameObjects.Image>();
   private tileAnimFrame = 0;
+  private mapPixelH = 0;
   private ambientSFX!: AmbientSFX;
   /** O(1) lookup set for NPC-occupied tile positions. */
   private npcOccupiedTiles = new Set<string>();
@@ -121,6 +124,7 @@ export class OverworldScene extends Phaser.Scene {
     this.interactPrompt = undefined;
     this.waterTileSprites = [];
     this.tallGrassTileSprites = [];
+    this.grassSpriteByTile.clear();
     this.lavaTileSprites = [];
     this.tileAnimFrame = 0;
   }
@@ -155,6 +159,7 @@ export class OverworldScene extends Phaser.Scene {
 
     const mapW = this.mapDef.width;
     const mapH = this.mapDef.height;
+    this.mapPixelH = mapH * TILE_SIZE;
 
     // Draw tile map
     this.drawMap(mapW, mapH);
@@ -190,7 +195,7 @@ export class OverworldScene extends Phaser.Scene {
 
     this.player = new Player(this, spawnX, spawnY, gm.getPlayerGender() === 'girl' ? 'player-walk-female' : 'player-walk');
     this.player.setScale(2);
-    this.player.setDepth(1); // Between ground (0) and foreground overlays like tall grass (2)
+    // Depth is set dynamically per-frame by y-based sorting in update()
     const animDir = spawnDir === 'right' ? 'left' : spawnDir;
     this.player.play(`${this.animPrefix()}idle-${animDir}`);
     if (spawnDir === 'right') this.player.setFlipX(true);
@@ -485,11 +490,17 @@ export class OverworldScene extends Phaser.Scene {
           sprite.setDepth(FOREGROUND_TILES.has(tile) ? 2 : 0.5);
         }
 
+        // Explicit depth for animated ground tiles without an overlay base
+        if (baseTile === undefined) {
+          sprite.setDepth(0);
+        }
+
         // Collect references for animated tile effects
         if (tile === Tile.WATER || tile === Tile.TIDE_POOL) {
           this.waterTileSprites.push(sprite);
         } else if (tile === Tile.TALL_GRASS) {
           this.tallGrassTileSprites.push(sprite);
+          this.grassSpriteByTile.set(`${x},${y}`, sprite);
         } else if (tile === Tile.MAGMA_CRACK || tile === Tile.EMBER_VENT || tile === Tile.LAVA_ROCK) {
           (sprite as Phaser.GameObjects.Image & { _baseTile?: number })._baseTile = tile;
           this.lavaTileSprites.push(sprite);
@@ -549,6 +560,20 @@ export class OverworldScene extends Phaser.Scene {
       const footstepKey = this.getFootstepSFX(currentTile);
       if (footstepKey) {
         AudioManager.getInstance().playSFX(footstepKey);
+      }
+    }
+
+    // Grass rustle effect when stepping into tall grass
+    if (currentTile === Tile.TALL_GRASS || currentTile === Tile.DARK_GRASS) {
+      const grassSprite = this.grassSpriteByTile.get(`${tx},${ty}`);
+      if (grassSprite) {
+        this.tweens.add({
+          targets: grassSprite,
+          scaleX: { from: 2.3, to: 2 },
+          scaleY: { from: 1.7, to: 2 },
+          duration: 250,
+          ease: 'Back.easeOut',
+        });
       }
     }
 
@@ -860,6 +885,16 @@ export class OverworldScene extends Phaser.Scene {
     const delta = this.game.loop.delta;
     for (const controller of this.npcBehaviors) {
       controller.update(delta);
+    }
+
+    // Y-based depth sorting: characters lower on screen render in front
+    const maxH = this.mapPixelH || 1;
+    this.player.setDepth(1 + (this.player.y / maxH) * 0.9);
+    for (const npc of this.npcs) {
+      npc.setDepth(1 + (npc.y / maxH) * 0.9);
+    }
+    for (const trainer of this.trainers) {
+      trainer.setDepth(1 + (trainer.y / maxH) * 0.9);
     }
 
     // Refresh NPC occupied tile positions after behavior updates

@@ -6,6 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-25]
 
+### Added
+
+- **Y-based depth sorting for characters**: Player, NPCs, and trainers now sort by Y position each frame so characters lower on screen render in front of those above. Depth ranges from 1.0 to 1.9, between ground (0) and foreground overlays (2)
+- **Grass rustle animation**: Stepping into tall grass triggers a brief scale pulse (squash-and-stretch tween) on the grass sprite at that tile, providing visual feedback like classic Pokemon games
+- **Explicit depth for animated ground tiles**: Water, tide pool, and lava sprites now explicitly set depth 0 instead of relying on Phaser's default
+
 ### Fixed
 
 - **Player hidden in tall grass**: Made tall grass tile background transparent in the tileset PNG so the grass blades overlay properly on the base grass tile. Removed alpha hack — the tile art itself now has transparent pixels between the grass blades, letting the player show through naturally (depth order: background → player → grass)
