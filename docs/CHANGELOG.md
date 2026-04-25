@@ -8,6 +8,8 @@ All notable changes to the Pokemon Web project.
 
 ### Added
 
+- **6 unique gym leader sprites**: Created type-themed sprites for Coral (Water/teal), Ivy (Grass/green), Morwen (Ghost/purple), Drake (Dragon/red-cape), Solara (Fire/orange), Giovanni (Ground/dark-suit) — each with distinct hair, outfit, and accent colors
+- **Sprite catalog generator**: `temp/scripts/sprites/sprite_catalog.py` renders all 47 sprites at 4x zoom in a visual reference grid
 - **Map generation toolchain**: Full map creation pipeline at `temp/scripts/map-gen/` with CLI, validation, preview, procedural generators, and template composition system
   - Core utilities: Grid class, flood-fill connectivity, A* pathfinding, seeded PRNG
   - 4 procedural generators: BSP dungeon (rooms + corridors), cellular automata caves, route carver, maze generator (growing tree with sparsification)

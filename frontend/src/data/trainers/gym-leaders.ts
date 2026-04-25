@@ -27,7 +27,7 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
 
   // ─── Gym 2: Coral (Water-type Gym Leader) ───
   'gym-coral': {
-    id: 'gym-coral', name: 'Gym Leader Coral', spriteKey: 'npc-swimmer',
+    id: 'gym-coral', name: 'Gym Leader Coral', spriteKey: 'npc-gym-coral',
     party: [
       { pokemonId: 120, level: 18, moves: ['water-gun', 'tackle', 'harden', 'swift'] },
       { pokemonId: 90, level: 18, moves: ['tackle', 'withdraw', 'ice-beam', 'clamp'] },
@@ -83,7 +83,7 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
 
   // ─── Gym 4: Ivy (Grass-type Gym Leader) ───
   'gym-ivy': {
-    id: 'gym-ivy', name: 'Gym Leader Ivy', spriteKey: 'npc-female-5',
+    id: 'gym-ivy', name: 'Gym Leader Ivy', spriteKey: 'npc-gym-ivy',
     party: [
       { pokemonId: 70, level: 28, moves: ['razor-leaf', 'sleep-powder', 'vine-whip', 'wrap'] },
       { pokemonId: 47, level: 28, moves: ['spore', 'mega-drain', 'slash', 'growth'] },
@@ -140,7 +140,7 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
 
   // ─── Gym 6: Morwen (Ghost-type Gym Leader) ───
   'gym-morwen': {
-    id: 'gym-morwen', name: 'Gym Leader Morwen', spriteKey: 'npc-female-6',
+    id: 'gym-morwen', name: 'Gym Leader Morwen', spriteKey: 'npc-gym-morwen',
     party: [
       { pokemonId: 93, level: 38, moves: ['lick', 'hypnosis', 'dream-eater', 'confuse-ray'] },
       { pokemonId: 94, level: 40, moves: ['lick', 'hypnosis', 'dream-eater', 'night-shade'] },
@@ -158,7 +158,7 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
 
   // ─── Gym 7: Drake (Dragon-type Gym Leader) ───
   'gym-drake': {
-    id: 'gym-drake', name: 'Gym Leader Drake', spriteKey: 'npc-male-5',
+    id: 'gym-drake', name: 'Gym Leader Drake', spriteKey: 'npc-gym-drake',
     party: [
       { pokemonId: 148, level: 42, moves: ['dragon-rage', 'slam', 'thunder-wave', 'agility'] },
       { pokemonId: 148, level: 43, moves: ['dragon-pulse', 'slam', 'thunder-wave', 'dragon-dance'] },
@@ -176,7 +176,7 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
 
   // ─── Gym 8: Solara (Fire-type Gym Leader) ───
   'gym-solara': {
-    id: 'gym-solara', name: 'Gym Leader Solara', spriteKey: 'npc-female-9',
+    id: 'gym-solara', name: 'Gym Leader Solara', spriteKey: 'npc-gym-solara',
     party: [
       { pokemonId: 78, level: 44, moves: ['fire-spin', 'stomp', 'agility', 'fire-blast'] },
       { pokemonId: 59, level: 44, moves: ['flamethrower', 'bite', 'take-down', 'agility'] },
@@ -194,7 +194,7 @@ export const gymLeaderTrainers: Record<string, TrainerData> = {
 
   // ─── Gym 9: Giovanni (Ground-type Gym Leader) ───
   'gym-giovanni': {
-    id: 'gym-giovanni', name: 'Gym Leader Giovanni', spriteKey: 'generic-trainer',
+    id: 'gym-giovanni', name: 'Gym Leader Giovanni', spriteKey: 'npc-gym-giovanni',
     party: [
       { pokemonId: 111, level: 50, moves: ['earthquake', 'horn-drill', 'stomp', 'fury-attack'] },
       { pokemonId: 51, level: 50, moves: ['earthquake', 'slash', 'sand-attack', 'dig'] },
