@@ -69,11 +69,16 @@ export class DialogueScene extends Phaser.Scene {
 
     const layout = ui(this);
 
-    // Nine-patch dialogue box
+    // Hide desktop keyboard hints so they don't overlap the dialogue box
+    const hintsEl = document.getElementById('desktop-hints');
+    if (hintsEl) hintsEl.style.display = 'none';
+
+    // Nine-patch dialogue box — positioned above the bottom edge to avoid
+    // overlapping desktop chrome and to leave room for the advance indicator.
     const boxW = layout.w - 20;
     const boxH = 100;
     const boxX = layout.cx;
-    const boxY = layout.h - 60;
+    const boxY = layout.h - 80;
     this.panel = new NinePatchPanel(this, boxX, boxY, boxW, boxH, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.92,
@@ -82,36 +87,39 @@ export class DialogueScene extends Phaser.Scene {
       cornerRadius: 8,
     });
 
-    // Speaker name panel (if provided)
+    // Speaker name panel (if provided) — anchored inside the viewport,
+    // sitting just above the dialogue box.
     if (this.speaker) {
       const speakerW = Math.max(100, this.speaker.length * 10 + 24);
-      this.speakerPanel = new NinePatchPanel(this, 70, layout.h - 118, speakerW, 26, {
+      const speakerX = 20 + speakerW / 2;
+      const speakerY = boxY - boxH / 2 - 16;
+      this.speakerPanel = new NinePatchPanel(this, speakerX, speakerY, speakerW, 26, {
         fillColor: COLORS.bgCard,
         fillAlpha: 0.95,
         borderColor: COLORS.borderHighlight,
         borderWidth: 1,
         cornerRadius: 4,
       });
-      this.speakerText = this.add.text(70, layout.h - 118, this.speaker, {
+      this.speakerText = this.add.text(speakerX, speakerY, this.speaker, {
         ...FONTS.caption, color: COLORS.textHighlight, fontStyle: 'bold', fontSize: mobileFontSize(13),
       }).setOrigin(0.5);
     }
 
     // Text display — scale font for viewport width
     const baseFontPx = layout.w < 900 ? 15 : layout.w > 1200 ? 19 : 17;
-    this.dialogueText = this.add.text(30, layout.h - 100, '', {
+    this.dialogueText = this.add.text(30, boxY - boxH / 2 + 10, '', {
       ...FONTS.body,
       fontSize: mobileFontSize(baseFontPx),
       wordWrap: { width: layout.w - 60 },
     });
 
-    // Animated advance indicator (bouncing arrow)
-    this.advanceIndicator = this.add.text(layout.w - 40, layout.h - 22, '▼', {
+    // Animated advance indicator (bouncing arrow) — sits below the box
+    this.advanceIndicator = this.add.text(layout.w - 40, boxY + boxH / 2 + 12, '▼', {
       fontSize: mobileFontSize(14), color: COLORS.textHighlight,
     }).setOrigin(0.5).setAlpha(0);
     this.indicatorTween = this.tweens.add({
       targets: this.advanceIndicator,
-      y: layout.h - 16,
+      y: boxY + boxH / 2 + 18,
       duration: 500,
       yoyo: true,
       repeat: -1,
@@ -121,20 +129,28 @@ export class DialogueScene extends Phaser.Scene {
     // Re-layout on resize / orientation change
     layoutOn(this, () => {
       const l = ui(this);
+      const rBoxY = l.h - 80;
       // Reposition panel (destroy + recreate since NinePatchPanel lacks setPosition)
       this.panel.destroy();
-      this.panel = new NinePatchPanel(this, l.cx, l.h - 60, l.w - 20, 100, {
+      this.panel = new NinePatchPanel(this, l.cx, rBoxY, l.w - 20, 100, {
         fillColor: 0x0a0a18, fillAlpha: 0.92, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 8,
       });
       // Reposition text elements
-      this.dialogueText.setPosition(30, l.h - 100);
+      this.dialogueText.setPosition(30, rBoxY - 40);
       this.dialogueText.setWordWrapWidth(l.w - 60);
-      this.advanceIndicator.setPosition(l.w - 40, l.h - 22);
-      if (this.speakerText) this.speakerText.setY(l.h - 118);
+      this.advanceIndicator.setPosition(l.w - 40, rBoxY + 62);
+      if (this.speakerText) {
+        const sw = Math.max(100, (this.speaker?.length ?? 0) * 10 + 24);
+        const sx = 20 + sw / 2;
+        const sy = rBoxY - 66;
+        this.speakerText.setPosition(sx, sy);
+      }
       if (this.speakerPanel) {
         this.speakerPanel.destroy();
         const sw = Math.max(100, (this.speaker?.length ?? 0) * 10 + 24);
-        this.speakerPanel = new NinePatchPanel(this, 70, l.h - 118, sw, 26, {
+        const sx = 20 + sw / 2;
+        const sy = rBoxY - 66;
+        this.speakerPanel = new NinePatchPanel(this, sx, sy, sw, 26, {
           fillColor: COLORS.bgCard, fillAlpha: 0.95, borderColor: COLORS.borderHighlight, borderWidth: 1, cornerRadius: 4,
         });
       }
@@ -243,7 +259,7 @@ export class DialogueScene extends Phaser.Scene {
     const choiceW = isMobile() ? 180 : 150;
     const choiceH = this.choices.length * choiceRowH + 16;
     const choiceX = layout.w - 100;
-    const choiceY = layout.h - 120 - choiceH / 2;
+    const choiceY = layout.h - 140 - choiceH / 2;
 
     this.choicePanel = new NinePatchPanel(this, choiceX, choiceY, choiceW, choiceH, {
       fillColor: 0x0a0a18,
@@ -303,6 +319,9 @@ export class DialogueScene extends Phaser.Scene {
     this.typeTimer?.destroy();
     this.indicatorTween?.destroy();
     this.cleanupChoices();
+    // Restore desktop keyboard hints
+    const hintsEl = document.getElementById('desktop-hints');
+    if (hintsEl) hintsEl.style.display = '';
     this.scene.stop();
     this.scene.resume(this.callingScene);
   }
@@ -312,5 +331,8 @@ export class DialogueScene extends Phaser.Scene {
     this.input.removeAllListeners();
     this.typeTimer?.destroy();
     this.indicatorTween?.destroy();
+    // Ensure hints are restored if scene is stopped externally
+    const hintsEl = document.getElementById('desktop-hints');
+    if (hintsEl) hintsEl.style.display = '';
   }
 }

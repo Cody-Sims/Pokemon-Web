@@ -6,44 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-25]
 
-### Added
-
-- **6 unique gym leader sprites**: Created type-themed sprites for Coral (Water/teal), Ivy (Grass/green), Morwen (Ghost/purple), Drake (Dragon/red-cape), Solara (Fire/orange), Giovanni (Ground/dark-suit) — each with distinct hair, outfit, and accent colors
-- **Sprite catalog generator**: `temp/scripts/sprites/sprite_catalog.py` renders all 47 sprites at 4x zoom in a visual reference grid
-- **Map generation toolchain**: Full map creation pipeline at `temp/scripts/map-gen/` with CLI, validation, preview, procedural generators, and template composition system
-  - Core utilities: Grid class, flood-fill connectivity, A* pathfinding, seeded PRNG
-  - 4 procedural generators: BSP dungeon (rooms + corridors), cellular automata caves, route carver, maze generator (growing tree with sparsification)
-  - Template composition: 17 reusable building/terrain/path/interior templates in `temp/map-templates/`; template loader, map composer, and auto path-connector
-  - 10 biome themes with character substitution (standard, volcanic, coastal, forest, ghost, dragon, mine, electric, synthesis, cave)
-- **Map generation tests**: 22 unit tests covering Grid logic, flood-fill, seeded RNG determinism, A* pathfinding, biome substitution, CHAR_TO_TILE mapping, and roundtrip export
-- **Sample generated maps**: BSP dungeon, cellular cave, ghost-biome dungeon, and template-composed town in `temp/generated-maps/`
-
 ### Fixed
 
-- **9 failing maps**: Corrected invalid Unicode characters (ŧ→Ŧ in abyssal-spire-f1 and verdantia-lab, Ɩ→Ɖ in abyssal-spire-f5, Ư→Ɯ in voltara-gym) and padded short rows (crystal-cavern-depths, shattered-isles-ruins, shattered-isles-temple, pewter-museum, scalecrest-gym)
-- **coral-harbor and shattered-isles-shore**: Fixed dimension mismatches — all 66 maps now pass validation
-  - Map validator with 8 checks (dimension consistency, character validity, border integrity, warp reachability, NPC placement, spawn validity, connectivity)
-  - PPM preview renderer with warp/NPC/trainer/spawn markers and optional grid overlay
-  - TypeScript exporter for generating complete MapDefinition .ts files
-  - CLI entry point: `npm run map:validate`, `map:preview`, `map:preview-all`, `map:gen`, `map:compose`
-- **Map generation instructions**: `.github/instructions/map-generation.instructions.md` with workflow rules, CHAR_TO_TILE reference, and generator parameters
-- **Tileset expansion**: Expanded tileset.png from 10x11 (110 frames) to 10x12 (120 frames), fixing tile overflow for IDs 110-114
-- **Field ability tile art**: Drew pixel art for CUT_TREE (110), CRACKED_ROCK (111), STRENGTH_BOULDER (112), LEDGE_LEFT (113), LEDGE_RIGHT (114) — previously rendered as blank frames
-- **Tile validation script**: `temp/scripts/tileset/validate_tiles.py` checks color count, lighting model, depth borders, and isolated pixels against quality rules
-- **Tile catalog generator**: `temp/scripts/tileset/tile_catalog.py` renders full tileset at 4x zoom with IDs and names for visual reference
-- **Tile & Sprite Asset Plan**: `docs/TileSpriteAssetPlan.md` documenting quality rules, biome palettes, sprite conventions, and sourcing strategy
-- **Female player sprite**: Proper dedicated atlas at `sprites/player/player-walk-female.{png,json}` replacing the npc-lass placeholder; distinct brown hair, pink-red top, matching 64x51 / 12-frame atlas format
-
-### Fixed
-
-- **33 core tile quality failures eliminated**: Added texture detail (highlights + shadows) to tiles 1-62 that had only 3 colors; fixed reversed lighting on tiles 7, 29, 34, 36, 40, 42, 60-62; fully redrawn tile 36 (RUG) and tile 53 (ARENA_MARK). Tileset now has 0 FAIL across all 120 tiles (was 33 FAIL)
-- **11 worst biome tiles regenerated**: Tile 92 (MIST) fixed from 1-color FAIL to proper translucent fog; tiles 81, 85, 93, 99, 100, 102, 103, 104, 105, 109 redrawn with proper depth borders, palettes, and detail
-- **Female player no longer reuses npc-lass**: PreloadScene now loads dedicated female player atlas from `sprites/player/` directory
-- **Surfing encounters**: Water tile encounters now trigger while surfing; added surf encounter tables for route-1, route-3, coral-harbor, and shattered-isles-shore with Tentacool, Horsea, Shellder, Gyarados, Lapras, Staryu, Starmie
-- **Seeded PRNG support**: `EncounterSystem.setRng()` allows injecting a seeded PRNG for deterministic replay/testing
-
-### Fixed
-
+- **Dialogue box visibility**: Moved dialog box 20px higher so text is no longer hidden behind the desktop keyboard hints overlay
+- **Speaker name panel clipping**: Repositioned the speaker name tag (e.g. "Prof. Willow") to anchor relative to the dialog box top edge with proper left-margin so it stays inside the viewport
+- **Controls overlapping dialog**: Desktop keyboard hints (`#desktop-hints`) are now hidden while DiaglogueScene is active and restored when dialog closes
+- **Choice panel position**: Updated choice menu to match the new dialog box position
 - **TypeScript errors**: Resolved all 14 remaining compilation errors — added `'full-restore' | 'level-up'` to `ItemData.effect.type` union, expanded `MoveEffect.stat` to accept `'accuracy' | 'evasion'`, fixed `StatusEffectHandler.getEffectiveStat` to handle accuracy/evasion with base value of 100
 
 ### Changed
