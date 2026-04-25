@@ -6,6 +6,15 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-25]
 
+### Added
+
+- **Dialogue portrait/avatar**: NPC dialogue boxes now show a 48x48 sprite portrait of the speaking NPC in a bordered frame on the left side of the dialog box; text wraps around the portrait; supported from NPC interaction, trainer battles, and cutscenes via new `portraitKey` field in `DialogueData`
+- **Dialogue slide animation**: Dialog box and all associated elements (speaker name, portrait, text) slide in from below on open and slide out downward on close using Back easing
+
+### Changed
+
+- **Dialogue depth ordering**: All dialogue UI elements now use a consistent depth base of 1000 (`DIALOGUE_DEPTH`), with speaker, portrait, text, and choices layered at +1/+2/+3/+4 increments to prevent z-fighting
+
 ### Fixed
 
 - **Mobile viewport distortion**: Replaced `ENVELOP` scale mode + CSS `width/height: 100% !important` with `FIT` + `CENTER_BOTH` on all devices. The CSS override was stretching the 4:3 game canvas to fill portrait viewports, causing severe aspect ratio distortion. FIT preserves correct proportions and `computeGameWidth()` ensures landscape phones get near-100% fill

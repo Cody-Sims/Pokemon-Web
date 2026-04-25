@@ -75,6 +75,9 @@ export function tryInteract(ctx: InteractionContext): void {
       // NPC turns to face the player
       npc.faceDirection(NPC.getOpposite(facing));
 
+      // Capture the NPC's sprite key for optional portrait display in dialogue
+      const npcPortraitKey = npc.texture?.key;
+
       // Undefeated trainer → trigger battle
       if (npc instanceof Trainer && !npc.defeated) {
         ctx.triggerTrainerBattle(npc);
@@ -127,7 +130,7 @@ export function tryInteract(ctx: InteractionContext): void {
       // Handle special interaction types
       if (spawnDef?.interactionType === 'heal') {
         sm.pause();
-        sm.launch('DialogueScene', { dialogue });
+        sm.launch('DialogueScene', { dialogue, portraitKey: npcPortraitKey });
         sm.get('DialogueScene').events.once('shutdown', () => {
           ctx.healParty();
           sm.resume();
@@ -137,7 +140,7 @@ export function tryInteract(ctx: InteractionContext): void {
 
       if (spawnDef?.interactionType === 'shop') {
         sm.pause();
-        sm.launch('DialogueScene', { dialogue });
+        sm.launch('DialogueScene', { dialogue, portraitKey: npcPortraitKey });
         sm.get('DialogueScene').events.once('shutdown', () => {
           sm.launch('ShopScene', { shopId: gm.getCurrentMap() });
           sm.get('ShopScene').events.once('shutdown', () => {
@@ -149,7 +152,7 @@ export function tryInteract(ctx: InteractionContext): void {
 
       if (spawnDef?.interactionType === 'pc') {
         sm.pause();
-        sm.launch('DialogueScene', { dialogue });
+        sm.launch('DialogueScene', { dialogue, portraitKey: npcPortraitKey });
         sm.get('DialogueScene').events.once('shutdown', () => {
           sm.launch('PCScene');
           sm.get('PCScene').events.once('shutdown', () => {
@@ -162,7 +165,7 @@ export function tryInteract(ctx: InteractionContext): void {
       if (spawnDef?.interactionType === 'move-tutor') {
         const tutorId = spawnDef.interactionData ?? spawnDef.id;
         sm.pause();
-        sm.launch('DialogueScene', { dialogue });
+        sm.launch('DialogueScene', { dialogue, portraitKey: npcPortraitKey });
         sm.get('DialogueScene').events.once('shutdown', () => {
           sm.launch('MoveTutorScene', { tutorId });
           sm.get('MoveTutorScene').events.once('shutdown', () => {
@@ -174,7 +177,7 @@ export function tryInteract(ctx: InteractionContext): void {
 
       if (spawnDef?.interactionType === 'starter-select' && !gm.getFlag('receivedStarter')) {
         sm.pause();
-        sm.launch('DialogueScene', { dialogue });
+        sm.launch('DialogueScene', { dialogue, portraitKey: npcPortraitKey });
         sm.get('DialogueScene').events.once('shutdown', () => {
           sm.resume();
           ctx.launchStarterSelection();
@@ -184,7 +187,7 @@ export function tryInteract(ctx: InteractionContext): void {
 
       if (spawnDef?.interactionType === 'name-rater') {
         sm.pause();
-        sm.launch('DialogueScene', { dialogue });
+        sm.launch('DialogueScene', { dialogue, portraitKey: npcPortraitKey });
         sm.get('DialogueScene').events.once('shutdown', () => {
           // Launch party selection, then naming input for the chosen Pokémon
           sm.launch('PartyScene', { selectMode: true });
@@ -220,7 +223,7 @@ export function tryInteract(ctx: InteractionContext): void {
             const enemyParty1 = e1Data.party.map(p => EncounterSystem.createWildPokemon(p.pokemonId, p.level));
             const enemyParty2 = e2Data.party.map(p => EncounterSystem.createWildPokemon(p.pokemonId, p.level));
             sm.pause();
-            sm.launch('DialogueScene', { dialogue });
+            sm.launch('DialogueScene', { dialogue, portraitKey: npcPortraitKey });
             sm.get('DialogueScene').events.once('shutdown', () => {
               sm.start('TransitionScene', {
                 targetScene: 'BattleScene',
@@ -247,7 +250,7 @@ export function tryInteract(ctx: InteractionContext): void {
         const nextReq = requirements.find(r => !gm.getFlag(r.flag));
         if (nextReq) {
           sm.pause();
-          sm.launch('DialogueScene', { dialogue });
+          sm.launch('DialogueScene', { dialogue, portraitKey: npcPortraitKey });
           sm.get('DialogueScene').events.once('shutdown', () => {
             sm.launch('PartyScene', { selectMode: true });
             sm.get('PartyScene').events.once('pokemon-selected', (index: number) => {
@@ -259,10 +262,10 @@ export function tryInteract(ctx: InteractionContext): void {
               if (pData && pData.types.some((t: string) => t === nextReq.type)) {
                 gm.setFlag(nextReq.flag);
                 EventManager.getInstance().emit('flag-set', nextReq.flag);
-                sm.launch('DialogueScene', { dialogue: [`Magnificent! A fine ${nextReq.type}-type indeed!`] });
+                sm.launch('DialogueScene', { dialogue: [`Magnificent! A fine ${nextReq.type}-type indeed!`], portraitKey: npcPortraitKey });
                 sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
               } else {
-                sm.launch('DialogueScene', { dialogue: [`Hmm, that's not the ${nextReq.type}-type I'm looking for.`] });
+                sm.launch('DialogueScene', { dialogue: [`Hmm, that's not the ${nextReq.type}-type I'm looking for.`], portraitKey: npcPortraitKey });
                 sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
               }
             });
@@ -277,7 +280,7 @@ export function tryInteract(ctx: InteractionContext): void {
         const [speciesId, lvl] = spawnDef.interactionData.split('-').map(Number);
         if (speciesId && lvl) {
           sm.pause();
-          sm.launch('DialogueScene', { dialogue });
+          sm.launch('DialogueScene', { dialogue, portraitKey: npcPortraitKey });
           sm.get('DialogueScene').events.once('shutdown', () => {
             const wild = EncounterSystem.createWildPokemon(speciesId, lvl);
             ctx.triggerWildEncounter(wild);
@@ -302,7 +305,7 @@ export function tryInteract(ctx: InteractionContext): void {
 
       // Regular dialogue
       sm.pause();
-      sm.launch('DialogueScene', { dialogue });
+      sm.launch('DialogueScene', { dialogue, portraitKey: npcPortraitKey });
       sm.get('DialogueScene').events.once('shutdown', () => {
         sm.resume();
       });

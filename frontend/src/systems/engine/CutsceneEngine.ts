@@ -109,12 +109,13 @@ export class CutsceneEngine {
 
   // ── Action implementations ──────────────────────────────
 
-  private execDialogue(action: { speaker?: string; lines: string[] }): Promise<void> {
+  private execDialogue(action: { speaker?: string; portraitKey?: string; lines: string[] }): Promise<void> {
     return new Promise<void>((resolve) => {
       this.scene.scene.pause();
       this.scene.scene.launch('DialogueScene', {
         dialogue: action.lines,
         speaker: action.speaker,
+        portraitKey: action.portraitKey,
       });
       this.scene.scene.get('DialogueScene').events.once('shutdown', () => {
         this.scene.scene.resume(this.scene.scene.key);

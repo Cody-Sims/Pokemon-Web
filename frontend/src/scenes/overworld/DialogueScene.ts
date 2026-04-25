@@ -19,10 +19,15 @@ const TEXT_SPEEDS: Record<string, number> = {
 export interface DialogueData {
   dialogue: string[];
   speaker?: string;
+  /** Phaser texture key for a portrait sprite shown inside the dialog box. */
+  portraitKey?: string;
   choices?: { text: string; value: string }[];
   onChoice?: (value: string) => void;
   callingScene?: string;
 }
+
+/** Base depth for all dialogue UI elements — high enough to overlay everything. */
+const DIALOGUE_DEPTH = 1000;
 
 export class DialogueScene extends Phaser.Scene {
   private dialogueText!: Phaser.GameObjects.Text;
@@ -38,6 +43,9 @@ export class DialogueScene extends Phaser.Scene {
   private indicatorTween?: Phaser.Tweens.Tween;
   private panel!: NinePatchPanel;
   private speaker?: string;
+  private portraitKey?: string;
+  private portrait?: Phaser.GameObjects.Sprite;
+  private portraitBg?: NinePatchPanel;
   private choices?: { text: string; value: string }[];
   private onChoice?: (value: string) => void;
   private choiceTexts: Phaser.GameObjects.Text[] = [];
@@ -54,6 +62,7 @@ export class DialogueScene extends Phaser.Scene {
     this.queue = data.dialogue || ['...'];
     this.currentIndex = 0;
     this.speaker = data.speaker;
+    this.portraitKey = data.portraitKey;
     this.choices = data.choices;
     this.onChoice = data.onChoice;
     this.callingScene = data.callingScene ?? 'OverworldScene';
@@ -73,8 +82,12 @@ export class DialogueScene extends Phaser.Scene {
     const hintsEl = document.getElementById('desktop-hints');
     if (hintsEl) hintsEl.style.display = 'none';
 
-    // Nine-patch dialogue box — positioned above the bottom edge to avoid
-    // overlapping desktop chrome and to leave room for the advance indicator.
+    // ── Determine portrait dimensions ─────────────────────────
+    const hasPortrait = !!this.portraitKey && this.textures.exists(this.portraitKey);
+    const portraitSize = 48;
+    const portraitPad = hasPortrait ? portraitSize + 20 : 0;
+
+    // ── Nine-patch dialogue box ───────────────────────────────
     const boxW = layout.w - 20;
     const boxH = 100;
     const boxX = layout.cx;
@@ -86,9 +99,26 @@ export class DialogueScene extends Phaser.Scene {
       borderWidth: 2,
       cornerRadius: 8,
     });
+    this.panel.setDepth(DIALOGUE_DEPTH);
 
-    // Speaker name panel (if provided) — anchored inside the viewport,
-    // sitting just above the dialogue box.
+    // ── Portrait (optional) ───────────────────────────────────
+    if (hasPortrait) {
+      const pX = boxX - boxW / 2 + 12 + portraitSize / 2;
+      const pY = boxY;
+      this.portraitBg = new NinePatchPanel(this, pX, pY, portraitSize + 8, portraitSize + 8, {
+        fillColor: 0x181830,
+        fillAlpha: 0.95,
+        borderColor: COLORS.borderHighlight,
+        borderWidth: 1,
+        cornerRadius: 4,
+      });
+      this.portraitBg.setDepth(DIALOGUE_DEPTH + 1);
+      this.portrait = this.add.sprite(pX, pY, this.portraitKey!, 'walk-down-0')
+        .setDisplaySize(portraitSize, portraitSize)
+        .setDepth(DIALOGUE_DEPTH + 2);
+    }
+
+    // ── Speaker name panel ────────────────────────────────────
     if (this.speaker) {
       const speakerW = Math.max(100, this.speaker.length * 10 + 24);
       const speakerX = 20 + speakerW / 2;
@@ -100,23 +130,25 @@ export class DialogueScene extends Phaser.Scene {
         borderWidth: 1,
         cornerRadius: 4,
       });
+      this.speakerPanel.setDepth(DIALOGUE_DEPTH + 1);
       this.speakerText = this.add.text(speakerX, speakerY, this.speaker, {
         ...FONTS.caption, color: COLORS.textHighlight, fontStyle: 'bold', fontSize: mobileFontSize(13),
-      }).setOrigin(0.5);
+      }).setOrigin(0.5).setDepth(DIALOGUE_DEPTH + 2);
     }
 
-    // Text display — scale font for viewport width
+    // ── Text display ──────────────────────────────────────────
     const baseFontPx = layout.w < 900 ? 15 : layout.w > 1200 ? 19 : 17;
-    this.dialogueText = this.add.text(30, boxY - boxH / 2 + 10, '', {
+    const textX = 30 + portraitPad;
+    this.dialogueText = this.add.text(textX, boxY - boxH / 2 + 10, '', {
       ...FONTS.body,
       fontSize: mobileFontSize(baseFontPx),
-      wordWrap: { width: layout.w - 60 },
-    });
+      wordWrap: { width: layout.w - 60 - portraitPad },
+    }).setDepth(DIALOGUE_DEPTH + 2);
 
-    // Animated advance indicator (bouncing arrow) — sits below the box
+    // ── Advance indicator ─────────────────────────────────────
     this.advanceIndicator = this.add.text(layout.w - 40, boxY + boxH / 2 + 12, '▼', {
       fontSize: mobileFontSize(14), color: COLORS.textHighlight,
-    }).setOrigin(0.5).setAlpha(0);
+    }).setOrigin(0.5).setAlpha(0).setDepth(DIALOGUE_DEPTH + 2);
     this.indicatorTween = this.tweens.add({
       targets: this.advanceIndicator,
       y: boxY + boxH / 2 + 18,
@@ -126,19 +158,53 @@ export class DialogueScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
-    // Re-layout on resize / orientation change
+    // ── Slide-in animation ────────────────────────────────────
+    // Collect all graphics objects for a coordinated slide-up entrance.
+    const slideTargets: Phaser.GameObjects.GameObject[] = [
+      this.panel.getGraphics(),
+      this.dialogueText,
+      this.advanceIndicator,
+    ];
+    if (this.speakerPanel) slideTargets.push(this.speakerPanel.getGraphics());
+    if (this.speakerText) slideTargets.push(this.speakerText);
+    if (this.portraitBg) slideTargets.push(this.portraitBg.getGraphics());
+    if (this.portrait) slideTargets.push(this.portrait);
+
+    // Offset everything downward, then tween up
+    const slideDistance = boxH + 40;
+    for (const obj of slideTargets) {
+      (obj as unknown as { y: number }).y += slideDistance;
+    }
+    this.tweens.add({
+      targets: slideTargets,
+      y: `-=${slideDistance}`,
+      duration: 200,
+      ease: 'Back.easeOut',
+    });
+
+    // ── Re-layout on resize / orientation change ──────────────
     layoutOn(this, () => {
       const l = ui(this);
       const rBoxY = l.h - 80;
-      // Reposition panel (destroy + recreate since NinePatchPanel lacks setPosition)
       this.panel.destroy();
       this.panel = new NinePatchPanel(this, l.cx, rBoxY, l.w - 20, 100, {
         fillColor: 0x0a0a18, fillAlpha: 0.92, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 8,
       });
-      // Reposition text elements
-      this.dialogueText.setPosition(30, rBoxY - 40);
-      this.dialogueText.setWordWrapWidth(l.w - 60);
+      this.panel.setDepth(DIALOGUE_DEPTH);
+      this.dialogueText.setPosition(30 + portraitPad, rBoxY - 40);
+      this.dialogueText.setWordWrapWidth(l.w - 60 - portraitPad);
       this.advanceIndicator.setPosition(l.w - 40, rBoxY + 62);
+      if (this.portrait) {
+        const pX = l.cx - (l.w - 20) / 2 + 12 + portraitSize / 2;
+        this.portrait.setPosition(pX, rBoxY);
+        if (this.portraitBg) {
+          this.portraitBg.destroy();
+          this.portraitBg = new NinePatchPanel(this, pX, rBoxY, portraitSize + 8, portraitSize + 8, {
+            fillColor: 0x181830, fillAlpha: 0.95, borderColor: COLORS.borderHighlight, borderWidth: 1, cornerRadius: 4,
+          });
+          this.portraitBg.setDepth(DIALOGUE_DEPTH + 1);
+        }
+      }
       if (this.speakerText) {
         const sw = Math.max(100, (this.speaker?.length ?? 0) * 10 + 24);
         const sx = 20 + sw / 2;
@@ -153,6 +219,7 @@ export class DialogueScene extends Phaser.Scene {
         this.speakerPanel = new NinePatchPanel(this, sx, sy, sw, 26, {
           fillColor: COLORS.bgCard, fillAlpha: 0.95, borderColor: COLORS.borderHighlight, borderWidth: 1, cornerRadius: 4,
         });
+        this.speakerPanel.setDepth(DIALOGUE_DEPTH + 1);
       }
     });
 
@@ -268,13 +335,14 @@ export class DialogueScene extends Phaser.Scene {
       borderWidth: 2,
       cornerRadius: 6,
     });
+    this.choicePanel.setDepth(DIALOGUE_DEPTH + 3);
 
     this.choiceTexts = this.choices.map((choice, i) => {
       const t = this.add.text(
         choiceX, choiceY - choiceH / 2 + 16 + i * choiceRowH,
         choice.text,
         { ...FONTS.body, fontSize: mobileFontSize(16) },
-      ).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      ).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(DIALOGUE_DEPTH + 4);
       t.setPadding(8, Math.max(0, (choiceRowH - 16) / 2), 8, Math.max(0, (choiceRowH - 16) / 2));
       t.on('pointerover', () => { this.choiceCursor = i; this.updateChoiceCursor(); });
       t.on('pointerdown', () => { this.choiceCursor = i; this.selectChoice(); });
@@ -319,11 +387,34 @@ export class DialogueScene extends Phaser.Scene {
     this.typeTimer?.destroy();
     this.indicatorTween?.destroy();
     this.cleanupChoices();
-    // Restore desktop keyboard hints
-    const hintsEl = document.getElementById('desktop-hints');
-    if (hintsEl) hintsEl.style.display = '';
-    this.scene.stop();
-    this.scene.resume(this.callingScene);
+
+    // Slide-out animation before stopping the scene
+    const slideTargets: Phaser.GameObjects.GameObject[] = [
+      this.panel.getGraphics(),
+      this.dialogueText,
+      this.advanceIndicator,
+    ];
+    if (this.speakerPanel) slideTargets.push(this.speakerPanel.getGraphics());
+    if (this.speakerText) slideTargets.push(this.speakerText);
+    if (this.portraitBg) slideTargets.push(this.portraitBg.getGraphics());
+    if (this.portrait) slideTargets.push(this.portrait);
+
+    // Disable input during exit animation
+    this.input.keyboard?.removeAllListeners();
+    this.input.removeAllListeners();
+
+    this.tweens.add({
+      targets: slideTargets,
+      y: '+=140',
+      duration: 150,
+      ease: 'Back.easeIn',
+      onComplete: () => {
+        const hintsEl = document.getElementById('desktop-hints');
+        if (hintsEl) hintsEl.style.display = '';
+        this.scene.stop();
+        this.scene.resume(this.callingScene);
+      },
+    });
   }
 
   shutdown(): void {
@@ -331,6 +422,10 @@ export class DialogueScene extends Phaser.Scene {
     this.input.removeAllListeners();
     this.typeTimer?.destroy();
     this.indicatorTween?.destroy();
+    this.portrait?.destroy();
+    this.portrait = undefined;
+    this.portraitBg?.destroy();
+    this.portraitBg = undefined;
     // Ensure hints are restored if scene is stopped externally
     const hintsEl = document.getElementById('desktop-hints');
     if (hintsEl) hintsEl.style.display = '';

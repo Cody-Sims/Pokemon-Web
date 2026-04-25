@@ -683,6 +683,7 @@ export class OverworldScene extends Phaser.Scene {
         this.scene.pause();
         this.scene.launch('DialogueScene', {
           dialogue: tData?.dialogue?.before ?? ['...'],
+          portraitKey: tData?.spriteKey,
         });
 
         this.scene.get('DialogueScene').events.once('shutdown', () => {
