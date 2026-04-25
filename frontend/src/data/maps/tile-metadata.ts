@@ -219,6 +219,11 @@ export const TILE_COLORS: Record<number, number> = {
   [Tile.CUT_TREE]:          0x4a8a30,
   [Tile.CRACKED_ROCK]:      0x908070,
   [Tile.STRENGTH_BOULDER]:  0x808068,
+  // Animation frame tiles
+  [Tile.WATER_FRAME_1]:     0x4080c0,
+  [Tile.WATER_FRAME_2]:     0x4080c0,
+  [Tile.LAVA_FRAME_1]:      0xe06010,
+  [Tile.LAVA_FRAME_2]:      0xe06010,
 };
 
 // Solid tiles that block movement

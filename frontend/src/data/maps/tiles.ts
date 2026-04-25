@@ -154,6 +154,12 @@ export const Tile = {
   STRENGTH_BOULDER:112,  // pushable boulder (solid, Strength target)
   LEDGE_LEFT:      113,  // one-way ledge: can only enter from right (moving left)
   LEDGE_RIGHT:     114,  // one-way ledge: can only enter from left (moving right)
+
+  // ── Animation alternate frames (frame-swap targets) ──
+  WATER_FRAME_1:   115,
+  WATER_FRAME_2:   116,
+  LAVA_FRAME_1:    117,
+  LAVA_FRAME_2:    118,
 } as const;
 
 /**

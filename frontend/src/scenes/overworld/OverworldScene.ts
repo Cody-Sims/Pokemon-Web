@@ -241,7 +241,7 @@ export class OverworldScene extends Phaser.Scene {
     const layout = ui(this);
 
     // Dark background for any void area outside the map bounds
-    this.cameras.main.setBackgroundColor(this.mapDef.isInterior ? 0x202020 : 0x0f0f1a);
+    this.cameras.main.setBackgroundColor(this.mapDef.isInterior ? 0x1a1a1a : 0x000000);
 
     if (this.mapDef.isInterior && mapPixelW <= layout.w && mapPixelH <= layout.h) {
       // Small interior — center the map in the viewport, don't follow player
@@ -333,7 +333,7 @@ export class OverworldScene extends Phaser.Scene {
 
     // Quick-save floating button (mobile only, top-right below menu button)
     if (TouchControls.isTouchDevice()) {
-      this.saveBtn = this.add.text(this.cameras.main.width - 20, 60, '💾', {
+      this.saveBtn = this.add.text(this.cameras.main.width - 20, 100, '💾', {
         fontSize: mobileFontSize(22),
       }).setOrigin(1, 0).setScrollFactor(0).setDepth(100).setAlpha(0.5)
         .setInteractive({ useHandCursor: true })
@@ -850,8 +850,16 @@ export class OverworldScene extends Phaser.Scene {
       const waterTints = [0x3090e0, 0x40a0f0, 0x2080d0];
       const lavaTints = [0xe06020, 0xf07030, 0xd05010];
       const idx = Math.floor(this.tileAnimFrame / 30) % 3;
-      for (const s of this.waterTileSprites) s.setTint(waterTints[idx]);
-      for (const s of this.lavaTileSprites) s.setTint(lavaTints[idx]);
+      const waterFrames = [Tile.WATER, Tile.WATER_FRAME_1, Tile.WATER_FRAME_2];
+      const lavaFrames = [Tile.LAVA_ROCK, Tile.LAVA_FRAME_1, Tile.LAVA_FRAME_2];
+      for (const s of this.waterTileSprites) {
+        s.setTint(waterTints[idx]);
+        s.setFrame(waterFrames[idx]);
+      }
+      for (const s of this.lavaTileSprites) {
+        s.setTint(lavaTints[idx]);
+        s.setFrame(lavaFrames[idx]);
+      }
     }
     if (this.tileAnimFrame % 60 === 0) {
       for (const s of this.tallGrassTileSprites) {
