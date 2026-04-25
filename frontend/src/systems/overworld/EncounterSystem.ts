@@ -10,6 +10,12 @@ import { ExperienceCalculator, getNatureMultiplier } from '@battle/calculation/E
 export class EncounterSystem {
   private stepCount = 0;
   private repelSteps = 0;
+  private rng: () => number = Math.random;
+
+  /** Inject a seeded PRNG for deterministic encounters (e.g. replays). */
+  setRng(rng: () => number): void {
+    this.rng = rng;
+  }
 
   /** Call on each step in an encounter zone. Returns a wild Pokemon if triggered, else null.
    *  @param rateMultiplier Optional multiplier for encounter rate (e.g. 1.5 for running). */
@@ -21,7 +27,7 @@ export class EncounterSystem {
 
     this.stepCount++;
 
-    if (Math.random() > BASE_ENCOUNTER_RATE * rateMultiplier) {
+    if (this.rng() > BASE_ENCOUNTER_RATE * rateMultiplier) {
       return null;
     }
 

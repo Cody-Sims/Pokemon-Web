@@ -6,6 +6,11 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-25]
 
+### Added
+
+- **Surfing encounters**: Water tile encounters now trigger while surfing; added surf encounter tables for route-1, route-3, coral-harbor, and shattered-isles-shore with Tentacool, Horsea, Shellder, Gyarados, Lapras, Staryu, Starmie
+- **Seeded PRNG support**: `EncounterSystem.setRng()` allows injecting a seeded PRNG for deterministic replay/testing
+
 ### Fixed
 
 - **TypeScript errors**: Resolved all 14 remaining compilation errors — added `'full-restore' | 'level-up'` to `ItemData.effect.type` union, expanded `MoveEffect.stat` to accept `'accuracy' | 'evasion'`, fixed `StatusEffectHandler.getEffectiveStat` to handle accuracy/evasion with base value of 100

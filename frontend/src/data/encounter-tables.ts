@@ -183,6 +183,33 @@ export const encounterTables: Record<string, EncounterEntry[]> = {
     { pokemonId: 143, levelRange: [65, 70], weight: 5 },   // Snorlax (very rare)
     { pokemonId: 142, levelRange: [65, 70], weight: 5 },   // Aerodactyl (very rare)
   ],
+
+  // ─── Surfing encounter tables (water tile encounters) ───
+  'route-1-surf': [
+    { pokemonId: 72, levelRange: [15, 25], weight: 50 },   // Tentacool
+    { pokemonId: 129, levelRange: [10, 20], weight: 30 },  // Magikarp
+    { pokemonId: 116, levelRange: [15, 25], weight: 20 },  // Horsea
+  ],
+  'route-3-surf': [
+    { pokemonId: 72, levelRange: [20, 30], weight: 40 },   // Tentacool
+    { pokemonId: 116, levelRange: [20, 28], weight: 30 },  // Horsea
+    { pokemonId: 90, levelRange: [22, 30], weight: 20 },   // Shellder
+    { pokemonId: 130, levelRange: [25, 35], weight: 10 },  // Gyarados (rare)
+  ],
+  'coral-harbor-surf': [
+    { pokemonId: 72, levelRange: [25, 32], weight: 35 },   // Tentacool
+    { pokemonId: 116, levelRange: [25, 32], weight: 25 },  // Horsea
+    { pokemonId: 120, levelRange: [25, 32], weight: 20 },  // Staryu
+    { pokemonId: 131, levelRange: [30, 35], weight: 10 },  // Lapras (rare)
+    { pokemonId: 73, levelRange: [30, 35], weight: 10 },   // Tentacruel
+  ],
+  'shattered-isles-shore-surf': [
+    { pokemonId: 73, levelRange: [35, 42], weight: 30 },   // Tentacruel
+    { pokemonId: 117, levelRange: [35, 42], weight: 25 },  // Seadra
+    { pokemonId: 121, levelRange: [35, 42], weight: 20 },  // Starmie
+    { pokemonId: 130, levelRange: [38, 45], weight: 15 },  // Gyarados
+    { pokemonId: 131, levelRange: [40, 45], weight: 10 },  // Lapras (rare)
+  ],
 };
 
 /** Fishing encounter tables: per-route + per-rod tier. */

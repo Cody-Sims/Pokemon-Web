@@ -12,6 +12,7 @@ import { TouchControls } from '@ui/controls/TouchControls';
 import { Direction } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
+import { encounterTables } from '@data/encounter-tables';
 import { GameClock } from '@systems/engine/GameClock';
 import { WeatherRenderer } from '@systems/rendering/WeatherRenderer';
 import { TransitionManager } from '@managers/TransitionManager';
@@ -205,6 +206,7 @@ export class OverworldScene extends Phaser.Scene {
     this.rebuildNpcOccupiedTiles();
 
     // Set up collision: solid tiles + NPC positions
+    this.player.gridMovement.setMapBounds(mapW, mapH);
     this.player.gridMovement.setCollisionCheck((tx, ty) => {
       if (tx < 0 || ty < 0 || ty >= mapH || tx >= mapW) return true;
       const groundTile = this.mapDef.ground[ty][tx];
@@ -584,6 +586,22 @@ export class OverworldScene extends Phaser.Scene {
       // Running increases encounter rate; cycling is normal
       const encounterMultiplier = this.player.gridMovement.isRunning() ? 1.5 : 1;
       const wild = this.encounterSystem.checkEncounter(this.mapDef.encounterTableKey, encounterMultiplier);
+      if (wild) {
+        this.triggerWildEncounter(wild);
+      }
+    }
+
+    // Water encounters while surfing
+    if (
+      this.surfing &&
+      this.mapDef.encounterTableKey &&
+      this.mapDef.ground[ty]?.[tx] === Tile.WATER
+    ) {
+      const surfKey = `${this.mapDef.encounterTableKey}-surf`;
+      const wild = this.encounterSystem.checkEncounter(
+        surfKey in (encounterTables ?? {}) ? surfKey : this.mapDef.encounterTableKey,
+        0.8,
+      );
       if (wild) {
         this.triggerWildEncounter(wild);
       }

@@ -1,7 +1,7 @@
 # Bug Report — Pokemon Web (Consolidated)
 
 > **Last updated:** 2026-04-25
-> **Status:** Full codebase audit. 108 of 110 historical bugs resolved. 55 new bugs identified, 50 fixed.
+> **Status:** Full codebase audit. 108 of 110 historical bugs resolved. 55 new bugs identified, 52 fixed.
 
 ---
 
@@ -11,9 +11,9 @@
 |----------|------------|-------|
 | Critical | 0          | 5     |
 | High     | 0          | 14    |
-| Medium   | 3          | 23    |
-| Low      | 2          | 8     |
-| **Total**| **5**      | **50**|
+| Medium   | 2          | 24    |
+| Low      | 1          | 9     |
+| **Total**| **3**      | **52**|
 
 *Includes 2 previously known open bugs (BUG-039, NEW-006).*
 
@@ -143,7 +143,7 @@
 - **File:** `frontend/src/battle/core/AIController.ts` (line ~12)
 - **Description:** `'struggle'` may not exist in `moveData`. If it doesn't, the AI picks a null move causing a silent no-op with no recoil.
 
-### AUDIT-035: Keyboard listeners accumulate in BattleUIScene
+### ~~AUDIT-035: Keyboard listeners accumulate in BattleUIScene~~ FIXED (shutdown() calls removeAllListeners)
 
 - **File:** `frontend/src/scenes/battle/BattleUIScene.ts` (line ~165)
 - **Description:** `create()` adds keyboard listeners without cleanup. `waitForConfirmThen` adds manual listeners that leak if the battle ends before confirm fires.
@@ -171,7 +171,7 @@
 
 ### ~~AUDIT-042: stepCount lost on save/load~~ FIXED
 
-### AUDIT-043: EncounterSystem uses Math.random not seeded PRNG
+### ~~AUDIT-043: EncounterSystem uses Math.random not seeded PRNG~~ FIXED (setRng() method added)
 
 - **File:** `frontend/src/systems/overworld/EncounterSystem.ts`
 - **Description:** Uses `Math.random()` instead of the seeded PRNG. This breaks replay determinism.
