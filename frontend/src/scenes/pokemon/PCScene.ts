@@ -61,11 +61,11 @@ export class PCScene extends Phaser.Scene {
     this.add.text(layout.cx, 24, 'PC STORAGE', { ...FONTS.heading, fontSize: mobileFontSize(22) }).setOrigin(0.5);
 
     // Box name + arrows
-    this.add.text(200, 50, '◀', { ...FONTS.heading, color: COLORS.textHighlight })
+    this.add.text(layout.cx - 140, 50, '◀', { ...FONTS.heading, color: COLORS.textHighlight })
       .setOrigin(0.5).setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.switchBox(-1));
-    this.boxNameText = this.add.text(340, 50, '', { ...FONTS.body, fontStyle: 'bold' }).setOrigin(0.5);
-    this.add.text(480, 50, '▶', { ...FONTS.heading, color: COLORS.textHighlight })
+    this.boxNameText = this.add.text(layout.cx, 50, '', { ...FONTS.body, fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(layout.cx + 140, 50, '▶', { ...FONTS.heading, color: COLORS.textHighlight })
       .setOrigin(0.5).setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.switchBox(1));
 
@@ -282,9 +282,10 @@ export class PCScene extends Phaser.Scene {
     const box = gm.getBox(this.currentBox);
     this.boxNameText.setText(gm.getBoxNames()[this.currentBox]);
 
-    const startX = 30;
+    const layout = ui(this);
+    const startX = 20;
     const startY = 70;
-    const cellW = 80;
+    const cellW = Math.floor((layout.w - 200) / GRID_COLS);
     const cellH = 68;
 
     for (let i = 0; i < GRID_COLS * GRID_ROWS; i++) {

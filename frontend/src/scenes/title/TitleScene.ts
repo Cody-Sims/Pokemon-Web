@@ -134,15 +134,47 @@ export class TitleScene extends Phaser.Scene {
       // Fade out press start
       this.tweens.add({ targets: pressStart, alpha: 0, duration: 200, onComplete: () => pressStart.destroy() });
 
-      // Fade in menu
+      // Fade in menu and enable interaction after fade completes
       this.menuItems.forEach(item => {
-        this.tweens.add({ targets: item, alpha: 1, duration: 300 });
-        item.setInteractive({ useHandCursor: true });
+        this.tweens.add({
+          targets: item,
+          alpha: 1,
+          duration: 300,
+          onComplete: () => {
+            item.setInteractive({ useHandCursor: true });
+          },
+        });
       });
       this.tweens.add({ targets: this.cursorIcon, alpha: 1, duration: 300 });
 
-      // Bind menu navigation
+      // Bind menu navigation (keyboard)
       this.bindMenuKeys();
+
+      // ── Mobile-friendly: scene-level tap handler that maps Y coordinate to menu items ──
+      // This is more reliable than per-item interactive hit areas on touch devices.
+      this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+        // Find which menu item is closest to the tap Y position
+        let bestIdx = -1;
+        let bestDist = Infinity;
+        for (let i = 0; i < this.menuItems.length; i++) {
+          const item = this.menuItems[i];
+          if (item.alpha < 0.5) continue; // not yet visible
+          const dy = Math.abs(pointer.y - item.y);
+          const dx = Math.abs(pointer.x - item.x);
+          // Must be within reasonable tap range of the item
+          if (dx < item.width / 2 + 60 && dy < menuSpacing / 2) {
+            if (dy < bestDist) {
+              bestDist = dy;
+              bestIdx = i;
+            }
+          }
+        }
+        if (bestIdx >= 0) {
+          this.cursor = bestIdx;
+          this.updateCursor();
+          this.selectOption();
+        }
+      });
 
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
     };
@@ -231,6 +263,7 @@ export class TitleScene extends Phaser.Scene {
 
     // Disable title menu interaction
     this.input.keyboard!.removeAllListeners();
+    this.input.removeAllListeners(); // Remove title menu tap handler
     this.menuItems.forEach(item => item.disableInteractive());
     this.cursorIcon.setVisible(false);
 
@@ -282,7 +315,25 @@ export class TitleScene extends Phaser.Scene {
       restoreTitle();
     };
 
+    // ── Mobile-friendly: scene-level tap for difficulty items ──
+    const onDiffTap = (pointer: Phaser.Input.Pointer) => {
+      for (let i = 0; i < diffItems.length; i++) {
+        const item = diffItems[i];
+        const dy = Math.abs(pointer.y - item.y);
+        const dx = Math.abs(pointer.x - item.x);
+        if (dx < item.width / 2 + 60 && dy < 30) {
+          diffCursor = i;
+          updateDiff();
+          AudioManager.getInstance().playSFX(SFX.CONFIRM);
+          confirmDiff();
+          return;
+        }
+      }
+    };
+    this.input.on('pointerdown', onDiffTap);
+
     const cleanup = () => {
+      this.input.off('pointerdown', onDiffTap);
       this.input.keyboard!.off('keydown-UP', onUp);
       this.input.keyboard!.off('keydown-DOWN', onDown);
       this.input.keyboard!.off('keydown-ENTER', onEnter);

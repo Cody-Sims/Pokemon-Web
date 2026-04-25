@@ -67,27 +67,27 @@ export class PartyScene extends Phaser.Scene {
       // Mini sprite (icon) if texture exists
       const iconKey = pData?.spriteKeys.icon;
       if (iconKey && this.textures.exists(iconKey)) {
-        const icon = this.add.image(30, slotY, iconKey).setScale(1.5);
+        const icon = this.add.image(Math.round(layout.w * 0.04), slotY, iconKey).setScale(1.5);
         if (isFainted) icon.setAlpha(0.4).setTint(0x888888);
       }
 
       // Name (dimmed if fainted)
-      const nameText = this.add.text(55, slotY - 18, name, { ...FONTS.body, fontSize: mobileFontSize(16), fontStyle: 'bold' });
+      const nameText = this.add.text(Math.round(layout.w * 0.07), slotY - 18, name, { ...FONTS.body, fontSize: mobileFontSize(16), fontStyle: 'bold' });
       if (isFainted) nameText.setAlpha(0.5);
 
       // Level
-      const lvText = this.add.text(55, slotY + 4, `Lv. ${p.level}`, { ...FONTS.caption, fontSize: mobileFontSize(12) });
+      const lvText = this.add.text(Math.round(layout.w * 0.07), slotY + 4, `Lv. ${p.level}`, { ...FONTS.caption, fontSize: mobileFontSize(12) });
       if (isFainted) lvText.setAlpha(0.5);
 
       // HP bar
-      this.add.text(230, slotY - 18, 'HP', { ...FONTS.label, fontSize: mobileFontSize(11) });
-      drawHpBar(this, 256, slotY - 12, 170, 10, p.currentHp, p.stats.hp);
-      this.add.text(434, slotY - 18, `${p.currentHp}/${p.stats.hp}`, { ...FONTS.caption, fontSize: mobileFontSize(12) });
+      this.add.text(Math.round(layout.w * 0.30), slotY - 18, 'HP', { ...FONTS.label, fontSize: mobileFontSize(11) });
+      drawHpBar(this, Math.round(layout.w * 0.33), slotY - 12, 170, 10, p.currentHp, p.stats.hp);
+      this.add.text(Math.round(layout.w * 0.56), slotY - 18, `${p.currentHp}/${p.stats.hp}`, { ...FONTS.caption, fontSize: mobileFontSize(12) });
 
       // Type badges
       if (pData) {
         pData.types.forEach((type, ti) => {
-          drawTypeBadge(this, 256 + ti * 72, slotY + 10, type);
+          drawTypeBadge(this, Math.round(layout.w * 0.33) + ti * 72, slotY + 10, type);
         });
       }
 

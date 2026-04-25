@@ -77,7 +77,7 @@ export class ShopScene extends Phaser.Scene {
       { key: 'sell', label: 'SELL' },
     ];
     this.tabTexts = tabLabels.map((t, i) => {
-      const tx = this.add.text(100 + i * 120, 58, t.label, {
+      const tx = this.add.text(Math.round(layout.cx - 100 + i * (layout.w * 0.15)), 58, t.label, {
         ...FONTS.body, fontSize: mobileFontSize(16),
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       tx.on('pointerdown', () => {
@@ -215,7 +215,7 @@ export class ShopScene extends Phaser.Scene {
       const price = this.tab === 'buy'
         ? (entry.item.buyPrice ?? 0)
         : Math.floor((entry.item.buyPrice ?? 0) / 2);
-      const priceText = this.add.text(390, y, `₽${price}`, {
+      const priceText = this.add.text(Math.round(layout.w * 0.55), y, `₽${price}`, {
         ...FONTS.bodySmall, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
       });
       this.itemListGroup.add(priceText);

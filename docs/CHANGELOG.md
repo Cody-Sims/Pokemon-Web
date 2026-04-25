@@ -25,6 +25,7 @@ All notable changes to the Pokemon Web project.
 - **Touch button release bug**: Fixed `handleUp` which reset ALL button visual states on any `touchend` event (including joystick lifts). Now tracks individual touch IDs per button and only resets the matching button on release
 - **Button alpha ignored highVis**: `handleUp` always reset alpha to 0.5, ignoring the `highVisControls` setting (0.85). Now uses stored `baseAlpha` from settings
 - **DOM A/B buttons ignore swapAB**: The HTML overlay A/B buttons hardcoded `A=confirm, B=cancel` regardless of the swap setting. Now respects `swapAB` preference
+- **UI scenes use hardcoded pixel positions**: Converted 5 scene files from absolute pixel coordinates to viewport-relative values using `ui()` layout. PCScene box arrows/grid, MoveTutorScene move list columns, PartyScene slot contents, ShopScene tabs/prices, and VoltorbFlipScene grid/HUD/panel all now scale with dynamic resolution
 
 ### Added
 

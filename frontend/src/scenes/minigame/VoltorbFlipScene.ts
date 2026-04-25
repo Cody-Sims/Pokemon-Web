@@ -42,7 +42,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
     // Background
     this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
 
-    new NinePatchPanel(this, layout.cx, layout.cy, 760, 560, {
+    new NinePatchPanel(this, layout.cx, layout.cy, Math.round(layout.w * 0.85), Math.round(layout.h * 0.85), {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
@@ -59,13 +59,14 @@ export class VoltorbFlipScene extends Phaser.Scene {
     this.drawHints();
 
     // HUD
-    this.levelText = this.add.text(40, 70, `Level: ${this.level}`, {
+    const hudX = Math.round(layout.w * 0.03);
+    this.levelText = this.add.text(hudX, 70, `Level: ${this.level}`, {
       ...FONTS.body, fontSize: mobileFontSize(14),
     });
-    this.scoreText = this.add.text(40, 95, `Round: ×${this.roundScore}`, {
+    this.scoreText = this.add.text(hudX, 95, `Round: ×${this.roundScore}`, {
       ...FONTS.body, fontSize: mobileFontSize(14),
     });
-    this.totalText = this.add.text(40, 120, `Total Coins: ${this.totalCoins}`, {
+    this.totalText = this.add.text(hudX, 120, `Total Coins: ${this.totalCoins}`, {
       ...FONTS.body, fontSize: mobileFontSize(14),
     });
     this.messageText = this.add.text(layout.cx, layout.h - 40, '', {
@@ -157,9 +158,17 @@ export class VoltorbFlipScene extends Phaser.Scene {
     return positions;
   }
 
-  private readonly GRID_X = 220;
-  private readonly GRID_Y = 80;
   private readonly CELL_SIZE = 72;
+
+  private get GRID_X(): number {
+    const layout = ui(this);
+    return Math.round(layout.cx - (5 * this.CELL_SIZE) / 2);
+  }
+
+  private get GRID_Y(): number {
+    const layout = ui(this);
+    return Math.round(layout.h * 0.15);
+  }
 
   private drawBoard(): void {
     this.cardSprites = [];

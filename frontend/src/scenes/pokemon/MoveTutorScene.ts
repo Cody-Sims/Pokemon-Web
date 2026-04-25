@@ -186,11 +186,11 @@ export class MoveTutorScene extends Phaser.Scene {
 
       // Type color dot
       const typeColor = TYPE_COLORS[move?.type ?? 'normal'] ?? 0xa8a878;
-      const dot = this.add.circle(50, y + 10, 6, typeColor);
+      const dot = this.add.circle(Math.round(layout.w * 0.05), y + 10, 6, typeColor);
       this.moveGroup.add(dot);
 
       // Move name
-      const nameT = this.add.text(65, y, move?.name ?? entry.moveId, {
+      const nameT = this.add.text(Math.round(layout.w * 0.05 + 15), y, move?.name ?? entry.moveId, {
         ...FONTS.body, fontSize: mobileFontSize(15),
       });
       this.moveGroup.add(nameT);
@@ -199,14 +199,14 @@ export class MoveTutorScene extends Phaser.Scene {
       // PP / Power
       const pp = move?.pp ?? '—';
       const power = move?.power ?? '—';
-      const statsT = this.add.text(350, y, `PP: ${pp}  Pow: ${power}`, FONTS.bodySmall);
+      const statsT = this.add.text(Math.round(layout.w * 0.45), y, `PP: ${pp}  Pow: ${power}`, FONTS.bodySmall);
       this.moveGroup.add(statsT);
 
       // Cost
       const costLabel = entry.costType === 'money'
         ? `₽${entry.cost}`
         : `${entry.cost} Heart Scale${entry.cost !== 1 ? 's' : ''}`;
-      const costT = this.add.text(550, y, costLabel, {
+      const costT = this.add.text(Math.round(layout.w * 0.72), y, costLabel, {
         ...FONTS.bodySmall, color: COLORS.textHighlight,
       });
       this.moveGroup.add(costT);
