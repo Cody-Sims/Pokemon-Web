@@ -70,10 +70,10 @@ export const victoryRoad: MapDefinition = {
       requireFlag: '!vent-5-recorded', setsFlag: 'vent-5-recorded' },
   ],
   trainers: [
-    { id: 'vr-rival-kael', trainerId: 'rival-5', tileX: 12, tileY: 30, textureKey: 'rival', facing: 'up', lineOfSight: 4 },
-    { id: 'vr-ace-1', trainerId: 'ace-trainer-1', tileX: 6, tileY: 9, textureKey: 'npc-ace-trainer', facing: 'right', lineOfSight: 4 },
-    { id: 'vr-ace-2', trainerId: 'ace-trainer-2', tileX: 18, tileY: 15, textureKey: 'npc-ace-trainer-f', facing: 'left', lineOfSight: 4 },
-    { id: 'vr-ace-3', trainerId: 'ace-trainer-3', tileX: 6, tileY: 24, textureKey: 'npc-ace-trainer', facing: 'right', lineOfSight: 4 },
+    { id: 'vr-rival-kael', name: 'Kael', trainerId: 'rival-5', tileX: 12, tileY: 30, textureKey: 'rival', facing: 'up', lineOfSight: 4 },
+    { id: 'vr-ace-1', name: 'Ace Trainer', trainerId: 'ace-trainer-1', tileX: 6, tileY: 9, textureKey: 'npc-ace-trainer', facing: 'right', lineOfSight: 4 },
+    { id: 'vr-ace-2', name: 'Ace Trainer', trainerId: 'ace-trainer-2', tileX: 18, tileY: 15, textureKey: 'npc-ace-trainer-f', facing: 'left', lineOfSight: 4 },
+    { id: 'vr-ace-3', name: 'Ace Trainer', trainerId: 'ace-trainer-3', tileX: 6, tileY: 24, textureKey: 'npc-ace-trainer', facing: 'right', lineOfSight: 4 },
   ],
   warps: [
     { tileX: 10, tileY: 34, targetMap: 'route-8', targetSpawnId: 'from-victory-road' },

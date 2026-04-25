@@ -70,6 +70,7 @@ export const route5: MapDefinition = {
     // Marina co-op event
     {
       id: 'route5-marina',
+      name: 'Marina',
       tileX: 6,
       tileY: 14,
       textureKey: 'generic-trainer',
@@ -87,6 +88,7 @@ export const route5: MapDefinition = {
   trainers: [
     {
       id: 'route5-bugcatcher-4',
+      name: 'Bug Catcher',
       trainerId: 'bug-catcher-4',
       tileX: 7,
       tileY: 7,
@@ -96,6 +98,7 @@ export const route5: MapDefinition = {
     },
     {
       id: 'route5-lass-3',
+      name: 'Lass',
       trainerId: 'lass-3',
       tileX: 15,
       tileY: 20,
@@ -105,6 +108,7 @@ export const route5: MapDefinition = {
     },
     {
       id: 'route5-grunt-4',
+      name: 'Synthesis Grunt',
       trainerId: 'synthesis-grunt-3',
       tileX: 10,
       tileY: 12,
@@ -114,6 +118,7 @@ export const route5: MapDefinition = {
     },
     {
       id: 'route5-camper-4',
+      name: 'Camper',
       trainerId: 'camper-4',
       tileX: 4,
       tileY: 16,
@@ -123,6 +128,7 @@ export const route5: MapDefinition = {
     },
     {
       id: 'route5-youngster-6',
+      name: 'Youngster',
       trainerId: 'youngster-6',
       tileX: 17,
       tileY: 24,
@@ -132,6 +138,7 @@ export const route5: MapDefinition = {
     },
     {
       id: 'route5-grunt-6',
+      name: 'Synthesis Grunt',
       trainerId: 'synthesis-grunt-6',
       tileX: 12,
       tileY: 8,
@@ -142,6 +149,7 @@ export const route5: MapDefinition = {
     // Zara Lux — reveals herself after player frees trapped Pokémon
     {
       id: 'route5-zara',
+      name: 'Zara',
       trainerId: 'admin-zara-2',
       tileX: 14,
       tileY: 14,

@@ -74,6 +74,7 @@ export const verdantiaLab: MapDefinition = {
   trainers: [
     {
       id: 'lab-grunt-1',
+      name: 'Synthesis Grunt',
       trainerId: 'synth-grunt-verdantia-1',
       tileX: 3,
       tileY: 4,
@@ -83,6 +84,7 @@ export const verdantiaLab: MapDefinition = {
     },
     {
       id: 'lab-grunt-2',
+      name: 'Synthesis Grunt',
       trainerId: 'synth-grunt-verdantia-2',
       tileX: 7,
       tileY: 7,
@@ -92,6 +94,7 @@ export const verdantiaLab: MapDefinition = {
     },
     {
       id: 'lab-grunt-3',
+      name: 'Synthesis Grunt',
       trainerId: 'synth-grunt-verdantia-3',
       tileX: 11,
       tileY: 9,

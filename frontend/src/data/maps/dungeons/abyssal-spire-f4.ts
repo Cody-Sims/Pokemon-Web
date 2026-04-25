@@ -33,6 +33,7 @@ export const abyssalSpireF4: MapDefinition = {
   npcs: [
     {
       id: 'professor-willow-rescue',
+      name: 'Prof. Willow',
       tileX: 7,
       tileY: 7,
       textureKey: 'generic-trainer',
@@ -56,6 +57,7 @@ export const abyssalSpireF4: MapDefinition = {
     },
     {
       id: 'sanctum-lore-1',
+      name: 'Ancient Spirit',
       tileX: 2,
       tileY: 2,
       textureKey: 'generic-trainer',
@@ -69,6 +71,7 @@ export const abyssalSpireF4: MapDefinition = {
     },
     {
       id: 'sanctum-lore-2',
+      name: 'Ancient Spirit',
       tileX: 12,
       tileY: 5,
       textureKey: 'generic-trainer',

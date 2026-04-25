@@ -104,6 +104,7 @@ export const emberMines: MapDefinition = {
   trainers: [
     {
       id: 'mines-grunt-1',
+      name: 'Synthesis Grunt',
       trainerId: 'synthesis-grunt-2',
       tileX: 5,
       tileY: 8,
@@ -113,6 +114,7 @@ export const emberMines: MapDefinition = {
     },
     {
       id: 'mines-grunt-2',
+      name: 'Synthesis Grunt',
       trainerId: 'synthesis-grunt-3',
       tileX: 10,
       tileY: 14,
@@ -123,6 +125,7 @@ export const emberMines: MapDefinition = {
     // Dr. Vex boss battle #1 — center of synthesis lab
     {
       id: 'mines-vex',
+      name: 'Admin Vex',
       trainerId: 'admin-vex-1',
       tileX: 10,
       tileY: 20,
@@ -132,6 +135,7 @@ export const emberMines: MapDefinition = {
     },
     {
       id: 'mines-grunt-3',
+      name: 'Synthesis Grunt',
       trainerId: 'synthesis-grunt-5',
       tileX: 8,
       tileY: 23,

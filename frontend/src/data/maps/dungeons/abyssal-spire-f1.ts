@@ -45,6 +45,7 @@ export const abyssalSpireF1: MapDefinition = {
     },
     {
       id: 'rook-partner-f1',
+      name: 'Rook',
       tileX: 8,
       tileY: 16,
       textureKey: 'npc-rook',
@@ -60,6 +61,7 @@ export const abyssalSpireF1: MapDefinition = {
   trainers: [
     {
       id: 'spire-grunt-f1-1',
+      name: 'Synthesis Elite',
       trainerId: 'synth-elite-f1-1',
       tileX: 5,
       tileY: 9,
@@ -69,6 +71,7 @@ export const abyssalSpireF1: MapDefinition = {
     },
     {
       id: 'spire-grunt-f1-2',
+      name: 'Synthesis Elite',
       trainerId: 'synth-elite-f1-2',
       tileX: 14,
       tileY: 12,

@@ -14,9 +14,10 @@ export const scalecrestPokemart: MapDefinition = {
   encounterTableKey: '', isInterior: true, displayName: 'Scalecrest Poké Mart',
   npcs: [{
     id: 'scalecrest-clerk', tileX: 5, tileY: 1, textureKey: 'generic-trainer',
+    name: 'Clerk',
     facing: 'down', dialogue: ['Welcome to the Poké Mart!'], interactionType: 'shop',
   }, {
-    id: 'scalecrest-shopper', tileX: 8, tileY: 5, textureKey: 'npc-male-1',
+    id: 'scalecrest-shopper', name: 'Shopper', tileX: 8, tileY: 5, textureKey: 'npc-male-1',
     facing: 'left', dialogue: ['I came all the way here for Dragon Scale items. Worth the trip!'],
   }],
   trainers: [],

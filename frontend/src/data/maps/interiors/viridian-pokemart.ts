@@ -23,6 +23,7 @@ export const viridianPokemart: MapDefinition = {
   npcs: [
     {
       id: 'viridian-clerk-inside',
+      name: 'Clerk',
       tileX: 5,
       tileY: 1,
       textureKey: 'generic-trainer',
@@ -46,6 +47,7 @@ export const viridianPokemart: MapDefinition = {
     },
     {
       id: 'viridian-mart-shopper',
+      name: 'Shopper',
       tileX: 3,
       tileY: 5,
       textureKey: 'npc-female-1',

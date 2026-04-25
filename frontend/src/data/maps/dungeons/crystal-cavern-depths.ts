@@ -65,9 +65,9 @@ export const crystalCavernDepths: MapDefinition = {
       interactionData: '153' },
   ],
   trainers: [
-    { id: 'depths-hiker-1', trainerId: 'hiker-5', tileX: 14, tileY: 11, textureKey: 'npc-hiker', facing: 'left', lineOfSight: 3 },
-    { id: 'depths-hiker-2', trainerId: 'hiker-5', tileX: 5, tileY: 15, textureKey: 'npc-hiker', facing: 'right', lineOfSight: 3 },
-    { id: 'depths-marina-4', trainerId: 'marina-4', tileX: 10, tileY: 5, textureKey: 'npc-marina', facing: 'down', lineOfSight: 5,
+    { id: 'depths-hiker-1', name: 'Hiker', trainerId: 'hiker-5', tileX: 14, tileY: 11, textureKey: 'npc-hiker', facing: 'left', lineOfSight: 3 },
+    { id: 'depths-hiker-2', name: 'Hiker', trainerId: 'hiker-5', tileX: 5, tileY: 15, textureKey: 'npc-hiker', facing: 'right', lineOfSight: 3 },
+    { id: 'depths-marina-4', name: 'Marina', trainerId: 'marina-4', tileX: 10, tileY: 5, textureKey: 'npc-marina', facing: 'down', lineOfSight: 5,
       condition: '!marina-4' },
   ],
   warps: [

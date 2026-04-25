@@ -84,6 +84,7 @@ export const viridianForest: MapDefinition = {
     // ─── Story NPC: Rook's first forest appearance ───
     {
       id: 'forest-rook-warning',
+      name: 'Rook',
       tileX: 4,
       tileY: 14,
       textureKey: 'generic-trainer',
@@ -114,6 +115,7 @@ export const viridianForest: MapDefinition = {
   trainers: [
     {
       id: 'forest-bugcatcher-1',
+      name: 'Bug Catcher',
       trainerId: 'bug-catcher-1',
       tileX: 7,
       tileY: 8,
@@ -123,6 +125,7 @@ export const viridianForest: MapDefinition = {
     },
     {
       id: 'forest-bugcatcher-2',
+      name: 'Bug Catcher',
       trainerId: 'bug-catcher-2',
       tileX: 16,
       tileY: 15,
@@ -132,6 +135,7 @@ export const viridianForest: MapDefinition = {
     },
     {
       id: 'forest-bugcatcher-3',
+      name: 'Bug Catcher',
       trainerId: 'bug-catcher-3',
       tileX: 7,
       tileY: 27,
@@ -141,6 +145,7 @@ export const viridianForest: MapDefinition = {
     },
     {
       id: 'forest-bugcatcher-5',
+      name: 'Bug Catcher',
       trainerId: 'bug-catcher-5',
       tileX: 18,
       tileY: 22,
@@ -150,6 +155,7 @@ export const viridianForest: MapDefinition = {
     },
     {
       id: 'forest-lass-5',
+      name: 'Lass',
       trainerId: 'lass-5',
       tileX: 12,
       tileY: 34,

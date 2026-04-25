@@ -56,6 +56,7 @@ export const ironvaleCity: MapDefinition = {
     },
     {
       id: 'ironvale-npc-1',
+      name: 'Townsperson',
       tileX: 16,
       tileY: 6,
       textureKey: 'npc-male-1',
@@ -69,6 +70,7 @@ export const ironvaleCity: MapDefinition = {
     // Miner Gil (side quest: Mine Clearance) — near mine entrance
     {
       id: 'ironvale-gil',
+      name: 'Gil',
       tileX: 18,
       tileY: 17,
       textureKey: 'npc-hiker',
@@ -97,7 +99,7 @@ export const ironvaleCity: MapDefinition = {
       ],
     },
     // Move Tutor — on forge terrace
-    { id: 'tutor-ironvale', tileX: 7, tileY: 10, textureKey: 'npc-hiker', facing: 'right',
+    { id: 'tutor-ironvale', name: 'Move Tutor', tileX: 7, tileY: 10, textureKey: 'npc-hiker', facing: 'right',
       dialogue: ['Punch Tutor: I teach the elemental punches and more!', 'Punch Tutor: For a small fee, of course.'],
       interactionType: 'move-tutor', interactionData: 'tutor-ironvale' },
     // Aldric hologram (story event) — central forge area
@@ -122,6 +124,7 @@ export const ironvaleCity: MapDefinition = {
     // Kael — tag-battle partner (story encounter 3)
     {
       id: 'ironvale-kael',
+      name: 'Kael',
       tileX: 15,
       tileY: 15,
       textureKey: 'rival',
@@ -149,6 +152,7 @@ export const ironvaleCity: MapDefinition = {
     // ─── Blacksmith's Apprentice (forge area) ───
     {
       id: 'ironvale-apprentice',
+      name: 'Apprentice',
       tileX: 8,
       tileY: 8,
       textureKey: 'npc-male-6',

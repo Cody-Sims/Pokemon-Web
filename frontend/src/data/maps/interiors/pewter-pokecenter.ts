@@ -23,6 +23,7 @@ export const pewterPokecenter: MapDefinition = {
   npcs: [
     {
       id: 'pewter-nurse-inside',
+      name: 'Nurse Joy',
       tileX: 5,
       tileY: 1,
       textureKey: 'npc-nurse',
@@ -35,6 +36,7 @@ export const pewterPokecenter: MapDefinition = {
     },
     {
       id: 'pewter-center-npc',
+      name: 'Townsperson',
       tileX: 9,
       tileY: 5,
       textureKey: 'generic-trainer',

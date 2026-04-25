@@ -31,6 +31,7 @@ export const wraithmoorGym: MapDefinition = {
   npcs: [
     {
       id: 'wraithmoor-gym-guide',
+      name: 'Gym Guide',
       tileX: 3,
       tileY: 11,
       textureKey: 'npc-male-1',
@@ -51,9 +52,9 @@ export const wraithmoorGym: MapDefinition = {
     },
   ],
   trainers: [
-    { id: 'wraithmoor-gym-leader', trainerId: 'gym-morwen', tileX: 6, tileY: 2, textureKey: 'npc-female-6', facing: 'down', lineOfSight: 6 },
-    { id: 'wraithmoor-trainer-1', trainerId: 'medium-wraithmoor-1', tileX: 3, tileY: 4, textureKey: 'npc-psychic', facing: 'right', lineOfSight: 3 },
-    { id: 'wraithmoor-trainer-2', trainerId: 'medium-wraithmoor-2', tileX: 9, tileY: 9, textureKey: 'npc-psychic', facing: 'left', lineOfSight: 3 },
+    { id: 'wraithmoor-gym-leader', name: 'Morwen', trainerId: 'gym-morwen', tileX: 6, tileY: 2, textureKey: 'npc-female-6', facing: 'down', lineOfSight: 6 },
+    { id: 'wraithmoor-trainer-1', name: 'Medium', trainerId: 'medium-wraithmoor-1', tileX: 3, tileY: 4, textureKey: 'npc-psychic', facing: 'right', lineOfSight: 3 },
+    { id: 'wraithmoor-trainer-2', name: 'Medium', trainerId: 'medium-wraithmoor-2', tileX: 9, tileY: 9, textureKey: 'npc-psychic', facing: 'left', lineOfSight: 3 },
   ],
   warps: [
     { tileX: 5, tileY: 13, targetMap: 'wraithmoor-town', targetSpawnId: 'from-gym' },

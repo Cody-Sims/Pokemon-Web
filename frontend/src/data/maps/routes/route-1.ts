@@ -66,6 +66,7 @@ export const route1: MapDefinition = {
     },
     {
       id: 'route1-npc-1',
+      name: 'Townsperson',
       tileX: 14,
       tileY: 2,
       textureKey: 'generic-trainer',
@@ -77,6 +78,7 @@ export const route1: MapDefinition = {
     },
     {
       id: 'route1-npc-2',
+      name: 'Townsperson',
       tileX: 3,
       tileY: 23,
       textureKey: 'npc-female-3',
@@ -90,6 +92,7 @@ export const route1: MapDefinition = {
     // ─── Story NPC: Rook's first appearance ───
     {
       id: 'route1-rook',
+      name: 'Rook',
       tileX: 12,
       tileY: 21,
       textureKey: 'npc-male-6',
@@ -117,6 +120,7 @@ export const route1: MapDefinition = {
   trainers: [
     {
       id: 'route1-youngster',
+      name: 'Youngster',
       trainerId: 'youngster-1',
       tileX: 14,
       tileY: 19,
@@ -126,6 +130,7 @@ export const route1: MapDefinition = {
     },
     {
       id: 'route1-lass',
+      name: 'Lass',
       trainerId: 'lass-1',
       tileX: 14,
       tileY: 13,
@@ -135,6 +140,7 @@ export const route1: MapDefinition = {
     },
     {
       id: 'route1-youngster-2',
+      name: 'Youngster',
       trainerId: 'youngster-2',
       tileX: 12,
       tileY: 29,

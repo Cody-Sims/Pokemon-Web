@@ -21,13 +21,13 @@ export const pokemonLeague: MapDefinition = {
   encounterTableKey: '', isInterior: true, battleBg: 'bg-league',
   displayName: 'Pokémon League',
   npcs: [
-    { id: 'league-guide', tileX: 4, tileY: 9, textureKey: 'npc-male-4', facing: 'up',
+    { id: 'league-guide', name: 'League Guide', tileX: 4, tileY: 9, textureKey: 'npc-male-4', facing: 'up',
       dialogue: [
         'Welcome to the Pokémon League!',
         'Beyond this hall lie the Elite Four and the Champion.',
         'Are you prepared?',
       ] },
-    { id: 'tutor-league', tileX: 8, tileY: 9, textureKey: 'npc-male-4', facing: 'left',
+    { id: 'tutor-league', name: 'Move Tutor', tileX: 8, tileY: 9, textureKey: 'npc-male-4', facing: 'left',
       dialogue: ['League Tutor: Only the strongest moves are taught here.', 'League Tutor: Are you ready to pay the price?'],
       interactionType: 'move-tutor', interactionData: 'tutor-league' },
   ],
@@ -74,7 +74,7 @@ export const pokemonLeagueNerida: MapDefinition = {
   displayName: 'Elite Four — Nerida',
   npcs: [],
   trainers: [
-    { id: 'elite-nerida', trainerId: 'elite-nerida', tileX: 5, tileY: 3,
+    { id: 'elite-nerida', name: 'Nerida', trainerId: 'elite-nerida', tileX: 5, tileY: 3,
       textureKey: 'npc-female-7', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
@@ -116,7 +116,7 @@ export const pokemonLeagueTheron: MapDefinition = {
   displayName: 'Elite Four — Theron',
   npcs: [],
   trainers: [
-    { id: 'elite-theron', trainerId: 'elite-theron', tileX: 5, tileY: 3,
+    { id: 'elite-theron', name: 'Theron', trainerId: 'elite-theron', tileX: 5, tileY: 3,
       textureKey: 'npc-male-5', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
@@ -158,7 +158,7 @@ export const pokemonLeagueLysandra: MapDefinition = {
   displayName: 'Elite Four — Lysandra',
   npcs: [],
   trainers: [
-    { id: 'elite-lysandra', trainerId: 'elite-lysandra', tileX: 5, tileY: 3,
+    { id: 'elite-lysandra', name: 'Lysandra', trainerId: 'elite-lysandra', tileX: 5, tileY: 3,
       textureKey: 'npc-female-8', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
@@ -200,7 +200,7 @@ export const pokemonLeagueAshborne: MapDefinition = {
   displayName: 'Elite Four — Ashborne',
   npcs: [],
   trainers: [
-    { id: 'elite-ashborne', trainerId: 'elite-ashborne', tileX: 5, tileY: 3,
+    { id: 'elite-ashborne', name: 'Ashborne', trainerId: 'elite-ashborne', tileX: 5, tileY: 3,
       textureKey: 'npc-male-6', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
@@ -246,7 +246,7 @@ export const pokemonLeagueChampion: MapDefinition = {
   onEnterCutsceneRequireFlag: 'aldric_escaped_to_league',
   npcs: [],
   trainers: [
-    { id: 'champion-aldric', trainerId: 'champion-aldric', tileX: 6, tileY: 4,
+    { id: 'champion-aldric', name: 'Aldric', trainerId: 'champion-aldric', tileX: 6, tileY: 4,
       textureKey: 'npc-male-6', facing: 'down', lineOfSight: 5 },
   ],
   warps: [

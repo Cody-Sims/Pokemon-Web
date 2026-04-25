@@ -55,6 +55,7 @@ export const route2: MapDefinition = {
     },
     {
       id: 'route2-npc-1',
+      name: 'Townsperson',
       tileX: 14,
       tileY: 16,
       textureKey: 'npc-male-2',
@@ -76,6 +77,7 @@ export const route2: MapDefinition = {
   trainers: [
     {
       id: 'route2-marina',
+      name: 'Marina',
       trainerId: 'marina-1',
       tileX: 7,
       tileY: 14,
@@ -85,6 +87,7 @@ export const route2: MapDefinition = {
     },
     {
       id: 'route2-youngster-4',
+      name: 'Youngster',
       trainerId: 'youngster-4',
       tileX: 14,
       tileY: 3,
@@ -94,6 +97,7 @@ export const route2: MapDefinition = {
     },
     {
       id: 'route2-lass-4',
+      name: 'Lass',
       trainerId: 'lass-4',
       tileX: 3,
       tileY: 18,
@@ -103,6 +107,7 @@ export const route2: MapDefinition = {
     },
     {
       id: 'route2-camper-1',
+      name: 'Camper',
       trainerId: 'camper-1',
       tileX: 14,
       tileY: 20,

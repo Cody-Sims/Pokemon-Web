@@ -51,6 +51,7 @@ export const viridianCity: MapDefinition = {
     },
     {
       id: 'viridian-npc-1',
+      name: 'Townsperson',
       tileX: 20,
       tileY: 5,
       textureKey: 'npc-male-2',
@@ -63,6 +64,7 @@ export const viridianCity: MapDefinition = {
     },
     {
       id: 'viridian-gym-block',
+      name: 'Townsperson',
       tileX: 10,
       tileY: 18,
       textureKey: 'generic-trainer',
@@ -72,6 +74,7 @@ export const viridianCity: MapDefinition = {
     },
     {
       id: 'viridian-route2-guide',
+      name: 'Guide',
       tileX: 6,
       tileY: 1,
       textureKey: 'npc-oldman',
@@ -81,6 +84,7 @@ export const viridianCity: MapDefinition = {
     // ─── Quest NPC: Collector Magnus ───
     {
       id: 'viridian-magnus',
+      name: 'Magnus',
       tileX: 24,
       tileY: 15,
       textureKey: 'npc-male-4',
@@ -117,6 +121,7 @@ export const viridianCity: MapDefinition = {
     // ─── Delivery quest receiver ───
     {
       id: 'viridian-delivery-npc',
+      name: 'Delivery Worker',
       tileX: 22,
       tileY: 20,
       textureKey: 'npc-female-2',
@@ -141,6 +146,7 @@ export const viridianCity: MapDefinition = {
     // ─── Old Man Edgar (catch tutorial) ───
     {
       id: 'viridian-edgar',
+      name: 'Edgar',
       tileX: 10,
       tileY: 1,
       textureKey: 'npc-oldman',

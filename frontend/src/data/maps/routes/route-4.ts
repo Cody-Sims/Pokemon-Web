@@ -58,6 +58,7 @@ export const route4: MapDefinition = {
     // Rook saves player from Synthetic Pokémon
     {
       id: 'route4-rook',
+      name: 'Rook',
       tileX: 12,
       tileY: 12,
       textureKey: 'npc-male-6',
@@ -76,6 +77,7 @@ export const route4: MapDefinition = {
   trainers: [
     {
       id: 'route4-hiker-4',
+      name: 'Hiker',
       trainerId: 'hiker-4',
       tileX: 6,
       tileY: 15,
@@ -85,6 +87,7 @@ export const route4: MapDefinition = {
     },
     {
       id: 'route4-grunt-1',
+      name: 'Synthesis Grunt',
       trainerId: 'synthesis-grunt-1',
       tileX: 14,
       tileY: 10,
@@ -94,6 +97,7 @@ export const route4: MapDefinition = {
     },
     {
       id: 'route4-hiker-6',
+      name: 'Hiker',
       trainerId: 'hiker-6',
       tileX: 10,
       tileY: 22,
@@ -103,6 +107,7 @@ export const route4: MapDefinition = {
     },
     {
       id: 'route4-youngster-5',
+      name: 'Youngster',
       trainerId: 'youngster-5',
       tileX: 5,
       tileY: 8,
@@ -112,6 +117,7 @@ export const route4: MapDefinition = {
     },
     {
       id: 'route4-grunt-4',
+      name: 'Synthesis Grunt',
       trainerId: 'synthesis-grunt-4',
       tileX: 12,
       tileY: 18,

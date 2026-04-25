@@ -64,6 +64,7 @@ export const route3: MapDefinition = {
     },
     {
       id: 'route3-fisherman',
+      name: 'Fisherman',
       tileX: 4,
       tileY: 9,
       textureKey: 'npc-sailor',
@@ -75,6 +76,7 @@ export const route3: MapDefinition = {
     },
     {
       id: 'route3-hiker',
+      name: 'Hiker',
       tileX: 15,
       tileY: 17,
       textureKey: 'npc-hiker',
@@ -89,6 +91,7 @@ export const route3: MapDefinition = {
   trainers: [
     {
       id: 'route3-rival-kael',
+      name: 'Kael',
       trainerId: 'rival-2',
       tileX: 10,
       tileY: 4,
@@ -98,6 +101,7 @@ export const route3: MapDefinition = {
     },
     {
       id: 'route3-swimmer-1',
+      name: 'Swimmer',
       trainerId: 'swimmer-1',
       tileX: 4,
       tileY: 11,
@@ -107,6 +111,7 @@ export const route3: MapDefinition = {
     },
     {
       id: 'route3-lass-2',
+      name: 'Lass',
       trainerId: 'lass-2',
       tileX: 9,
       tileY: 31,
@@ -116,6 +121,7 @@ export const route3: MapDefinition = {
     },
     {
       id: 'route3-youngster-3',
+      name: 'Youngster',
       trainerId: 'youngster-3',
       tileX: 14,
       tileY: 35,
@@ -125,6 +131,7 @@ export const route3: MapDefinition = {
     },
     {
       id: 'route3-swimmer-2',
+      name: 'Swimmer',
       trainerId: 'swimmer-2',
       tileX: 4,
       tileY: 25,
@@ -134,6 +141,7 @@ export const route3: MapDefinition = {
     },
     {
       id: 'route3-fisherman-1',
+      name: 'Fisherman',
       trainerId: 'fisherman-1',
       tileX: 3,
       tileY: 23,
@@ -143,6 +151,7 @@ export const route3: MapDefinition = {
     },
     {
       id: 'route3-sailor-1',
+      name: 'Sailor',
       trainerId: 'sailor-1',
       tileX: 10,
       tileY: 27,
@@ -153,6 +162,7 @@ export const route3: MapDefinition = {
     // Stern Engine quest grunts
     {
       id: 'route3-stern-grunt-1',
+      name: 'Synthesis Grunt',
       trainerId: 'stern-grunt-1',
       tileX: 14,
       tileY: 15,

@@ -15,11 +15,11 @@ export const verdantiaGym: MapDefinition = {
   battleBg: 'bg-gym-grass',
   npcs: [],
   trainers: [
-    { id: 'verdantia-gym-beauty', trainerId: 'beauty-1', tileX: 7, tileY: 10,
+    { id: 'verdantia-gym-beauty', name: 'Beauty', trainerId: 'beauty-1', tileX: 7, tileY: 10,
       textureKey: 'npc-female-3', facing: 'left', lineOfSight: 3 },
-    { id: 'verdantia-gym-picnicker', trainerId: 'picnicker-1', tileX: 3, tileY: 6,
+    { id: 'verdantia-gym-picnicker', name: 'Picnicker', trainerId: 'picnicker-1', tileX: 3, tileY: 6,
       textureKey: 'npc-female-4', facing: 'right', lineOfSight: 3 },
-    { id: 'verdantia-gym-leader', trainerId: 'gym-ivy', tileX: 4, tileY: 2,
+    { id: 'verdantia-gym-leader', name: 'Ivy', trainerId: 'gym-ivy', tileX: 4, tileY: 2,
       textureKey: 'npc-female-5', facing: 'down', lineOfSight: 6 },
   ],
   warps: [

@@ -27,6 +27,7 @@ export const palletOakLab: MapDefinition = {
   npcs: [
     {
       id: 'lab-oak',
+      name: 'Prof. Willow',
       tileX: 6,
       tileY: 3,
       textureKey: 'npc-oak',
@@ -41,6 +42,7 @@ export const palletOakLab: MapDefinition = {
     },
     {
       id: 'lab-oak-after',
+      name: 'Prof. Willow',
       tileX: 6,
       tileY: 3,
       textureKey: 'npc-oak',
@@ -71,6 +73,7 @@ export const palletOakLab: MapDefinition = {
     },
     {
       id: 'lab-aide-1',
+      name: 'Lab Aide',
       tileX: 2,
       tileY: 5,
       textureKey: 'npc-scientist',
@@ -82,6 +85,7 @@ export const palletOakLab: MapDefinition = {
     },
     {
       id: 'lab-aide-2',
+      name: 'Lab Aide',
       tileX: 10,
       tileY: 5,
       textureKey: 'npc-scientist',
@@ -105,6 +109,7 @@ export const palletOakLab: MapDefinition = {
     },
     {
       id: 'lab-kael-intro',
+      name: 'Kael',
       tileX: 8,
       tileY: 8,
       textureKey: 'rival',
@@ -117,6 +122,7 @@ export const palletOakLab: MapDefinition = {
   trainers: [
     {
       id: 'lab-rival-kael',
+      name: 'Kael',
       trainerId: 'rival-1',
       tileX: 8,
       tileY: 9,

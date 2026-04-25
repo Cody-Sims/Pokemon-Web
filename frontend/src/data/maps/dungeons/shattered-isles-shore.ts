@@ -52,6 +52,7 @@ export const shatteredIslesShore: MapDefinition = {
     // ─── Rook NPC — seeking redemption ───
     {
       id: 'rook-postgame-npc',
+      name: 'Rook',
       tileX: 7,
       tileY: 12,
       textureKey: 'npc-rook',
@@ -70,6 +71,7 @@ export const shatteredIslesShore: MapDefinition = {
   trainers: [
     {
       id: 'rook-postgame-trainer',
+      name: 'Rook',
       trainerId: 'rook-postgame',
       tileX: 7,
       tileY: 12,

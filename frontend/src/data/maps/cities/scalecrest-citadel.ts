@@ -37,19 +37,19 @@ export const scalecrestCitadel: MapDefinition = {
   npcs: [
     { id: 'scalecrest-sign', tileX: 13, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['SCALECREST CITADEL', '"Ancestral Fortress of the Dragon Keepers"'] },
-    { id: 'scalecrest-npc', tileX: 16, tileY: 6, textureKey: 'npc-male-5', facing: 'left',
+    { id: 'scalecrest-npc', name: 'Townsperson', tileX: 16, tileY: 6, textureKey: 'npc-male-5', facing: 'left',
       dialogue: ['Drake is our Gym Leader. His dragons descend from ancient guardians.', 'Only the worthy may pass!'] },
-    { id: 'tutor-scalecrest', tileX: 8, tileY: 13, textureKey: 'npc-male-5', facing: 'right',
+    { id: 'tutor-scalecrest', name: 'Move Tutor', tileX: 8, tileY: 13, textureKey: 'npc-male-5', facing: 'right',
       dialogue: ['Dragon Tutor: I teach the ancient dragon arts.', 'Dragon Tutor: Bring me Heart Scales and I shall share my knowledge.'],
       interactionType: 'move-tutor', interactionData: 'tutor-scalecrest' },
-    { id: 'scalecrest-wren', tileX: 16, tileY: 15, textureKey: 'npc-male-2', facing: 'left',
+    { id: 'scalecrest-wren', name: 'Wren', tileX: 16, tileY: 15, textureKey: 'npc-male-2', facing: 'left',
       dialogue: ['Dragon Keeper Wren: A Dragonair in the caves is in pain...',
         'Wren: The Aether disturbance is affecting it terribly.',
         'Wren: If you could find an Aether Salve, it might help.',
         'Wren: The ingredients are in Verdantia and Ember Mines.'],
       setsFlag: 'quest_dragonLament_started' },
     // ─── Veteran Knox (citadel gate, gives Scope Lens) ───
-    { id: 'scalecrest-knox', tileX: 8, tileY: 23, textureKey: 'npc-ace-trainer', facing: 'right',
+    { id: 'scalecrest-knox', name: 'Knox', tileX: 8, tileY: 23, textureKey: 'npc-ace-trainer', facing: 'right',
       dialogue: [
         'Veteran Knox: I\'ve stood guard at this citadel for thirty years.',
         'Knox: Back in my day, we fought the first Aether surge...',

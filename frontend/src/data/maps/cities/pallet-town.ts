@@ -45,6 +45,7 @@ export const palletTown: MapDefinition = {
   npcs: [
     {
       id: 'pallet-npc-1',
+      name: 'Townsperson',
       tileX: 7,
       tileY: 7,
       textureKey: 'npc-male-1',
@@ -57,6 +58,7 @@ export const palletTown: MapDefinition = {
     },
     {
       id: 'pallet-npc-2',
+      name: 'Townsperson',
       tileX: 18,
       tileY: 9,
       textureKey: 'npc-female-1',
@@ -77,6 +79,7 @@ export const palletTown: MapDefinition = {
     // ─── Quest NPC: Delivery Girl Pip ───
     {
       id: 'pallet-pip',
+      name: 'Pip',
       tileX: 3,
       tileY: 14,
       textureKey: 'npc-lass',
@@ -112,6 +115,7 @@ export const palletTown: MapDefinition = {
     // ─── Fisherman Wade at the docks ───
     {
       id: 'pallet-wade',
+      name: 'Wade',
       tileX: 13,
       tileY: 26,
       textureKey: 'npc-sailor',
@@ -147,6 +151,7 @@ export const palletTown: MapDefinition = {
     // ─── Mom (heals party) ───
     {
       id: 'pallet-mom',
+      name: 'Mom',
       tileX: 3,
       tileY: 7,
       textureKey: 'npc-mom',

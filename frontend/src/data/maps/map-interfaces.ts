@@ -30,6 +30,8 @@ export interface NpcSpawn {
 
 export interface TrainerSpawn {
   id: string;          // NPC id
+  /** Display name shown in the dialogue speaker tag. */
+  name?: string;
   trainerId: string;   // Key into trainerData
   tileX: number;
   tileY: number;

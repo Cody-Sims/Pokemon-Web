@@ -23,6 +23,7 @@ export const pewterPokemart: MapDefinition = {
   npcs: [
     {
       id: 'pewter-mart-clerk',
+      name: 'Clerk',
       tileX: 5,
       tileY: 1,
       textureKey: 'generic-trainer',
@@ -35,6 +36,7 @@ export const pewterPokemart: MapDefinition = {
     },
     {
       id: 'pewter-mart-shopper',
+      name: 'Shopper',
       tileX: 3,
       tileY: 5,
       textureKey: 'npc-female-1',

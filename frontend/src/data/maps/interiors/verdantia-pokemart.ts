@@ -15,9 +15,10 @@ export const verdantiaPokemart: MapDefinition = {
   encounterTableKey: '', isInterior: true, displayName: 'Verdantia Poké Mart',
   npcs: [{
     id: 'verdantia-clerk', tileX: 5, tileY: 1, textureKey: 'generic-trainer',
+    name: 'Clerk',
     facing: 'down', dialogue: ['Welcome to the Poké Mart!'], interactionType: 'shop',
   }, {
-    id: 'verdantia-shopper', tileX: 3, tileY: 5, textureKey: 'npc-female-1',
+    id: 'verdantia-shopper', name: 'Shopper', tileX: 3, tileY: 5, textureKey: 'npc-female-1',
     facing: 'right', dialogue: ['They sell Berry fertilizer here! Great for the gardens.'],
   }],
   trainers: [],

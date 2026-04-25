@@ -31,6 +31,7 @@ export const abyssalSpireF5: MapDefinition = {
   npcs: [
     {
       id: 'aldric-confrontation',
+      name: 'Champion Aldric',
       tileX: 7,
       tileY: 7,
       textureKey: 'generic-trainer',

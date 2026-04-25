@@ -61,6 +61,7 @@ function buildHouse(cityKey: string, houseIndex: number, npcDialogue: string[], 
     npcs: [
       {
         id: `${key}-resident`,
+        name: 'Resident',
         tileX: 3,
         tileY: 3,
         textureKey: houseIndex % 2 === 0 ? 'npc-female-1' : 'npc-male-1',

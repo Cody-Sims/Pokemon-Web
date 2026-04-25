@@ -23,6 +23,7 @@ export const viridianPokecenter: MapDefinition = {
   npcs: [
     {
       id: 'viridian-nurse-inside',
+      name: 'Nurse Joy',
       tileX: 5,
       tileY: 1,
       textureKey: 'npc-nurse',
@@ -35,6 +36,7 @@ export const viridianPokecenter: MapDefinition = {
     },
     {
       id: 'viridian-center-npc',
+      name: 'Townsperson',
       tileX: 3,
       tileY: 5,
       textureKey: 'generic-trainer',

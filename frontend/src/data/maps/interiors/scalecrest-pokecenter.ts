@@ -14,12 +14,14 @@ export const scalecrestPokecenter: MapDefinition = {
   encounterTableKey: '', isInterior: true, displayName: 'Scalecrest Pokémon Center',
   npcs: [{
     id: 'scalecrest-nurse', tileX: 5, tileY: 1, textureKey: 'npc-nurse',
+    name: 'Nurse Joy',
     facing: 'down', dialogue: ['Welcome! We\'ll heal your Pokémon!'], interactionType: 'heal',
   }, {
     id: 'scalecrest-pc', tileX: 11, tileY: 2, textureKey: 'generic-trainer',
     facing: 'down', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc',
   }, {
     id: 'scalecrest-center-npc', tileX: 9, tileY: 5, textureKey: 'npc-female-1',
+    name: 'Townsperson',
     facing: 'left', dialogue: ['Dragon tamers from all over Aurum come to challenge Drake.'],
   }],
   trainers: [],

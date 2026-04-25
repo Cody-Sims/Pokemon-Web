@@ -15,9 +15,10 @@ export const voltaraPokemart: MapDefinition = {
   encounterTableKey: '', isInterior: true, displayName: 'Voltara Poké Mart',
   npcs: [{
     id: 'voltara-clerk', tileX: 5, tileY: 1, textureKey: 'generic-trainer',
+    name: 'Clerk',
     facing: 'down', dialogue: ['Welcome to the Poké Mart!'], interactionType: 'shop',
   }, {
-    id: 'voltara-shopper', tileX: 3, tileY: 5, textureKey: 'npc-male-1',
+    id: 'voltara-shopper', name: 'Shopper', tileX: 3, tileY: 5, textureKey: 'npc-male-1',
     facing: 'right', dialogue: ['Picked up some Paralyze Heals. Electric types are rough...'],
   }],
   trainers: [],

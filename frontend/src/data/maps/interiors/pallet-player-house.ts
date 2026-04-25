@@ -23,6 +23,7 @@ export const palletPlayerHouse: MapDefinition = {
   npcs: [
     {
       id: 'house-mom',
+      name: 'Mom',
       tileX: 2,
       tileY: 4,
       textureKey: 'npc-mom',

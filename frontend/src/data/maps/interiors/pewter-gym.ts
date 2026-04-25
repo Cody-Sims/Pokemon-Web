@@ -27,6 +27,7 @@ export const pewterGym: MapDefinition = {
   npcs: [
     {
       id: 'pewter-gym-guide-inside',
+      name: 'Gym Guide',
       tileX: 3,
       tileY: 10,
       textureKey: 'npc-male-1',
@@ -51,6 +52,7 @@ export const pewterGym: MapDefinition = {
   trainers: [
     {
       id: 'pewter-gym-camper',
+      name: 'Camper',
       trainerId: 'camper-3',
       tileX: 4,
       tileY: 8,
@@ -60,6 +62,7 @@ export const pewterGym: MapDefinition = {
     },
     {
       id: 'pewter-gym-brock-inside',
+      name: 'Brock',
       trainerId: 'gym-brock',
       tileX: 7,
       tileY: 2,

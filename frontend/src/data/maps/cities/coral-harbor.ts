@@ -55,6 +55,7 @@ export const coralHarbor: MapDefinition = {
     },
     {
       id: 'coral-npc-1',
+      name: 'Townsperson',
       tileX: 8,
       tileY: 6,
       textureKey: 'npc-male-5',
@@ -68,6 +69,7 @@ export const coralHarbor: MapDefinition = {
     // ─── Captain Stern (ferry quest) ───
     {
       id: 'coral-stern',
+      name: 'Captain Stern',
       tileX: 14,
       tileY: 10,
       textureKey: 'npc-sailor',
@@ -99,6 +101,7 @@ export const coralHarbor: MapDefinition = {
     // ─── Diver Lena (Good Rod) ───
     {
       id: 'coral-lena',
+      name: 'Lena',
       tileX: 16,
       tileY: 16,
       textureKey: 'npc-swimmer',
@@ -114,6 +117,7 @@ export const coralHarbor: MapDefinition = {
     // ─── Chef Marco (Berry quest) ───
     {
       id: 'coral-marco',
+      name: 'Marco',
       tileX: 8,
       tileY: 19,
       textureKey: 'npc-male-6',
@@ -145,6 +149,7 @@ export const coralHarbor: MapDefinition = {
     // ─── Zara Lux disguised appearance ───
     {
       id: 'coral-zara-disguise',
+      name: 'Zara',
       tileX: 10,
       tileY: 17,
       textureKey: 'npc-female-6',
@@ -160,8 +165,8 @@ export const coralHarbor: MapDefinition = {
   ],
   trainers: [
     // Stern Engine quest grunts (docks & beach)
-    { id: 'coral-stern-grunt-2', trainerId: 'stern-grunt-2', tileX: 14, tileY: 11, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 3, condition: '!stern-grunt-2' },
-    { id: 'coral-stern-grunt-3', trainerId: 'stern-grunt-3', tileX: 8, tileY: 18, textureKey: 'npc-grunt', facing: 'up', lineOfSight: 3, condition: '!stern-grunt-3' },
+    { id: 'coral-stern-grunt-2', name: 'Synthesis Grunt', trainerId: 'stern-grunt-2', tileX: 14, tileY: 11, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 3, condition: '!stern-grunt-2' },
+    { id: 'coral-stern-grunt-3', name: 'Synthesis Grunt', trainerId: 'stern-grunt-3', tileX: 8, tileY: 18, textureKey: 'npc-grunt', facing: 'up', lineOfSight: 3, condition: '!stern-grunt-3' },
   ],
   warps: [
     // North exit → Route 3

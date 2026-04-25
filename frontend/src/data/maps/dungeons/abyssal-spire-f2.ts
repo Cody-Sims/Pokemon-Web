@@ -78,6 +78,7 @@ export const abyssalSpireF2: MapDefinition = {
   trainers: [
     {
       id: 'spire-grunt-f2-1',
+      name: 'Synthesis Elite',
       trainerId: 'synth-elite-f2-1',
       tileX: 4,
       tileY: 13,
@@ -87,6 +88,7 @@ export const abyssalSpireF2: MapDefinition = {
     },
     {
       id: 'spire-grunt-f2-2',
+      name: 'Synthesis Elite',
       trainerId: 'synth-elite-f2-2',
       tileX: 15,
       tileY: 9,
@@ -97,6 +99,7 @@ export const abyssalSpireF2: MapDefinition = {
     // Dr. Vex boss battle #3
     {
       id: 'spire-vex',
+      name: 'Admin Vex',
       trainerId: 'admin-vex-3',
       tileX: 10,
       tileY: 5,

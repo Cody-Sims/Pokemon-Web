@@ -31,6 +31,7 @@ export const scalecrestGym: MapDefinition = {
   npcs: [
     {
       id: 'scalecrest-gym-guide',
+      name: 'Gym Guide',
       tileX: 3,
       tileY: 11,
       textureKey: 'npc-male-1',
@@ -51,9 +52,9 @@ export const scalecrestGym: MapDefinition = {
     },
   ],
   trainers: [
-    { id: 'scalecrest-gym-leader', trainerId: 'gym-drake', tileX: 6, tileY: 2, textureKey: 'npc-male-5', facing: 'down', lineOfSight: 6 },
-    { id: 'scalecrest-trainer-1', trainerId: 'ace-scalecrest-1', tileX: 3, tileY: 5, textureKey: 'npc-ace-trainer', facing: 'right', lineOfSight: 3 },
-    { id: 'scalecrest-trainer-2', trainerId: 'ace-scalecrest-2', tileX: 9, tileY: 9, textureKey: 'npc-ace-trainer-f', facing: 'left', lineOfSight: 3 },
+    { id: 'scalecrest-gym-leader', name: 'Drake', trainerId: 'gym-drake', tileX: 6, tileY: 2, textureKey: 'npc-male-5', facing: 'down', lineOfSight: 6 },
+    { id: 'scalecrest-trainer-1', name: 'Ace Trainer', trainerId: 'ace-scalecrest-1', tileX: 3, tileY: 5, textureKey: 'npc-ace-trainer', facing: 'right', lineOfSight: 3 },
+    { id: 'scalecrest-trainer-2', name: 'Ace Trainer', trainerId: 'ace-scalecrest-2', tileX: 9, tileY: 9, textureKey: 'npc-ace-trainer-f', facing: 'left', lineOfSight: 3 },
   ],
   warps: [
     { tileX: 5, tileY: 13, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-gym' },

@@ -6,6 +6,11 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-25]
 
+### Added
+
+- **NPC and trainer display names**: Added `name` field to all NPC and trainer spawn objects across all map files (cities, interiors, dungeons, routes). Names follow role-based conventions: story characters use their actual names, gym leaders use their name, generic NPCs get role titles (Townsperson, Nurse Joy, Clerk, etc.), and grunts are labeled Synthesis Grunt. Signs, items, and interactive objects are intentionally left unnamed.
+- **TrainerSpawn name field**: Added optional `name?: string` field to the `TrainerSpawn` interface in `map-interfaces.ts`
+
 ### Fixed
 
 - **Dialogue text not inside box**: Replaced broken slide animation (y-offset tweens on NinePatchPanel Graphics objects caused text to render above the dialog box) with a clean fade-in/fade-out animation that keeps all elements at their correct positions

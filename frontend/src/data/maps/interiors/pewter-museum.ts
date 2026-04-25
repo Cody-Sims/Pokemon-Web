@@ -28,6 +28,7 @@ export const pewterMuseum: MapDefinition = {
     // ─── Museum Guide ───
     {
       id: 'museum-guide',
+      name: 'Museum Guide',
       tileX: 4,
       tileY: 5,
       textureKey: 'npc-female-3',
@@ -42,6 +43,7 @@ export const pewterMuseum: MapDefinition = {
     // ─── Fossil Scientist ───
     {
       id: 'museum-fossil-scientist',
+      name: 'Fossil Scientist',
       tileX: 12,
       tileY: 2,
       textureKey: 'npc-scientist',
@@ -56,6 +58,7 @@ export const pewterMuseum: MapDefinition = {
     // ─── Aether Researcher ───
     {
       id: 'museum-aether-researcher',
+      name: 'Researcher',
       tileX: 8,
       tileY: 5,
       textureKey: 'npc-scientist',
@@ -104,6 +107,7 @@ export const pewterMuseum: MapDefinition = {
     // ─── Museum Visitor ───
     {
       id: 'museum-visitor',
+      name: 'Visitor',
       tileX: 3,
       tileY: 8,
       textureKey: 'npc-male-1',

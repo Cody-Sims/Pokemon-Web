@@ -38,7 +38,7 @@ export const aetherSanctum: MapDefinition = {
   npcs: [
     { id: 'sanctum-sign', tileX: 10, tileY: 23, textureKey: 'generic-trainer', facing: 'up',
       dialogue: ['The air hums with raw Aether energy...', 'Ancient runes glow along the walls.'] },
-    { id: 'sanctum-rook', tileX: 10, tileY: 2, textureKey: 'npc-male-6', facing: 'down',
+    { id: 'sanctum-rook', name: 'Rook', tileX: 10, tileY: 2, textureKey: 'npc-male-6', facing: 'down',
       dialogue: [
         'Rook: You made it. This place is the convergence point.',
         'Rook: All the Aether in the region flows through here.',
@@ -48,10 +48,10 @@ export const aetherSanctum: MapDefinition = {
       requireFlag: 'champion_defeated' },
   ],
   trainers: [
-    { id: 'sanctum-grunt-1', trainerId: 'synthesis-grunt-3', tileX: 5, tileY: 9, textureKey: 'npc-grunt', facing: 'right', lineOfSight: 4 },
-    { id: 'sanctum-grunt-2', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 9, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 4 },
-    { id: 'sanctum-grunt-3', trainerId: 'synthesis-grunt-3', tileX: 10, tileY: 17, textureKey: 'npc-grunt', facing: 'up', lineOfSight: 3 },
-    { id: 'sanctum-kael-6', trainerId: 'rival-6', tileX: 10, tileY: 5, textureKey: 'rival', facing: 'down', lineOfSight: 5,
+    { id: 'sanctum-grunt-1', name: 'Synthesis Grunt', trainerId: 'synthesis-grunt-3', tileX: 5, tileY: 9, textureKey: 'npc-grunt', facing: 'right', lineOfSight: 4 },
+    { id: 'sanctum-grunt-2', name: 'Synthesis Grunt', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 9, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 4 },
+    { id: 'sanctum-grunt-3', name: 'Synthesis Grunt', trainerId: 'synthesis-grunt-3', tileX: 10, tileY: 17, textureKey: 'npc-grunt', facing: 'up', lineOfSight: 3 },
+    { id: 'sanctum-kael-6', name: 'Kael', trainerId: 'rival-6', tileX: 10, tileY: 5, textureKey: 'rival', facing: 'down', lineOfSight: 5,
       condition: '!rival-6' },
   ],
   warps: [

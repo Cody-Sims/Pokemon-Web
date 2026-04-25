@@ -34,6 +34,7 @@ export const abyssalSpireF3: MapDefinition = {
   npcs: [
     {
       id: 'zara-lux-f3',
+      name: 'Zara',
       tileX: 9,
       tileY: 6,
       textureKey: 'npc-zara',
@@ -71,6 +72,7 @@ export const abyssalSpireF3: MapDefinition = {
   trainers: [
     {
       id: 'spire-zara',
+      name: 'Zara',
       trainerId: 'admin-zara-3',
       tileX: 9,
       tileY: 8,

@@ -57,6 +57,7 @@ export const shatteredIslesTemple: MapDefinition = {
     // ─── Father NPC (appears after quest completion) ───
     {
       id: 'father-temple',
+      name: 'Father',
       tileX: 9,
       tileY: 4,
       textureKey: 'npc-professor',

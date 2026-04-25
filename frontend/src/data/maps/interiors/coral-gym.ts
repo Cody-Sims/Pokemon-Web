@@ -32,6 +32,7 @@ export const coralGym: MapDefinition = {
   trainers: [
     {
       id: 'coral-gym-trainer-1',
+      name: 'Swimmer',
       trainerId: 'swimmer-1',
       tileX: 3,
       tileY: 10,
@@ -41,6 +42,7 @@ export const coralGym: MapDefinition = {
     },
     {
       id: 'coral-gym-trainer-2',
+      name: 'Swimmer',
       trainerId: 'swimmer-3',
       tileX: 7,
       tileY: 6,
@@ -50,6 +52,7 @@ export const coralGym: MapDefinition = {
     },
     {
       id: 'coral-gym-leader',
+      name: 'Coral',
       trainerId: 'gym-coral',
       tileX: 4,
       tileY: 2,

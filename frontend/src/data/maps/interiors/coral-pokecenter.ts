@@ -22,6 +22,7 @@ export const coralPokecenter: MapDefinition = {
   npcs: [
     {
       id: 'coral-center-nurse',
+      name: 'Nurse Joy',
       tileX: 4,
       tileY: 2,
       textureKey: 'npc-nurse',

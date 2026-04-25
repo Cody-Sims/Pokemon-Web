@@ -22,6 +22,7 @@ export const coralPokemart: MapDefinition = {
   npcs: [
     {
       id: 'coral-mart-clerk',
+      name: 'Clerk',
       tileX: 3,
       tileY: 2,
       textureKey: 'generic-trainer',

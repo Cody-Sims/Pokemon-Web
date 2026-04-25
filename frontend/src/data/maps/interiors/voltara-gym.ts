@@ -31,6 +31,7 @@ export const voltaraGym: MapDefinition = {
   npcs: [
     {
       id: 'voltara-gym-guide',
+      name: 'Gym Guide',
       tileX: 3,
       tileY: 11,
       textureKey: 'npc-male-1',
@@ -51,9 +52,9 @@ export const voltaraGym: MapDefinition = {
     },
   ],
   trainers: [
-    { id: 'voltara-gym-leader', trainerId: 'gym-blitz', tileX: 6, tileY: 2, textureKey: 'npc-gym-blitz', facing: 'down', lineOfSight: 6 },
-    { id: 'voltara-trainer-1', trainerId: 'engineer-voltara-1', tileX: 3, tileY: 5, textureKey: 'npc-scientist', facing: 'right', lineOfSight: 3 },
-    { id: 'voltara-trainer-2', trainerId: 'engineer-voltara-2', tileX: 9, tileY: 8, textureKey: 'npc-scientist', facing: 'left', lineOfSight: 3 },
+    { id: 'voltara-gym-leader', name: 'Blitz', trainerId: 'gym-blitz', tileX: 6, tileY: 2, textureKey: 'npc-gym-blitz', facing: 'down', lineOfSight: 6 },
+    { id: 'voltara-trainer-1', name: 'Engineer', trainerId: 'engineer-voltara-1', tileX: 3, tileY: 5, textureKey: 'npc-scientist', facing: 'right', lineOfSight: 3 },
+    { id: 'voltara-trainer-2', name: 'Engineer', trainerId: 'engineer-voltara-2', tileX: 9, tileY: 8, textureKey: 'npc-scientist', facing: 'left', lineOfSight: 3 },
   ],
   warps: [
     { tileX: 5, tileY: 13, targetMap: 'voltara-city', targetSpawnId: 'from-gym' },

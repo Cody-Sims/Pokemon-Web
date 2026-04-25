@@ -26,6 +26,7 @@ export const viridianGym: MapDefinition = {
   npcs: [
     {
       id: 'viridian-gym-guide',
+      name: 'Gym Guide',
       tileX: 3,
       tileY: 9,
       textureKey: 'npc-male-1',
@@ -48,9 +49,10 @@ export const viridianGym: MapDefinition = {
     },
   ],
   trainers: [
-    { id: 'viridian-gym-leader', trainerId: 'gym-giovanni', tileX: 7, tileY: 2, textureKey: 'generic-trainer', facing: 'down', lineOfSight: 4 },
+    { id: 'viridian-gym-leader', name: 'Giovanni', trainerId: 'gym-giovanni', tileX: 7, tileY: 2, textureKey: 'generic-trainer', facing: 'down', lineOfSight: 4 },
     {
       id: 'viridian-trainer-1',
+      name: 'Cool Trainer',
       trainerId: 'cooltrainer-viridian-1',
       tileX: 4,
       tileY: 5,
@@ -60,6 +62,7 @@ export const viridianGym: MapDefinition = {
     },
     {
       id: 'viridian-trainer-2',
+      name: 'Cool Trainer',
       trainerId: 'cooltrainer-viridian-2',
       tileX: 10,
       tileY: 5,

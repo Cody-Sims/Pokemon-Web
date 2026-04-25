@@ -51,6 +51,7 @@ export const pewterCity: MapDefinition = {
     },
     {
       id: 'pewter-npc-1',
+      name: 'Townsperson',
       tileX: 20,
       tileY: 6,
       textureKey: 'npc-male-1',
@@ -63,6 +64,7 @@ export const pewterCity: MapDefinition = {
     },
     {
       id: 'pewter-museum-npc',
+      name: 'Townsperson',
       tileX: 10,
       tileY: 25,
       textureKey: 'npc-male-3',
@@ -75,6 +77,7 @@ export const pewterCity: MapDefinition = {
     // ─── Quest NPC: Hiker Jerome (Lost Pokémon quest) ───
     {
       id: 'pewter-jerome',
+      name: 'Jerome',
       tileX: 18,
       tileY: 14,
       textureKey: 'npc-hiker',
@@ -108,6 +111,7 @@ export const pewterCity: MapDefinition = {
     // ─── Delivery quest receiver ───
     {
       id: 'pewter-delivery-npc',
+      name: 'Delivery Worker',
       tileX: 8,
       tileY: 20,
       textureKey: 'npc-female-3',
@@ -133,6 +137,7 @@ export const pewterCity: MapDefinition = {
     // ─── Museum Curator (Aether lore) ───
     {
       id: 'pewter-curator',
+      name: 'Curator',
       tileX: 16,
       tileY: 26,
       textureKey: 'npc-male-1',

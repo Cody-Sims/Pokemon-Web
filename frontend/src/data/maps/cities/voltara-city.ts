@@ -56,6 +56,7 @@ export const voltaraCity: MapDefinition = {
     },
     {
       id: 'voltara-npc-1',
+      name: 'Townsperson',
       tileX: 18,
       tileY: 9,
       textureKey: 'npc-male-2',
@@ -69,6 +70,7 @@ export const voltaraCity: MapDefinition = {
     // Engineer Sparks (power restoration quest)
     {
       id: 'voltara-sparks',
+      name: 'Sparks',
       tileX: 18,
       tileY: 12,
       textureKey: 'npc-scientist',
@@ -102,6 +104,7 @@ export const voltaraCity: MapDefinition = {
     // Move Tutor Bolt
     {
       id: 'voltara-bolt',
+      name: 'Bolt',
       tileX: 5,
       tileY: 10,
       textureKey: 'npc-male-4',
@@ -116,6 +119,7 @@ export const voltaraCity: MapDefinition = {
     // Story: Blitz discovers Collective is tapping the grid
     {
       id: 'voltara-blitz-story',
+      name: 'Blitz',
       tileX: 11,
       tileY: 13,
       textureKey: 'npc-gym-blitz',
@@ -133,6 +137,7 @@ export const voltaraCity: MapDefinition = {
     // Conduit interaction points for Power Restoration quest
     {
       id: 'voltara-conduit-1',
+      name: 'Conduit',
       tileX: 6,
       tileY: 25,
       textureKey: 'generic-trainer',
@@ -143,6 +148,7 @@ export const voltaraCity: MapDefinition = {
     },
     {
       id: 'voltara-conduit-2',
+      name: 'Conduit',
       tileX: 5,
       tileY: 3,
       textureKey: 'generic-trainer',
@@ -153,6 +159,7 @@ export const voltaraCity: MapDefinition = {
     },
     {
       id: 'voltara-conduit-3',
+      name: 'Conduit',
       tileX: 10,
       tileY: 27,
       textureKey: 'generic-trainer',
@@ -164,6 +171,7 @@ export const voltaraCity: MapDefinition = {
     // Story: Professor Willow kidnapping
     {
       id: 'voltara-willow-kidnap',
+      name: 'Prof. Willow',
       tileX: 11,
       tileY: 9,
       textureKey: 'npc-professor',

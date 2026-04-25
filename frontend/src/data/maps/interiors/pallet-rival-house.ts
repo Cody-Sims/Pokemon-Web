@@ -23,6 +23,7 @@ export const palletRivalHouse: MapDefinition = {
   npcs: [
     {
       id: 'rival-sister',
+      name: "Rival's Sister",
       tileX: 5,
       tileY: 3,
       textureKey: 'generic-trainer',

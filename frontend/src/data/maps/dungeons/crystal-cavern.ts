@@ -66,6 +66,7 @@ export const crystalCavern: MapDefinition = {
     },
     {
       id: 'cavern-hiker',
+      name: 'Hiker',
       tileX: 10,
       tileY: 8,
       textureKey: 'npc-hiker',
@@ -100,6 +101,7 @@ export const crystalCavern: MapDefinition = {
   trainers: [
     {
       id: 'cavern-hiker-1',
+      name: 'Hiker',
       trainerId: 'hiker-1',
       tileX: 10,
       tileY: 20,
@@ -109,6 +111,7 @@ export const crystalCavern: MapDefinition = {
     },
     {
       id: 'cavern-hiker-2',
+      name: 'Hiker',
       trainerId: 'hiker-2',
       tileX: 14,
       tileY: 14,
@@ -118,6 +121,7 @@ export const crystalCavern: MapDefinition = {
     },
     {
       id: 'cavern-hiker-3',
+      name: 'Hiker',
       trainerId: 'hiker-3',
       tileX: 5,
       tileY: 14,
@@ -127,6 +131,7 @@ export const crystalCavern: MapDefinition = {
     },
     {
       id: 'cavern-hiker-5',
+      name: 'Hiker',
       trainerId: 'hiker-5',
       tileX: 10,
       tileY: 4,
@@ -136,6 +141,7 @@ export const crystalCavern: MapDefinition = {
     },
     {
       id: 'cavern-camper-2',
+      name: 'Camper',
       trainerId: 'camper-2',
       tileX: 5,
       tileY: 9,
