@@ -3,6 +3,8 @@ import { NPCBehaviorConfig } from '@systems/overworld/NPCBehavior';
 
 export interface NpcSpawn {
   id: string;
+  /** Display name shown in the dialogue speaker tag. */
+  name?: string;
   tileX: number;
   tileY: number;
   textureKey: string;
