@@ -44,6 +44,10 @@ export class TouchControls {
   private readonly padding = 16;
   private buttons: ButtonDef[] = [];
 
+  // Track which pointer/touch IDs are pressing which buttons
+  private activeButtonTouches = new Map<number, ButtonDef>();
+  private baseAlpha = 0.5;
+
   // Tap tracking
   private trackedTouches = new Map<number, TrackedTouch>();
 
@@ -501,10 +505,10 @@ export class TouchControls {
     const highVis = this.readSetting('highVisControls') === 'true';
     const aAction: 'confirm' | 'cancel' = swapped ? 'cancel' : 'confirm';
     const bAction: 'confirm' | 'cancel' = swapped ? 'confirm' : 'cancel';
-    const alpha = highVis ? 0.85 : 0.5;
+    this.baseAlpha = highVis ? 0.85 : 0.5;
     const stroke = highVis ? 3 : 0;
-    const aBtn = this.makeActionButton(0, -48, swapped ? 'B' : 'A', 0x44aa55, aAction, alpha, stroke);
-    const bBtn = this.makeActionButton(0, 48, swapped ? 'A' : 'B', 0xaa4444, bAction, alpha, stroke);
+    const aBtn = this.makeActionButton(0, -48, swapped ? 'B' : 'A', 0x44aa55, aAction, this.baseAlpha, stroke);
+    const bBtn = this.makeActionButton(0, 48, swapped ? 'A' : 'B', 0xaa4444, bAction, this.baseAlpha, stroke);
     this.buttonContainer.add([aBtn, bBtn]);
   }
 
