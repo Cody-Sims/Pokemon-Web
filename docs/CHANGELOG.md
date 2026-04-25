@@ -21,6 +21,9 @@ All notable changes to the Pokemon Web project.
 - **Dialogue portrait/avatar**: NPC dialogue boxes now show a 48x48 sprite portrait of the speaking NPC in a bordered frame on the left side of the dialog box; text wraps around the portrait; supported from NPC interaction, trainer battles, and cutscenes via new `portraitKey` field in `DialogueData`
 - **Dialogue slide animation**: Dialog box and all associated elements (speaker name, portrait, text) slide in from below on open and slide out downward on close using Back easing
 - **Dialog text shadow**: Added drop shadow to dialogue text for improved readability over any background
+- **NPC speaker names**: Added optional `name` field to `NpcSpawn` interface; `OverworldInteraction` now passes `speaker` from spawn data to `DialogueScene` so NPC name tags display automatically
+- **Dialogue open/close SFX**: Play confirm sound on dialog slide-in and cancel sound on slide-out for tactile audio feedback
+- **Cutscene portrait keys**: Added `portraitKey` to all cutscene dialogue actions with known NPC sprites (Prof. Willow, Kael, Aldric, Marina, Morwen, Solara, Ashborne)
 
 ### Changed
 

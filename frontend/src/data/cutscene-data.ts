@@ -6,7 +6,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
     actions: [
       { type: 'showEmote', targetId: 'player', emote: 'exclamation' },
       { type: 'wait', ms: 500 },
-      { type: 'dialogue', speaker: 'Kael', lines: [
+      { type: 'dialogue', speaker: 'Kael', portraitKey: 'rival', lines: [
         'Hey! You there!',
         'I heard you got a Pokémon from the Professor.',
         'Let\'s see how strong you really are!',
@@ -16,7 +16,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
   'willow-lab-intro': {
     id: 'willow-lab-intro',
     actions: [
-      { type: 'dialogue', speaker: 'Prof. Willow', lines: [
+      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-professor', lines: [
         'Welcome to my laboratory!',
         'I study the Pokémon of the Aurum Region.',
         'But first, choose your partner Pokémon!',
@@ -41,7 +41,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
   'morwen-prophecy': {
     id: 'morwen-prophecy',
     actions: [
-      { type: 'dialogue', speaker: 'Morwen', lines: [
+      { type: 'dialogue', speaker: 'Morwen', portraitKey: 'npc-gym-morwen', lines: [
         'The sleeper beneath the spire will not distinguish between savior and destroyer.',
         'Be certain of your resolve.',
         'The dead whisper of a convergence... and of one who watches from the shadows.',
@@ -54,7 +54,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
   'solara-confession': {
     id: 'solara-confession',
     actions: [
-      { type: 'dialogue', speaker: 'Solara', lines: [
+      { type: 'dialogue', speaker: 'Solara', portraitKey: 'npc-gym-solara', lines: [
         'There\'s something I need to tell you.',
         'The Champion... Aldric Maren... he was my teacher.',
         'He changed after the incident at the Shattered Isles.',
@@ -69,8 +69,8 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
   'ashborne-warning': {
     id: 'ashborne-warning',
     actions: [
-      { type: 'dialogue', speaker: 'Ashborne', lines: [
-        '...You truly are remarkable.',
+      { type: 'dialogue', speaker: 'Ashborne', portraitKey: 'npc-e4-ashborne', lines: [
+        '...You truly are remarkable.',,
         'The Champion awaits in the chamber above.',
         'But I must warn you...',
         'Whatever you find up there... don\'t lose yourself.',
@@ -84,7 +84,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
     id: 'aldric-spire-offer',
     actions: [
       { type: 'playBGM', key: 'bgm-legendary' },
-      { type: 'dialogue', speaker: 'Aldric', lines: [
+      { type: 'dialogue', speaker: 'Aldric', portraitKey: 'npc-champion-aldric', lines: [
         'I\'ve seen what nature does to the creatures we claim to love.',
         'I choose to do better.',
         'Join me. Together, we can build a world where no Pokémon ever suffers again.',
@@ -93,7 +93,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
       { type: 'dialogue', speaker: 'Narrator', lines: [
         'You shake your head firmly.',
       ]},
-      { type: 'dialogue', speaker: 'Aldric', lines: [
+      { type: 'dialogue', speaker: 'Aldric', portraitKey: 'npc-champion-aldric', lines: [
         'A shame. Then you leave me no choice.',
         'The Aether converges at the League. That is where this ends.',
       ]},
@@ -127,7 +127,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
         'Deep below, the ancient guardian Solatheon stirs...',
         'But sensing your compassion, it returns to peaceful slumber.',
       ]},
-      { type: 'dialogue', speaker: 'Aldric', lines: [
+      { type: 'dialogue', speaker: 'Aldric', portraitKey: 'npc-champion-aldric', lines: [
         '...It\'s over then.',
         'Perhaps... perhaps you were right.',
       ]},
@@ -158,7 +158,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
       ]},
       { type: 'fadeFromBlack', duration: 800 },
       { type: 'wait', ms: 300 },
-      { type: 'dialogue', speaker: 'Prof. Willow', lines: [
+      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-professor', lines: [
         'Ah, you must be the new arrival!',
         'Welcome to the Aurum Region, young Trainer!',
         'Your mother told me you\'d be coming.',
@@ -174,7 +174,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
     actions: [
       { type: 'showEmote', targetId: 'kael', emote: 'exclamation' },
       { type: 'wait', ms: 400 },
-      { type: 'dialogue', speaker: 'Kael', lines: [
+      { type: 'dialogue', speaker: 'Kael', portraitKey: 'rival', lines: [
         'Well, well! So YOU\'re the one the Professor chose?',
         'I already picked my partner. Obviously the best one.',
         'Let\'s battle right now — I\'ll show you the difference between us!',
@@ -200,7 +200,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
         '"Aether extraction rate: 340% above baseline."',
         '"Subject tolerance declining. Recommend increased dosage."',
       ]},
-      { type: 'dialogue', speaker: 'Marina', lines: [
+      { type: 'dialogue', speaker: 'Marina', portraitKey: 'npc-marina', lines: [
         'What IS this...?',
         'Someone\'s been experimenting on Pokémon with concentrated Aether energy!',
         'We need to find out who\'s behind this. I\'ll analyze this data.',
@@ -219,7 +219,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
         'The Professor is coming with us!',
         'Director\'s orders — no exceptions!',
       ]},
-      { type: 'dialogue', speaker: 'Prof. Willow', lines: [
+      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-professor', lines: [
         'No! You can\'t—!',
         '...Take my research chip! Don\'t let them have it!',
       ]},
@@ -281,7 +281,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
       { type: 'dialogue', speaker: 'Narrator', lines: [
         'You find Professor Willow in a containment cell, weakened but alive.',
       ]},
-      { type: 'dialogue', speaker: 'Prof. Willow', lines: [
+      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-professor', lines: [
         'You came...! I knew you would.',
         'Listen carefully — while I was captive, I mapped their ley-line network.',
         'This data can shut down the Aether conduit at the League.',
@@ -304,7 +304,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
         'A familiar figure stands in the light.',
       ]},
       { type: 'wait', ms: 500 },
-      { type: 'dialogue', speaker: 'Aldric', lines: [
+      { type: 'dialogue', speaker: 'Aldric', portraitKey: 'npc-champion-aldric', lines: [
         'Surprised? You shouldn\'t be.',
         'Who better to reshape the world than the strongest Trainer in the region?',
         'The Synthesis Collective was merely a means to an end.',
