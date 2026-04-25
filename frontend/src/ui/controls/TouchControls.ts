@@ -39,7 +39,7 @@ export class TouchControls {
   private confirmPressed = false;
   private cancelPressed = false;
   private menuBtn!: Phaser.GameObjects.Container;
-  private readonly menuBtnSize = 36;
+  private readonly menuBtnSize = 48;
   private readonly btnSize = 72;
   private readonly padding = 16;
   private buttons: ButtonDef[] = [];

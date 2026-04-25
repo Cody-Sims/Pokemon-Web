@@ -89,7 +89,6 @@ export class OverworldScene extends Phaser.Scene {
   private npcOccupiedTiles = new Set<string>();
   private hudText?: Phaser.GameObjects.Text;
   private clockText?: Phaser.GameObjects.Text;
-  private saveBtn?: Phaser.GameObjects.Text;
   private interactPrompt?: Phaser.GameObjects.Text;
 
   constructor() {
@@ -257,6 +256,9 @@ export class OverworldScene extends Phaser.Scene {
       const boundsY = (mapPixelH - boundsH) / 2;
       this.cameras.main.setBounds(boundsX, boundsY, boundsW, boundsH);
       this.cameras.main.startFollow(this.player, true);
+      // Dead zone keeps the player centered but allows margin for HUD
+      this.cameras.main.setFollowOffset(0, 0);
+      this.cameras.main.setDeadzone(layout.w * 0.2, layout.h * 0.2);
     }
 
     // Weather
@@ -331,27 +333,10 @@ export class OverworldScene extends Phaser.Scene {
       padding: { x: 6, y: 3 },
     }).setScrollFactor(0).setDepth(100);
 
-    // Quick-save floating button (mobile only, top-right below menu button)
-    if (TouchControls.isTouchDevice()) {
-      this.saveBtn = this.add.text(this.cameras.main.width - 20, 100, '💾', {
-        fontSize: mobileFontSize(22),
-      }).setOrigin(1, 0).setScrollFactor(0).setDepth(100).setAlpha(0.5)
-        .setInteractive({ useHandCursor: true })
-        .setPadding(8, 8, 8, 8);
-      this.saveBtn.on('pointerdown', () => {
-        import('@managers/SaveManager').then(({ SaveManager }) => {
-          SaveManager.getInstance().save();
-          this.saveBtn?.setAlpha(1);
-          this.time.delayedCall(600, () => this.saveBtn?.setAlpha(0.5));
-        });
-      });
-    }
-
     // Re-layout HUD elements on resize / orientation change
     layoutOn(this, () => {
       const w = this.cameras.main.width;
       this.hudText?.setX(w / 2);
-      this.saveBtn?.setX(w - 20);
       this.clockText?.setPosition(8, 8);
     });
 

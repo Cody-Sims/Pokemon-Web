@@ -8,6 +8,11 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **Fixed aspect ratio scaling**: Replaced dynamic `computeGameWidth/Height` with fixed 720x480 (3:2) internal resolution. Phaser's FIT mode now handles all scaling automatically — portrait fills width, landscape fills height, aspect ratio always preserved
+- **Removed save button**: Removed redundant quick-save floating button from overworld; save is accessible via the menu
+- **Menu button size**: Increased from 36px to 48px for better tap targets on mobile
+- **Camera dead zone**: Added 20% dead zone to camera follow so the player stays centered and doesn't get hidden behind HUD elements at map edges
+- **Simplified resize handler**: Removed complex dynamic resize logic; FIT mode with fixed resolution handles all viewport changes including rotation automatically
 - **Portrait mode width**: `computeGameWidth()` now adapts to actual viewport orientation — in portrait, game fills screen width with proportional height instead of forcing landscape ratio that leaves huge top/bottom bars
 - **Rotation not adjusting**: Orientation change handler now fires at 100ms, 300ms, and 600ms intervals to catch viewport settling, and recomputes both width and height dynamically
 - **Mobile name input**: Added hidden DOM `<input>` element in IntroScene and NicknameScene that focuses on tap to trigger the mobile soft keyboard; input value syncs to the game's name field in real-time

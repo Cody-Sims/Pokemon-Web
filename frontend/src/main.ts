@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import { gameConfig } from '@config/game-config';
 import { resetSafeAreaCache } from '@utils/safe-area';
 import { syncAccessibilitySettings } from '@utils/accessibility';
-import { computeGameWidth, GAME_HEIGHT } from '@utils/constants';
 import { AudioManager } from '@managers/AudioManager';
 
 const game = new Phaser.Game(gameConfig);
@@ -109,32 +108,16 @@ window.addEventListener('orientationchange', () => {
   setTimeout(collapseIOSSafariChrome, 500);
 });
 
-// ── Dynamic game resize — fill the viewport after orientation or resize changes ──
-let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+// ── Viewport resize — just refresh Phaser's scale manager ──
+// With a fixed game resolution and FIT mode, Phaser handles all scaling.
+// We just need to tell it to re-measure the parent on resize/orientation.
 function handleViewportResize(): void {
-  if (resizeTimer) clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    const newWidth = computeGameWidth();
-    // Recompute height for phone vs tablet/desktop
-    const shortSide = Math.min(window.innerWidth, window.innerHeight);
-    const newHeight = shortSide <= 500 ? 420 : 600;
-    const current = game.scale.gameSize;
-    if (current.width !== newWidth || current.height !== newHeight) {
-      game.scale.resize(newWidth, newHeight);
-    }
-    game.scale.refresh();
-  }, 50);
+  game.scale.refresh();
 }
-// Also resize immediately once the game is ready (in case it booted in portrait)
-game.events.once('ready', () => {
-  handleViewportResize();
-});
 window.addEventListener('resize', handleViewportResize);
 window.addEventListener('orientationchange', () => {
-  // Fire multiple times as viewport settles during rotation animation
   setTimeout(handleViewportResize, 100);
-  setTimeout(handleViewportResize, 300);
-  setTimeout(handleViewportResize, 600);
+  setTimeout(handleViewportResize, 400);
 });
 
 // ── iOS "Add to Home Screen" install prompt ──
