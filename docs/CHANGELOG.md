@@ -8,6 +8,8 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **Dialogue text not inside box**: Replaced broken slide animation (y-offset tweens on NinePatchPanel Graphics objects caused text to render above the dialog box) with a clean fade-in/fade-out animation that keeps all elements at their correct positions
+- **Purple void background**: Set camera background to pure black (`0x000000`) for all maps (was `0x1a1a1a` for interiors) and changed desktop HTML background from `#0f0f1a` to `#000000` to eliminate any visible purple/navy around the game viewport
 - **Battle scene layout**: Converted all hard-coded battle positions (sprites, platforms, info panels, animations) from absolute pixel values to viewport-relative proportions using `ui()`. Enemy at 65% x / 30% y, player at 25% x / 65% y, trainer sprite at 78% x. Info panels, HP bars, and slide-in animations all scale correctly at any resolution
 - **Title screen tap input broken**: Switched Phaser scale mode from `ENVELOP` to `FIT` — ENVELOP causes touch coordinate misalignment where taps don't register on the correct elements (menus unresponsive on mobile)
 - **Game tiny on landscape mobile**: `computeGameWidth()` now always uses landscape orientation (larger dimension as width) so the game doesn't boot with a portrait aspect ratio and appear as a tiny centered square

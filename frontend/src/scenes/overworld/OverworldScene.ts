@@ -240,8 +240,8 @@ export class OverworldScene extends Phaser.Scene {
     const mapPixelH = mapH * TILE_SIZE;
     const layout = ui(this);
 
-    // Dark background for any void area outside the map bounds
-    this.cameras.main.setBackgroundColor(this.mapDef.isInterior ? 0x1a1a1a : 0x000000);
+    // Black background for any void area outside the map bounds
+    this.cameras.main.setBackgroundColor(0x000000);
 
     if (this.mapDef.isInterior && mapPixelW <= layout.w && mapPixelH <= layout.h) {
       // Small interior — center the map in the viewport, don't follow player

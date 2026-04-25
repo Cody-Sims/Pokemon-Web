@@ -160,30 +160,27 @@ export class DialogueScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
-    // ── Slide-in animation ────────────────────────────────────
-    // Collect all graphics objects for a coordinated slide-up entrance.
-    const slideTargets: Phaser.GameObjects.GameObject[] = [
+    // ── Fade-in animation ──────────────────────────────────────
+    const fadeTargets: Phaser.GameObjects.GameObject[] = [
       this.panel.getGraphics(),
       this.dialogueText,
       this.advanceIndicator,
     ];
-    if (this.speakerPanel) slideTargets.push(this.speakerPanel.getGraphics());
-    if (this.speakerText) slideTargets.push(this.speakerText);
-    if (this.portraitBg) slideTargets.push(this.portraitBg.getGraphics());
-    if (this.portrait) slideTargets.push(this.portrait);
+    if (this.speakerPanel) fadeTargets.push(this.speakerPanel.getGraphics());
+    if (this.speakerText) fadeTargets.push(this.speakerText);
+    if (this.portraitBg) fadeTargets.push(this.portraitBg.getGraphics());
+    if (this.portrait) fadeTargets.push(this.portrait);
 
-    // Offset everything downward, then tween up
-    const slideDistance = boxH + 40;
-    for (const obj of slideTargets) {
-      (obj as unknown as { y: number }).y += slideDistance;
+    // Start invisible, fade in
+    for (const obj of fadeTargets) {
+      (obj as unknown as { alpha: number }).alpha = 0;
     }
-    // Play a subtle open sound
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
     this.tweens.add({
-      targets: slideTargets,
-      y: `-=${slideDistance}`,
-      duration: 200,
-      ease: 'Back.easeOut',
+      targets: fadeTargets,
+      alpha: 1,
+      duration: 180,
+      ease: 'Sine.easeOut',
     });
 
     // ── Re-layout on resize / orientation change ──────────────
@@ -392,16 +389,16 @@ export class DialogueScene extends Phaser.Scene {
     this.indicatorTween?.destroy();
     this.cleanupChoices();
 
-    // Slide-out animation before stopping the scene
-    const slideTargets: Phaser.GameObjects.GameObject[] = [
+    // Fade-out animation before stopping the scene
+    const fadeTargets: Phaser.GameObjects.GameObject[] = [
       this.panel.getGraphics(),
       this.dialogueText,
       this.advanceIndicator,
     ];
-    if (this.speakerPanel) slideTargets.push(this.speakerPanel.getGraphics());
-    if (this.speakerText) slideTargets.push(this.speakerText);
-    if (this.portraitBg) slideTargets.push(this.portraitBg.getGraphics());
-    if (this.portrait) slideTargets.push(this.portrait);
+    if (this.speakerPanel) fadeTargets.push(this.speakerPanel.getGraphics());
+    if (this.speakerText) fadeTargets.push(this.speakerText);
+    if (this.portraitBg) fadeTargets.push(this.portraitBg.getGraphics());
+    if (this.portrait) fadeTargets.push(this.portrait);
 
     // Disable input during exit animation
     this.input.keyboard?.removeAllListeners();
@@ -409,10 +406,10 @@ export class DialogueScene extends Phaser.Scene {
 
     AudioManager.getInstance().playSFX(SFX.CANCEL);
     this.tweens.add({
-      targets: slideTargets,
-      y: '+=140',
-      duration: 150,
-      ease: 'Back.easeIn',
+      targets: fadeTargets,
+      alpha: 0,
+      duration: 120,
+      ease: 'Sine.easeIn',
       onComplete: () => {
         const hintsEl = document.getElementById('desktop-hints');
         if (hintsEl) hintsEl.style.display = '';
