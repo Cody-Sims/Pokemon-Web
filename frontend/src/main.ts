@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { gameConfig } from '@config/game-config';
 import { resetSafeAreaCache } from '@utils/safe-area';
 import { syncAccessibilitySettings } from '@utils/accessibility';
-import { computeGameWidth, GAME_HEIGHT } from '@utils/constants';
+import { computeGameDimensions } from '@utils/constants';
 import { AudioManager } from '@managers/AudioManager';
 
 const game = new Phaser.Game(gameConfig);
@@ -109,15 +109,15 @@ window.addEventListener('orientationchange', () => {
   setTimeout(collapseIOSSafariChrome, 500);
 });
 
-// ── Dynamic game resize — fill the viewport after orientation or resize changes ──
+// ── Dynamic game resize — adapt to viewport on resize/orientation change ──
 let resizeTimer: ReturnType<typeof setTimeout> | null = null;
 function handleViewportResize(): void {
   if (resizeTimer) clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    const newWidth = computeGameWidth();
+    const { width, height } = computeGameDimensions();
     const current = game.scale.gameSize;
-    if (current.width !== newWidth || current.height !== GAME_HEIGHT) {
-      game.scale.resize(newWidth, GAME_HEIGHT);
+    if (current.width !== width || current.height !== height) {
+      game.scale.resize(width, height);
     }
     game.scale.refresh();
   }, 150);

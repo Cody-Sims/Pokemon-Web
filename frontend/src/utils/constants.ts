@@ -19,18 +19,44 @@ export const FISHING_ENCOUNTER_RATE = 0.5; // 50% chance on each cast
 // EXP
 export const TRAINER_EXP_MULTIPLIER = 1.5;
 
-// Game dimensions — height is fixed; width adapts to the device aspect ratio
-// so widescreen displays fill the screen instead of showing black bars.
-export const GAME_HEIGHT = 600;
+// Game dimensions — both width and height adapt to the device viewport.
+// In landscape (desktop/tablet/phone), height is fixed at 600 and width
+// scales to match the aspect ratio. In portrait, width is fixed at 400
+// and height scales. This ensures zero black bars on any device/orientation.
 
-/** Compute a game width that matches the device aspect ratio (clamped 4:3 – 21:9). */
-export function computeGameWidth(): number {
-  if (typeof window === 'undefined') return 800; // SSR / test fallback
-  const aspect = window.innerWidth / window.innerHeight;
-  // Clamp between 4:3 (1.333) and 21:9 (2.333)
+/** Base height for landscape orientation. */
+const LANDSCAPE_HEIGHT = 600;
+/** Base width for portrait orientation. */
+const PORTRAIT_WIDTH = 400;
+
+/** Compute game dimensions that match the current viewport. */
+export function computeGameDimensions(): { width: number; height: number } {
+  if (typeof window === 'undefined') return { width: 800, height: 600 };
+
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const isPortrait = vh > vw;
+
+  if (isPortrait) {
+    // Portrait: lock width, compute height from aspect ratio
+    const aspect = vh / vw; // > 1
+    const clamped = Math.min(aspect, 2.5); // cap at 2.5:1
+    const h = Math.round((PORTRAIT_WIDTH * clamped) / 2) * 2;
+    return { width: PORTRAIT_WIDTH, height: h };
+  }
+
+  // Landscape / desktop: lock height, compute width from aspect ratio
+  const aspect = vw / vh;
   const clamped = Math.max(4 / 3, Math.min(21 / 9, aspect));
-  // Round to nearest even number for pixel-art rendering
-  return Math.round((GAME_HEIGHT * clamped) / 2) * 2;
+  const w = Math.round((LANDSCAPE_HEIGHT * clamped) / 2) * 2;
+  return { width: w, height: LANDSCAPE_HEIGHT };
 }
 
-export const GAME_WIDTH = computeGameWidth();
+/** @deprecated Use computeGameDimensions() instead — kept for backward compat. */
+export function computeGameWidth(): number {
+  return computeGameDimensions().width;
+}
+
+const _dims = computeGameDimensions();
+export const GAME_WIDTH = _dims.width;
+export const GAME_HEIGHT = _dims.height;
