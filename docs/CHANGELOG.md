@@ -12,9 +12,14 @@ All notable changes to the Pokemon Web project.
 - **Elite Four + Champion sprites**: 5 unique type-themed character sprites — Nerida (Water/teal), Theron (Fighting/red), Lysandra (Psychic/purple), Ashborne (Fire/orange), Champion Aldric (mixed/gold-royal). Updated elite-four.ts spriteKeys and PreloadScene
 - **Dialogue portrait/avatar**: NPC dialogue boxes now show a 48x48 sprite portrait of the speaking NPC in a bordered frame on the left side of the dialog box; text wraps around the portrait; supported from NPC interaction, trainer battles, and cutscenes via new `portraitKey` field in `DialogueData`
 - **Dialogue slide animation**: Dialog box and all associated elements (speaker name, portrait, text) slide in from below on open and slide out downward on close using Back easing
+- **Dialog text shadow**: Added drop shadow to dialogue text for improved readability over any background
 
 ### Changed
 
+- **Desktop scaling**: Switched from `FIT` to `ENVELOP` scale mode so the game canvas fills the entire viewport with zero visible bars or background
+- **Desktop background**: Removed purple radial-gradient and canvas border/shadow styling; background is now solid dark `#0f0f1a` matching the game canvas
+- **Dialog text contrast**: Changed `textWhite` from dim `#e8e8f0` to pure `#ffffff`, increased dialog box opacity from 0.92 to 0.98, and added explicit white color and text shadow for maximum readability
+- **Text color brightness**: Updated `textGray` from `#a0a0b8` to brighter `#b0b0c8` for better overall UI legibility
 - **Dialogue depth ordering**: All dialogue UI elements now use a consistent depth base of 1000 (`DIALOGUE_DEPTH`), with speaker, portrait, text, and choices layered at +1/+2/+3/+4 increments to prevent z-fighting
 
 ### Fixed

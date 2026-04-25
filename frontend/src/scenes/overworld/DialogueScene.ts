@@ -94,7 +94,7 @@ export class DialogueScene extends Phaser.Scene {
     const boxY = layout.h - 80;
     this.panel = new NinePatchPanel(this, boxX, boxY, boxW, boxH, {
       fillColor: 0x0a0a18,
-      fillAlpha: 0.92,
+      fillAlpha: 0.98,
       borderColor: COLORS.borderLight,
       borderWidth: 2,
       cornerRadius: 8,
@@ -141,8 +141,10 @@ export class DialogueScene extends Phaser.Scene {
     const textX = 30 + portraitPad;
     this.dialogueText = this.add.text(textX, boxY - boxH / 2 + 10, '', {
       ...FONTS.body,
+      color: '#ffffff',
       fontSize: mobileFontSize(baseFontPx),
       wordWrap: { width: layout.w - 60 - portraitPad },
+      shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 2, fill: true },
     }).setDepth(DIALOGUE_DEPTH + 2);
 
     // ── Advance indicator ─────────────────────────────────────
@@ -188,7 +190,7 @@ export class DialogueScene extends Phaser.Scene {
       const rBoxY = l.h - 80;
       this.panel.destroy();
       this.panel = new NinePatchPanel(this, l.cx, rBoxY, l.w - 20, 100, {
-        fillColor: 0x0a0a18, fillAlpha: 0.92, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 8,
+        fillColor: 0x0a0a18, fillAlpha: 0.98, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 8,
       });
       this.panel.setDepth(DIALOGUE_DEPTH);
       this.dialogueText.setPosition(30 + portraitPad, rBoxY - 40);

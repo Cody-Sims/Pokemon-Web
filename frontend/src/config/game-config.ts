@@ -38,10 +38,10 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     activePointers: 3, // Multi-touch: joystick + action buttons simultaneously
   },
   scale: {
-    // FIT preserves aspect ratio on all devices. The game width is dynamically
-    // computed from the viewport aspect ratio (see computeGameWidth), so FIT
-    // fills the screen with minimal bars. On resize, main.ts recalculates width.
-    mode: Phaser.Scale.FIT,
+    // ENVELOP fills the viewport completely on all devices — no visible
+    // bars or background. The game width is dynamically computed from the
+    // viewport aspect ratio (see computeGameWidth) so cropping is minimal.
+    mode: Phaser.Scale.ENVELOP,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   physics: {

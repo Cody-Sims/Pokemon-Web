@@ -17,8 +17,8 @@ export const COLORS = {
   borderHighlight: 0xffcc00,
 
   // Text (hex strings for Phaser text)
-  textWhite: '#e8e8f0',
-  textGray: '#a0a0b8',
+  textWhite: '#ffffff',
+  textGray: '#b0b0c8',
   textDim: '#6a6a80',
   textHighlight: '#ffcc00',
   textDanger: '#ff5555',
