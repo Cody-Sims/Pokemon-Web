@@ -8,6 +8,11 @@ All notable changes to the Pokemon Web project.
 
 ### Added
 
+- **Tileset expansion**: Expanded tileset.png from 10x11 (110 frames) to 10x12 (120 frames), fixing tile overflow for IDs 110-114
+- **Field ability tile art**: Drew pixel art for CUT_TREE (110), CRACKED_ROCK (111), STRENGTH_BOULDER (112), LEDGE_LEFT (113), LEDGE_RIGHT (114) — previously rendered as blank frames
+- **Tile validation script**: `temp/scripts/tileset/validate_tiles.py` checks color count, lighting model, depth borders, and isolated pixels against quality rules
+- **Tile catalog generator**: `temp/scripts/tileset/tile_catalog.py` renders full tileset at 4x zoom with IDs and names for visual reference
+- **Tile & Sprite Asset Plan**: `docs/TileSpriteAssetPlan.md` documenting quality rules, biome palettes, sprite conventions, and sourcing strategy
 - **Surfing encounters**: Water tile encounters now trigger while surfing; added surf encounter tables for route-1, route-3, coral-harbor, and shattered-isles-shore with Tentacool, Horsea, Shellder, Gyarados, Lapras, Staryu, Starmie
 - **Seeded PRNG support**: `EncounterSystem.setRng()` allows injecting a seeded PRNG for deterministic replay/testing
 
