@@ -6,6 +6,14 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-25]
 
+### Fixed
+
+- **Purple void background**: Changed camera background from `0x0f0f1a` (purple-tinted navy) to `0x000000` (pure black) for exterior maps, and matched HTML body + Phaser config backgroundColor to `#000000` so void areas blend seamlessly
+- **Save/menu icon overlap**: Moved quick-save button from `y: 60` to `y: 100` to prevent it overlapping with the 36px menu button in the top-right corner
+- **Touch button release bug**: Fixed `handleUp` which reset ALL button visual states on any `touchend` event (including joystick lifts). Now tracks individual touch IDs per button and only resets the matching button on release
+- **Button alpha ignored highVis**: `handleUp` always reset alpha to 0.5, ignoring the `highVisControls` setting (0.85). Now uses stored `baseAlpha` from settings
+- **DOM A/B buttons ignore swapAB**: The HTML overlay A/B buttons hardcoded `A=confirm, B=cancel` regardless of the swap setting. Now respects `swapAB` preference
+
 ### Added
 
 - **Water and lava tile animation**: Water tiles cycle through 3 frames (base + 2 variants) every 30 ticks; lava tiles cycle through 3 frames every 30 ticks. Animation frames stored in tileset slots 115-118 with frame-swap logic in OverworldScene

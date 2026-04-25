@@ -33,7 +33,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   pixelArt: true,
-  backgroundColor: '#0f0f1a',
+  backgroundColor: '#000000',
   input: {
     activePointers: 3, // Multi-touch: joystick + action buttons simultaneously
   },

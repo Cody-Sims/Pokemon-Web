@@ -604,9 +604,15 @@ export class TouchControls {
   private setupDOMButtons(): void {
     const btnA = document.getElementById('btn-a');
     const btnB = document.getElementById('btn-b');
+    const swapped = this.readSetting('swapAB') === 'true';
 
     if (btnA) {
-      const aStart = () => { this.confirmPressed = true; btnA.classList.add('pressed'); };
+      const aAction = swapped ? 'cancel' : 'confirm';
+      const aStart = () => {
+        if (aAction === 'confirm') this.confirmPressed = true;
+        else this.cancelPressed = true;
+        btnA.classList.add('pressed');
+      };
       const aEnd = () => btnA.classList.remove('pressed');
       this.trackListener(btnA, 'touchstart', aStart, { passive: true });
       this.trackListener(btnA, 'touchend', aEnd, { passive: true });
@@ -614,7 +620,12 @@ export class TouchControls {
     }
 
     if (btnB) {
-      const bStart = () => { this.cancelPressed = true; btnB.classList.add('pressed'); };
+      const bAction = swapped ? 'confirm' : 'cancel';
+      const bStart = () => {
+        if (bAction === 'confirm') this.confirmPressed = true;
+        else this.cancelPressed = true;
+        btnB.classList.add('pressed');
+      };
       const bEnd = () => btnB.classList.remove('pressed');
       this.trackListener(btnB, 'touchstart', bStart, { passive: true });
       this.trackListener(btnB, 'touchend', bEnd, { passive: true });
