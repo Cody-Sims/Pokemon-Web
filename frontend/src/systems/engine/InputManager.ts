@@ -59,7 +59,7 @@ export class InputManager {
     const touchConfirm = this.touchControls?.consumeConfirm() ?? false;
     const touchCancel = this.touchControls?.consumeCancel() ?? false;
 
-    // ESC/cancel maps to 'cancel' in menus, 'menu' only when nothing is open
+    // ESC/cancel maps to 'cancel' in menus, 'menu' only from overworld
     const cancelActive = escPressed || touchCancel;
 
     return {
@@ -67,7 +67,8 @@ export class InputManager {
       confirm: Phaser.Input.Keyboard.JustDown(this.confirmKey) || Phaser.Input.Keyboard.JustDown(this.spaceKey) || touchConfirm,
       cancel: cancelActive,
       bicycle: Phaser.Input.Keyboard.JustDown(this.bicycleKey),
-      menu: cancelActive,
+      // AUDIT-051: menu only fires from raw ESC, not touch cancel, to avoid double-trigger
+      menu: escPressed,
       _escRaw: escPressed,
     };
   }

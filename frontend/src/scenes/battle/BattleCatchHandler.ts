@@ -225,4 +225,6 @@ function promptNickname(ctx: CatchContext, pokemon: PokemonInstance, speciesName
   scene.input.keyboard!.on('keydown-RIGHT', onRight);
   scene.input.keyboard!.on('keydown-ENTER', onConfirm);
   scene.input.keyboard!.on('keydown-SPACE', onConfirm);
+  // AUDIT-056: Clean up listeners if scene shuts down mid-prompt
+  scene.events.once('shutdown', cleanup);
 }

@@ -152,6 +152,11 @@ function showMoveReplaceMenu(ctx: VictoryContext, newMoveId: string, newMoveName
   };
   scene.input.keyboard!.on('keydown-ENTER', confirmHandler);
   scene.input.keyboard!.on('keydown-SPACE', confirmHandler);
+  // AUDIT-037: Clean up listeners if scene shuts down mid-menu
+  scene.events.once('shutdown', () => {
+    scene.input.keyboard!.off('keydown-ENTER', confirmHandler);
+    scene.input.keyboard!.off('keydown-SPACE', confirmHandler);
+  });
 }
 
 function updateReplaceCursor(ctx: VictoryContext, len: number): void {

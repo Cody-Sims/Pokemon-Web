@@ -99,12 +99,12 @@ export class SynthesisHandler {
     const state = this.synthesizedPokemon.get(pokemon);
     if (!state) return;
 
-    // Subtract stat boosts
-    if (state.boosts.attack) pokemon.stats.attack -= state.boosts.attack;
-    if (state.boosts.defense) pokemon.stats.defense -= state.boosts.defense;
-    if (state.boosts.spAttack) pokemon.stats.spAttack -= state.boosts.spAttack;
-    if (state.boosts.spDefense) pokemon.stats.spDefense -= state.boosts.spDefense;
-    if (state.boosts.speed) pokemon.stats.speed -= state.boosts.speed;
+    // AUDIT-055: Floor stats at 1 to prevent negative values
+    if (state.boosts.attack) pokemon.stats.attack = Math.max(1, pokemon.stats.attack - state.boosts.attack);
+    if (state.boosts.defense) pokemon.stats.defense = Math.max(1, pokemon.stats.defense - state.boosts.defense);
+    if (state.boosts.spAttack) pokemon.stats.spAttack = Math.max(1, pokemon.stats.spAttack - state.boosts.spAttack);
+    if (state.boosts.spDefense) pokemon.stats.spDefense = Math.max(1, pokemon.stats.spDefense - state.boosts.spDefense);
+    if (state.boosts.speed) pokemon.stats.speed = Math.max(1, pokemon.stats.speed - state.boosts.speed);
 
     // Restore ability
     if (state.originalAbility !== undefined) {

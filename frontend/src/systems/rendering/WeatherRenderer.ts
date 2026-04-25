@@ -37,6 +37,15 @@ export class WeatherRenderer {
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
+    // AUDIT-053: Re-apply weather on viewport resize to cover new dimensions
+    scene.scale.on('resize', () => {
+      if (this.activeWeather !== 'none') {
+        const w = this.activeWeather;
+        this.cleanup();
+        this.activeWeather = 'none';
+        this.setWeather(w);
+      }
+    });
   }
 
   /** Set the active weather. Transitions smoothly. */

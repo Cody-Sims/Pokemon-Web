@@ -2,7 +2,7 @@ import { PokemonInstance, MoveData } from '@data/interfaces';
 import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { clamp, randomInt } from '@utils/math-helpers';
-import { StatStages, StatusCondition, VolatileStatus, MoveEffect, PokemonType } from '@utils/type-helpers';
+import { Stats, StatStages, StatusCondition, VolatileStatus, MoveEffect, PokemonType } from '@utils/type-helpers';
 
 // ── Result types ────────────────────────────────────────────────
 
@@ -99,7 +99,7 @@ export class StatusEffectHandler {
 
   /** Return the effective stat value (base × stage multiplier × status modifiers). */
   getEffectiveStat(pokemon: PokemonInstance, stat: keyof StatStages): number {
-    const base = pokemon.stats[stat];
+    const base = (stat === 'accuracy' || stat === 'evasion') ? 100 : pokemon.stats[stat as keyof Stats];
     const stage = this.getState(pokemon).statStages[stat];
     let value = Math.floor(base * STAGE_MULTIPLIERS[stage]);
 
@@ -175,7 +175,12 @@ export class StatusEffectHandler {
         messages.push(`${name} is confused!`);
         // 50% chance to hit self
         if (Math.random() < 0.5) {
-          const selfDamage = Math.max(1, Math.floor(pokemon.stats.attack * 0.1));
+          // AUDIT-046: Use proper confusion damage formula (level-based like the games)
+          const confusionPower = 40;
+          const level = pokemon.level;
+          const A = pokemon.stats.attack;
+          const D = pokemon.stats.defense;
+          const selfDamage = Math.max(1, Math.floor(((2 * level / 5 + 2) * confusionPower * A / Math.max(1, D)) / 50 + 2));
           pokemon.currentHp = Math.max(0, pokemon.currentHp - selfDamage);
           messages.push(`It hurt itself in its confusion! ${selfDamage} dmg.`);
           return { canAct: false, messages };

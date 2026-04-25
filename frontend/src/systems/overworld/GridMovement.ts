@@ -51,6 +51,15 @@ export class GridMovement {
     this.ledgeCallback = callback;
   }
 
+  /** Set map bounds for boundary validation. */
+  private mapWidth = Infinity;
+  private mapHeight = Infinity;
+
+  setMapBounds(width: number, height: number): void {
+    this.mapWidth = width;
+    this.mapHeight = height;
+  }
+
   /** Attempt to move in a direction. Returns true if movement started. */
   move(direction: Direction): boolean {
     if (this.isMoving) return false;
@@ -65,6 +74,11 @@ export class GridMovement {
       case 'down':  targetY++; break;
       case 'left':  targetX--; break;
       case 'right': targetX++; break;
+    }
+
+    // AUDIT-052: Check map boundary before collision callback
+    if (targetX < 0 || targetY < 0 || targetX >= this.mapWidth || targetY >= this.mapHeight) {
+      return false;
     }
 
     // Check collision

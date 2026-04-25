@@ -1,7 +1,7 @@
 # Bug Report — Pokemon Web (Consolidated)
 
-> **Last updated:** 2026-04-19
-> **Status:** Full codebase audit. 108 of 110 historical bugs resolved. 55 new bugs identified, 41 fixed.
+> **Last updated:** 2026-04-25
+> **Status:** Full codebase audit. 108 of 110 historical bugs resolved. 55 new bugs identified, 50 fixed.
 
 ---
 
@@ -11,9 +11,9 @@
 |----------|------------|-------|
 | Critical | 0          | 5     |
 | High     | 0          | 14    |
-| Medium   | 7          | 19    |
-| Low      | 7          | 5     |
-| **Total**| **14**     | **43**|
+| Medium   | 3          | 23    |
+| Low      | 2          | 8     |
+| **Total**| **5**      | **50**|
 
 *Includes 2 previously known open bugs (BUG-039, NEW-006).*
 
@@ -133,12 +133,12 @@
 
 ### ~~AUDIT-032: Moves with 0 PP still execute~~ FIXED
 
-### AUDIT-033: End-of-turn abilities never trigger (Speed Boost, Poison Heal in ability system)
+### ~~AUDIT-033: End-of-turn abilities never trigger (Speed Boost, Poison Heal in ability system)~~ FIXED (via BattleEndOfTurn.ts already calling AbilityHandler.onEndOfTurn)
 
 - **File:** `frontend/src/battle/core/BattleManager.ts`
 - **Description:** `AbilityHandler.onEndOfTurn()` is never called, so abilities like Speed Boost never activate through the ability system.
 
-### AUDIT-034: Struggle may silently fail
+### ~~AUDIT-034: Struggle may silently fail~~ FIXED (struggle exists in moveData and AIController already uses it)
 
 - **File:** `frontend/src/battle/core/AIController.ts` (line ~12)
 - **Description:** `'struggle'` may not exist in `moveData`. If it doesn't, the AI picks a null move causing a silent no-op with no recoil.
@@ -150,7 +150,7 @@
 
 ### ~~AUDIT-036: fleeAttempts not reset between battles~~ FIXED
 
-### AUDIT-037: Keyboard listeners leak in move replace menu
+### ~~AUDIT-037: Keyboard listeners leak in move replace menu~~ FIXED
 
 - **File:** `frontend/src/scenes/battle/BattleVictorySequence.ts` (line ~140)
 - **Description:** Move replacement keyboard listeners are added but not tied to scene lifecycle and not cleaned up on scene shutdown.
@@ -184,12 +184,12 @@
 
 ## Low Bugs
 
-### AUDIT-046: Confusion self-damage uses flat 10% instead of proper formula
+### ~~AUDIT-046: Confusion self-damage uses flat 10% instead of proper formula~~ FIXED
 
 - **File:** `frontend/src/battle/effects/StatusEffectHandler.ts`
 - **Description:** Confusion self-hit uses 10% of raw attack as damage. The games use a proper damage formula with level and stats.
 
-### AUDIT-047: Level-up doesn't increase currentHp
+### ~~AUDIT-047: Level-up doesn't increase currentHp~~ FIXED
 
 - **File:** `frontend/src/battle/execution/MoveExecutor.ts`
 - **Description:** When a Pokemon levels up mid-battle (from EXP), `currentHp` is not increased by the HP stat gain. The Pokemon appears to lose HP on level-up.
@@ -209,32 +209,32 @@
 - **File:** `frontend/src/ui/controls/MenuController.ts`
 - **Description:** `bindInteractive()` pointer listeners are not cleaned up in `destroy()`.
 
-### AUDIT-051: Cancel and Menu inputs return identical value
+### ~~AUDIT-051: Cancel and Menu inputs return identical value~~ FIXED
 
 - **File:** `frontend/src/systems/engine/InputManager.ts`
 - **Description:** Both `cancel` and `menu` map to the same key/value. Pressing ESC triggers both cancel and menu actions simultaneously.
 
-### AUDIT-052: GridMovement has no map boundary validation
+### ~~AUDIT-052: GridMovement has no map boundary validation~~ FIXED
 
 - **File:** `frontend/src/systems/overworld/GridMovement.ts`
 - **Description:** No bounds check prevents walking off the map edge if the collision callback doesn't happen to block it.
 
-### AUDIT-053: WeatherRenderer has no resize handler
+### ~~AUDIT-053: WeatherRenderer has no resize handler~~ FIXED
 
 - **File:** `frontend/src/systems/rendering/WeatherRenderer.ts`
 - **Description:** Weather overlay doesn't cover the full viewport after a browser resize.
 
-### AUDIT-054: CryGenerator capped at dex 151
+### ~~AUDIT-054: CryGenerator capped at dex 151~~ FIXED
 
 - **File:** `frontend/src/systems/audio/CryGenerator.ts`
 - **Description:** Dex number is clamped to 151. Any Pokemon beyond Gen I will produce a wrong or identical cry.
 
-### AUDIT-055: Stat revert can push stats below 0
+### ~~AUDIT-055: Stat revert can push stats below 0~~ FIXED
 
 - **File:** `frontend/src/battle/effects/SynthesisHandler.ts` (line ~86)
 - **Description:** If stats changed between activate and revert (e.g. a stat boost wore off or was cleared), the revert subtraction can push stats negative.
 
-### AUDIT-056: Nickname prompt keyboard listeners not tied to scene lifecycle
+### ~~AUDIT-056: Nickname prompt keyboard listeners not tied to scene lifecycle~~ FIXED
 
 - **File:** `frontend/src/scenes/battle/BattleCatchHandler.ts` (line ~150)
 - **Description:** Keyboard listeners added during pokemon nickname prompt are not cleaned up if the scene shuts down mid-prompt.

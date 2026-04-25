@@ -4,6 +4,22 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-25]
+
+### Fixed
+
+- **AUDIT-037**: Keyboard listeners leak in move replace menu — added scene shutdown cleanup
+- **AUDIT-046**: Confusion self-damage uses flat 10% attack — changed to proper level-based damage formula
+- **AUDIT-047**: Level-up doesn't increase currentHp — `recalculateStats` now adds the HP stat gain to currentHp
+- **AUDIT-051**: Cancel and Menu inputs return identical value — `menu` now only fires on raw ESC
+- **AUDIT-052**: GridMovement has no map boundary validation — added `setMapBounds` and boundary check before collision
+- **AUDIT-053**: WeatherRenderer has no resize handler — re-applies weather on viewport resize
+- **AUDIT-054**: CryGenerator capped at dex 151 — raised cap to 1010
+- **AUDIT-055**: Stat revert can push stats below 0 — SynthesisHandler now floors stats at 1
+- **AUDIT-056**: Nickname prompt keyboard listeners not tied to scene lifecycle — added shutdown cleanup
+
+---
+
 ## [2026-04-19]
 
 ### Fixed

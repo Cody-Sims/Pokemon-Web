@@ -112,8 +112,17 @@ export class ExperienceCalculator {
     const iv = pokemon.ivs;
     const ev = pokemon.evs;
 
+    // AUDIT-047: Increase currentHp by the HP stat gain on level-up
+    const oldMaxHp = pokemon.stats.hp;
+
     // HP formula (nature does not affect HP)
     pokemon.stats.hp = Math.floor(((2 * base.hp + iv.hp + Math.floor(ev.hp / 4)) * level) / 100) + level + 10;
+
+    // Increase currentHp by the amount the max HP grew
+    const hpGain = pokemon.stats.hp - oldMaxHp;
+    if (hpGain > 0) {
+      pokemon.currentHp += hpGain;
+    }
 
     // Other stats (with nature modifier)
     const statKeys = ['attack', 'defense', 'spAttack', 'spDefense', 'speed'] as const;

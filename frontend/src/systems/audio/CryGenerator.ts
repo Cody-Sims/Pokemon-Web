@@ -48,7 +48,8 @@ export class CryGenerator {
       }
     }
 
-    const dex = Math.max(1, Math.min(151, dexNumber));
+    // AUDIT-054: Support dex numbers beyond Gen I (cap at 1010 for future expansion)
+    const dex = Math.max(1, Math.min(1010, dexNumber));
 
     // ── Deterministic parameters seeded from dex number ──
     const baseFreq = 800 - (dex * 3) + ((dex * 7) % 200);
