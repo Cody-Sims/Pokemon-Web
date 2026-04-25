@@ -120,12 +120,16 @@ function handleViewportResize(): void {
       game.scale.resize(newWidth, GAME_HEIGHT);
     }
     game.scale.refresh();
-  }, 150);
+  }, 50); // short delay so viewport settles
 }
+// Also resize immediately once the game is ready (in case it booted in portrait)
+game.events.once('ready', () => {
+  handleViewportResize();
+});
 window.addEventListener('resize', handleViewportResize);
 window.addEventListener('orientationchange', () => {
   // Delay a bit longer for orientation — the viewport needs time to settle
-  setTimeout(handleViewportResize, 400);
+  setTimeout(handleViewportResize, 300);
 });
 
 // ── iOS "Add to Home Screen" install prompt ──
