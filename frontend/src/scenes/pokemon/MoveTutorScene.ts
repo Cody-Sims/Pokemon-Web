@@ -8,6 +8,7 @@ import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
+import { ScrollContainer } from '@ui/widgets/ScrollContainer';
 import { COLORS, FONTS, TYPE_COLORS, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { PokemonInstance, MoveInstance, MoveData } from '@data/interfaces';
@@ -53,6 +54,7 @@ export class MoveTutorScene extends Phaser.Scene {
   private replaceGroup!: Phaser.GameObjects.Group;
   private headerText?: Phaser.GameObjects.Text;
   private costText?: Phaser.GameObjects.Text;
+  private moveScrollContainer?: ScrollContainer;
 
   constructor() {
     super({ key: 'MoveTutorScene' });
@@ -129,6 +131,21 @@ export class MoveTutorScene extends Phaser.Scene {
     this.moveGroup.add(this.moveListPanel.getGraphics());
 
     this.renderMoveItems();
+
+    // Touch drag-to-scroll for the move list area
+    const itemH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 40) : 40;
+    this.moveScrollContainer?.destroy();
+    this.moveScrollContainer = new ScrollContainer(this, {
+      x: 20, y: 100, width: layout.w - 40, height: this.moveMaxVisible * itemH,
+      contentHeight: this.tutor.moves.length * itemH,
+      onScroll: (offset) => {
+        const newOffset = Math.round(offset / itemH);
+        if (newOffset !== this.moveScrollOffset) {
+          this.moveScrollOffset = Math.max(0, Math.min(newOffset, this.tutor.moves.length - this.moveMaxVisible));
+          this.renderMoveItems();
+        }
+      },
+    });
 
     this.moveController = new MenuController(this, {
       columns: 1,
@@ -211,12 +228,15 @@ export class MoveTutorScene extends Phaser.Scene {
   }
 
   private ensureMoveVisible(idx: number): void {
+    const itemH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 40) : 40;
     if (idx < this.moveScrollOffset) {
       this.moveScrollOffset = idx;
       this.renderMoveItems();
+      this.moveScrollContainer?.scrollTo(this.moveScrollOffset * itemH);
     } else if (idx >= this.moveScrollOffset + this.moveMaxVisible) {
       this.moveScrollOffset = idx - this.moveMaxVisible + 1;
       this.renderMoveItems();
+      this.moveScrollContainer?.scrollTo(this.moveScrollOffset * itemH);
     }
   }
 

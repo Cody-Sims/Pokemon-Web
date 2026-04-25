@@ -39,9 +39,9 @@ export interface MoveEffect {
     | 'ohko' | 'fixed-damage' | 'level-damage' | 'self-destruct' | 'leech-seed' | 'trap'
     | 'weather' | 'protect' | 'two-turn' | 'multi-turn-lock';
   target: 'self' | 'enemy';
-  stat?: keyof Stats;
+  stat?: keyof Stats | 'accuracy' | 'evasion';
   stages?: number;
-  statChanges?: { stat: keyof Stats; stages: number }[];
+  statChanges?: { stat: keyof Stats | 'accuracy' | 'evasion'; stages: number }[];
   status?: StatusCondition | VolatileStatus;
   chance?: number; // 0-100 probability
   amount?: number; // Fixed damage, heal %, or recoil %

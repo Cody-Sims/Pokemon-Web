@@ -32,7 +32,7 @@ export interface ItemData {
   description: string;
   buyPrice?: number;
   effect: {
-    type: 'heal-hp' | 'heal-status' | 'capture' | 'boost-stat' | 'key' | 'teach-move' | 'repel' | 'held-passive' | 'evolution-stone';
+    type: 'heal-hp' | 'heal-status' | 'capture' | 'boost-stat' | 'key' | 'teach-move' | 'repel' | 'held-passive' | 'evolution-stone' | 'full-restore' | 'level-up';
     amount?: number;
     status?: string;
     catchRateMultiplier?: number;

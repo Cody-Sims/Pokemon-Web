@@ -8,6 +8,11 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **TypeScript errors**: Resolved all 14 remaining compilation errors — added `'full-restore' | 'level-up'` to `ItemData.effect.type` union, expanded `MoveEffect.stat` to accept `'accuracy' | 'evasion'`, fixed `StatusEffectHandler.getEffectiveStat` to handle accuracy/evasion with base value of 100
+
+### Changed
+
+- **MoveTutorScene touch scrolling**: Added ScrollContainer for touch-drag scrolling of the move list, with keyboard navigation sync
 - **AUDIT-037**: Keyboard listeners leak in move replace menu — added scene shutdown cleanup
 - **AUDIT-046**: Confusion self-damage uses flat 10% attack — changed to proper level-based damage formula
 - **AUDIT-047**: Level-up doesn't increase currentHp — `recalculateStats` now adds the HP stat gain to currentHp
