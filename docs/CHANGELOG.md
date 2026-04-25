@@ -23,6 +23,12 @@ All notable changes to the Pokemon Web project.
 - **Tile validation script**: `temp/scripts/tileset/validate_tiles.py` checks color count, lighting model, depth borders, and isolated pixels against quality rules
 - **Tile catalog generator**: `temp/scripts/tileset/tile_catalog.py` renders full tileset at 4x zoom with IDs and names for visual reference
 - **Tile & Sprite Asset Plan**: `docs/TileSpriteAssetPlan.md` documenting quality rules, biome palettes, sprite conventions, and sourcing strategy
+- **Female player sprite**: Proper dedicated atlas at `sprites/player/player-walk-female.{png,json}` replacing the npc-lass placeholder; distinct brown hair, pink-red top, matching 64x51 / 12-frame atlas format
+
+### Fixed
+
+- **11 worst biome tiles regenerated**: Tile 92 (MIST) fixed from 1-color FAIL to proper translucent fog; tiles 81, 85, 93, 99, 100, 102, 103, 104, 105, 109 redrawn with proper depth borders, palettes, and detail
+- **Female player no longer reuses npc-lass**: PreloadScene now loads dedicated female player atlas from `sprites/player/` directory
 - **Surfing encounters**: Water tile encounters now trigger while surfing; added surf encounter tables for route-1, route-3, coral-harbor, and shattered-isles-shore with Tentacool, Horsea, Shellder, Gyarados, Lapras, Staryu, Starmie
 - **Seeded PRNG support**: `EncounterSystem.setRng()` allows injecting a seeded PRNG for deterministic replay/testing
 
