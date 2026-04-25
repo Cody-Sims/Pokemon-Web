@@ -27,6 +27,7 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **33 core tile quality failures eliminated**: Added texture detail (highlights + shadows) to tiles 1-62 that had only 3 colors; fixed reversed lighting on tiles 7, 29, 34, 36, 40, 42, 60-62; fully redrawn tile 36 (RUG) and tile 53 (ARENA_MARK). Tileset now has 0 FAIL across all 120 tiles (was 33 FAIL)
 - **11 worst biome tiles regenerated**: Tile 92 (MIST) fixed from 1-color FAIL to proper translucent fog; tiles 81, 85, 93, 99, 100, 102, 103, 104, 105, 109 redrawn with proper depth borders, palettes, and detail
 - **Female player no longer reuses npc-lass**: PreloadScene now loads dedicated female player atlas from `sprites/player/` directory
 - **Surfing encounters**: Water tile encounters now trigger while surfing; added surf encounter tables for route-1, route-3, coral-harbor, and shattered-isles-shore with Tentacool, Horsea, Shellder, Gyarados, Lapras, Staryu, Starmie
