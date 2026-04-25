@@ -224,6 +224,8 @@ export const TILE_COLORS: Record<number, number> = {
   [Tile.WATER_FRAME_2]:     0x4080c0,
   [Tile.LAVA_FRAME_1]:      0xe06010,
   [Tile.LAVA_FRAME_2]:      0xe06010,
+  [Tile.EMBER_FRAME_1]:     0xc04010,
+  [Tile.EMBER_FRAME_2]:     0xc04010,
 };
 
 // Solid tiles that block movement

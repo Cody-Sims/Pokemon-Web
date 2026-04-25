@@ -463,6 +463,7 @@ export class OverworldScene extends Phaser.Scene {
         } else if (tile === Tile.TALL_GRASS) {
           this.tallGrassTileSprites.push(sprite);
         } else if (tile === Tile.MAGMA_CRACK || tile === Tile.EMBER_VENT || tile === Tile.LAVA_ROCK) {
+          (sprite as Phaser.GameObjects.Image & { _baseTile?: number })._baseTile = tile;
           this.lavaTileSprites.push(sprite);
         }
       }
@@ -856,9 +857,16 @@ export class OverworldScene extends Phaser.Scene {
         s.setTint(waterTints[idx]);
         s.setFrame(waterFrames[idx]);
       }
+      const emberFrames = [Tile.EMBER_VENT, Tile.EMBER_FRAME_1, Tile.EMBER_FRAME_2];
       for (const s of this.lavaTileSprites) {
-        s.setTint(lavaTints[idx]);
-        s.setFrame(lavaFrames[idx]);
+        const baseTile = (s as Phaser.GameObjects.Image & { _baseTile?: number })._baseTile;
+        if (baseTile === Tile.EMBER_VENT) {
+          s.setTint(lavaTints[idx]);
+          s.setFrame(emberFrames[idx]);
+        } else {
+          s.setTint(lavaTints[idx]);
+          s.setFrame(lavaFrames[idx]);
+        }
       }
     }
     if (this.tileAnimFrame % 60 === 0) {

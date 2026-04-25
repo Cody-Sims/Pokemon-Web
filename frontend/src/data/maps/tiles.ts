@@ -160,6 +160,8 @@ export const Tile = {
   WATER_FRAME_2:   116,
   LAVA_FRAME_1:    117,
   LAVA_FRAME_2:    118,
+  EMBER_FRAME_1:   119,
+  EMBER_FRAME_2:   120,
 } as const;
 
 /**
