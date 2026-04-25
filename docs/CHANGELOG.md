@@ -8,6 +8,7 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **Player hidden in tall grass**: Made tall grass tile background transparent in the tileset PNG so the grass blades overlay properly on the base grass tile. Removed alpha hack — the tile art itself now has transparent pixels between the grass blades, letting the player show through naturally (depth order: background → player → grass)
 - **Fixed aspect ratio scaling**: Replaced dynamic `computeGameWidth/Height` with fixed 720x480 (3:2) internal resolution. Phaser's FIT mode now handles all scaling automatically — portrait fills width, landscape fills height, aspect ratio always preserved
 - **Removed save button**: Removed redundant quick-save floating button from overworld; save is accessible via the menu
 - **Menu button size**: Increased from 36px to 48px for better tap targets on mobile

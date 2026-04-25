@@ -483,9 +483,6 @@ export class OverworldScene extends Phaser.Scene {
         sprite.setScale(scale);
         if (baseTile !== undefined) {
           sprite.setDepth(FOREGROUND_TILES.has(tile) ? 2 : 0.5);
-          if (tile === Tile.TALL_GRASS) {
-            sprite.setAlpha(0.7);
-          }
         }
 
         // Collect references for animated tile effects
