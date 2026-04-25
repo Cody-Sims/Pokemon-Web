@@ -13,6 +13,13 @@ All notable changes to the Pokemon Web project.
   - 4 procedural generators: BSP dungeon (rooms + corridors), cellular automata caves, route carver, maze generator (growing tree with sparsification)
   - Template composition: 17 reusable building/terrain/path/interior templates in `temp/map-templates/`; template loader, map composer, and auto path-connector
   - 10 biome themes with character substitution (standard, volcanic, coastal, forest, ghost, dragon, mine, electric, synthesis, cave)
+- **Map generation tests**: 22 unit tests covering Grid logic, flood-fill, seeded RNG determinism, A* pathfinding, biome substitution, CHAR_TO_TILE mapping, and roundtrip export
+- **Sample generated maps**: BSP dungeon, cellular cave, ghost-biome dungeon, and template-composed town in `temp/generated-maps/`
+
+### Fixed
+
+- **9 failing maps**: Corrected invalid Unicode characters (ŧ→Ŧ in abyssal-spire-f1 and verdantia-lab, Ɩ→Ɖ in abyssal-spire-f5, Ư→Ɯ in voltara-gym) and padded short rows (crystal-cavern-depths, shattered-isles-ruins, shattered-isles-temple, pewter-museum, scalecrest-gym)
+- **coral-harbor and shattered-isles-shore**: Fixed dimension mismatches — all 66 maps now pass validation
   - Map validator with 8 checks (dimension consistency, character validity, border integrity, warp reachability, NPC placement, spawn validity, connectivity)
   - PPM preview renderer with warp/NPC/trainer/spawn markers and optional grid overlay
   - TypeScript exporter for generating complete MapDefinition .ts files
