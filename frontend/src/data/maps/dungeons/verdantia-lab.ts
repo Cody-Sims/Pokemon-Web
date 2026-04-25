@@ -5,18 +5,18 @@ import { MapDefinition, parseMap } from '../shared';
 // Discovered after defeating Gym 4 (Ivy). Roots and vines clash with lab equipment.
 const labGround = parseMap([
   'ĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦ', // 0
-  'ĦŦŦŦŦĦ£,,£ĦŊŧŧĦ', // 1  north chamber: containment pods
-  'ĦŧƫŧŧĦ£,,£ĦŧŧŧĦ', // 2  terminal
-  'ĦŧŧŧŧĦ,¡¡,ĦŧƫŧĦ', // 3  vine corridor + terminal
-  'ĦŧŧŧŧĐ,,,,ĐŧŧŧĦ', // 4  synthesis doors connect chambers
+  'ĦŦŦŦŦĦ£,,£ĦŊŦŦĦ', // 1  north chamber: containment pods
+  'ĦŦƫŦŦĦ£,,£ĦŦŦŦĦ', // 2  terminal
+  'ĦŦŦŦŦĦ,¡¡,ĦŦƫŦĦ', // 3  vine corridor + terminal
+  'ĦŦŦŦŦĐ,,,,ĐŦŦŦĦ', // 4  synthesis doors connect chambers
   'ĦĦĦĐĦĦĦĦĦĦĦĐĦĦĦ', // 5  wall with doors
   'Ħ£¡,,,,¡£,,,,¡Ħ', // 6  root-covered corridor
   'Ħ£,,,,,,,,,,,,Ħ', // 7
   'ĦĦĦĐĦĦĦĦĦĦĦĐĦĦĦ', // 8  wall with doors
-  'ĦŧŧŧŧĐ,,,,ĐŧŧŧĦ', // 9  synthesis doors
-  'ĦŧŊŧŧĦ,¡¡,ĦŧŧŊĦ', // 10 containment pods + vines
-  'ĦŧŧƫŧĦ£,,£ĦŧƫŧĦ', // 11 terminals
-  'ĦŧŧŧŧĦ£,,£ĦŧŧŧĦ', // 12
+  'ĦŦŦŦŦĐ,,,,ĐŦŦŦĦ', // 9  synthesis doors
+  'ĦŦŊŦŦĦ,¡¡,ĦŦŦŊĦ', // 10 containment pods + vines
+  'ĦŦŦƫŦĦ£,,£ĦŦƫŦĦ', // 11 terminals
+  'ĦŦŦŦŦĦ£,,£ĦŦŦŦĦ', // 12
   'ĦĦĦĦĦĦ£,,£ĦĦĦĦĦ', // 13
   ';;;£,,,,,,,,£;;', // 14 cave transition to exit
   ';;;£,,,,,,,,£;¡', // 15

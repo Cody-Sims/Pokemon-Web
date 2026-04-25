@@ -4,14 +4,14 @@ import { MapDefinition, parseMap } from '../shared';
 // Puzzle: circuit routing through narrow conduit corridors
 const ground = parseMap([
   'ƜƜƜƜƜƜƜƜƜƜƜƜ', // 0 - metal walls
-  'Ɯw§§§§§§§§wƯ', // 1 - wire floor
+  'Ɯw§§§§§§§§wƜ', // 1 - wire floor
   'Ɯ§¦§§§§§¦§§Ɯ', // 2 - electric panels flanking
   'Ɯ§§§§§§§§§§Ɯ', // 3
-  'Ɯ§§ƯƯ§§ƯƯ§§Ɯ', // 4 - metal wall barriers
+  'Ɯ§§ƜƜ§§ƜƜ§§Ɯ', // 4 - metal wall barriers
   'Ɯ¥¥¥¥§§¥¥¥¥Ɯ', // 5 - conduit paths
   'Ɯ§§§§§§§§§§Ɯ', // 6
   'Ɯ§¦§§§§§§¦§Ɯ', // 7 - panels
-  'Ɯ§§ƯƯ§§ƯƯ§§Ɯ', // 8 - more barriers
+  'Ɯ§§ƜƜ§§ƜƜ§§Ɯ', // 8 - more barriers
   'Ɯ¥¥¥¥§§¥¥¥¥Ɯ', // 9 - conduit paths
   'Ɯ§§§§§§§§§§Ɯ', // 10
   'Ɯ§§§§§§§§§§Ɯ', // 11

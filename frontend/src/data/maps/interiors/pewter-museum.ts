@@ -3,7 +3,7 @@ import { MapDefinition, parseMap } from '../shared';
 const ground = parseMap([
   // 0123456789012345
   '################', // 0  - north wall
-  '#w____d_d____w#', // 1  - windows + display cases
+  '#w____d_d_____w#', // 1  - windows + display cases
   '#_j__d___d__j__#', // 2  - fossils + cases
   '#______________#', // 3  - open hall
   '#_d__________d_#', // 4  - side exhibits

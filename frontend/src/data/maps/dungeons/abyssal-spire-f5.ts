@@ -6,7 +6,7 @@ import { MapDefinition, parseMap } from '../shared';
 const spireF5Ground = parseMap([
   'ĦĦĦĦĦĦĦĦĦĦĦĦĦĦĦ', // 0
   'ĦĦĦ÷ŦŦŦŦŦŦŦ÷ĦĦĦ', // 1
-  'ĦĦŦŦŦƖŦŦŦƖŦŦŦĦĦ', // 2  aether conduits
+  'ĦĦŦŦŦƉŦŦŦƉŦŦŦĦĦ', // 2  aether conduits
   'Ħ÷ŦŦŦŦŦŦŦŦŦŦŦ÷Ħ', // 3
   'ĦŦŦŦŦŦŦŦŦŦŦŦŦŦĦ', // 4
   'ĦŦƉŦŦŦŦŦŦŦŦŦƉŦĦ', // 5  conduit ring

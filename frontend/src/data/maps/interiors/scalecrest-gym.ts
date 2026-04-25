@@ -4,16 +4,16 @@ import { MapDefinition, parseMap } from '../shared';
 // Puzzle: fortress stone, dragon statues, scale floors
 const ground = parseMap([
   'ÆÆÆÆÆÆÆÆÆÆÆÆ', // 0 - fortress walls
-  'ÆwÐÐÐÐÐÐÐwÆ', // 1 - dragon scale floor
-  'ÆÐðÐÐÐÐÐðÐÆ', // 2 - dragon statues flanking leader
+  'ÆwÐÐÐÐÐÐÐÐwÆ', // 1 - dragon scale floor
+  'ÆÐðÐÐÐÐÐÐðÐÆ', // 2 - dragon statues flanking leader
   'ÆÐÐÐÐÐÐÐÐÐÐÆ', // 3
   'ÆÐÐÐÆÆÆÐÐÐÐÆ', // 4 - fortress wall barriers
   'ÆÐÐÐÐÐÐÐÐÐÐÆ', // 5
-  'ÆÐðÐÐÐÐÐðÐÆ', // 6 - dragon statues
+  'ÆÐðÐÐÐÐÐÐðÐÆ', // 6 - dragon statues
   'ÆÐÐÐÐÐÐÐÐÐÐÆ', // 7
   'ÆÐÐÐÆÆÆÐÐÐÐÆ', // 8 - more fortress barriers
   'ÆÐÐÐÐÐÐÐÐÐÐÆ', // 9
-  'ÆÐðÐÐÐÐÐðÐÆ', // 10 - dragon statues
+  'ÆÐðÐÐÐÐÐÐðÐÆ', // 10 - dragon statues
   'ÆÐÐÐÐÐÐÐÐÐÐÆ', // 11
   'ÆÐÐÐÐÐÐÐÐÐÐÆ', // 12
   'ÆÆÆÆ_vv_ÆÆÆÆ', // 13 - exit with floor tiles
