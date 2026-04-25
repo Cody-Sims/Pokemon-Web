@@ -74,6 +74,8 @@ export class PreloadScene extends Phaser.Scene {
       'npc-gym-brock', 'npc-gym-blitz', 'npc-gym-ferris', 'npc-admin-vex',
       'npc-gym-coral', 'npc-gym-ivy', 'npc-gym-morwen', 'npc-gym-drake',
       'npc-gym-solara', 'npc-gym-giovanni',
+      'npc-e4-nerida', 'npc-e4-theron', 'npc-e4-lysandra', 'npc-e4-ashborne',
+      'npc-champion-aldric',
       'npc-oak',
     ];
     for (const key of npcSprites) {

@@ -3,7 +3,7 @@ import { TrainerData } from '../interfaces';
 export const eliteFourTrainers: Record<string, TrainerData> = {
   // ─── Elite Four ───
   'elite-nerida': {
-    id: 'elite-nerida', name: 'Elite Four Nerida', spriteKey: 'npc-female-7',
+    id: 'elite-nerida', name: 'Elite Four Nerida', spriteKey: 'npc-e4-nerida',
     party: [
       { pokemonId: 87, level: 50, moves: ['ice-beam', 'surf', 'body-slam', 'rest'] },
       { pokemonId: 91, level: 50, moves: ['ice-beam', 'clamp', 'supersonic', 'aurora-beam'] },
@@ -22,7 +22,7 @@ export const eliteFourTrainers: Record<string, TrainerData> = {
 
   // ─── Elite Four #2: Theron (Fighting/Rock) ───
   'elite-theron': {
-    id: 'elite-theron', name: 'Elite Four Theron', spriteKey: 'npc-male-5',
+    id: 'elite-theron', name: 'Elite Four Theron', spriteKey: 'npc-e4-theron',
     party: [
       { pokemonId: 68, level: 50, moves: ['karate-chop', 'seismic-toss', 'earthquake', 'rock-slide'] },
       { pokemonId: 76, level: 49, moves: ['rock-slide', 'earthquake', 'body-slam', 'explosion'] },
@@ -48,7 +48,7 @@ export const eliteFourTrainers: Record<string, TrainerData> = {
 
   // ─── Elite Four #3: Lysandra (Psychic/Dark) ───
   'elite-lysandra': {
-    id: 'elite-lysandra', name: 'Elite Four Lysandra', spriteKey: 'npc-female-8',
+    id: 'elite-lysandra', name: 'Elite Four Lysandra', spriteKey: 'npc-e4-lysandra',
     party: [
       { pokemonId: 65, level: 51, moves: ['psychic', 'night-shade', 'recover', 'reflect'] },
       { pokemonId: 94, level: 51, moves: ['night-shade', 'psychic', 'hypnosis', 'dream-eater'] },
@@ -74,7 +74,7 @@ export const eliteFourTrainers: Record<string, TrainerData> = {
 
   // ─── Elite Four #4: Ashborne (Fire/Dragon) ───
   'elite-ashborne': {
-    id: 'elite-ashborne', name: 'Elite Four Ashborne', spriteKey: 'npc-male-6',
+    id: 'elite-ashborne', name: 'Elite Four Ashborne', spriteKey: 'npc-e4-ashborne',
     party: [
       { pokemonId: 59, level: 52, moves: ['flamethrower', 'take-down', 'fire-blast', 'agility'] },
       { pokemonId: 6, level: 52, moves: ['flamethrower', 'dragon-rage', 'slash', 'fire-spin'] },
@@ -102,7 +102,7 @@ export const eliteFourTrainers: Record<string, TrainerData> = {
 
   // ─── Champion Aldric Maren ───
   'champion-aldric': {
-    id: 'champion-aldric', name: 'Champion Aldric', spriteKey: 'npc-male-6',
+    id: 'champion-aldric', name: 'Champion Aldric', spriteKey: 'npc-champion-aldric',
     party: [
       { pokemonId: 94, level: 52, moves: ['lick', 'dream-eater', 'hypnosis', 'night-shade'] },
       { pokemonId: 65, level: 52, moves: ['psychic', 'recover', 'reflect', 'psybeam'] },

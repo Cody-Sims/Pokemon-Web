@@ -8,6 +8,8 @@ All notable changes to the Pokemon Web project.
 
 ### Added
 
+- **Water and lava tile animation**: Water tiles cycle through 3 frames (base + 2 variants) every 30 ticks; lava tiles cycle through 3 frames every 30 ticks. Animation frames stored in tileset slots 115-118 with frame-swap logic in OverworldScene
+- **Elite Four + Champion sprites**: 5 unique type-themed character sprites — Nerida (Water/teal), Theron (Fighting/red), Lysandra (Psychic/purple), Ashborne (Fire/orange), Champion Aldric (mixed/gold-royal). Updated elite-four.ts spriteKeys and PreloadScene
 - **Dialogue portrait/avatar**: NPC dialogue boxes now show a 48x48 sprite portrait of the speaking NPC in a bordered frame on the left side of the dialog box; text wraps around the portrait; supported from NPC interaction, trainer battles, and cutscenes via new `portraitKey` field in `DialogueData`
 - **Dialogue slide animation**: Dialog box and all associated elements (speaker name, portrait, text) slide in from below on open and slide out downward on close using Back easing
 
