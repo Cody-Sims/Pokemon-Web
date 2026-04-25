@@ -177,6 +177,8 @@ export class DialogueScene extends Phaser.Scene {
     for (const obj of slideTargets) {
       (obj as unknown as { y: number }).y += slideDistance;
     }
+    // Play a subtle open sound
+    AudioManager.getInstance().playSFX(SFX.CONFIRM);
     this.tweens.add({
       targets: slideTargets,
       y: `-=${slideDistance}`,
@@ -405,6 +407,7 @@ export class DialogueScene extends Phaser.Scene {
     this.input.keyboard?.removeAllListeners();
     this.input.removeAllListeners();
 
+    AudioManager.getInstance().playSFX(SFX.CANCEL);
     this.tweens.add({
       targets: slideTargets,
       y: '+=140',
