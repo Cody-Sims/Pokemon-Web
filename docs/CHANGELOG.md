@@ -10,6 +10,8 @@ All notable changes to the Pokemon Web project.
 
 - **NPC and trainer display names**: Added `name` field to all NPC and trainer spawn objects across all map files (cities, interiors, dungeons, routes). Names follow role-based conventions: story characters use their actual names, gym leaders use their name, generic NPCs get role titles (Townsperson, Nurse Joy, Clerk, etc.), and grunts are labeled Synthesis Grunt. Signs, items, and interactive objects are intentionally left unnamed.
 - **TrainerSpawn name field**: Added optional `name?: string` field to the `TrainerSpawn` interface in `map-interfaces.ts`
+- **Ember vent tile animation**: Ember vent tiles (97) now cycle through 3 frames alongside water and lava. Tileset expanded to 10x13 (130 frames) with ember animation variants at slots 119-120
+- **Tilemap batch rendering**: Static ground tiles now render via a single `Phaser.Tilemaps.TilemapLayer` instead of individual Image objects. Only animated and overlay tiles use individual sprites. Reduces game objects by ~70% on typical maps
 
 ### Fixed
 

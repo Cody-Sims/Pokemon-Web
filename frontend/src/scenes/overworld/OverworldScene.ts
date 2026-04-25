@@ -430,11 +430,60 @@ export class OverworldScene extends Phaser.Scene {
     // Scale factor: tileset is 16px, game tiles are TILE_SIZE (32px)
     const scale = TILE_SIZE / 16;
 
+    // Set of tile IDs that need individual sprites (animated or overlays)
+    const animatedTiles = new Set([
+      Tile.WATER, Tile.TIDE_POOL, Tile.TALL_GRASS,
+      Tile.MAGMA_CRACK, Tile.EMBER_VENT, Tile.LAVA_ROCK,
+    ]);
+
+    // Build a Phaser Tilemap for the static ground layer (batch rendering)
+    const tileData: number[][] = [];
+    for (let y = 0; y < mapH; y++) {
+      const row: number[] = [];
+      for (let x = 0; x < mapW; x++) {
+        const tile = this.mapDef.ground[y][x];
+        const isOverlay = OVERLAY_BASE[tile] !== undefined;
+        const isAnimated = animatedTiles.has(tile);
+        // Static ground tiles go into the tilemap; overlays and animated tiles use sprites
+        row.push((!isOverlay && !isAnimated) ? tile : -1);
+      }
+      tileData.push(row);
+    }
+
+    const tilemapData = new Phaser.Tilemaps.MapData({
+      width: mapW,
+      height: mapH,
+      tileWidth: 16,
+      tileHeight: 16,
+    });
+    const tilemap = new Phaser.Tilemaps.Tilemap(this, tilemapData);
+    const tileset = tilemap.addTilesetImage('tileset', 'tileset', 16, 16) as Phaser.Tilemaps.Tileset;
+
+    // Create a layer from the static tile data
+    const staticLayer = tilemap.createBlankLayer('ground', tileset, 0, 0, mapW, mapH, 16, 16);
+    if (staticLayer) {
+      for (let y = 0; y < mapH; y++) {
+        for (let x = 0; x < mapW; x++) {
+          const id = tileData[y][x];
+          if (id >= 0) {
+            staticLayer.putTileAt(id, x, y);
+          }
+        }
+      }
+      staticLayer.setScale(scale);
+      staticLayer.setDepth(0);
+    }
+
+    // Now handle overlay tiles and animated tiles as individual sprites
     for (let y = 0; y < mapH; y++) {
       for (let x = 0; x < mapW; x++) {
         const tile = this.mapDef.ground[y][x];
         const px = x * TILE_SIZE + TILE_SIZE / 2;
         const py = y * TILE_SIZE + TILE_SIZE / 2;
+        const isOverlay = OVERLAY_BASE[tile] !== undefined;
+        const isAnimated = animatedTiles.has(tile);
+
+        if (!isOverlay && !isAnimated) continue; // Handled by tilemap layer
 
         // If this tile is an overlay object, draw the base ground tile first
         const baseTile = OVERLAY_BASE[tile];
@@ -448,10 +497,7 @@ export class OverworldScene extends Phaser.Scene {
         const sprite = this.add.image(px, py, 'tileset', tile);
         sprite.setScale(scale);
         if (baseTile !== undefined) {
-          // Foreground overlays render ABOVE the player (tall grass, trees)
-          // Ground overlays render BELOW the player (doors, flowers, mats, etc.)
           sprite.setDepth(FOREGROUND_TILES.has(tile) ? 2 : 0.5);
-          // Tall grass should be semi-transparent so entities are partially visible
           if (tile === Tile.TALL_GRASS) {
             sprite.setAlpha(0.7);
           }
