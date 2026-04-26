@@ -53,6 +53,9 @@ If a task introduces new scenes, managers, systems, entities, data files, or cha
 - `npm run build` — Type-check then build for production
 - `npm run preview` — Preview production build locally
 
+## Build Validation (MANDATORY)
+Before committing any TypeScript or configuration changes, **run `npm run build`** and confirm it completes with zero errors. The build runs `tsc --noEmit` (full type-check) followed by a Vite production build. Fix all TypeScript errors before committing — do not merge code that breaks the build.
+
 ## Testing (MANDATORY)
 The project has a comprehensive 5-layer test suite. See [docs/TestingArchitecture.md](../../docs/TestingArchitecture.md) for full details.
 

@@ -6,8 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-25]
 
+### Fixed
+
+- **TypeScript build errors**: Added `portraitKey` optional field to `CutsceneAction` dialogue type in `CutsceneEngine.ts`, fixed double comma causing `undefined` in `cutscene-data.ts` Ashborne dialogue, and typed `animatedTiles` as `Set<number>` in `OverworldScene.ts` to resolve 16 build errors
+
 ### Added
 
+- **Build validation instruction**: Added mandatory build validation section to copilot instructions requiring `npm run build` before committing TypeScript changes
 - **Y-based depth sorting for characters**: Player, NPCs, and trainers now sort by Y position each frame so characters lower on screen render in front of those above. Depth ranges from 1.0 to 1.9, between ground (0) and foreground overlays (2)
 - **Grass rustle animation**: Stepping into tall grass triggers a brief scale pulse (squash-and-stretch tween) on the grass sprite at that tile, providing visual feedback like classic Pokemon games
 - **Explicit depth for animated ground tiles**: Water, tide pool, and lava sprites now explicitly set depth 0 instead of relying on Phaser's default

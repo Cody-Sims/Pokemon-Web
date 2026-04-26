@@ -9,7 +9,7 @@ import { EventManager } from '@managers/EventManager';
 // ─── CutsceneAction union type ──────────────────────────────
 
 export type CutsceneAction =
-  | { type: 'dialogue'; speaker?: string; lines: string[] }
+  | { type: 'dialogue'; speaker?: string; portraitKey?: string; lines: string[] }
   | { type: 'moveCameraTo'; x: number; y: number; duration?: number }
   | { type: 'moveNPC'; npcId: string; direction: Direction; tiles: number; speed?: number }
   | { type: 'faceNPC'; npcId: string; direction: Direction }

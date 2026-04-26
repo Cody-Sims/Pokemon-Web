@@ -421,7 +421,7 @@ export class OverworldScene extends Phaser.Scene {
     const scale = TILE_SIZE / 16;
 
     // Set of tile IDs that need individual sprites (animated or overlays)
-    const animatedTiles = new Set([
+    const animatedTiles = new Set<number>([
       Tile.WATER, Tile.TIDE_POOL, Tile.TALL_GRASS,
       Tile.MAGMA_CRACK, Tile.EMBER_VENT, Tile.LAVA_ROCK,
     ]);

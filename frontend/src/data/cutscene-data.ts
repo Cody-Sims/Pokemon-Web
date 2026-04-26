@@ -70,7 +70,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
     id: 'ashborne-warning',
     actions: [
       { type: 'dialogue', speaker: 'Ashborne', portraitKey: 'npc-e4-ashborne', lines: [
-        '...You truly are remarkable.',,
+        '...You truly are remarkable.',
         'The Champion awaits in the chamber above.',
         'But I must warn you...',
         'Whatever you find up there... don\'t lose yourself.',
