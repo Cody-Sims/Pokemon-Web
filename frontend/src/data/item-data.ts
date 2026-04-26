@@ -329,6 +329,19 @@ export const itemData: Record<string, ItemData> = {
     effect: { type: 'key' },
   },
 
+  // ─── Fossils ───
+  // Take to the Pewter Museum to revive into a fossil Pokémon.
+  'claw-fossil': {
+    id: 'claw-fossil', name: 'Claw Fossil', category: 'key',
+    description: 'A fossilized claw of an ancient Pokémon. Take it to the Pewter Museum to revive Lithoclaw.',
+    effect: { type: 'key' },
+  },
+  'wing-fossil': {
+    id: 'wing-fossil', name: 'Wing Fossil', category: 'key',
+    description: 'A fossilized wing of an ancient Pokémon. Take it to the Pewter Museum to revive Aerolith.',
+    effect: { type: 'key' },
+  },
+
   // ─── Synthesis ───
   'synthesis-bracelet': {
     id: 'synthesis-bracelet', name: 'Synthesis Bracelet', category: 'key',

@@ -132,7 +132,21 @@ export const emberMines: MapDefinition = {
         'You extracted the Aether Crystal Mineral!',
       ],
       requireFlag: '!dragon-mineral-found',
-      setsFlag: 'dragon-mineral-found' }
+      setsFlag: 'dragon-mineral-found' },
+    // ─── Fossil: Wing Fossil → Aerolith at Pewter Museum ───
+    {
+      id: 'mines-wing-fossil',
+      tileX: 16,
+      tileY: 8,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'Embedded in the rock — the impression of a great wing...',
+        'You chiseled out the Wing Fossil!',
+        'Take it to the Pewter Museum to revive an ancient Pokémon.',
+      ],
+      requireFlag: '!emberMinesWingFossil',
+      setsFlag: 'emberMinesWingFossil',
+      givesItem: 'wing-fossil' }
   ],
   warps: [
     // South exit → Route 4 (through synthesis doors)

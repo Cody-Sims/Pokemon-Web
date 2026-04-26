@@ -299,6 +299,58 @@ export function tryInteract(ctx: InteractionContext): void {
         }
       }
 
+      // ── Fossil-revival handler (Pewter Museum) ──
+      if (spawnDef?.interactionType === 'fossil-revival') {
+        const fossilTable: { itemId: string; speciesId: number; name: string }[] = [
+          { itemId: 'claw-fossil', speciesId: 154, name: 'Lithoclaw' },
+          { itemId: 'wing-fossil', speciesId: 155, name: 'Aerolith' },
+        ];
+        const owned = fossilTable.find(f => gm.getItemCount(f.itemId) > 0);
+        if (!owned) {
+          // No fossil — explain and exit.
+          sm.pause();
+          sm.launch('DialogueScene', {
+            dialogue: [
+              'I can revive ancient fossils into living Pokémon!',
+              'Bring me a Claw Fossil or Wing Fossil and I will get to work.',
+            ],
+            speaker: npcSpeaker, portraitKey: npcPortraitKey,
+          });
+          sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+          return;
+        }
+        const FOSSIL_PRICE = 5000;
+        if (gm.getMoney() < FOSSIL_PRICE) {
+          sm.pause();
+          sm.launch('DialogueScene', {
+            dialogue: [
+              `Reviving the ${owned.name === 'Lithoclaw' ? 'Claw' : 'Wing'} Fossil costs ¥${FOSSIL_PRICE}.`,
+              `You don\u2019t have enough money. Come back when you can afford it!`,
+            ],
+            speaker: npcSpeaker, portraitKey: npcPortraitKey,
+          });
+          sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+          return;
+        }
+        // Revive: spend money, consume fossil, generate Pokémon, add to party.
+        gm.spendMoney(FOSSIL_PRICE);
+        gm.removeItem(owned.itemId, 1);
+        const revived = EncounterSystem.createWildPokemon(owned.speciesId, 20);
+        gm.addToParty(revived);
+        sm.pause();
+        sm.launch('DialogueScene', {
+          dialogue: [
+            `Loading the ${owned.name === 'Lithoclaw' ? 'Claw' : 'Wing'} Fossil into the regenerator...`,
+            'The machine hums to life — ancient DNA reawakens!',
+            `You received ${owned.name} (Lv. 20)!`,
+            `That will be ¥${FOSSIL_PRICE}. A pleasure doing science with you!`,
+          ],
+          speaker: npcSpeaker, portraitKey: npcPortraitKey,
+        });
+        sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+        return;
+      }
+
       // Cutscene trigger (overrides regular dialogue unless already completed)
       if (spawnDef?.triggerCutscene && cutsceneData[spawnDef.triggerCutscene]) {
         const cutscene = cutsceneData[spawnDef.triggerCutscene];

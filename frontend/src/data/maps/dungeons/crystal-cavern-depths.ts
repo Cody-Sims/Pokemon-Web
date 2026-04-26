@@ -69,7 +69,17 @@ export const crystalCavernDepths: MapDefinition = {
         'The shadow given form stares with hollow eyes!',
       ],
       interactionType: 'wild-encounter',
-      interactionData: '153' }
+      interactionData: '153' },
+    // ─── Fossil: Claw Fossil → Lithoclaw at Pewter Museum ───
+    { id: 'depths-claw-fossil', tileX: 6, tileY: 18, textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'A curved claw juts from the cavern wall...',
+        'You found a Claw Fossil!',
+        'Take it to the Pewter Museum to revive an ancient Pokémon.',
+      ],
+      requireFlag: '!crystalDepthsClawFossil',
+      setsFlag: 'crystalDepthsClawFossil',
+      givesItem: 'claw-fossil' }
   ],
   warps: [
     // South exit → Crystal Cavern main floor

@@ -6,6 +6,18 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-26]
 
+### Added — Fossil Pokémon (#154 Lithoclaw, #155 Aerolith)
+
+- **A.3 Fossil Pokémon**: Added two Aurum Region fossil species — **Lithoclaw** (#154, Rock/Water, BST 485, learns Accelerock and Head Smash) and **Aerolith** (#155, Rock/Flying, BST 500, learns Sky Attack, Ancient Power, and Head Smash). Both are inert without a fossil item; only obtainable via revival. [rock.ts](frontend/src/data/pokemon/rock.ts).
+- **Fossil items**: New `claw-fossil` and `wing-fossil` key items in [item-data.ts](frontend/src/data/item-data.ts).
+- **Fossil placements**: Claw Fossil item-ball drops at (6, 18) in [crystal-cavern-depths.ts](frontend/src/data/maps/dungeons/crystal-cavern-depths.ts); Wing Fossil item-ball at (16, 8) in [ember-mines.ts](frontend/src/data/maps/dungeons/ember-mines.ts). Both gated by one-shot `setsFlag` so the player can only collect each once.
+- **Pewter Museum revival**: New `interactionType: 'fossil-revival'` (extended in [map-interfaces.ts](frontend/src/data/maps/map-interfaces.ts)). Handler in [OverworldInteraction.ts](frontend/src/scenes/overworld/OverworldInteraction.ts) checks the player's bag for a fossil item, charges ¥5,000, consumes the fossil, and adds the revived Pokémon at Lv. 20 to the party (auto-deposits to PC if full). The existing `museum-fossil-revival` NPC in [pewter-museum.ts](frontend/src/data/maps/interiors/pewter-museum.ts) was wired to the new type and its dialogue updated to mention Claw / Wing Fossils.
+- Verified by [tests/unit/data/fossil-pokemon.test.ts](tests/unit/data/fossil-pokemon.test.ts) (8 cases covering species, items, placements, and NPC wiring).
+
+---
+
+## [2026-04-26]
+
 ### Fixed — Mobile rotation, menu cutoffs, touch-button overlay
 
 - **Game canvas didn't resize after rotating the device**: `computeGameDimensions()` was reading `document.body.clientWidth/Height`, which iOS Safari leaves at the pre-rotation values for one or two layout passes. The Settings panel showed up squeezed into a portrait-shaped column inside a landscape viewport because the canvas itself never resized. [constants.ts](frontend/src/utils/constants.ts) now picks the dimension source whose orientation matches `window.innerWidth/Height` — `visualViewport` first, then `body`, then `window` — so a stale orientation is skipped automatically. [main.ts](frontend/src/main.ts) `handleViewportResize()` now forces a synchronous reflow (`void document.body.offsetHeight`) before reading and re-emits the scale-manager `resize` event so scenes' `layoutOn(...)` callbacks always re-run, even when the logical game dimensions are unchanged but the canvas DOM rect shifted.

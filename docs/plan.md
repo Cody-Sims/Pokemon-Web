@@ -69,6 +69,8 @@ Endless streak mode unlocked from the Pokémon League lobby.
 
 Revival at Pewter Museum for 5,000 money.
 
+> **Status (2026-04-26)**: Done. Both species shipped in [rock.ts](../frontend/src/data/pokemon/rock.ts) (Lithoclaw BST 485, Aerolith BST 500), `claw-fossil` / `wing-fossil` key items added to [item-data.ts](../frontend/src/data/item-data.ts), fossils dropped via gated item-balls in Crystal Cavern Depths and Ember Mines, and a new `interactionType: 'fossil-revival'` handler at the Pewter Museum charges ¥5,000, consumes the fossil, and adds the revived Pokémon at Lv. 20 to the party. Verified by `tests/unit/data/fossil-pokemon.test.ts`.
+
 ### A.4 Move Pool Expansion (~30 new moves)
 
 > **Status (2026-04-26)**: Done. Added Bug (X-Scissor, Signal Beam, Fury Cutter, Lunge, Megahorn), Rock (Power Gem, Head Smash, Accelerock, Rock Polish, Ancient Power), Electric (Wild Charge, Electroweb), Ice (Icicle Crash, Frost Breath), Steel (Flash Cannon), and Ghost (Shadow Claw). All new moves carry effect metadata (priority, recoil, weather, multi-hit, stat-change). Verified by `tests/unit/data/move-pool-expansion.test.ts`.

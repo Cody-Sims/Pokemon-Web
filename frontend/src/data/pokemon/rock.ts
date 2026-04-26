@@ -124,4 +124,36 @@ export const rockPokemon: Record<number, PokemonData> = {
     catchRate: 45, expYield: 180,
     spriteKeys: { front: 'aerodactyl-front', back: 'aerodactyl-back', icon: 'aerodactyl-icon' },
   },
+  // ─── Aurum Region Fossils ───
+  // Revived from Claw Fossil & Wing Fossil at the Pewter Museum.
+  154: {
+    id: 154, name: 'Lithoclaw', types: ['rock', 'water'],
+    baseStats: { hp: 75, attack: 115, defense: 110, spAttack: 50, spDefense: 70, speed: 65 },
+    abilities: ['rock-head'],
+    learnset: [
+      { level: 1, moveId: 'scratch' }, { level: 1, moveId: 'harden' },
+      { level: 8, moveId: 'water-gun' }, { level: 15, moveId: 'rock-throw' },
+      { level: 22, moveId: 'bite' }, { level: 29, moveId: 'rock-tomb' },
+      { level: 36, moveId: 'accelerock' }, { level: 43, moveId: 'crunch' },
+      { level: 50, moveId: 'head-smash' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 175,
+    spriteKeys: { front: 'lithoclaw-front', back: 'lithoclaw-back', icon: 'lithoclaw-icon' },
+  },
+  155: {
+    id: 155, name: 'Aerolith', types: ['rock', 'flying'],
+    baseStats: { hp: 70, attack: 100, defense: 70, spAttack: 65, spDefense: 75, speed: 120 },
+    abilities: ['pressure'],
+    learnset: [
+      { level: 1, moveId: 'gust' }, { level: 1, moveId: 'leer' },
+      { level: 9, moveId: 'rock-throw' }, { level: 16, moveId: 'wing-attack' },
+      { level: 23, moveId: 'agility' }, { level: 30, moveId: 'ancient-power' },
+      { level: 37, moveId: 'rock-slide' }, { level: 44, moveId: 'sky-attack' },
+      { level: 51, moveId: 'head-smash' },
+    ],
+    evolutionChain: [],
+    catchRate: 45, expYield: 175,
+    spriteKeys: { front: 'aerolith-front', back: 'aerolith-back', icon: 'aerolith-icon' },
+  },
 };

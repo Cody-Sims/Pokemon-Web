@@ -83,16 +83,18 @@ export const pewterMuseum: MapDefinition = {
     // ─── Fossil Revival NPC ───
     {
       id: 'museum-fossil-revival',
+      name: 'Fossil Revival Scientist',
       tileX: 8,
       tileY: 9,
       textureKey: 'npc-male-2',
       facing: 'up',
       dialogue: [
         'I can revive fossils into living Pokémon!',
-        'Bring me a Helix Fossil, Dome Fossil, or Old Amber.',
+        'Bring me a Claw Fossil or a Wing Fossil.',
         'The process takes just a moment!',
       ],
       requireFlag: 'defeatedBrock',
+      interactionType: 'fossil-revival',
       flagDialogue: [
         {
           flag: '!defeatedBrock',
