@@ -6,6 +6,18 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-26]
 
+### Fixed — Mobile portrait polish for battle, starter select, and bag
+
+- **HUD overlays bled through the battle scene**: The minimap, quest tracker, and party-quick-view scenes are launched alongside `OverworldScene`, so when a battle started they kept rendering on top of the battle view (the user reported a stray "Lv5" partner pokeball + tiny minimap floating over Charmander). [BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts) now sleeps the three HUD overlay scenes inside `create()` (`hideOverworldHud()`) and wakes them again in `shutdown()` (`showOverworldHud()`), so battles always own the full canvas.
+- **Battle action menu cut off on mobile portrait**: The action panel was anchored at `h - 110 / h - 50` regardless of orientation. On a tall portrait viewport (~800 px) this still rendered inside the canvas, but the bottom ~100 px was occluded by the DOM touch controls (joystick + A/B). [BattleUIScene.ts](frontend/src/scenes/battle/BattleUIScene.ts) now reserves a 100 px bottom-pad in mobile portrait (vs 10 px elsewhere), derives `menuY`, `messageY`, and the 2×2 action grid from that single anchor, and re-applies the same logic inside `layoutOn(...)` so rotation re-positions everything cleanly.
+- **Battle sprites/HP boxes overlapped action menu in portrait**: Enemy at `h * 0.30` + player at `h * 0.65` worked in landscape but pushed the player Pokémon and HP box into the action menu reserved area in tall portrait viewports. [BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts) now picks `0.22 / 0.50` for portrait so both Pokémon sit higher on screen with comfortable padding above the message bar, and the player info box anchor moved from `h * 0.52` to `h * 0.40` in portrait.
+- **Starter select cards overlapped/cut off in portrait**: The 180 px wide cards were laid out side-by-side at 220 px spacing (= 660 px total), which clipped Bulbasaur and Squirtle on a 400 px portrait canvas. [StarterSelectScene.ts](frontend/src/scenes/pokemon/StarterSelectScene.ts) now stacks the three cards vertically in portrait, switches each card to a horizontal layout (sprite on the left, name/type/level stacked on the right), shrinks the title font, and wires UP/DOWN keyboard nav so the stack feels native. Landscape keeps the original 3-across grid.
+- **Bag (inventory) tabs overflowed and detail panel overlapped item list in portrait**: Tabs were placed at fixed `20 + i * 155` offsets (last tab at x=485, off-screen on portrait) and the detail panel was anchored at `layout.w - 160, width 280`, which collided with the item list in a 400 px viewport. [InventoryScene.ts](frontend/src/scenes/menu/InventoryScene.ts) now distributes the four category tabs evenly across the available width, picks an orientation-appropriate detail panel position (right rail in landscape, stacked block below the item list in portrait), pushes the qty column to the canvas edge, and updates `showItemDetail()` to use the matching wrap width so descriptions don't run off-screen.
+
+---
+
+## [2026-04-26]
+
 ### Fixed — Mobile/desktop overworld HUD polish
 
 - **Header text clipped in mobile portrait**: The HUD strip rendered `"Pallet Town  |  Tap = Talk"` centered on a ~400px-wide portrait canvas, so both ends got clipped (`"allet Town  |  Tap = Tal"`). [OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts) now shows just the location name in portrait orientation and reserves the full hint string (`Map  |  SPACE = Talk  |  ESC = Menu`) for landscape/desktop. The orientation-aware text is also refreshed inside `layoutOn(...)` so rotating the device updates the strip immediately.

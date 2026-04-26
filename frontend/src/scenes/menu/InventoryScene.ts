@@ -71,27 +71,38 @@ export class InventoryScene extends Phaser.Scene {
     this.add.text(layout.cx, 28, 'BAG', { ...FONTS.heading, fontSize: mobileFontSize(24) }).setOrigin(0.5);
     this.add.rectangle(layout.cx, 46, 160, 2, COLORS.borderHighlight, 0.4);
 
-    // Category tabs
+    // Category tabs — distribute evenly across the available width so the
+    // last tab doesn't overflow on narrow portrait viewports.
+    const isPortrait = layout.h > layout.w;
+    const tabPad = 16;
+    const tabAreaW = layout.w - tabPad * 2;
+    const tabSlotW = tabAreaW / CATEGORY_LABELS.length;
     this.tabTexts = CATEGORY_LABELS.map((cat, i) => {
-      const t = this.add.text(20 + i * 155, 58, cat.label, {
-        ...FONTS.bodySmall, fontSize: mobileFontSize(13),
-      }).setInteractive({ useHandCursor: true });
+      const t = this.add.text(tabPad + tabSlotW * i + tabSlotW / 2, 58, cat.label, {
+        ...FONTS.bodySmall, fontSize: mobileFontSize(isPortrait ? 11 : 13),
+      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
       t.on('pointerdown', () => { this.categoryIndex = i; this.switchCategory(); });
       return t;
     });
     this.add.rectangle(layout.cx, 78, layout.w - 40, 1, COLORS.border, 0.4);
 
-    // Detail panel (right side)
-    new NinePatchPanel(this, layout.w - 160, layout.cy + 30, 280, layout.h - 160, {
-      fillColor: COLORS.bgCard,
-      fillAlpha: 0.7,
-      borderColor: COLORS.border,
-      cornerRadius: 6,
-    });
+    // Detail panel — landscape uses a right-side rail; portrait stacks it
+    // below the item list so neither pane gets clipped or overlaps.
+    if (isPortrait) {
+      const listH = Math.floor((layout.h - 130) * 0.55);
+      new NinePatchPanel(this, layout.cx, 90 + listH + 10 + (layout.h - 130 - listH - 20) / 2,
+        layout.w - 30, layout.h - 130 - listH - 20, {
+          fillColor: COLORS.bgCard, fillAlpha: 0.7, borderColor: COLORS.border, cornerRadius: 6,
+        });
+    } else {
+      new NinePatchPanel(this, layout.w - 160, layout.cy + 30, 280, layout.h - 160, {
+        fillColor: COLORS.bgCard, fillAlpha: 0.7, borderColor: COLORS.border, cornerRadius: 6,
+      });
+    }
 
     // Money display
     const gm = GameManager.getInstance();
-    this.add.text(layout.w - 280, layout.h - 50, `₽ ${gm.getMoney()}`, {
+    this.add.text(isPortrait ? 16 : layout.w - 280, layout.h - 50, `₽ ${gm.getMoney()}`, {
       ...FONTS.body, color: COLORS.textHighlight,
     });
 
@@ -211,16 +222,24 @@ export class InventoryScene extends Phaser.Scene {
     this.itemTexts = [];
     this.itemListGroup.clear(true, true);
 
+    const layout = ui(this);
+    const isPortrait = layout.h > layout.w;
     const startY = 92;
     const itemH = 36;
     const endIdx = Math.min(this.scrollOffset + this.maxVisible, this.filteredItems.length);
+    // Right-edge X for the quantity column. Landscape uses the legacy 260
+    // (item list runs 30-280 wide); portrait pushes it close to the canvas
+    // edge so it never sits under the detail panel.
+    const qtyX = isPortrait ? layout.w - 40 : 260;
+    const qtyOrigin = isPortrait ? 1 : 0;
 
     for (let vi = this.scrollOffset; vi < endIdx; vi++) {
       const entry = this.filteredItems[vi];
       const y = startY + (vi - this.scrollOffset) * itemH;
       const t = this.add.text(30, y, `${entry.item.name}`, { ...FONTS.body, fontSize: mobileFontSize(15) })
         .setInteractive({ useHandCursor: true });
-      const qty = this.add.text(260, y, `x${entry.qty}`, { ...FONTS.bodySmall });
+      const qty = this.add.text(qtyX, y, `x${entry.qty}`, { ...FONTS.bodySmall })
+        .setOrigin(qtyOrigin, 0);
       t.on('pointerover', () => this.itemController?.hoverIndex(vi));
       t.on('pointerdown', () => this.itemController?.clickIndex(vi));
       this.itemTexts.push(t);
@@ -267,15 +286,19 @@ export class InventoryScene extends Phaser.Scene {
 
     const entry = this.filteredItems[idx];
     const layout = ui(this);
-    const x = layout.w - 280;
-    let y = 110;
+    const isPortrait = layout.h > layout.w;
+    // Landscape: right-rail detail. Portrait: detail block below the
+    // item list so the wrap width fits the viewport.
+    const x = isPortrait ? 24 : layout.w - 280;
+    const wrapW = isPortrait ? layout.w - 48 : 240;
+    let y = isPortrait ? 90 + Math.floor((layout.h - 130) * 0.55) + 24 : 110;
 
     const name = this.add.text(x, y, entry.item.name, { ...FONTS.body, fontStyle: 'bold', fontSize: mobileFontSize(17) });
     this.detailGroup.add(name);
     y += 28;
 
     const desc = this.add.text(x, y, entry.item.description, {
-      ...FONTS.bodySmall, wordWrap: { width: 240 },
+      ...FONTS.bodySmall, wordWrap: { width: wrapW },
     });
     this.detailGroup.add(desc);
     y += desc.height + 16;

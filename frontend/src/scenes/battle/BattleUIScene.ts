@@ -87,6 +87,15 @@ export class BattleUIScene extends Phaser.Scene {
     // Compact mode for small mobile screens
     const compact = isMobile() && (window.innerHeight < 400 || h < 400);
     const menuH = compact ? 50 : 100;
+    // Reserve room at the bottom of the canvas in mobile portrait so the
+    // action menu doesn't sit underneath the DOM touch controls (joystick
+    // + A/B buttons take ~140 px on phones). Landscape phones keep 0 since
+    // controls sit on the sides, not below.
+    const isPortrait = h > w;
+    const bottomReserve = isMobile() && isPortrait ? 100 : 10;
+    const menuY = h - menuH / 2 - bottomReserve;
+    const messageY = menuY - menuH / 2 - 20;
+    const messageTextY = messageY - 12;
 
     // Weather indicator (top-center, hidden initially)
     this.messageHandler.weatherText = this.add.text(cx, 12, '', {
@@ -94,15 +103,15 @@ export class BattleUIScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(50);
 
     // Nine-patch message bar
-    new NinePatchPanel(this, cx, h - (compact ? 80 : 120), w - 20, 30, {
+    new NinePatchPanel(this, cx, messageY, w - 20, 30, {
       fillColor: 0x0a0a18, fillAlpha: 0.92, borderColor: COLORS.border, borderWidth: 1, cornerRadius: 4,
     });
-    this.messageHandler.messageText = this.add.text(30, h - (compact ? 92 : 132), 'What will you do?', { ...FONTS.body, fontSize: mobileFontSize(16) });
+    this.messageHandler.messageText = this.add.text(30, messageTextY, 'What will you do?', { ...FONTS.body, fontSize: mobileFontSize(16) });
 
     // Nine-patch action menu
-    this.actionMenu.actionMenuBg = this.add.rectangle(cx, h - menuH / 2 - 10, w - 20, menuH, 0x1a1a2e, 0.95);
+    this.actionMenu.actionMenuBg = this.add.rectangle(cx, menuY, w - 20, menuH, 0x1a1a2e, 0.95);
     this.actionMenu.actionMenuBg.setStrokeStyle(2, COLORS.borderLight);
-    new NinePatchPanel(this, cx, h - menuH / 2 - 10, w - 20, menuH, {
+    new NinePatchPanel(this, cx, menuY, w - 20, menuH, {
       fillColor: COLORS.bgPanel, fillAlpha: 0.95, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 6,
     });
 
@@ -114,12 +123,15 @@ export class BattleUIScene extends Phaser.Scene {
       if (compact) {
         const spacing = w / 5;
         x = spacing * (i + 1);
-        y = h - menuH / 2 - 10;
+        y = menuY;
       } else {
         const col = i % 2;
         const row = Math.floor(i / 2);
+        // Center the 2x2 grid inside the menu panel — was hard-coded to
+        // h-85/h-50, which clipped on tall portrait viewports because it
+        // ignored the per-orientation menu Y.
         x = cx - 80 + col * 160;
-        y = h - 85 + row * actionRowH;
+        y = menuY - actionRowH / 2 + row * actionRowH;
       }
       const t = this.add.text(
         x, y,
@@ -135,7 +147,7 @@ export class BattleUIScene extends Phaser.Scene {
 
     // ── SYNTH button (conditionally shown) ──
     this.actionMenu.synthText = this.add.text(
-      cx, h - 15,
+      cx, menuY + menuH / 2 + 8,
       'SYNTH', { ...FONTS.menuItem, fontSize: actionFontSize },
     ).setOrigin(0.5).setVisible(false).setInteractive({ useHandCursor: true });
     this.actionMenu.synthText.setPadding(12, 8, 12, 8);
@@ -143,7 +155,7 @@ export class BattleUIScene extends Phaser.Scene {
 
     // ── Partner action indicator (double battles only) ──
     this.actionMenu.partnerActionText = this.add.text(
-      30, h - (compact ? 112 : 152), '',
+      30, messageY - 22, '',
       { ...FONTS.caption, fontSize: mobileFontSize(11), color: '#aaddff', fontStyle: 'italic' },
     ).setDepth(50).setVisible(false);
 
@@ -161,22 +173,26 @@ export class BattleUIScene extends Phaser.Scene {
       const { w, h, cx } = ui(this);
       const cpt = isMobile() && (window.innerHeight < 400 || h < 400);
       const mH = cpt ? 50 : 100;
+      const isP = h > w;
+      const bReserve = isMobile() && isP ? 100 : 10;
+      const mY = h - mH / 2 - bReserve;
+      const msgY = mY - mH / 2 - 20;
       this.messageHandler.weatherText?.setPosition(cx, 12);
-      this.messageHandler.messageText.setPosition(30, h - (cpt ? 92 : 132));
-      this.actionMenu.actionMenuBg.setPosition(cx, h - mH / 2 - 10).setSize(w - 20, mH);
+      this.messageHandler.messageText.setPosition(30, msgY - 12);
+      this.actionMenu.actionMenuBg.setPosition(cx, mY).setSize(w - 20, mH);
+      const rowH = Math.round(35 * MOBILE_SCALE);
       this.actionMenu.actionTexts.forEach((t, i) => {
         if (cpt) {
           const sp = w / 5;
-          t.setPosition(sp * (i + 1), h - mH / 2 - 10);
+          t.setPosition(sp * (i + 1), mY);
         } else {
           const col = i % 2;
           const row = Math.floor(i / 2);
-          const rowH = Math.round(35 * MOBILE_SCALE);
-          t.setPosition(cx - 80 + col * 160, h - 85 + row * rowH);
+          t.setPosition(cx - 80 + col * 160, mY - rowH / 2 + row * rowH);
         }
       });
-      this.actionMenu.synthText?.setPosition(cx, h - 15);
-      this.actionMenu.partnerActionText?.setPosition(30, h - (cpt ? 112 : 152));
+      this.actionMenu.synthText?.setPosition(cx, mY + mH / 2 + 8);
+      this.actionMenu.partnerActionText?.setPosition(30, msgY - 22);
     });
   }
 

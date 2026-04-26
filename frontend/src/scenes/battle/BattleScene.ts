@@ -106,6 +106,11 @@ export class BattleScene extends Phaser.Scene {
     const data = this.initData;
     const gm = GameManager.getInstance();
 
+    // Sleep overworld HUD overlays so they don't render on top of the
+    // battle scene (minimap, quest tracker, party row would otherwise sit
+    // above the player HP bar / action menu).
+    this.hideOverworldHud();
+
     // Store return info passed through from TransitionScene
     this.returnScene = (data?._returnScene as string) ?? 'OverworldScene';
     this.returnData = (data?._returnData as Record<string, unknown>) ?? {};
@@ -145,10 +150,14 @@ export class BattleScene extends Phaser.Scene {
 
     // ── Proportional battle positions ──
     // Enemy side: upper-right area; Player side: lower-left area
+    // Portrait viewports are very tall, so move both Pokemon higher and
+    // tighter together — otherwise the player back sprite collides with
+    // the message bar / action menu reserved at the bottom.
+    const isPortraitBattle = h > w;
     const enemyX = Math.round(w * 0.65);
-    const enemyY = Math.round(h * 0.30);
+    const enemyY = Math.round(h * (isPortraitBattle ? 0.22 : 0.30));
     const playerX = Math.round(w * 0.25);
-    const playerY = Math.round(h * 0.65);
+    const playerY = Math.round(h * (isPortraitBattle ? 0.50 : 0.65));
     const platformYOffset = Math.round(h * 0.05); // platform sits slightly below sprite
 
     // ── Draw battle scene background ──
@@ -282,7 +291,7 @@ export class BattleScene extends Phaser.Scene {
     this.tweens.add({ targets: [this.enemyHpBg, this.enemyHpBar], y: enemyHpY, duration: 400, delay: introDelay + slideDuration, ease: 'Back.easeOut' });
 
     // Player info slides up — target Y positions proportional to viewport
-    const playerInfoY = Math.round(h * 0.52);
+    const playerInfoY = Math.round(h * (isPortraitBattle ? 0.40 : 0.52));
     const playerNameY = playerInfoY - 25;
     const playerHpY = playerInfoY + 5;
     const playerHpTextY = playerHpY - 6;
@@ -671,6 +680,28 @@ export class BattleScene extends Phaser.Scene {
   shutdown(): void {
     this.tweens.killAll();
     this.time.removeAllEvents();
+    // Wake the overworld HUD overlays so they reappear when we return to
+    // the OverworldScene.
+    this.showOverworldHud();
+  }
+
+  /** Overworld HUD scenes that render above the canvas — sleep during battle. */
+  private readonly hudOverlayKeys = [
+    'MinimapScene',
+    'QuestTrackerScene',
+    'PartyQuickViewScene',
+  ];
+
+  private hideOverworldHud(): void {
+    for (const key of this.hudOverlayKeys) {
+      if (this.scene.isActive(key)) this.scene.sleep(key);
+    }
+  }
+
+  private showOverworldHud(): void {
+    for (const key of this.hudOverlayKeys) {
+      if (this.scene.isSleeping(key)) this.scene.wake(key);
+    }
   }
 }
 

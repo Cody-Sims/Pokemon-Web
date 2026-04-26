@@ -55,50 +55,95 @@ export class StarterSelectScene extends Phaser.Scene {
     // Darken background
     this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, 0x000000, 0.7);
 
-    // Title
-    this.add.text(layout.cx, 50, 'Choose Your Starter Pokémon!', {
-      ...FONTS.title, fontSize: mobileFontSize(24),
+    // Adapt to portrait — narrow viewport stacks cards vertically and uses
+    // smaller cards so all three fit without overlapping or clipping.
+    const isPortrait = layout.h > layout.w;
+    // Title (smaller in portrait so it doesn't dominate)
+    const titleFontPx = isPortrait ? 18 : 24;
+    this.add.text(layout.cx, isPortrait ? 28 : 50, 'Choose Your Starter Pokémon!', {
+      ...FONTS.title, fontSize: mobileFontSize(titleFontPx),
     }).setOrigin(0.5);
 
-    // Draw three starter cards (BUG-080: use relative spacing)
-    const cardSpacing = Math.min(220, (layout.w - 60) / 3);
-    const startX = layout.cx - cardSpacing;
+    // Card sizing & layout
+    let cardW: number;
+    let cardH: number;
+    let positions: { x: number; y: number }[];
+    if (isPortrait) {
+      // Vertical stack with 12px gaps. Reserve top (title ~50) and bottom
+      // (hint ~50) so all 3 cards + spacing fit.
+      const topReserve = 60;
+      const bottomReserve = 70;
+      const available = layout.h - topReserve - bottomReserve;
+      const gap = 8;
+      cardH = Math.min(190, Math.floor((available - gap * 2) / 3));
+      cardW = Math.min(layout.w - 32, 320);
+      positions = [0, 1, 2].map(i => ({
+        x: layout.cx,
+        y: topReserve + cardH / 2 + i * (cardH + gap),
+      }));
+    } else {
+      cardW = 180;
+      cardH = 240;
+      const cardSpacing = Math.min(220, (layout.w - 60) / 3);
+      const startX = layout.cx - cardSpacing;
+      positions = [0, 1, 2].map(i => ({
+        x: startX + i * cardSpacing,
+        y: layout.cy - 20,
+      }));
+    }
+
     for (let i = 0; i < 3; i++) {
       const s = this.starters[i];
-      const cx = startX + i * cardSpacing;
-      const cy = layout.cy - 20;
+      const { x: cx, y: cy } = positions[i];
 
       const container = this.add.container(cx, cy);
 
       // Card background
-      const bg = this.add.rectangle(0, 0, 180, 240, 0x222222, 0.9)
+      const bg = this.add.rectangle(0, 0, cardW, cardH, 0x222222, 0.9)
         .setStrokeStyle(3, s.color);
       container.add(bg);
 
-      // Pokémon sprite
+      // In portrait we lay the card out horizontally: sprite on the left,
+      // name + type + level stacked on the right. Landscape keeps the
+      // legacy vertical layout (sprite on top, text below).
       const data = pokemonData[s.id];
-      if (data) {
-        const sprite = this.add.image(0, -40, data.spriteKeys.front).setScale(2);
-        container.add(sprite);
+      if (isPortrait) {
+        const spriteX = -cardW / 2 + cardH / 2;
+        if (data) {
+          const sprite = this.add.image(spriteX, 0, data.spriteKeys.front).setScale(1.6);
+          container.add(sprite);
+        }
+        const textX = spriteX + cardH / 2 + 12;
+        const nameText = this.add.text(textX, -cardH * 0.20, s.name, {
+          fontSize: mobileFontSize(18), color: '#ffffff', fontStyle: 'bold',
+        }).setOrigin(0, 0.5);
+        container.add(nameText);
+        const typeText = this.add.text(textX, 4, s.type, {
+          fontSize: mobileFontSize(13), color: '#cccccc',
+        }).setOrigin(0, 0.5);
+        container.add(typeText);
+        const lvlText = this.add.text(textX, cardH * 0.20, 'Lv. 5', {
+          fontSize: mobileFontSize(13), color: '#aaaaaa',
+        }).setOrigin(0, 0.5);
+        container.add(lvlText);
+      } else {
+        if (data) {
+          const sprite = this.add.image(0, -40, data.spriteKeys.front).setScale(2);
+          container.add(sprite);
+        }
+        const nameText = this.add.text(0, 50, s.name, {
+          fontSize: mobileFontSize(18), color: '#ffffff', fontStyle: 'bold',
+        }).setOrigin(0.5);
+        container.add(nameText);
+        const typeText = this.add.text(0, 75, s.type, {
+          fontSize: mobileFontSize(14), color: '#cccccc',
+        }).setOrigin(0.5);
+        container.add(typeText);
+        const lvlText = this.add.text(0, 95, 'Lv. 5', {
+          fontSize: mobileFontSize(14), color: '#aaaaaa',
+        }).setOrigin(0.5);
+        container.add(lvlText);
       }
-
-      // Name
-      const nameText = this.add.text(0, 50, s.name, {
-        fontSize: mobileFontSize(18), color: '#ffffff', fontStyle: 'bold',
-      }).setOrigin(0.5);
-      container.add(nameText);
-
-      // Type
-      const typeText = this.add.text(0, 75, s.type, {
-        fontSize: mobileFontSize(14), color: '#cccccc',
-      }).setOrigin(0.5);
-      container.add(typeText);
-
-      // Level
-      const lvlText = this.add.text(0, 95, 'Lv. 5', {
-        fontSize: mobileFontSize(14), color: '#aaaaaa',
-      }).setOrigin(0.5);
-      container.add(lvlText);
 
       // Make interactive
       bg.setInteractive({ useHandCursor: true });
@@ -109,9 +154,11 @@ export class StarterSelectScene extends Phaser.Scene {
     }
 
     // Hint text
-    const hint = isMobile() ? 'Swipe or tap to choose' : 'Use ← → to choose, Enter to confirm';
-    this.add.text(layout.cx, layout.h - 50, hint, {
-      fontSize: mobileFontSize(14), color: '#888888',
+    const hint = isMobile()
+      ? (isPortrait ? 'Tap a card to choose' : 'Swipe or tap to choose')
+      : 'Use ← → to choose, Enter to confirm';
+    this.add.text(layout.cx, layout.h - (isPortrait ? 28 : 50), hint, {
+      fontSize: mobileFontSize(13), color: '#888888',
     }).setOrigin(0.5);
 
     this.updateCursor();
@@ -123,6 +170,17 @@ export class StarterSelectScene extends Phaser.Scene {
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
     this.input.keyboard!.on('keydown-RIGHT', () => {
+      this.cursor = (this.cursor + 1) % 3;
+      this.updateCursor();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
+    });
+    // Portrait stack — also wire UP/DOWN so arrow keys feel natural.
+    this.input.keyboard!.on('keydown-UP', () => {
+      this.cursor = (this.cursor - 1 + 3) % 3;
+      this.updateCursor();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
+    });
+    this.input.keyboard!.on('keydown-DOWN', () => {
       this.cursor = (this.cursor + 1) % 3;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
