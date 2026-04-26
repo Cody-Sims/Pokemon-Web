@@ -81,7 +81,7 @@ export const route1: MapDefinition = {
       name: 'Townsperson',
       tileX: 3,
       tileY: 23,
-      textureKey: 'npc-female-3',
+      textureKey: 'npc-female-1',
       facing: 'right',
       dialogue: [
         'I\'ve heard Pikachu live on this route...',

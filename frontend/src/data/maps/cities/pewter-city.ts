@@ -67,7 +67,7 @@ export const pewterCity: MapDefinition = {
       name: 'Townsperson',
       tileX: 10,
       tileY: 25,
-      textureKey: 'npc-male-3',
+      textureKey: 'npc-male-2',
       facing: 'right',
       dialogue: [
         'The Pewter Museum of Science is famous!',
@@ -114,7 +114,7 @@ export const pewterCity: MapDefinition = {
       name: 'Delivery Worker',
       tileX: 8,
       tileY: 20,
-      textureKey: 'npc-female-3',
+      textureKey: 'npc-female-1',
       facing: 'right',
       dialogue: ['I work at the museum. Fascinating place!'],
       flagDialogue: [

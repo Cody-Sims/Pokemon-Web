@@ -104,17 +104,20 @@ export class Trainer extends NPC {
       }
 
       let completed = 0;
+      const stepDuration = 200;
       const doStep = () => {
+        this.playWalkAnim(stepDuration);
         this.scene.tweens.add({
           targets: this,
           x: this.x + (this.facing === 'left' || this.facing === 'right' ? pixelStepX : 0),
           y: this.y + (this.facing === 'up' || this.facing === 'down' ? pixelStepY : 0),
-          duration: 200,
+          duration: stepDuration,
           onComplete: () => {
             completed++;
             if (completed < steps) {
               doStep();
             } else {
+              this.stopWalkAnim();
               resolve();
             }
           },

@@ -60,7 +60,7 @@ export const shatteredIslesTemple: MapDefinition = {
       name: 'Father',
       tileX: 9,
       tileY: 4,
-      textureKey: 'npc-professor',
+      textureKey: 'npc-oak',
       facing: 'down',
       requireFlag: 'quest_fatherTrail_complete',
       triggerCutscene: 'father-reunion',

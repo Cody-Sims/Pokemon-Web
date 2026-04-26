@@ -16,7 +16,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
   'willow-lab-intro': {
     id: 'willow-lab-intro',
     actions: [
-      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-professor', lines: [
+      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-oak', lines: [
         'Welcome to my laboratory!',
         'I study the Pokémon of the Aurum Region.',
         'But first, choose your partner Pokémon!',
@@ -158,7 +158,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
       ]},
       { type: 'fadeFromBlack', duration: 800 },
       { type: 'wait', ms: 300 },
-      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-professor', lines: [
+      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-oak', lines: [
         'Ah, you must be the new arrival!',
         'Welcome to the Aurum Region, young Trainer!',
         'Your mother told me you\'d be coming.',
@@ -219,7 +219,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
         'The Professor is coming with us!',
         'Director\'s orders — no exceptions!',
       ]},
-      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-professor', lines: [
+      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-oak', lines: [
         'No! You can\'t—!',
         '...Take my research chip! Don\'t let them have it!',
       ]},
@@ -281,7 +281,7 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
       { type: 'dialogue', speaker: 'Narrator', lines: [
         'You find Professor Willow in a containment cell, weakened but alive.',
       ]},
-      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-professor', lines: [
+      { type: 'dialogue', speaker: 'Prof. Willow', portraitKey: 'npc-oak', lines: [
         'You came...! I knew you would.',
         'Listen carefully — while I was captive, I mapped their ley-line network.',
         'This data can shut down the Aether conduit at the League.',

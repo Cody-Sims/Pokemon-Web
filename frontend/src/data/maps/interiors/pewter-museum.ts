@@ -31,7 +31,7 @@ export const pewterMuseum: MapDefinition = {
       name: 'Museum Guide',
       tileX: 4,
       tileY: 5,
-      textureKey: 'npc-female-3',
+      textureKey: 'npc-female-1',
       facing: 'right',
       dialogue: [
         'Welcome to the Pewter Museum of Science!',
@@ -85,7 +85,7 @@ export const pewterMuseum: MapDefinition = {
       id: 'museum-fossil-revival',
       tileX: 8,
       tileY: 9,
-      textureKey: 'npc-male-3',
+      textureKey: 'npc-male-2',
       facing: 'up',
       dialogue: [
         'I can revive fossils into living Pokémon!',

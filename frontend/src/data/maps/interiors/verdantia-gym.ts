@@ -16,11 +16,11 @@ export const verdantiaGym: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'verdantia-gym-beauty', name: 'Beauty', trainerId: 'beauty-1', tileX: 7, tileY: 10,
-      textureKey: 'npc-female-3', facing: 'left', lineOfSight: 3 },
+      textureKey: 'npc-female-1', facing: 'left', lineOfSight: 3 },
     { id: 'verdantia-gym-picnicker', name: 'Picnicker', trainerId: 'picnicker-1', tileX: 3, tileY: 6,
-      textureKey: 'npc-female-4', facing: 'right', lineOfSight: 3 },
+      textureKey: 'npc-female-2', facing: 'right', lineOfSight: 3 },
     { id: 'verdantia-gym-leader', name: 'Ivy', trainerId: 'gym-ivy', tileX: 4, tileY: 2,
-      textureKey: 'npc-female-5', facing: 'down', lineOfSight: 6 },
+      textureKey: 'npc-female-1', facing: 'down', lineOfSight: 6 },
   ],
   warps: [
     { tileX: 3, tileY: 13, targetMap: 'verdantia-village', targetSpawnId: 'from-gym' },

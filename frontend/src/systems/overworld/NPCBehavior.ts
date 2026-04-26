@@ -144,12 +144,14 @@ export class NPCBehaviorController {
 
     // Tween the NPC one tile
     this.isMoving = true;
+    this.npc.playWalkAnim(WALK_DURATION);
     this.scene.tweens.add({
       targets: this.npc,
       x: targetX * TILE_SIZE + TILE_SIZE / 2,
       y: targetY * TILE_SIZE + TILE_SIZE / 2,
       duration: WALK_DURATION,
       onComplete: () => {
+        this.npc.stopWalkAnim();
         this.isMoving = false;
       },
     });

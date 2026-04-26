@@ -34,6 +34,7 @@ import {
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
 import { mobileFontSize } from '@ui/theme';
+import { EmoteBubble } from '@systems/rendering/EmoteBubble';
 import { hintText } from '@utils/hint-text';
 import { MapPreloader } from '@systems/engine/MapPreloader';
 import { EventManager } from '@managers/EventManager';
@@ -635,7 +636,6 @@ export class OverworldScene extends Phaser.Scene {
             this.scene.pause();
             this.scene.launch('DialogueScene', {
               dialogue: ['The way ahead is blocked...'],
-              speaker: 'Notice',
             });
             // AUDIT-014: Resume when dialogue ends to prevent softlock
             this.scene.get('DialogueScene').events.once('shutdown', () => {
@@ -650,7 +650,6 @@ export class OverworldScene extends Phaser.Scene {
           this.scene.pause();
           this.scene.launch('DialogueScene', {
             dialogue: ['You should go see Prof. Willow first!'],
-            speaker: 'Notice',
           });
           // AUDIT-015: Resume when dialogue ends to prevent softlock
           this.scene.get('DialogueScene').events.once('shutdown', () => {
@@ -749,19 +748,15 @@ export class OverworldScene extends Phaser.Scene {
 
     const { x: px, y: py } = this.player.getTilePosition();
 
-    // Exclamation mark above trainer
-    const excl = this.add.text(trainer.x, trainer.y - 30, '!', {
-      fontSize: mobileFontSize(24), color: '#ff0000', fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(10);
+    // Exclamation emote above trainer
+    EmoteBubble.show(this, trainer, 'exclamation', 600);
 
     // After a brief pause, trainer walks toward the player
     this.time.delayedCall(600, () => {
       // NEW-012: Guard against scene/sprite destruction during delay
       if (!this.scene.isActive() || !trainer.active) {
-        excl.destroy();
         return;
       }
-      excl.destroy();
 
       // Trainer walks toward the player (stops 1 tile away)
       trainer.walkToward(px, py).then(() => {
@@ -780,7 +775,6 @@ export class OverworldScene extends Phaser.Scene {
         this.scene.pause();
         this.scene.launch('DialogueScene', {
           dialogue: tData?.dialogue?.before ?? ['...'],
-          speaker: tData?.name ?? 'Trainer',
           portraitKey: tData?.spriteKey,
         });
 

@@ -51,8 +51,8 @@ export const route8: MapDefinition = {
       ] },
   ],
   trainers: [
-    { id: 'route8-ace-1', name: 'Ace Trainer', trainerId: 'ace-trainer-4', tileX: 14, tileY: 6, textureKey: 'npc-male-3', facing: 'left', lineOfSight: 4 },
-    { id: 'route8-ace-2', name: 'Ace Trainer', trainerId: 'ace-trainer-5', tileX: 6, tileY: 11, textureKey: 'npc-female-3', facing: 'right', lineOfSight: 4 },
+    { id: 'route8-ace-1', name: 'Ace Trainer', trainerId: 'ace-trainer-4', tileX: 14, tileY: 6, textureKey: 'npc-male-2', facing: 'left', lineOfSight: 4 },
+    { id: 'route8-ace-2', name: 'Ace Trainer', trainerId: 'ace-trainer-5', tileX: 6, tileY: 11, textureKey: 'npc-female-1', facing: 'right', lineOfSight: 4 },
     { id: 'route8-grunt-9', name: 'Synthesis Grunt', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 18, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 3 },
     { id: 'route8-kael-4', name: 'Kael', trainerId: 'rival-4', tileX: 10, tileY: 22, textureKey: 'rival', facing: 'up', lineOfSight: 5,
       condition: '!rival-4' },

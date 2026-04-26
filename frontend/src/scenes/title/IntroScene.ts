@@ -84,8 +84,8 @@ export class IntroScene extends Phaser.Scene {
     // Container for slide content
     this.slideContainer = this.add.container(0, 0);
 
-    // Professor sprite (using existing npc-professor atlas)
-    this.professorSprite = this.add.image(width / 2, height * 0.35, 'npc-professor', 0)
+    // Professor sprite (using npc-oak atlas)
+    this.professorSprite = this.add.image(width / 2, height * 0.35, 'npc-oak', 0)
       .setScale(6)
       .setAlpha(0);
     this.slideContainer.add(this.professorSprite);

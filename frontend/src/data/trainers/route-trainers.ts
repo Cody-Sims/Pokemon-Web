@@ -462,7 +462,7 @@ export const routeTrainers: Record<string, TrainerData> = {
 
   // ─── Route 5: Verdant Path — nature trainers ───
   'camper-4': {
-    id: 'camper-4', name: 'Camper Rosa', spriteKey: 'npc-female-4',
+    id: 'camper-4', name: 'Camper Rosa', spriteKey: 'npc-female-2',
     party: [
       { pokemonId: 25, level: 24, moves: ['thunderbolt', 'quick-attack', 'double-team'] },
       { pokemonId: 44, level: 23, moves: ['acid', 'sleep-powder', 'razor-leaf'] },
@@ -489,7 +489,7 @@ export const routeTrainers: Record<string, TrainerData> = {
 
   // ─── Verdantia Gym: Nature-themed trainers ───
   'beauty-1': {
-    id: 'beauty-1', name: 'Beauty Lily', spriteKey: 'npc-female-3',
+    id: 'beauty-1', name: 'Beauty Lily', spriteKey: 'npc-female-1',
     party: [
       { pokemonId: 45, level: 27, moves: ['petal-dance', 'sleep-powder', 'acid', 'mega-drain'] },
       { pokemonId: 47, level: 27, moves: ['spore', 'slash', 'mega-drain', 'growth'] },
@@ -501,7 +501,7 @@ export const routeTrainers: Record<string, TrainerData> = {
     rewardMoney: 540,
   },
   'picnicker-1': {
-    id: 'picnicker-1', name: 'Picnicker Daisy', spriteKey: 'npc-female-4',
+    id: 'picnicker-1', name: 'Picnicker Daisy', spriteKey: 'npc-female-2',
     party: [
       { pokemonId: 114, level: 28, moves: ['vine-whip', 'bind', 'sleep-powder', 'growth'] },
       { pokemonId: 2, level: 27, moves: ['razor-leaf', 'vine-whip', 'sleep-powder', 'growth'] },

@@ -174,7 +174,7 @@ export const voltaraCity: MapDefinition = {
       name: 'Prof. Willow',
       tileX: 11,
       tileY: 9,
-      textureKey: 'npc-professor',
+      textureKey: 'npc-oak',
       facing: 'down',
       dialogue: [
         'A scientist runs up to you, panicked!',

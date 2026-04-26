@@ -37,9 +37,9 @@ export const scalecrestCitadel: MapDefinition = {
   npcs: [
     { id: 'scalecrest-sign', tileX: 13, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
       dialogue: ['SCALECREST CITADEL', '"Ancestral Fortress of the Dragon Keepers"'] },
-    { id: 'scalecrest-npc', name: 'Townsperson', tileX: 16, tileY: 6, textureKey: 'npc-male-5', facing: 'left',
+    { id: 'scalecrest-npc', name: 'Townsperson', tileX: 16, tileY: 6, textureKey: 'npc-male-3', facing: 'left',
       dialogue: ['Drake is our Gym Leader. His dragons descend from ancient guardians.', 'Only the worthy may pass!'] },
-    { id: 'tutor-scalecrest', name: 'Move Tutor', tileX: 8, tileY: 13, textureKey: 'npc-male-5', facing: 'right',
+    { id: 'tutor-scalecrest', name: 'Move Tutor', tileX: 8, tileY: 13, textureKey: 'npc-male-3', facing: 'right',
       dialogue: ['Dragon Tutor: I teach the ancient dragon arts.', 'Dragon Tutor: Bring me Heart Scales and I shall share my knowledge.'],
       interactionType: 'move-tutor', interactionData: 'tutor-scalecrest' },
     { id: 'scalecrest-wren', name: 'Wren', tileX: 16, tileY: 15, textureKey: 'npc-male-2', facing: 'left',

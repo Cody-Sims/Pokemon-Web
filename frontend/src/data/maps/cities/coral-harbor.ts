@@ -58,7 +58,7 @@ export const coralHarbor: MapDefinition = {
       name: 'Townsperson',
       tileX: 8,
       tileY: 6,
-      textureKey: 'npc-male-5',
+      textureKey: 'npc-male-3',
       facing: 'left',
       dialogue: [
         'Coral is the Gym Leader here!',
@@ -152,7 +152,7 @@ export const coralHarbor: MapDefinition = {
       name: 'Zara',
       tileX: 10,
       tileY: 17,
-      textureKey: 'npc-female-6',
+      textureKey: 'npc-female-2',
       facing: 'down',
       dialogue: [
         'Philanthropist: Oh, hello! I\'m just a traveling philanthropist.',

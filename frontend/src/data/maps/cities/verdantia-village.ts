@@ -87,7 +87,7 @@ export const verdantiaVillage: MapDefinition = {
       name: 'Hana',
       tileX: 20,
       tileY: 11,
-      textureKey: 'npc-female-5',
+      textureKey: 'npc-female-1',
       facing: 'left',
       dialogue: [
         'Hana: Welcome to my berry garden!',

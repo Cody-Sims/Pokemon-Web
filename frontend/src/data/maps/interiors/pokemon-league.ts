@@ -117,7 +117,7 @@ export const pokemonLeagueTheron: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'elite-theron', name: 'Theron', trainerId: 'elite-theron', tileX: 5, tileY: 3,
-      textureKey: 'npc-male-5', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-male-3', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
     // Back to Nerida
@@ -159,7 +159,7 @@ export const pokemonLeagueLysandra: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'elite-lysandra', name: 'Lysandra', trainerId: 'elite-lysandra', tileX: 5, tileY: 3,
-      textureKey: 'npc-female-8', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-female-3', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
     // Back to Theron

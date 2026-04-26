@@ -34,7 +34,7 @@ export interface CutsceneDefinition {
 // ─── Minimal interface so CutsceneEngine doesn't depend on the concrete OverworldScene class ───
 
 export interface CutsceneSceneAccess {
-  npcs: { npcId: string; x: number; y: number; faceDirection(dir: Direction): void; setFrame(frame: string): void; setFlipX(flip: boolean): void; texture: { key: string } }[];
+  npcs: { npcId: string; x: number; y: number; faceDirection(dir: Direction): void; playWalkAnim(duration: number): void; stopWalkAnim(): void; setFrame(frame: string): void; setFlipX(flip: boolean): void; texture: { key: string } }[];
   player: {
     x: number; y: number;
     gridMovement: {
@@ -146,8 +146,10 @@ export class CutsceneEngine {
       const targetX = npc.x + dx * TILE_SIZE;
       const targetY = npc.y + dy * TILE_SIZE;
       npc.faceDirection(action.direction);
+      npc.playWalkAnim(speed);
       await this.tweenTo(npc as unknown as Phaser.GameObjects.Sprite, targetX, targetY, speed);
     }
+    npc.stopWalkAnim();
   }
 
   private execFaceNPC(action: { npcId: string; direction: Direction }): Promise<void> {

@@ -64,7 +64,7 @@ export const rematchTrainers: Record<string, TrainerData> = {
   },
 
   'rematch-ivy': {
-    id: 'rematch-ivy', name: 'Gym Leader Ivy', spriteKey: 'npc-female-5',
+    id: 'rematch-ivy', name: 'Gym Leader Ivy', spriteKey: 'npc-female-1',
     party: [
       { pokemonId: 3, level: 61, moves: ['solar-beam', 'sleep-powder', 'sludge', 'growth'] },
       { pokemonId: 71, level: 60, moves: ['razor-leaf', 'sleep-powder', 'swords-dance', 'wrap'] },
@@ -98,7 +98,7 @@ export const rematchTrainers: Record<string, TrainerData> = {
   },
 
   'rematch-morwen': {
-    id: 'rematch-morwen', name: 'Gym Leader Morwen', spriteKey: 'npc-female-6',
+    id: 'rematch-morwen', name: 'Gym Leader Morwen', spriteKey: 'npc-female-2',
     party: [
       { pokemonId: 94, level: 61, moves: ['shadow-ball', 'psychic', 'hypnosis', 'dream-eater'] },
       { pokemonId: 93, level: 60, moves: ['shadow-ball', 'hypnosis', 'dream-eater', 'confuse-ray'] },
@@ -115,7 +115,7 @@ export const rematchTrainers: Record<string, TrainerData> = {
   },
 
   'rematch-drake': {
-    id: 'rematch-drake', name: 'Gym Leader Drake', spriteKey: 'npc-male-5',
+    id: 'rematch-drake', name: 'Gym Leader Drake', spriteKey: 'npc-male-3',
     party: [
       { pokemonId: 149, level: 62, moves: ['hyper-beam', 'dragon-rage', 'thunder', 'ice-beam'] },
       { pokemonId: 130, level: 61, moves: ['hydro-pump', 'ice-beam', 'earthquake', 'dragon-rage'] },
@@ -132,7 +132,7 @@ export const rematchTrainers: Record<string, TrainerData> = {
   },
 
   'rematch-solara': {
-    id: 'rematch-solara', name: 'Gym Leader Solara', spriteKey: 'npc-female-9',
+    id: 'rematch-solara', name: 'Gym Leader Solara', spriteKey: 'npc-female-4',
     party: [
       { pokemonId: 6, level: 62, moves: ['flamethrower', 'dragon-rage', 'slash', 'earthquake'] },
       { pokemonId: 59, level: 61, moves: ['flamethrower', 'fire-blast', 'take-down', 'agility'] },
@@ -168,7 +168,7 @@ export const rematchTrainers: Record<string, TrainerData> = {
   },
 
   'rematch-theron': {
-    id: 'rematch-theron', name: 'Elite Four Theron', spriteKey: 'npc-male-5',
+    id: 'rematch-theron', name: 'Elite Four Theron', spriteKey: 'npc-male-3',
     party: [
       { pokemonId: 68, level: 70, moves: ['karate-chop', 'earthquake', 'rock-slide', 'body-slam'] },
       { pokemonId: 76, level: 71, moves: ['earthquake', 'rock-slide', 'explosion', 'body-slam'] },
@@ -185,7 +185,7 @@ export const rematchTrainers: Record<string, TrainerData> = {
   },
 
   'rematch-lysandra': {
-    id: 'rematch-lysandra', name: 'Elite Four Lysandra', spriteKey: 'npc-female-8',
+    id: 'rematch-lysandra', name: 'Elite Four Lysandra', spriteKey: 'npc-female-3',
     party: [
       { pokemonId: 65, level: 72, moves: ['psychic', 'shadow-ball', 'recover', 'reflect'] },
       { pokemonId: 94, level: 71, moves: ['shadow-ball', 'psychic', 'hypnosis', 'dream-eater'] },
