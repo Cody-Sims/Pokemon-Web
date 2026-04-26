@@ -113,7 +113,7 @@ export class DialogueScene extends Phaser.Scene {
         cornerRadius: 4,
       });
       this.portraitBg.setDepth(DIALOGUE_DEPTH + 1);
-      this.portrait = this.add.sprite(pX, pY, this.portraitKey!, 'walk-down-0')
+      this.portrait = this.add.sprite(pX, pY, this.portraitKey!, 'walk-down-1')
         .setDisplaySize(portraitSize, portraitSize)
         .setDepth(DIALOGUE_DEPTH + 2);
     }
@@ -428,6 +428,10 @@ export class DialogueScene extends Phaser.Scene {
     this.portrait = undefined;
     this.portraitBg?.destroy();
     this.portraitBg = undefined;
+    this.speakerPanel?.destroy();
+    this.speakerPanel = undefined;
+    this.speakerText?.destroy();
+    this.speakerText = undefined;
     // Ensure hints are restored if scene is stopped externally
     const hintsEl = document.getElementById('desktop-hints');
     if (hintsEl) hintsEl.style.display = '';

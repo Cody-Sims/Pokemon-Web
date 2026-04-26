@@ -635,6 +635,7 @@ export class OverworldScene extends Phaser.Scene {
             this.scene.pause();
             this.scene.launch('DialogueScene', {
               dialogue: ['The way ahead is blocked...'],
+              speaker: 'Notice',
             });
             // AUDIT-014: Resume when dialogue ends to prevent softlock
             this.scene.get('DialogueScene').events.once('shutdown', () => {
@@ -649,6 +650,7 @@ export class OverworldScene extends Phaser.Scene {
           this.scene.pause();
           this.scene.launch('DialogueScene', {
             dialogue: ['You should go see Prof. Willow first!'],
+            speaker: 'Notice',
           });
           // AUDIT-015: Resume when dialogue ends to prevent softlock
           this.scene.get('DialogueScene').events.once('shutdown', () => {
@@ -778,6 +780,7 @@ export class OverworldScene extends Phaser.Scene {
         this.scene.pause();
         this.scene.launch('DialogueScene', {
           dialogue: tData?.dialogue?.before ?? ['...'],
+          speaker: tData?.name ?? 'Trainer',
           portraitKey: tData?.spriteKey,
         });
 
