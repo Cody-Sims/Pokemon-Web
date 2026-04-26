@@ -39,6 +39,8 @@ type safety, and Vite for fast bundling.
 - `.github/instructions/scenes.instructions.md` — Scene creation rules
 - `.github/instructions/entities.instructions.md` — Entity class rules
 - `.github/instructions/managers.instructions.md` — Manager singleton rules
+- `.github/instructions/systems.instructions.md` — Gameplay system rules
+- `.github/instructions/ui.instructions.md` — UI component rules
 - `.github/instructions/testing.instructions.md` — Test conventions and structure
 
 ## Commands
