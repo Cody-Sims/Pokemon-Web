@@ -23,7 +23,7 @@ export interface NpcSpawn {
   /** On first interaction, give this item to the player (requires setsFlag to gate). */
   givesItem?: string;
   /** Special interaction type instead of plain dialogue. */
-  interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select' | 'name-rater' | 'move-tutor' | 'tag-battle' | 'show-pokemon' | 'wild-encounter' | 'fossil-revival';
+  interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select' | 'name-rater' | 'move-tutor' | 'tag-battle' | 'show-pokemon' | 'wild-encounter' | 'fossil-revival' | 'berry-tree';
   /** Extra data for the interaction (e.g. tutorId for move-tutor). */
   interactionData?: string;
   /** Idle behavior config (look-around, wander, pace). */
@@ -69,7 +69,7 @@ export interface ObjectSpawn {
   /** On first interaction, give this item to the player (requires setsFlag to gate). */
   givesItem?: string;
   /** Special interaction type instead of plain dialogue. */
-  interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select' | 'name-rater' | 'move-tutor' | 'tag-battle' | 'show-pokemon' | 'wild-encounter' | 'fossil-revival';
+  interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select' | 'name-rater' | 'move-tutor' | 'tag-battle' | 'show-pokemon' | 'wild-encounter' | 'fossil-revival' | 'berry-tree';
   /** Extra data for the interaction (e.g. tutorId for move-tutor). */
   interactionData?: string;
   /** If set, play this cutscene (by key) when the player interacts instead of normal dialogue. */

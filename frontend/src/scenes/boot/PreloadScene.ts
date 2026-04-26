@@ -217,6 +217,30 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Generate procedural berry-tree texture (small bush + red berries) so
+    // berry-tree map objects (A.5) render with their own distinct sprite
+    // rather than reusing the item-ball icon. See OverworldInteraction's
+    // berry-tree handler for the harvest logic.
+    if (!this.textures.exists('berry-tree')) {
+      const g = this.add.graphics();
+      // Soft brown trunk
+      g.fillStyle(0x6b3a1f, 1);
+      g.fillRect(7, 11, 2, 4);
+      // Foliage
+      g.fillStyle(0x2c8a3a, 1);
+      g.fillCircle(8, 7, 6);
+      g.fillStyle(0x37a046, 1);
+      g.fillCircle(6, 6, 3);
+      g.fillCircle(10, 5, 3);
+      // Berries
+      g.fillStyle(0xd23045, 1);
+      g.fillCircle(5, 8, 1.4);
+      g.fillCircle(11, 8, 1.4);
+      g.fillCircle(8, 4, 1.4);
+      g.generateTexture('berry-tree', 16, 16);
+      g.destroy();
+    }
+
     // Initialize cry generator with audio context
     const audio = AudioManager.getInstance();
     audio.setScene(this);

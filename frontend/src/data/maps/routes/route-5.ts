@@ -153,7 +153,16 @@ export const route5: MapDefinition = {
         'It\'s designed to drain energy from captured Pokémon!',
         'The Synthesis Collective insignia is stamped on the side.',
       ],
-      setsFlag: 'found_synthesis_trap' }
+      setsFlag: 'found_synthesis_trap' },
+    // ─── Berry tree (A.5): regrows every ~300 game minutes (~30 real min). ───
+    {
+      id: 'route5-berry-tree-pecha',
+      tileX: 17,
+      tileY: 13,
+      textureKey: 'berry-tree', objectType: 'item-ball',
+      dialogue: ['A canopy berry tree, half-hidden by leaves.'],
+      interactionType: 'berry-tree',
+      interactionData: 'pecha-berry:300' }
   ],
   warps: [
     // North exit → Ironvale City

@@ -88,7 +88,7 @@ Fill gaps in underrepresented types so every type has at least 8 moves covering 
 
 ### A.5 Berry & Held-Item Expansion
 
-> **Status (2026-04-26)**: Held-item half done. Added Persim Berry confusion cure (and Lum-vs-confusion path), all four weather rocks (Heat / Damp / Smooth / Icy) wired to extend their matching weather by 3 turns via `HeldItemHandler.getWeatherDurationBonus()` consumed in `MoveExecutor`. Item entries added in `item-data.ts`. Berry trees on routes that regrow by `GameClock` time still pending. Verified by `tests/unit/battle/held-item-extended.test.ts`.
+> **Status (2026-04-26)**: Held-items done (see prior entry). Berry trees on routes shipped — Routes 1, 5, and 8 each carry a `berry-tree` object (Oran/Pecha/Sitrus) that regrows on a per-tree GameClock timer (240/300/480 game-minutes). Implementation: new `berry-tree` `interactionType`, `berryHarvests` log on `PlayerStateManager`, `getGameMinutes()` callback on `InteractionContext`, and a 16×16 procedural `berry-tree` texture generated in `PreloadScene`. Verified by `tests/unit/data/berry-trees.test.ts`. Remaining: full 15-berry rollout across more routes, but the system is complete.
 
 - 15 holdable berries (Sitrus, Lum, Chesto, Rawst, Aspear, Leppa, Oran, Persim, Pecha, Cheri, Figy, Wiki, Mago, Aguav, Iapapa).
 - Berry trees on routes that regrow with `GameClock` time.

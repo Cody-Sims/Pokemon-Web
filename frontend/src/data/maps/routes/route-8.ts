@@ -57,7 +57,12 @@ export const route8: MapDefinition = {
   ],
   objects: [
     { id: 'route8-sign', tileX: 11, tileY: 1, textureKey: 'sign-post', objectType: 'sign',
-      dialogue: ['ROUTE 8 — STORMBREAK PASS', 'Victory Road →  Cinderfall Town ↑'] }
+      dialogue: ['ROUTE 8 — STORMBREAK PASS', 'Victory Road →  Cinderfall Town ↑'] },
+    // ─── Berry tree (A.5): rare Sitrus Berry, regrows every ~480 game minutes (~48 real min). ───
+    { id: 'route8-berry-tree-sitrus', tileX: 16, tileY: 25, textureKey: 'berry-tree', objectType: 'item-ball',
+      dialogue: ['A wind-bent berry tree clings to the cliffside.'],
+      interactionType: 'berry-tree',
+      interactionData: 'sitrus-berry:480' }
   ],
   warps: [
     { tileX: 8, tileY: 0, targetMap: 'cinderfall-town', targetSpawnId: 'from-route-8' },

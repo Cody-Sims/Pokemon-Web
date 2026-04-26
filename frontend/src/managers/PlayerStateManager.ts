@@ -33,6 +33,8 @@ export class PlayerStateManager {
   /** Locked-in monotype for `monotype` runs, captured from the chosen starter. */
   private monotypeLock: PokemonType | null = null;
   private berryPlots: Record<string, unknown[]> = {};
+  /** Berry-tree harvest log: tree-id → game-clock minutes when last harvested. */
+  private berryHarvests: Record<string, number> = {};
   private gameClockMinutes = 0;
   private speedrunSplits: SpeedrunSplit[] = [];
   private settings: Record<string, string | number | boolean> = {
@@ -75,6 +77,7 @@ export class PlayerStateManager {
     this.challengeModes = [];
     this.monotypeLock = null;
     this.berryPlots = {};
+    this.berryHarvests = {};
     this.gameClockMinutes = 0;
     this.speedrunSplits = [];
   }
@@ -161,6 +164,22 @@ export class PlayerStateManager {
   getBerryPlots(): Record<string, unknown[]> { return this.berryPlots; }
   setBerryPlots(plots: Record<string, unknown[]>): void { this.berryPlots = plots; }
 
+  // ── Berry-tree harvest log ─────────────────────────────
+
+  /**
+   * Get the game-clock minutes at which the given berry tree was last
+   * harvested, or null if it has never been harvested.
+   */
+  getBerryHarvestTime(treeId: string): number | null {
+    return this.berryHarvests[treeId] ?? null;
+  }
+  /** Record a harvest of `treeId` at the current game-clock minute timestamp. */
+  recordBerryHarvest(treeId: string, gameMinutes: number): void {
+    this.berryHarvests[treeId] = gameMinutes;
+  }
+  /** Read-only view of all recorded berry harvests. */
+  getBerryHarvests(): Record<string, number> { return this.berryHarvests; }
+
   // ── Game Clock ─────────────────────────────────────────
 
   getGameClockMinutes(): number { return this.gameClockMinutes; }
@@ -199,6 +218,7 @@ export class PlayerStateManager {
       monotypeLock: this.monotypeLock,
       settings: this.settings,
       berryPlots: this.berryPlots,
+      berryHarvests: this.berryHarvests,
       gameClockMinutes: this.gameClockMinutes,
       speedrunSplits: this.speedrunSplits,
     };
@@ -218,6 +238,7 @@ export class PlayerStateManager {
     monotypeLock?: PokemonType | null;
     settings?: Record<string, string | number | boolean>;
     berryPlots?: Record<string, unknown[]>;
+    berryHarvests?: Record<string, number>;
     gameClockMinutes?: number;
     speedrunSplits?: SpeedrunSplit[];
   }): void {
@@ -234,6 +255,7 @@ export class PlayerStateManager {
     if (data.monotypeLock !== undefined) this.monotypeLock = data.monotypeLock;
     if (data.settings) this.settings = { ...this.settings, ...data.settings };
     if (data.berryPlots) this.berryPlots = data.berryPlots;
+    if (data.berryHarvests) this.berryHarvests = data.berryHarvests;
     if (data.gameClockMinutes != null) this.gameClockMinutes = data.gameClockMinutes;
     if (data.speedrunSplits) this.speedrunSplits = data.speedrunSplits;
   }

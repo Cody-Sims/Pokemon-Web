@@ -6,6 +6,18 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-26]
 
+### Added — Berry trees with GameClock-driven regrowth
+
+- **A.5 Berry trees**: Routes 1, 5, and 8 each gained a harvestable `berry-tree` map object. Picking yields one berry; the tree then regrows on a per-tree game-minute timer (Route 1 Oran 240m, Route 5 Pecha 300m, Route 8 Sitrus 480m).
+- **PlayerStateManager** persists `berryHarvests: Record<string, number>` (tree-id → harvest game-minute timestamp). Exposed via `GameManager.recordBerryHarvest`, `getBerryHarvestTime`, and `getBerryHarvests`. Survives save/load.
+- **OverworldInteraction** gained a `berry-tree` interactionType handler. Reads the current game-clock minutes via the new `InteractionContext.getGameMinutes()` callback (wired to `OverworldScene.gameClock.getTotalElapsed()`), checks regrowth, and either grants the berry + records the harvest or shows a "needs N more game-minutes" message.
+- **PreloadScene** now generates a 16×16 procedural `berry-tree` texture (trunk + foliage + three red berries) so the new objects render distinctly from item-balls.
+- Verified by [tests/unit/data/berry-trees.test.ts](tests/unit/data/berry-trees.test.ts) (6 cases covering harvest log, persistence, and route placements).
+
+---
+
+## [2026-04-26]
+
 ### Added — Fossil Pokémon (#154 Lithoclaw, #155 Aerolith)
 
 - **A.3 Fossil Pokémon**: Added two Aurum Region fossil species — **Lithoclaw** (#154, Rock/Water, BST 485, learns Accelerock and Head Smash) and **Aerolith** (#155, Rock/Flying, BST 500, learns Sky Attack, Ancient Power, and Head Smash). Both are inert without a fossil item; only obtainable via revival. [rock.ts](frontend/src/data/pokemon/rock.ts).

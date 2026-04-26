@@ -888,6 +888,7 @@ export class OverworldScene extends Phaser.Scene {
       showFieldAbilityPopup: (t) => this.showFieldAbilityPopup(t),
       pushBoulder: (bx, by, d) => this.pushBoulder(bx, by, d),
       tryFishing: () => this.tryFishing(),
+      getGameMinutes: () => this.gameClock.getTotalElapsed(),
     };
     tryInteractHelper(ctx);
   }

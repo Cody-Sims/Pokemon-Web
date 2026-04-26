@@ -160,6 +160,13 @@ export class GameManager {
   getBerryPlots(): Record<string, unknown[]> { return this._player.getBerryPlots(); }
   setBerryPlots(plots: Record<string, unknown[]>): void { this._player.setBerryPlots(plots); }
 
+  /** Game-clock minute timestamp at which the given berry tree was last harvested, or null. */
+  getBerryHarvestTime(treeId: string): number | null { return this._player.getBerryHarvestTime(treeId); }
+  /** Record a harvest of `treeId` at the given game-clock minute timestamp. */
+  recordBerryHarvest(treeId: string, gameMinutes: number): void { this._player.recordBerryHarvest(treeId, gameMinutes); }
+  /** Read-only view of all recorded berry harvests. */
+  getBerryHarvests(): Record<string, number> { return this._player.getBerryHarvests(); }
+
   getGameClockMinutes(): number { return this._player.getGameClockMinutes(); }
   setGameClockMinutes(minutes: number): void { this._player.setGameClockMinutes(minutes); }
 

@@ -33,6 +33,8 @@ export interface InteractionContext {
   showFieldAbilityPopup(text: string): void;
   pushBoulder(bx: number, by: number, dir: Direction): void;
   tryFishing(): void;
+  /** Total game minutes elapsed (for time-gated interactions like berry trees). */
+  getGameMinutes(): number;
 }
 
 /** Handle player interact action — NPC dialogue/dispatch and tile interactions. */
@@ -429,6 +431,42 @@ export function tryInteract(ctx: InteractionContext): void {
             sm.resume();
           });
         });
+        return;
+      }
+
+      // ── Berry-tree handler ──
+      // interactionData = '<berryItemId>:<regrowthGameMinutes>' (e.g. 'oran-berry:240')
+      if (spawnDef?.interactionType === 'berry-tree' && spawnDef.interactionData) {
+        const [berryId, regrowthRaw] = spawnDef.interactionData.split(':');
+        const regrowth = Math.max(1, Number(regrowthRaw) || 240);
+        const treeId = `${gm.getCurrentMap()}:${spawnDef.id}`;
+        const lastHarvest = gm.getBerryHarvestTime(treeId);
+        const now = ctx.getGameMinutes();
+        const ready = lastHarvest === null || (now - lastHarvest) >= regrowth;
+        if (!ready && lastHarvest !== null) {
+          const remaining = Math.max(1, Math.ceil(regrowth - (now - lastHarvest)));
+          sm.pause();
+          sm.launch('DialogueScene', {
+            dialogue: [
+              'The berry tree is bare.',
+              `It looks like it needs about ${remaining} more game-minutes to bear fruit again.`,
+            ],
+          });
+          sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+          return;
+        }
+        gm.addItem(berryId, 1);
+        gm.recordBerryHarvest(treeId, now);
+        EventManager.getInstance().emit('berry-harvested', { treeId, berryId });
+        const berryName = berryId.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+        sm.pause();
+        sm.launch('DialogueScene', {
+          dialogue: [
+            'You picked a ripe berry from the tree!',
+            `Got 1 ${berryName}!`,
+          ],
+        });
+        sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
         return;
       }
 

@@ -143,7 +143,16 @@ export const route1: MapDefinition = {
       dialogue: [
         'If your Pokémon are weak, don\'t go into the tall grass!',
         'Wild Pokémon will jump out at you!',
-      ] }
+      ] },
+    // ─── Berry tree (A.5): regrows every ~240 game minutes (~24 real min). ───
+    {
+      id: 'route1-berry-tree-oran',
+      tileX: 4,
+      tileY: 33,
+      textureKey: 'berry-tree', objectType: 'item-ball',
+      dialogue: ['A small berry tree sways in the breeze.'],
+      interactionType: 'berry-tree',
+      interactionData: 'oran-berry:240' }
   ],
   warps: [
     // South exit → Pallet Town
