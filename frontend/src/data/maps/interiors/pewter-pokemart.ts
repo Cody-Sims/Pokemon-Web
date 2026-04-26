@@ -48,6 +48,7 @@ export const pewterPokemart: MapDefinition = {
     },
   ],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 4, tileY: 7, targetMap: 'pewter-city', targetSpawnId: 'from-pokemart' },
     { tileX: 5, tileY: 7, targetMap: 'pewter-city', targetSpawnId: 'from-pokemart' },

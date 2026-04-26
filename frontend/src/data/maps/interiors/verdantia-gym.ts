@@ -22,6 +22,7 @@ export const verdantiaGym: MapDefinition = {
     { id: 'verdantia-gym-leader', name: 'Ivy', trainerId: 'gym-ivy', tileX: 4, tileY: 2,
       textureKey: 'npc-female-1', facing: 'down', lineOfSight: 6 },
   ],
+  objects: [],
   warps: [
     { tileX: 3, tileY: 13, targetMap: 'verdantia-village', targetSpawnId: 'from-gym' },
     { tileX: 4, tileY: 13, targetMap: 'verdantia-village', targetSpawnId: 'from-gym' },

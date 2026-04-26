@@ -21,6 +21,7 @@ export const scalecrestPokemart: MapDefinition = {
     facing: 'left', dialogue: ['I came all the way here for Dragon Scale items. Worth the trip!'],
   }],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 5, tileY: 7, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-pokemart' },
     { tileX: 6, tileY: 7, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-pokemart' },

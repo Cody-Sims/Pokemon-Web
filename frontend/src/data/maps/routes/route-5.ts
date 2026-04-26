@@ -46,29 +46,6 @@ export const route5: MapDefinition = {
   weather: 'rain',
   npcs: [
     {
-      id: 'route5-sign',
-      tileX: 13,
-      tileY: 1,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['ROUTE 5 — CANOPY TRAIL', 'Verdantia Village ↓  Ironvale City ↑'],
-    },
-    // Synthesis trap found
-    {
-      id: 'route5-trap',
-      tileX: 16,
-      tileY: 8,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'A strange cage sits among the trees...',
-        'It\'s designed to drain energy from captured Pokémon!',
-        'The Synthesis Collective insignia is stamped on the side.',
-      ],
-      setsFlag: 'found_synthesis_trap',
-    },
-    // Marina co-op event
-    {
       id: 'route5-marina',
       name: 'Marina',
       tileX: 6,
@@ -83,7 +60,7 @@ export const route5: MapDefinition = {
       ],
       requireFlag: 'found_synthesis_trap',
       setsFlag: 'helped_marina_traps',
-    },
+    }
   ],
   trainers: [
     {
@@ -158,6 +135,25 @@ export const route5: MapDefinition = {
       lineOfSight: 5,
       condition: 'helped_marina_traps',
     },
+  ],
+  objects: [
+    {
+      id: 'route5-sign',
+      tileX: 13,
+      tileY: 1,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['ROUTE 5 — CANOPY TRAIL', 'Verdantia Village ↓  Ironvale City ↑'] },
+    {
+      id: 'route5-trap',
+      tileX: 16,
+      tileY: 8,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'A strange cage sits among the trees...',
+        'It\'s designed to drain energy from captured Pokémon!',
+        'The Synthesis Collective insignia is stamped on the side.',
+      ],
+      setsFlag: 'found_synthesis_trap' }
   ],
   warps: [
     // North exit → Ironvale City

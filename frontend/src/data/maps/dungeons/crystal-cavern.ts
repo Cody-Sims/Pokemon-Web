@@ -57,14 +57,6 @@ export const crystalCavern: MapDefinition = {
   ],
   npcs: [
     {
-      id: 'cavern-sign',
-      tileX: 10,
-      tileY: 28,
-      textureKey: 'sign-post',
-      facing: 'up',
-      dialogue: ['CRYSTAL CAVERN', 'Danger! Strong Pokémon inside!'],
-    },
-    {
       id: 'cavern-hiker',
       name: 'Hiker',
       tileX: 10,
@@ -76,27 +68,7 @@ export const crystalCavern: MapDefinition = {
         'lurking somewhere in the darkness.',
         'Be careful of the boulders — some paths are blocked.',
       ],
-    },
-    {
-      id: 'cavern-item-1',
-      tileX: 4,
-      tileY: 3,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: ['You found a Revive!'],
-      requireFlag: '!crystalCavernItem1',
-      setsFlag: 'crystalCavernItem1',
-    },
-    {
-      id: 'cavern-item-2',
-      tileX: 15,
-      tileY: 22,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: ['You found an Escape Rope!'],
-      requireFlag: '!crystalCavernItem2',
-      setsFlag: 'crystalCavernItem2',
-    },
+    }
   ],
   trainers: [
     {
@@ -149,6 +121,30 @@ export const crystalCavern: MapDefinition = {
       facing: 'right',
       lineOfSight: 4,
     },
+  ],
+  objects: [
+    {
+      id: 'cavern-sign',
+      tileX: 10,
+      tileY: 28,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['CRYSTAL CAVERN', 'Danger! Strong Pokémon inside!'] },
+    {
+      id: 'cavern-item-1',
+      tileX: 4,
+      tileY: 3,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['You found a Revive!'],
+      requireFlag: '!crystalCavernItem1',
+      setsFlag: 'crystalCavernItem1' },
+    {
+      id: 'cavern-item-2',
+      tileX: 15,
+      tileY: 22,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['You found an Escape Rope!'],
+      requireFlag: '!crystalCavernItem2',
+      setsFlag: 'crystalCavernItem2' }
   ],
   warps: [
     // South exit → Route 2

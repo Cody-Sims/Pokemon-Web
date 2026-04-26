@@ -59,6 +59,7 @@ export const viridianPokemart: MapDefinition = {
     },
   ],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 5, tileY: 7, targetMap: 'viridian-city', targetSpawnId: 'from-pokemart' },
   ],

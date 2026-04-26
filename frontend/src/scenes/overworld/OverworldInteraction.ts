@@ -1,11 +1,12 @@
 import { NPC } from '@entities/NPC';
 import { Trainer } from '@entities/Trainer';
+import { InteractableObject } from '@entities/InteractableObject';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { Tile } from '@data/maps';
-import type { MapDefinition, NpcSpawn } from '@data/maps';
+import type { MapDefinition, NpcSpawn, ObjectSpawn } from '@data/maps';
 import { trainerData } from '@data/trainer-data';
 import { pokemonData } from '@data/pokemon';
 import { cutsceneData } from '@data/cutscene-data';
@@ -19,6 +20,7 @@ export interface InteractionContext {
   mapDef: MapDefinition;
   player: { getTilePosition(): { x: number; y: number }; getFacing(): Direction };
   npcs: NPC[];
+  mapObjects: InteractableObject[];
   surfing: boolean;
   cutsceneEngine: { play(cutscene: CutsceneDefinition): void };
   triggerTrainerBattle(trainer: Trainer): void;
@@ -309,6 +311,83 @@ export function tryInteract(ctx: InteractionContext): void {
       // Regular dialogue
       sm.pause();
       sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+      sm.get('DialogueScene').events.once('shutdown', () => {
+        sm.resume();
+      });
+      return;
+    }
+  }
+
+  // ── Interactable object interactions (signs, item balls, PCs, doors) ──
+  for (const obj of ctx.mapObjects) {
+    const objTX = Math.floor(obj.x / TILE_SIZE);
+    const objTY = Math.floor(obj.y / TILE_SIZE);
+    if (tilesToCheck.some(t => t.tx === objTX && t.ty === objTY)) {
+      // Objects do NOT face the player (they are static sprites)
+      const spawnDef = obj.spawnDef;
+      const gm = GameManager.getInstance();
+
+      // Determine the right dialogue (flag-gated overrides)
+      let dialogue = obj.dialogue;
+      if (spawnDef?.flagDialogue) {
+        for (const fd of spawnDef.flagDialogue) {
+          if (gm.getFlag(fd.flag)) {
+            dialogue = fd.dialogue;
+            break;
+          }
+        }
+      }
+
+      // Set flag on interaction if configured (from matched flagDialogue or setsFlag)
+      if (spawnDef?.flagDialogue) {
+        for (const fd of spawnDef.flagDialogue) {
+          if (gm.getFlag(fd.flag) && fd.setFlag && !gm.getFlag(fd.setFlag)) {
+            gm.setFlag(fd.setFlag);
+            EventManager.getInstance().emit('flag-set', fd.setFlag);
+            break;
+          }
+        }
+      }
+      if (spawnDef?.setsFlag && !gm.getFlag(spawnDef.setsFlag)) {
+        gm.setFlag(spawnDef.setsFlag);
+        EventManager.getInstance().emit('flag-set', spawnDef.setsFlag);
+
+        // Give item if configured (only once, gated by the flag)
+        if (spawnDef.givesItem) {
+          gm.addItem(spawnDef.givesItem);
+        }
+      }
+
+      // Handle special interaction types
+      if (spawnDef?.interactionType === 'pc') {
+        sm.pause();
+        sm.launch('DialogueScene', { dialogue });
+        sm.get('DialogueScene').events.once('shutdown', () => {
+          sm.launch('PCScene');
+          sm.get('PCScene').events.once('shutdown', () => {
+            sm.resume();
+          });
+        });
+        return;
+      }
+
+      // Cutscene trigger (overrides regular dialogue unless already completed)
+      if (spawnDef?.triggerCutscene && cutsceneData[spawnDef.triggerCutscene]) {
+        const cutscene = cutsceneData[spawnDef.triggerCutscene];
+        const setFlagActions = cutscene.actions.filter(
+          (a): a is Extract<typeof a, { type: 'setFlag' }> => a.type === 'setFlag'
+        );
+        const alreadyPlayed = setFlagActions.length > 0 &&
+          setFlagActions.every(a => gm.getFlag(a.flag));
+        if (!alreadyPlayed) {
+          ctx.cutsceneEngine.play(cutscene);
+          return;
+        }
+      }
+
+      // Regular dialogue
+      sm.pause();
+      sm.launch('DialogueScene', { dialogue });
       sm.get('DialogueScene').events.once('shutdown', () => {
         sm.resume();
       });

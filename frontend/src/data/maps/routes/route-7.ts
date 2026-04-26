@@ -39,8 +39,6 @@ export const route7: MapDefinition = {
   encounterTableKey: 'route-7', battleBg: 'bg-ruins',
   weather: 'fog',
   npcs: [
-    { id: 'route7-sign', tileX: 11, tileY: 1, textureKey: 'sign-post', facing: 'down',
-      dialogue: ['ROUTE 7', 'Scalecrest Citadel ↓  Wraithmoor Town ↑'] },
     { id: 'route7-rook-reveal', name: 'Rook', tileX: 8, tileY: 15, textureKey: 'npc-male-5', facing: 'down',
       triggerCutscene: 'rook-reveal',
       dialogue: [
@@ -58,7 +56,7 @@ export const route7: MapDefinition = {
           'Rook: Be careful in there.',
         ], setFlag: 'hasAetherLens' },
       ],
-      requireFlag: 'defeatedVex2', setsFlag: 'rook_revealed' },
+      requireFlag: 'defeatedVex2', setsFlag: 'rook_revealed' }
   ],
   trainers: [
     { id: 'route7-grunt-6', name: 'Synthesis Grunt', trainerId: 'synthesis-grunt-3', tileX: 6, tileY: 7, textureKey: 'npc-grunt', facing: 'right', lineOfSight: 4 },
@@ -69,6 +67,10 @@ export const route7: MapDefinition = {
     { id: 'route7-elite-2', name: 'Synthesis Elite', trainerId: 'synth-elite-r7-2', tileX: 5, tileY: 11, textureKey: 'npc-grunt', facing: 'right', lineOfSight: 4, condition: '!defeatedVex2' },
     { id: 'route7-elite-3', name: 'Synthesis Elite', trainerId: 'synth-elite-r7-3', tileX: 14, tileY: 17, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 4, condition: '!defeatedVex2' },
     { id: 'route7-vex-2', name: 'Admin Vex', trainerId: 'admin-vex-2', tileX: 10, tileY: 10, textureKey: 'npc-admin-vex', facing: 'down', lineOfSight: 5 },
+  ],
+  objects: [
+    { id: 'route7-sign', tileX: 11, tileY: 1, textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['ROUTE 7', 'Scalecrest Citadel ↓  Wraithmoor Town ↑'] }
   ],
   warps: [
     { tileX: 8, tileY: 0, targetMap: 'wraithmoor-town', targetSpawnId: 'from-route-7' },

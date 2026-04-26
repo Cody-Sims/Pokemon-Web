@@ -85,6 +85,7 @@ export const abyssalSpireF4: MapDefinition = {
     },
   ],
   trainers: [],
+  objects: [],
   warps: [
     // South entrance → F3
     { tileX: 7, tileY: 15, targetMap: 'abyssal-spire-f3', targetSpawnId: 'default' },

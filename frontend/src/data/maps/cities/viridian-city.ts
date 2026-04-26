@@ -42,14 +42,6 @@ export const viridianCity: MapDefinition = {
   encounterTableKey: '',
   npcs: [
     {
-      id: 'viridian-sign-south',
-      tileX: 15,
-      tileY: 28,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['VIRIDIAN CITY', '"The Eternally Green Paradise"'],
-    },
-    {
       id: 'viridian-npc-1',
       name: 'Townsperson',
       tileX: 20,
@@ -81,7 +73,6 @@ export const viridianCity: MapDefinition = {
       facing: 'down',
       dialogue: ['Route 2 is just north of here.', 'Viridian Forest is beyond that!'],
     },
-    // ─── Quest NPC: Collector Magnus ───
     {
       id: 'viridian-magnus',
       name: 'Magnus',
@@ -118,7 +109,6 @@ export const viridianCity: MapDefinition = {
         },
       ],
     },
-    // ─── Delivery quest receiver ───
     {
       id: 'viridian-delivery-npc',
       name: 'Delivery Worker',
@@ -143,7 +133,6 @@ export const viridianCity: MapDefinition = {
       requireFlag: 'quest_lostDelivery_started',
       setsFlag: 'quest_lostDelivery_viridian',
     },
-    // ─── Old Man Edgar (catch tutorial) ───
     {
       id: 'viridian-edgar',
       name: 'Edgar',
@@ -166,9 +155,17 @@ export const viridianCity: MapDefinition = {
           ],
         },
       ],
-    },
+    }
   ],
   trainers: [],
+  objects: [
+    {
+      id: 'viridian-sign-south',
+      tileX: 15,
+      tileY: 28,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['VIRIDIAN CITY', '"The Eternally Green Paradise"'] }
+  ],
   warps: [
     // South exit → Route 1
     { tileX: 14, tileY: 29, targetMap: 'route-1', targetSpawnId: 'from-viridian' },

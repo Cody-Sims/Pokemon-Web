@@ -22,6 +22,7 @@ export const voltaraPokemart: MapDefinition = {
     facing: 'right', dialogue: ['Picked up some Paralyze Heals. Electric types are rough...'],
   }],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 4, tileY: 7, targetMap: 'voltara-city', targetSpawnId: 'from-pokemart' },
     { tileX: 5, tileY: 7, targetMap: 'voltara-city', targetSpawnId: 'from-pokemart' },

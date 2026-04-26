@@ -62,6 +62,7 @@ export const viridianPokecenter: MapDefinition = {
     },
   ],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 6, tileY: 7, targetMap: 'viridian-city', targetSpawnId: 'from-pokecenter' },
   ],

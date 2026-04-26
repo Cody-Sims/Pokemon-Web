@@ -1,5 +1,5 @@
 export { OverworldScene } from './OverworldScene';
-export { spawnNPCs, spawnTrainers } from './OverworldNPCSpawner';
+export { spawnNPCs, spawnTrainers, spawnObjects } from './OverworldNPCSpawner';
 export type { SpawnedNPCs } from './OverworldNPCSpawner';
 export { redrawTile, showFieldAbilityPopup, pushBoulder } from './OverworldFieldAbilities';
 export { getBestRod, attemptFish } from './OverworldFishing';

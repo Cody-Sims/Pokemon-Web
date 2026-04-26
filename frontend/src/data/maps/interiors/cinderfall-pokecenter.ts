@@ -6,6 +6,7 @@ export const cinderfallPokecenter: MapDefinition = {
   npcs: [{ id: 'cinderfall-nurse', name: 'Nurse Joy', tileX: 4, tileY: 2, textureKey: 'npc-nurse',
     facing: 'down', dialogue: ['Welcome! We\'ll heal your Pokémon!'], interactionType: 'heal' }],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 3, tileY: 7, targetMap: 'cinderfall-town', targetSpawnId: 'from-pokecenter' },
     { tileX: 4, tileY: 7, targetMap: 'cinderfall-town', targetSpawnId: 'from-pokecenter' },

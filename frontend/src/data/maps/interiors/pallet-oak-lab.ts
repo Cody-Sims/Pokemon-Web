@@ -133,6 +133,7 @@ export const palletOakLab: MapDefinition = {
       condition: 'receivedStarter',
     },
   ],
+  objects: [],
   warps: [
     { tileX: 5, tileY: 11, targetMap: 'pallet-town', targetSpawnId: 'from-oak-lab' },
     { tileX: 6, tileY: 11, targetMap: 'pallet-town', targetSpawnId: 'from-oak-lab' },

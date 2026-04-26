@@ -71,6 +71,7 @@ export const pewterGym: MapDefinition = {
       lineOfSight: 4,
     },
   ],
+  objects: [],
   warps: [
     { tileX: 7, tileY: 11, targetMap: 'pewter-city', targetSpawnId: 'from-gym' },
   ],

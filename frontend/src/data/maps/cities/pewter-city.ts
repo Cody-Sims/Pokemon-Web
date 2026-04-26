@@ -42,14 +42,6 @@ export const pewterCity: MapDefinition = {
   encounterTableKey: '',
   npcs: [
     {
-      id: 'pewter-sign',
-      tileX: 15,
-      tileY: 28,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['PEWTER CITY', '"A Stone Gray City"'],
-    },
-    {
       id: 'pewter-npc-1',
       name: 'Townsperson',
       tileX: 20,
@@ -74,7 +66,6 @@ export const pewterCity: MapDefinition = {
         'They have fossils of ancient Pokémon!',
       ],
     },
-    // ─── Quest NPC: Hiker Jerome (Lost Pokémon quest) ───
     {
       id: 'pewter-jerome',
       name: 'Jerome',
@@ -108,7 +99,6 @@ export const pewterCity: MapDefinition = {
         },
       ],
     },
-    // ─── Delivery quest receiver ───
     {
       id: 'pewter-delivery-npc',
       name: 'Delivery Worker',
@@ -134,7 +124,6 @@ export const pewterCity: MapDefinition = {
       requireFlag: 'quest_lostDelivery_started',
       setsFlag: 'quest_lostDelivery_pewter',
     },
-    // ─── Museum Curator (Aether lore) ───
     {
       id: 'pewter-curator',
       name: 'Curator',
@@ -158,9 +147,17 @@ export const pewterCity: MapDefinition = {
           ],
         },
       ],
-    },
+    }
   ],
   trainers: [],
+  objects: [
+    {
+      id: 'pewter-sign',
+      tileX: 15,
+      tileY: 28,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['PEWTER CITY', '"A Stone Gray City"'] }
+  ],
   warps: [
     // South exit → Viridian Forest
     { tileX: 14, tileY: 29, targetMap: 'viridian-forest', targetSpawnId: 'from-pewter' },

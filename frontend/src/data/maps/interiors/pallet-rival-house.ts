@@ -35,6 +35,7 @@ export const palletRivalHouse: MapDefinition = {
     },
   ],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 4, tileY: 7, targetMap: 'pallet-town', targetSpawnId: 'from-rival-house' },
   ],

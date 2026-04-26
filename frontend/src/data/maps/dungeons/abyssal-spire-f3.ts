@@ -82,6 +82,7 @@ export const abyssalSpireF3: MapDefinition = {
       lineOfSight: 4,
     },
   ],
+  objects: [],
   warps: [
     // South entrance → F2
     { tileX: 9, tileY: 17, targetMap: 'abyssal-spire-f2', targetSpawnId: 'default' },

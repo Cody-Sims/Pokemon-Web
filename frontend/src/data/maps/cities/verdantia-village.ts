@@ -42,14 +42,6 @@ export const verdantiaVillage: MapDefinition = {
   onEnterCutsceneRequireFlag: 'defeatedIvy',
   npcs: [
     {
-      id: 'verdantia-sign',
-      tileX: 12,
-      tileY: 1,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['VERDANTIA VILLAGE', '"Where Life Takes Root"'],
-    },
-    {
       id: 'verdantia-npc-1',
       name: 'Townsperson',
       tileX: 18,
@@ -62,7 +54,6 @@ export const verdantiaVillage: MapDefinition = {
         'Be careful — her Sleep Powder strategy is brutal!',
       ],
     },
-    // Elder Moss (Aether lore)
     {
       id: 'verdantia-moss',
       name: 'Moss',
@@ -81,7 +72,6 @@ export const verdantiaVillage: MapDefinition = {
       ],
       setsFlag: 'heard_solatheon_legend',
     },
-    // Berry Farmer Hana (quest)
     {
       id: 'verdantia-hana',
       name: 'Hana',
@@ -112,15 +102,9 @@ export const verdantiaVillage: MapDefinition = {
         },
       ],
     },
-    // Move Tutor
     { id: 'tutor-verdantia', name: 'Move Tutor', tileX: 6, tileY: 12, textureKey: 'npc-oldman', facing: 'right',
       dialogue: ['Move Tutor: I can teach your Pokémon powerful Grass-type moves!', 'Move Tutor: All I ask for are Heart Scales.'],
       interactionType: 'move-tutor', interactionData: 'tutor-verdantia' },
-    // Dragon's Lament quest: herb pickup
-    { id: 'verdantia-herb', name: 'Herbalist', tileX: 18, tileY: 8, textureKey: 'item-ball', facing: 'down',
-      dialogue: ['A rare medicinal herb grows here...', 'You gathered the Aether Herb for the salve!'],
-      requireFlag: '!dragon-herb-found', setsFlag: 'dragon-herb-found' },
-    // Name Rater
     {
       id: 'name-rater',
       name: 'Name Rater',
@@ -134,9 +118,20 @@ export const verdantiaVillage: MapDefinition = {
         'Would you like me to rename one?',
       ],
       interactionType: 'name-rater',
-    },
+    }
   ],
   trainers: [],
+  objects: [
+    {
+      id: 'verdantia-sign',
+      tileX: 12,
+      tileY: 1,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['VERDANTIA VILLAGE', '"Where Life Takes Root"'] },
+    { id: 'verdantia-herb', tileX: 18, tileY: 8, textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['A rare medicinal herb grows here...', 'You gathered the Aether Herb for the salve!'],
+      requireFlag: '!dragon-herb-found', setsFlag: 'dragon-herb-found' }
+  ],
   warps: [
     // North exit → Route 5
     { tileX: 9, tileY: 0, targetMap: 'route-5', targetSpawnId: 'from-verdantia' },

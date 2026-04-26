@@ -57,26 +57,6 @@ export const route1: MapDefinition = {
   encounterTableKey: 'route-1',
   npcs: [
     {
-      id: 'route1-sign-north',
-      tileX: 11,
-      tileY: 1,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['ROUTE 1', 'VIRIDIAN CITY ↑  LITTORAL TOWN ↓'],
-    },
-    {
-      id: 'route1-npc-1',
-      name: 'Townsperson',
-      tileX: 14,
-      tileY: 2,
-      textureKey: 'item-ball',
-      facing: 'left',
-      dialogue: [
-        'If your Pokémon are weak, don\'t go into the tall grass!',
-        'Wild Pokémon will jump out at you!',
-      ],
-    },
-    {
       id: 'route1-npc-2',
       name: 'Townsperson',
       tileX: 3,
@@ -89,7 +69,6 @@ export const route1: MapDefinition = {
       ],
       behavior: { type: 'wander', wanderRadius: 2 },
     },
-    // ─── Story NPC: Rook's first appearance ───
     {
       id: 'route1-rook',
       name: 'Rook',
@@ -115,7 +94,7 @@ export const route1: MapDefinition = {
           ],
         },
       ],
-    },
+    }
   ],
   trainers: [
     {
@@ -148,6 +127,23 @@ export const route1: MapDefinition = {
       facing: 'left',
       lineOfSight: 3,
     },
+  ],
+  objects: [
+    {
+      id: 'route1-sign-north',
+      tileX: 11,
+      tileY: 1,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['ROUTE 1', 'VIRIDIAN CITY ↑  LITTORAL TOWN ↓'] },
+    {
+      id: 'route1-npc-1',
+      tileX: 14,
+      tileY: 2,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'If your Pokémon are weak, don\'t go into the tall grass!',
+        'Wild Pokémon will jump out at you!',
+      ] }
   ],
   warps: [
     // South exit → Pallet Town

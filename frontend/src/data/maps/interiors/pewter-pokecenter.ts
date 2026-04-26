@@ -62,6 +62,7 @@ export const pewterPokecenter: MapDefinition = {
     },
   ],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 6, tileY: 7, targetMap: 'pewter-city', targetSpawnId: 'from-pokecenter' },
   ],

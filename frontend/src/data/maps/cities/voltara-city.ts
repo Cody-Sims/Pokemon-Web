@@ -47,14 +47,6 @@ export const voltaraCity: MapDefinition = {
   displayName: 'Voltara City',
   npcs: [
     {
-      id: 'voltara-sign',
-      tileX: 14,
-      tileY: 1,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['VOLTARA CITY', '"The City That Never Sleeps"'],
-    },
-    {
       id: 'voltara-npc-1',
       name: 'Townsperson',
       tileX: 18,
@@ -67,7 +59,6 @@ export const voltaraCity: MapDefinition = {
         'Ground-type moves are your only hope!',
       ],
     },
-    // Engineer Sparks (power restoration quest)
     {
       id: 'voltara-sparks',
       name: 'Sparks',
@@ -101,7 +92,6 @@ export const voltaraCity: MapDefinition = {
         },
       ],
     },
-    // Move Tutor Bolt
     {
       id: 'voltara-bolt',
       name: 'Bolt',
@@ -116,7 +106,6 @@ export const voltaraCity: MapDefinition = {
       ],
       interactionType: 'move-tutor', interactionData: 'tutor-voltara',
     },
-    // Story: Blitz discovers Collective is tapping the grid
     {
       id: 'voltara-blitz-story',
       name: 'Blitz',
@@ -134,41 +123,6 @@ export const voltaraCity: MapDefinition = {
       requireFlag: 'saw_aldric_hologram',
       setsFlag: 'blitz_hq_discovery',
     },
-    // Conduit interaction points for Power Restoration quest
-    {
-      id: 'voltara-conduit-1',
-      name: 'Conduit',
-      tileX: 6,
-      tileY: 25,
-      textureKey: 'item-ball',
-      facing: 'up',
-      dialogue: ['The conduit crackles with unstable energy...', 'You repair the conduit! It hums steadily now.'],
-      requireFlag: '!conduit-1-repaired',
-      setsFlag: 'conduit-1-repaired',
-    },
-    {
-      id: 'voltara-conduit-2',
-      name: 'Conduit',
-      tileX: 5,
-      tileY: 3,
-      textureKey: 'item-ball',
-      facing: 'up',
-      dialogue: ['Sparks fly from the damaged conduit...', 'You reconnect the wiring! Power flows again.'],
-      requireFlag: '!conduit-2-repaired',
-      setsFlag: 'conduit-2-repaired',
-    },
-    {
-      id: 'voltara-conduit-3',
-      name: 'Conduit',
-      tileX: 10,
-      tileY: 27,
-      textureKey: 'item-ball',
-      facing: 'up',
-      dialogue: ['The north gate conduit is completely fried...', 'You replace the core component! It powers up.'],
-      requireFlag: '!conduit-3-repaired',
-      setsFlag: 'conduit-3-repaired',
-    },
-    // Story: Professor Willow kidnapping
     {
       id: 'voltara-willow-kidnap',
       name: 'Prof. Willow',
@@ -185,9 +139,41 @@ export const voltaraCity: MapDefinition = {
       ],
       requireFlag: 'blitz_hq_discovery',
       setsFlag: 'willow_kidnapped',
-    },
+    }
   ],
   trainers: [],
+  objects: [
+    {
+      id: 'voltara-sign',
+      tileX: 14,
+      tileY: 1,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['VOLTARA CITY', '"The City That Never Sleeps"'] },
+    {
+      id: 'voltara-conduit-1',
+      tileX: 6,
+      tileY: 25,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['The conduit crackles with unstable energy...', 'You repair the conduit! It hums steadily now.'],
+      requireFlag: '!conduit-1-repaired',
+      setsFlag: 'conduit-1-repaired' },
+    {
+      id: 'voltara-conduit-2',
+      tileX: 5,
+      tileY: 3,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['Sparks fly from the damaged conduit...', 'You reconnect the wiring! Power flows again.'],
+      requireFlag: '!conduit-2-repaired',
+      setsFlag: 'conduit-2-repaired' },
+    {
+      id: 'voltara-conduit-3',
+      tileX: 10,
+      tileY: 27,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['The north gate conduit is completely fried...', 'You replace the core component! It powers up.'],
+      requireFlag: '!conduit-3-repaired',
+      setsFlag: 'conduit-3-repaired' }
+  ],
   warps: [
     // South exit → Verdantia Village
     { tileX: 11, tileY: 0, targetMap: 'verdantia-village', targetSpawnId: 'from-voltara' },

@@ -56,6 +56,7 @@ export const scalecrestGym: MapDefinition = {
     { id: 'scalecrest-trainer-1', name: 'Ace Trainer', trainerId: 'ace-scalecrest-1', tileX: 3, tileY: 5, textureKey: 'npc-ace-trainer', facing: 'right', lineOfSight: 3 },
     { id: 'scalecrest-trainer-2', name: 'Ace Trainer', trainerId: 'ace-scalecrest-2', tileX: 9, tileY: 9, textureKey: 'npc-ace-trainer-f', facing: 'left', lineOfSight: 3 },
   ],
+  objects: [],
   warps: [
     { tileX: 5, tileY: 13, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-gym' },
     { tileX: 6, tileY: 13, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-gym' },

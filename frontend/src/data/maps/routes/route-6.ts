@@ -38,11 +38,14 @@ export const route6: MapDefinition = {
   key: 'route-6', width: 20, height: 30, ground: route6Ground,
   encounterTableKey: 'route-6', battleBg: 'bg-ruins',
   weather: 'rain',
-  npcs: [{ id: 'route6-sign', tileX: 11, tileY: 1, textureKey: 'sign-post', facing: 'down',
-    dialogue: ['ROUTE 6', 'Wraithmoor Town ↓  Voltara City ↑'] }],
+  npcs: [],
   trainers: [
     { id: 'route6-psychic-1', name: 'Psychic', trainerId: 'psychic-1', tileX: 6, tileY: 12, textureKey: 'npc-psychic', facing: 'right', lineOfSight: 4 },
     { id: 'route6-grunt-5', name: 'Synthesis Grunt', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 18, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 3 },
+  ],
+  objects: [
+    { id: 'route6-sign', tileX: 11, tileY: 1, textureKey: 'sign-post', objectType: 'sign',
+    dialogue: ['ROUTE 6', 'Wraithmoor Town ↓  Voltara City ↑'] }
   ],
   warps: [
     { tileX: 8, tileY: 0, targetMap: 'voltara-city', targetSpawnId: 'from-route-6' },

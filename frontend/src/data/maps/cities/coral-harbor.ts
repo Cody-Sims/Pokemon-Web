@@ -46,14 +46,6 @@ export const coralHarbor: MapDefinition = {
   weather: 'rain',
   npcs: [
     {
-      id: 'coral-sign',
-      tileX: 15,
-      tileY: 1,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['CORAL HARBOR', '"Where the Tides Meet the Shore"'],
-    },
-    {
       id: 'coral-npc-1',
       name: 'Townsperson',
       tileX: 8,
@@ -66,7 +58,6 @@ export const coralHarbor: MapDefinition = {
         'Grass and Electric moves work great against her!',
       ],
     },
-    // ─── Captain Stern (ferry quest) ───
     {
       id: 'coral-stern',
       name: 'Captain Stern',
@@ -98,7 +89,6 @@ export const coralHarbor: MapDefinition = {
         },
       ],
     },
-    // ─── Diver Lena (Good Rod) ───
     {
       id: 'coral-lena',
       name: 'Lena',
@@ -114,7 +104,6 @@ export const coralHarbor: MapDefinition = {
       ],
       setsFlag: 'receivedGoodRod',
     },
-    // ─── Chef Marco (Berry quest) ───
     {
       id: 'coral-marco',
       name: 'Marco',
@@ -146,7 +135,6 @@ export const coralHarbor: MapDefinition = {
         },
       ],
     },
-    // ─── Zara Lux disguised appearance ───
     {
       id: 'coral-zara-disguise',
       name: 'Zara',
@@ -161,12 +149,20 @@ export const coralHarbor: MapDefinition = {
         'Philanthropist: ...Every last one of them.',
       ],
       setsFlag: 'met_zara_disguise',
-    },
+    }
   ],
   trainers: [
     // Stern Engine quest grunts (docks & beach)
     { id: 'coral-stern-grunt-2', name: 'Synthesis Grunt', trainerId: 'stern-grunt-2', tileX: 14, tileY: 11, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 3, condition: '!stern-grunt-2' },
     { id: 'coral-stern-grunt-3', name: 'Synthesis Grunt', trainerId: 'stern-grunt-3', tileX: 8, tileY: 18, textureKey: 'npc-grunt', facing: 'up', lineOfSight: 3, condition: '!stern-grunt-3' },
+  ],
+  objects: [
+    {
+      id: 'coral-sign',
+      tileX: 15,
+      tileY: 1,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['CORAL HARBOR', '"Where the Tides Meet the Shore"'] }
   ],
   warps: [
     // North exit → Route 3

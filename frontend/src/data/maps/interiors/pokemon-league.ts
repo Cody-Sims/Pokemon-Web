@@ -32,6 +32,7 @@ export const pokemonLeague: MapDefinition = {
       interactionType: 'move-tutor', interactionData: 'tutor-league' },
   ],
   trainers: [],
+  objects: [],
   warps: [
     // Exit to Victory Road
     { tileX: 4, tileY: 11, targetMap: 'victory-road', targetSpawnId: 'from-league' },
@@ -77,6 +78,7 @@ export const pokemonLeagueNerida: MapDefinition = {
     { id: 'elite-nerida', name: 'Nerida', trainerId: 'elite-nerida', tileX: 5, tileY: 3,
       textureKey: 'npc-female-7', facing: 'down', lineOfSight: 5 },
   ],
+  objects: [],
   warps: [
     // Back to lobby
     { tileX: 5, tileY: 13, targetMap: 'pokemon-league', targetSpawnId: 'from-pokemon-league-nerida' },
@@ -119,6 +121,7 @@ export const pokemonLeagueTheron: MapDefinition = {
     { id: 'elite-theron', name: 'Theron', trainerId: 'elite-theron', tileX: 5, tileY: 3,
       textureKey: 'npc-clerk', facing: 'down', lineOfSight: 5 },
   ],
+  objects: [],
   warps: [
     // Back to Nerida
     { tileX: 5, tileY: 13, targetMap: 'pokemon-league-nerida', targetSpawnId: 'from-pokemon-league-theron' },
@@ -161,6 +164,7 @@ export const pokemonLeagueLysandra: MapDefinition = {
     { id: 'elite-lysandra', name: 'Lysandra', trainerId: 'elite-lysandra', tileX: 5, tileY: 3,
       textureKey: 'npc-female-3', facing: 'down', lineOfSight: 5 },
   ],
+  objects: [],
   warps: [
     // Back to Theron
     { tileX: 5, tileY: 13, targetMap: 'pokemon-league-theron', targetSpawnId: 'from-pokemon-league-lysandra' },
@@ -203,6 +207,7 @@ export const pokemonLeagueAshborne: MapDefinition = {
     { id: 'elite-ashborne', name: 'Ashborne', trainerId: 'elite-ashborne', tileX: 5, tileY: 3,
       textureKey: 'npc-male-5', facing: 'down', lineOfSight: 5 },
   ],
+  objects: [],
   warps: [
     // Back to Lysandra
     { tileX: 5, tileY: 13, targetMap: 'pokemon-league-lysandra', targetSpawnId: 'from-pokemon-league-ashborne' },
@@ -249,6 +254,7 @@ export const pokemonLeagueChampion: MapDefinition = {
     { id: 'champion-aldric', name: 'Aldric', trainerId: 'champion-aldric', tileX: 6, tileY: 4,
       textureKey: 'npc-male-5', facing: 'down', lineOfSight: 5 },
   ],
+  objects: [],
   warps: [
     // Back to Ashborne
     { tileX: 6, tileY: 15, targetMap: 'pokemon-league-ashborne', targetSpawnId: 'from-pokemon-league-champion' },

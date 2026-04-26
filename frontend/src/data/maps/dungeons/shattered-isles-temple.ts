@@ -38,23 +38,6 @@ export const shatteredIslesTemple: MapDefinition = {
   battleBg: 'bg-ruins',
   displayName: 'Shattered Isles — Temple',
   npcs: [
-    // ─── Solatheon encounter at the altar ───
-    {
-      id: 'solatheon-altar',
-      tileX: 9,
-      tileY: 2,
-      textureKey: 'item-ball',
-      facing: 'down',
-      requireFlag: '!solatheon_caught',
-      dialogue: [
-        'A brilliant light emanates from the altar...',
-        'The air hums with ancient Aether energy.',
-        'A legendary Pokémon stirs from its millennia-long slumber!',
-      ],
-      interactionType: 'wild-encounter',
-      interactionData: '152',
-    },
-    // ─── Father NPC (appears after quest completion) ───
     {
       id: 'father-temple',
       name: 'Father',
@@ -79,9 +62,24 @@ export const shatteredIslesTemple: MapDefinition = {
         ]},
       ],
       interactionType: 'heal',
-    },
+    }
   ],
   trainers: [],
+  objects: [
+    {
+      id: 'solatheon-altar',
+      tileX: 9,
+      tileY: 2,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      requireFlag: '!solatheon_caught',
+      dialogue: [
+        'A brilliant light emanates from the altar...',
+        'The air hums with ancient Aether energy.',
+        'A legendary Pokémon stirs from its millennia-long slumber!',
+      ],
+      interactionType: 'wild-encounter',
+      interactionData: '152' }
+  ],
   warps: [
     // South exit → Shattered Isles Ruins
     { tileX: 9, tileY: 21, targetMap: 'shattered-isles-ruins', targetSpawnId: 'from-temple' },

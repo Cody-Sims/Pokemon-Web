@@ -56,6 +56,7 @@ export const wraithmoorGym: MapDefinition = {
     { id: 'wraithmoor-trainer-1', name: 'Medium', trainerId: 'medium-wraithmoor-1', tileX: 3, tileY: 4, textureKey: 'npc-psychic', facing: 'right', lineOfSight: 3 },
     { id: 'wraithmoor-trainer-2', name: 'Medium', trainerId: 'medium-wraithmoor-2', tileX: 9, tileY: 9, textureKey: 'npc-psychic', facing: 'left', lineOfSight: 3 },
   ],
+  objects: [],
   warps: [
     { tileX: 5, tileY: 13, targetMap: 'wraithmoor-town', targetSpawnId: 'from-gym' },
     { tileX: 6, tileY: 13, targetMap: 'wraithmoor-town', targetSpawnId: 'from-gym' },

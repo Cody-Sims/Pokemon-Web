@@ -36,14 +36,6 @@ export const abyssalSpireF1: MapDefinition = {
   displayName: 'Abyssal Spire — Entrance',
   npcs: [
     {
-      id: 'spire-entrance-sign',
-      tileX: 11,
-      tileY: 18,
-      textureKey: 'sign-post',
-      facing: 'up',
-      dialogue: ['ABYSSAL SPIRE', 'Ancient warnings are carved into the stone...', '"Turn back. The abyss consumes all."'],
-    },
-    {
       id: 'rook-partner-f1',
       name: 'Rook',
       tileX: 8,
@@ -56,7 +48,7 @@ export const abyssalSpireF1: MapDefinition = {
         'Rook: Stay sharp — their elite forces guard this place.',
         'Rook: I\'ll scout ahead. Meet me on the upper floors.',
       ],
-    },
+    }
   ],
   trainers: [
     {
@@ -79,6 +71,14 @@ export const abyssalSpireF1: MapDefinition = {
       facing: 'left',
       lineOfSight: 4,
     },
+  ],
+  objects: [
+    {
+      id: 'spire-entrance-sign',
+      tileX: 11,
+      tileY: 18,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['ABYSSAL SPIRE', 'Ancient warnings are carved into the stone...', '"Turn back. The abyss consumes all."'] }
   ],
   warps: [
     // South entrance → Route 8

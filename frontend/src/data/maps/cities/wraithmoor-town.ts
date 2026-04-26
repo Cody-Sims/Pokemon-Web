@@ -45,8 +45,6 @@ export const wraithmoorTown: MapDefinition = {
   encounterTableKey: '', battleBg: 'bg-ruins', displayName: 'Wraithmoor Town',
   weather: 'fog',
   npcs: [
-    { id: 'wraithmoor-sign', tileX: 10, tileY: 1, textureKey: 'sign-post', facing: 'down',
-      dialogue: ['WRAITHMOOR TOWN', '"Where Spirits Linger"'] },
     { id: 'wraithmoor-npc', name: 'Townsperson', tileX: 7, tileY: 6, textureKey: 'npc-male-2', facing: 'left',
       dialogue: ['Morwen is our Gym Leader. She communes with spirits.', 'Her Ghost Pokémon are terrifying...', 'Normal and Fighting moves won\'t work!'] },
     { id: 'wraithmoor-ghost-girl', name: 'Ghost Girl', tileX: 11, tileY: 12, textureKey: 'npc-female-2', facing: 'down',
@@ -60,19 +58,22 @@ export const wraithmoorTown: MapDefinition = {
         'Edith: They sealed guardians within to protect the Aether flow.',
         'Edith: But if someone were to break those seals...',
         'Edith: Take this Temple Map. It marks the sacred sites.'],
-      setsFlag: 'received_temple_map' },
-    // Memory fragment interaction points for Restless Spirit quest
-    { id: 'wraithmoor-memory-1', tileX: 11, tileY: 11, textureKey: 'item-ball', facing: 'down',
-      dialogue: ['A faint glow emanates from the graveyard stones...', 'You found a memory fragment! It pulses with ghostly light.'],
-      requireFlag: '!memory-1-found', setsFlag: 'memory-1-found' },
-    { id: 'wraithmoor-memory-2', tileX: 4, tileY: 13, textureKey: 'item-ball', facing: 'down',
-      dialogue: ['An old book on the library shelf glows faintly...', 'You found a memory fragment! Words shimmer on the page.'],
-      requireFlag: '!memory-2-found', setsFlag: 'memory-2-found' },
-    { id: 'wraithmoor-memory-3', tileX: 16, tileY: 18, textureKey: 'item-ball', facing: 'down',
-      dialogue: ['The ruined shrine hums with spectral energy...', 'You found a memory fragment! A ghostly figure smiles.'],
-      requireFlag: '!memory-3-found', setsFlag: 'memory-3-found' },
+      setsFlag: 'received_temple_map' }
   ],
   trainers: [],
+  objects: [
+    { id: 'wraithmoor-sign', tileX: 10, tileY: 1, textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['WRAITHMOOR TOWN', '"Where Spirits Linger"'] },
+    { id: 'wraithmoor-memory-1', tileX: 11, tileY: 11, textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['A faint glow emanates from the graveyard stones...', 'You found a memory fragment! It pulses with ghostly light.'],
+      requireFlag: '!memory-1-found', setsFlag: 'memory-1-found' },
+    { id: 'wraithmoor-memory-2', tileX: 4, tileY: 13, textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['An old book on the library shelf glows faintly...', 'You found a memory fragment! Words shimmer on the page.'],
+      requireFlag: '!memory-2-found', setsFlag: 'memory-2-found' },
+    { id: 'wraithmoor-memory-3', tileX: 16, tileY: 18, textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['The ruined shrine hums with spectral energy...', 'You found a memory fragment! A ghostly figure smiles.'],
+      requireFlag: '!memory-3-found', setsFlag: 'memory-3-found' }
+  ],
   warps: [
     { tileX: 11, tileY: 0, targetMap: 'route-6', targetSpawnId: 'from-wraithmoor' },
     { tileX: 12, tileY: 0, targetMap: 'route-6', targetSpawnId: 'from-wraithmoor' },

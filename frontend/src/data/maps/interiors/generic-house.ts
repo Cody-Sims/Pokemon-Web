@@ -71,6 +71,7 @@ function buildHouse(cityKey: string, houseIndex: number, npcDialogue: string[], 
       },
     ],
     trainers: [],
+    objects: [],
     warps: [
       { tileX: 2, tileY: 7, targetMap: cityKey, targetSpawnId: `from-house-${houseIndex}` },
       { tileX: 4, tileY: 7, targetMap: cityKey, targetSpawnId: `from-house-${houseIndex}` },

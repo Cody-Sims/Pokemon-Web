@@ -22,6 +22,7 @@ export const ironvaleGym: MapDefinition = {
     { id: 'ironvale-gym-leader', name: 'Ferris', trainerId: 'gym-ferris', tileX: 4, tileY: 2,
       textureKey: 'npc-gym-ferris', facing: 'down', lineOfSight: 6 },
   ],
+  objects: [],
   warps: [
     { tileX: 3, tileY: 13, targetMap: 'ironvale-city', targetSpawnId: 'from-gym' },
     { tileX: 4, tileY: 13, targetMap: 'ironvale-city', targetSpawnId: 'from-gym' },

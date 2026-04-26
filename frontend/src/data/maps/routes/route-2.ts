@@ -46,14 +46,6 @@ export const route2: MapDefinition = {
   encounterTableKey: 'route-2',
   npcs: [
     {
-      id: 'route2-sign',
-      tileX: 11,
-      tileY: 1,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['ROUTE 2', 'VIRIDIAN FOREST ↑  VIRIDIAN CITY ↓'],
-    },
-    {
       id: 'route2-npc-1',
       name: 'Townsperson',
       tileX: 14,
@@ -64,15 +56,7 @@ export const route2: MapDefinition = {
         'Viridian Forest is just ahead!',
         'Watch out for Bug Catchers in there.',
       ],
-    },
-    {
-      id: 'route2-cavern-sign',
-      tileX: 7,
-      tileY: 7,
-      textureKey: 'sign-post',
-      facing: 'right',
-      dialogue: ['CRYSTAL CAVERN →', 'Caution: Strong Pokémon dwell within!'],
-    },
+    }
   ],
   trainers: [
     {
@@ -115,6 +99,20 @@ export const route2: MapDefinition = {
       facing: 'left',
       lineOfSight: 3,
     },
+  ],
+  objects: [
+    {
+      id: 'route2-sign',
+      tileX: 11,
+      tileY: 1,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['ROUTE 2', 'VIRIDIAN FOREST ↑  VIRIDIAN CITY ↓'] },
+    {
+      id: 'route2-cavern-sign',
+      tileX: 7,
+      tileY: 7,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['CRYSTAL CAVERN →', 'Caution: Strong Pokémon dwell within!'] }
   ],
   warps: [
     // South exit → Viridian City

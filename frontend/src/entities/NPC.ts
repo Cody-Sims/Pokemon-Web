@@ -18,7 +18,7 @@ export class NPC extends Phaser.GameObjects.Sprite {
     dialogue: string[],
     facing: Direction = 'down'
   ) {
-    super(scene, tileX * TILE_SIZE + TILE_SIZE / 2, tileY * TILE_SIZE + TILE_SIZE / 2, textureKey, `walk-${facing}-1`);
+    super(scene, tileX * TILE_SIZE + TILE_SIZE / 2, tileY * TILE_SIZE + TILE_SIZE / 2, textureKey, `walk-${facing}-0`);
     scene.add.existing(this);
 
     this.npcId = npcId;
@@ -34,7 +34,7 @@ export class NPC extends Phaser.GameObjects.Sprite {
 
   /** Set the sprite frame matching a cardinal direction. */
   private setDirectionFrame(dir: Direction): void {
-    const frame = `walk-${dir}-1`;
+    const frame = `walk-${dir}-0`;
     this.setFlipX(false);
     if (this.scene.textures.exists(this.texture.key)) {
       const tex = this.scene.textures.get(this.texture.key);

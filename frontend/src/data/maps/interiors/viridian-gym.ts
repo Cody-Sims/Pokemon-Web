@@ -71,6 +71,7 @@ export const viridianGym: MapDefinition = {
       lineOfSight: 3,
     },
   ],
+  objects: [],
   warps: [
     { tileX: 6, tileY: 11, targetMap: 'viridian-city', targetSpawnId: 'from-gym' },
     { tileX: 7, tileY: 11, targetMap: 'viridian-city', targetSpawnId: 'from-gym' },

@@ -4,7 +4,7 @@
 export { Tile, LEDGE_TILES } from './tiles';
 export { TILE_COLORS, SOLID_TILES, OVERLAY_BASE, FOREGROUND_TILES } from './tile-metadata';
 export { parseMap } from './map-parser';
-export type { NpcSpawn, TrainerSpawn, WarpDefinition, SpawnPoint, MapDefinition } from './map-interfaces';
+export type { NpcSpawn, TrainerSpawn, ObjectSpawn, ObjectType, WarpDefinition, SpawnPoint, MapDefinition } from './map-interfaces';
 
 import type { MapDefinition } from './map-interfaces';
 

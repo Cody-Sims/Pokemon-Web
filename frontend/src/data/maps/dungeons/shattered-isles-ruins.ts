@@ -41,21 +41,6 @@ export const shatteredIslesRuins: MapDefinition = {
   battleBg: 'bg-ruins',
   displayName: 'Shattered Isles — Ruins',
   npcs: [
-    // ─── Father's Trail journal fragments (5 interactable points) ───
-    {
-      id: 'fathers-trail-clue-1',
-      tileX: 4,
-      tileY: 3,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'You find a weathered journal page wedged between the stones...',
-        '"Day 1 — I\'ve arrived at the Shattered Isles. The devastation is worse than the reports suggested."',
-        '"The Aether ley lines are unstable. I can feel them pulsing beneath the ground."',
-        '"I must find the source before the Collective does."',
-      ],
-      setsFlag: 'fatherTrail_clue1',
-    },
     {
       id: 'fathers-trail-clue-2',
       tileX: 15,
@@ -113,9 +98,23 @@ export const shatteredIslesRuins: MapDefinition = {
         '"If you\'re reading this... I\'m proud of how far you\'ve come."',
       ],
       setsFlag: 'fatherTrail_clue5',
-    },
+    }
   ],
   trainers: [],
+  objects: [
+    {
+      id: 'fathers-trail-clue-1',
+      tileX: 4,
+      tileY: 3,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'You find a weathered journal page wedged between the stones...',
+        '"Day 1 — I\'ve arrived at the Shattered Isles. The devastation is worse than the reports suggested."',
+        '"The Aether ley lines are unstable. I can feel them pulsing beneath the ground."',
+        '"I must find the source before the Collective does."',
+      ],
+      setsFlag: 'fatherTrail_clue1' }
+  ],
   warps: [
     // South exit → Shattered Isles Shore
     { tileX: 9, tileY: 24, targetMap: 'shattered-isles-shore', targetSpawnId: 'from-ruins' },

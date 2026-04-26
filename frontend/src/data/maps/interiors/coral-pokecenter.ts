@@ -32,6 +32,7 @@ export const coralPokecenter: MapDefinition = {
     },
   ],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 3, tileY: 7, targetMap: 'coral-harbor', targetSpawnId: 'from-pokecenter' },
     { tileX: 4, tileY: 7, targetMap: 'coral-harbor', targetSpawnId: 'from-pokecenter' },

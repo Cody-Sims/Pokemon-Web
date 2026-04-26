@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
 import { TILE_SIZE } from '@utils/constants';
+import type { ObjectSpawn, ObjectType } from '@data/maps';
 
-/** Signs, PCs, item balls, doors — anything the player can interact with. */
+/** Signs, PCs, item balls, doors — anything the player can interact with that is NOT an NPC. */
 export class InteractableObject extends Phaser.GameObjects.Sprite {
   public objectId: string;
-  public interactionType: 'sign' | 'pc' | 'item' | 'door';
-  private onInteract: () => void;
+  public objectType: ObjectType;
+  public dialogue: string[];
+  public spawnDef?: ObjectSpawn;
 
   constructor(
     scene: Phaser.Scene,
@@ -13,17 +15,13 @@ export class InteractableObject extends Phaser.GameObjects.Sprite {
     tileY: number,
     textureKey: string,
     objectId: string,
-    interactionType: 'sign' | 'pc' | 'item' | 'door',
-    onInteract: () => void
+    objectType: ObjectType,
+    dialogue: string[],
   ) {
     super(scene, tileX * TILE_SIZE + TILE_SIZE / 2, tileY * TILE_SIZE + TILE_SIZE / 2, textureKey);
     scene.add.existing(this);
     this.objectId = objectId;
-    this.interactionType = interactionType;
-    this.onInteract = onInteract;
-  }
-
-  interact(): void {
-    this.onInteract();
+    this.objectType = objectType;
+    this.dialogue = dialogue;
   }
 }

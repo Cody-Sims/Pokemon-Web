@@ -48,15 +48,6 @@ export const route4: MapDefinition = {
   weather: 'sandstorm',
   npcs: [
     {
-      id: 'route4-sign',
-      tileX: 11,
-      tileY: 1,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['ROUTE 4 — BASALT RIDGE', 'Ironvale City ↑  Coral Harbor ↓'],
-    },
-    // Rook saves player from Synthetic Pokémon
-    {
       id: 'route4-rook',
       name: 'Rook',
       tileX: 12,
@@ -72,7 +63,7 @@ export const route4: MapDefinition = {
       ],
       requireFlag: 'receivedStarter',
       setsFlag: 'met_rook_basalt',
-    },
+    }
   ],
   trainers: [
     {
@@ -125,6 +116,14 @@ export const route4: MapDefinition = {
       facing: 'down',
       lineOfSight: 4,
     },
+  ],
+  objects: [
+    {
+      id: 'route4-sign',
+      tileX: 11,
+      tileY: 1,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['ROUTE 4 — BASALT RIDGE', 'Ironvale City ↑  Coral Harbor ↓'] }
   ],
   warps: [
     // North exit → Ironvale City

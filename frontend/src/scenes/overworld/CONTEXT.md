@@ -8,7 +8,7 @@ field abilities, footsteps, and scene transitions.
 | File | Class | Purpose |
 |---|---|---|
 | `OverworldScene.ts` | `OverworldScene` | Main exploration scene. Composes all helper classes below. Manages map rendering, player, camera. |
-| `OverworldNPCSpawner.ts` | `OverworldNPCSpawner` | Spawns NPCs and trainers from map data. |
+| `OverworldNPCSpawner.ts` | `OverworldNPCSpawner` | Spawns NPCs, trainers, and interactable objects from map data. |
 | `OverworldInteraction.ts` | `OverworldInteraction` | Dispatches NPC talk, sign read, item pickup, and tile interactions. |
 | `OverworldFieldAbilities.ts` | `OverworldFieldAbilities` | Boulder push, tile redraw, and other field move effects. |
 | `OverworldFishing.ts` | `OverworldFishing` | Fishing rod logic and encounter triggers. |

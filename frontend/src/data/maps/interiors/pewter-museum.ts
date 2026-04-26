@@ -120,6 +120,7 @@ export const pewterMuseum: MapDefinition = {
     },
   ],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 6, tileY: 11, targetMap: 'pewter-city', targetSpawnId: 'from-museum' },
     { tileX: 7, tileY: 11, targetMap: 'pewter-city', targetSpawnId: 'from-museum' },

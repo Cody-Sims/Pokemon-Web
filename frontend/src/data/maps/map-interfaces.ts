@@ -42,6 +42,31 @@ export interface TrainerSpawn {
   condition?: string;
 }
 
+export type ObjectType = 'sign' | 'item-ball' | 'pc' | 'door';
+
+export interface ObjectSpawn {
+  id: string;
+  tileX: number;
+  tileY: number;
+  textureKey: string;
+  objectType: ObjectType;
+  dialogue: string[];
+  /** If set, object only appears when this flag is true (or false if prefixed with '!'). */
+  requireFlag?: string;
+  /** Alternative dialogue when a given flag is set. */
+  flagDialogue?: { flag: string; dialogue: string[]; setFlag?: string }[];
+  /** On interaction, set this flag to true. */
+  setsFlag?: string;
+  /** On first interaction, give this item to the player (requires setsFlag to gate). */
+  givesItem?: string;
+  /** Special interaction type instead of plain dialogue. */
+  interactionType?: 'heal' | 'shop' | 'pc' | 'starter-select' | 'name-rater' | 'move-tutor' | 'tag-battle' | 'show-pokemon' | 'wild-encounter';
+  /** Extra data for the interaction (e.g. tutorId for move-tutor). */
+  interactionData?: string;
+  /** If set, play this cutscene (by key) when the player interacts instead of normal dialogue. */
+  triggerCutscene?: string;
+}
+
 export interface WarpDefinition {
   tileX: number;
   tileY: number;
@@ -65,6 +90,7 @@ export interface MapDefinition {
   encounterTableKey: string;
   npcs: NpcSpawn[];
   trainers: TrainerSpawn[];
+  objects: ObjectSpawn[];
   warps: WarpDefinition[];
   spawnPoints: Record<string, SpawnPoint>;
   /** If true, this is an interior map (smaller camera, no encounters). */

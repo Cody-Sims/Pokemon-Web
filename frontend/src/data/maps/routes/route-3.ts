@@ -55,14 +55,6 @@ export const route3: MapDefinition = {
   battleBg: 'bg-coastal',
   npcs: [
     {
-      id: 'route3-sign-north',
-      tileX: 11,
-      tileY: 1,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['ROUTE 3 — TIDE POOL PATH', 'Coral Harbor ↓  Pewter City ↑'],
-    },
-    {
       id: 'route3-fisherman',
       name: 'Fisherman',
       tileX: 4,
@@ -86,7 +78,7 @@ export const route3: MapDefinition = {
         'They were carrying some kind of purple Poké Balls.',
         'Strange, don\'t you think?',
       ],
-    },
+    }
   ],
   trainers: [
     {
@@ -171,6 +163,14 @@ export const route3: MapDefinition = {
       lineOfSight: 3,
       condition: '!stern-grunt-1',
     },
+  ],
+  objects: [
+    {
+      id: 'route3-sign-north',
+      tileX: 11,
+      tileY: 1,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['ROUTE 3 — TIDE POOL PATH', 'Coral Harbor ↓  Pewter City ↑'] }
   ],
   warps: [
     // North exit → Pewter City

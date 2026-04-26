@@ -36,8 +36,6 @@ export const cinderfallTown: MapDefinition = {
   encounterTableKey: '', battleBg: 'bg-fire', displayName: 'Cinderfall Town',
   weather: 'sandstorm',
   npcs: [
-    { id: 'cinderfall-sign', tileX: 13, tileY: 1, textureKey: 'sign-post', facing: 'down',
-      dialogue: ['CINDERFALL TOWN', '"Born From the Embers"'] },
     { id: 'cinderfall-npc', name: 'Townsperson', tileX: 16, tileY: 6, textureKey: 'npc-female-3', facing: 'left',
       dialogue: ['Solara is our Gym Leader. She was once Aldric\'s student.',
         'Her Fire Pokémon burn with incredible passion!',
@@ -54,7 +52,6 @@ export const cinderfallTown: MapDefinition = {
       dialogue: ['Hot Spring Attendant: Welcome! Our springs heal all ailments.',
         'Your Pokémon feel refreshed and fully healed!'],
       interactionType: 'heal' },
-    // Dr. Ash — Volcanic Survey quest giver
     { id: 'cinderfall-dr-ash', name: 'Dr. Ash', tileX: 15, tileY: 20, textureKey: 'npc-scientist', facing: 'left',
       dialogue: [
         'Dr. Ash: I\'m studying the volcanic activity around Cinderfall.',
@@ -79,9 +76,13 @@ export const cinderfallTown: MapDefinition = {
           ],
         },
       ],
-    },
+    }
   ],
   trainers: [],
+  objects: [
+    { id: 'cinderfall-sign', tileX: 13, tileY: 1, textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['CINDERFALL TOWN', '"Born From the Embers"'] }
+  ],
   warps: [
     { tileX: 11, tileY: 0, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-cinderfall' },
     { tileX: 12, tileY: 0, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-cinderfall' },

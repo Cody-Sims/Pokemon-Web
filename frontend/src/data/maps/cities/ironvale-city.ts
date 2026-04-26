@@ -47,14 +47,6 @@ export const ironvaleCity: MapDefinition = {
   displayName: 'Ironvale City',
   npcs: [
     {
-      id: 'ironvale-sign',
-      tileX: 13,
-      tileY: 1,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['IRONVALE CITY', '"Forged in Fire and Steel"'],
-    },
-    {
       id: 'ironvale-npc-1',
       name: 'Townsperson',
       tileX: 16,
@@ -67,7 +59,6 @@ export const ironvaleCity: MapDefinition = {
         'Fire and Ground moves are your best bet.',
       ],
     },
-    // Miner Gil (side quest: Mine Clearance) — near mine entrance
     {
       id: 'ironvale-gil',
       name: 'Gil',
@@ -98,30 +89,9 @@ export const ironvaleCity: MapDefinition = {
         },
       ],
     },
-    // Move Tutor — on forge terrace
     { id: 'tutor-ironvale', name: 'Move Tutor', tileX: 7, tileY: 10, textureKey: 'npc-hiker', facing: 'right',
       dialogue: ['Punch Tutor: I teach the elemental punches and more!', 'Punch Tutor: For a small fee, of course.'],
       interactionType: 'move-tutor', interactionData: 'tutor-ironvale' },
-    // Aldric hologram (story event) — central forge area
-    {
-      id: 'ironvale-hologram',
-      tileX: 10,
-      tileY: 9,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'A holographic projection flickers to life...',
-        'Aldric: Impressive. You\'ve disrupted our operations twice now.',
-        'Aldric: But you understand nothing of what we\'re building.',
-        'Aldric: Every Pokémon we enhance is freed from weakness.',
-        'Aldric: Freed from suffering. From death.',
-        'Aldric: You\'ll understand, eventually. They all do.',
-        'The hologram fades...',
-      ],
-      requireFlag: 'found_mines_terminal',
-      setsFlag: 'saw_aldric_hologram',
-    },
-    // Kael — tag-battle partner (story encounter 3)
     {
       id: 'ironvale-kael',
       name: 'Kael',
@@ -150,7 +120,6 @@ export const ironvaleCity: MapDefinition = {
       interactionType: 'tag-battle',
       interactionData: 'rival-3|synthesis-grunt-ironvale-1|synthesis-grunt-ironvale-2|defeatedKael3',
     },
-    // ─── Blacksmith's Apprentice (forge area) ───
     {
       id: 'ironvale-apprentice',
       name: 'Apprentice',
@@ -174,9 +143,33 @@ export const ironvaleCity: MapDefinition = {
           ],
         },
       ],
-    },
+    }
   ],
   trainers: [],
+  objects: [
+    {
+      id: 'ironvale-sign',
+      tileX: 13,
+      tileY: 1,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['IRONVALE CITY', '"Forged in Fire and Steel"'] },
+    {
+      id: 'ironvale-hologram',
+      tileX: 10,
+      tileY: 9,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'A holographic projection flickers to life...',
+        'Aldric: Impressive. You\'ve disrupted our operations twice now.',
+        'Aldric: But you understand nothing of what we\'re building.',
+        'Aldric: Every Pokémon we enhance is freed from weakness.',
+        'Aldric: Freed from suffering. From death.',
+        'Aldric: You\'ll understand, eventually. They all do.',
+        'The hologram fades...',
+      ],
+      requireFlag: 'found_mines_terminal',
+      setsFlag: 'saw_aldric_hologram' }
+  ],
   warps: [
     // South exit → Route 4
     { tileX: 11, tileY: 0, targetMap: 'route-4', targetSpawnId: 'from-ironvale' },

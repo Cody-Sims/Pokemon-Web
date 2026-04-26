@@ -61,6 +61,7 @@ export const coralGym: MapDefinition = {
       lineOfSight: 6,
     },
   ],
+  objects: [],
   warps: [
     { tileX: 3, tileY: 13, targetMap: 'coral-harbor', targetSpawnId: 'from-gym' },
     { tileX: 4, tileY: 13, targetMap: 'coral-harbor', targetSpawnId: 'from-gym' },

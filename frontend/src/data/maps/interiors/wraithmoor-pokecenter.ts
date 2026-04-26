@@ -12,19 +12,23 @@ const g = parseMap([
 export const wraithmoorPokecenter: MapDefinition = {
   key: 'wraithmoor-pokecenter', width: 11, height: 8, ground: g,
   encounterTableKey: '', isInterior: true, displayName: 'Wraithmoor Pokémon Center',
-  npcs: [{
+  npcs: [
+    {
     id: 'wraithmoor-nurse', tileX: 5, tileY: 2, textureKey: 'npc-nurse',
     name: 'Nurse Joy',
     facing: 'down', dialogue: ['Welcome! We\'ll heal your Pokémon!'], interactionType: 'heal',
-  }, {
-    id: 'wraithmoor-pc', tileX: 9, tileY: 2, textureKey: 'item-ball',
-    facing: 'down', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc',
-  }, {
+  },
+    {
     id: 'wraithmoor-center-npc', tileX: 3, tileY: 5, textureKey: 'npc-female-1',
     name: 'Townsperson',
     facing: 'right', dialogue: ['Even ghosts need to rest... Well, their trainers do at least.'],
-  }],
+  }
+  ],
   trainers: [],
+  objects: [
+    {
+    id: 'wraithmoor-pc', tileX: 9, tileY: 2, textureKey: 'item-ball', objectType: 'pc', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc' }
+  ],
   warps: [
     { tileX: 4, tileY: 7, targetMap: 'wraithmoor-town', targetSpawnId: 'from-pokecenter' },
     { tileX: 5, tileY: 7, targetMap: 'wraithmoor-town', targetSpawnId: 'from-pokecenter' },

@@ -42,65 +42,7 @@ export const emberMines: MapDefinition = {
   weather: 'sandstorm',
   battleBg: 'bg-mine',
   displayName: 'Ember Mines',
-  npcs: [
-    {
-      id: 'mines-sign',
-      tileX: 10,
-      tileY: 23,
-      textureKey: 'sign-post',
-      facing: 'up',
-      dialogue: ['EMBER MINES', 'DANGER — Synthesis Collective Activity Detected'],
-    },
-    // Story: Synthesis lab equipment
-    {
-      id: 'mines-terminal',
-      tileX: 7,
-      tileY: 17,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'A Synthesis Collective data terminal...',
-        'The screen shows readings labeled "Aether Extraction Rate."',
-        'The numbers are climbing rapidly.',
-      ],
-      setsFlag: 'found_mines_terminal',
-      triggerCutscene: 'ember-mines-discovery',
-      flagDialogue: [
-        { flag: 'found_mines_terminal', dialogue: [
-          'The terminal shows more data about Project CONVERGENCE...',
-          'The extraction rates are still climbing.',
-        ]},
-      ],
-    },
-    // Caged Pokémon — near containment pods in lab
-    {
-      id: 'mines-cage',
-      tileX: 14,
-      tileY: 18,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'Pokémon are trapped in strange containment pods!',
-        'They\'re glowing with unstable energy...',
-        'You need to stop whoever is doing this!',
-      ],
-      setsFlag: 'found_caged_pokemon',
-    },
-    // Dragon's Lament quest: mineral pickup
-    {
-      id: 'mines-mineral',
-      tileX: 3,
-      tileY: 8,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'A vein of rare mineral glints in the torchlight...',
-        'You extracted the Aether Crystal Mineral!',
-      ],
-      requireFlag: '!dragon-mineral-found',
-      setsFlag: 'dragon-mineral-found',
-    },
-  ],
+  npcs: [],
   trainers: [
     {
       id: 'mines-grunt-1',
@@ -143,6 +85,54 @@ export const emberMines: MapDefinition = {
       facing: 'up',
       lineOfSight: 4,
     },
+  ],
+  objects: [
+    {
+      id: 'mines-sign',
+      tileX: 10,
+      tileY: 23,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['EMBER MINES', 'DANGER — Synthesis Collective Activity Detected'] },
+    {
+      id: 'mines-terminal',
+      tileX: 7,
+      tileY: 17,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'A Synthesis Collective data terminal...',
+        'The screen shows readings labeled "Aether Extraction Rate."',
+        'The numbers are climbing rapidly.',
+      ],
+      setsFlag: 'found_mines_terminal',
+      triggerCutscene: 'ember-mines-discovery',
+      flagDialogue: [
+        { flag: 'found_mines_terminal', dialogue: [
+          'The terminal shows more data about Project CONVERGENCE...',
+          'The extraction rates are still climbing.',
+        ]},
+      ] },
+    {
+      id: 'mines-cage',
+      tileX: 14,
+      tileY: 18,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'Pokémon are trapped in strange containment pods!',
+        'They\'re glowing with unstable energy...',
+        'You need to stop whoever is doing this!',
+      ],
+      setsFlag: 'found_caged_pokemon' },
+    {
+      id: 'mines-mineral',
+      tileX: 3,
+      tileY: 8,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'A vein of rare mineral glints in the torchlight...',
+        'You extracted the Aether Crystal Mineral!',
+      ],
+      requireFlag: '!dragon-mineral-found',
+      setsFlag: 'dragon-mineral-found' }
   ],
   warps: [
     // South exit → Route 4 (through synthesis doors)

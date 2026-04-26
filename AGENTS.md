@@ -142,7 +142,8 @@ data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 | `ItemData` | Item definitions | `id`, `name`, `category`, `buyPrice`, `effect` |
 | `TrainerData` | Trainer definitions | `id`, `name`, `party[]`, `dialogue`, `rewardMoney` |
 | `PokemonInstance` | Runtime Pokémon state | `dataId`, `level`, `currentHp`, `stats`, `moves`, `nature`, `ivs` |
-| `MapDefinition` | Map structure | `key`, `name`, `width`, `height`, `grid`, `npcs`, `warps`, `encounters` |
+| `MapDefinition` | Map structure | `key`, `name`, `width`, `height`, `grid`, `npcs`, `objects`, `warps`, `encounters` |
+| `ObjectSpawn` | Object placement | `id`, `tileX`, `tileY`, `textureKey`, `objectType`, `dialogue` |
 | `SaveData` | Serialized game state | `player`, `flags`, `trainersDefeated`, `boxes` |
 
 ## File-Finding Shortcuts
@@ -185,6 +186,13 @@ data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 1. Edit the map file in `frontend/src/data/maps/<category>/<map>.ts`
 2. Add to the `npcs` array following `NpcSpawn` interface
 3. Assign a sprite key from `frontend/public/assets/sprites/npcs/`
+4. Signs, item balls, PCs, and doors go in the `objects` array — not `npcs` (see below)
+
+### Adding a Map Object (Sign, Item Ball, PC, Door)
+1. Edit the map file in `frontend/src/data/maps/<category>/<map>.ts`
+2. Add to the `objects` array following the `ObjectSpawn` interface
+3. Set `objectType` to `'sign'`, `'item-ball'`, `'pc'`, or `'door'`
+4. Objects do NOT have `facing` or `behavior` — they are static sprites
 
 ### Adding a New Trainer
 1. Add trainer data in `frontend/src/data/trainers/<category>.ts`

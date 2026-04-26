@@ -1,10 +1,11 @@
 import { NPC } from '@entities/NPC';
 import { Trainer } from '@entities/Trainer';
+import { InteractableObject } from '@entities/InteractableObject';
 import { GameManager } from '@managers/GameManager';
 import { NPCBehaviorController } from '@systems/overworld/NPCBehavior';
 import { trainerData } from '@data/trainer-data';
 import { SOLID_TILES } from '@data/maps';
-import type { MapDefinition, NpcSpawn } from '@data/maps';
+import type { MapDefinition, NpcSpawn, ObjectSpawn } from '@data/maps';
 import { TILE_SIZE } from '@utils/constants';
 
 export interface SpawnedNPCs {
@@ -87,4 +88,32 @@ export function spawnTrainers(
   }
 
   return trainers;
+}
+
+/** Spawn all flag-gated interactable objects (signs, item balls, etc.) from the map definition. */
+export function spawnObjects(
+  scene: Phaser.Scene,
+  mapDef: MapDefinition,
+): InteractableObject[] {
+  const gm = GameManager.getInstance();
+  const objects: InteractableObject[] = [];
+
+  for (const def of mapDef.objects) {
+    if (def.requireFlag) {
+      const negate = def.requireFlag.startsWith('!');
+      const flagName = negate ? def.requireFlag.slice(1) : def.requireFlag;
+      const flagVal = gm.getFlag(flagName);
+      if (negate ? flagVal : !flagVal) continue;
+    }
+    const obj = new InteractableObject(
+      scene, def.tileX, def.tileY,
+      def.textureKey, def.id, def.objectType, def.dialogue,
+    );
+    obj.setScale(2);
+    obj.setDepth(1);
+    obj.spawnDef = def;
+    objects.push(obj);
+  }
+
+  return objects;
 }

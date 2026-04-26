@@ -69,6 +69,7 @@ export const palletPlayerHouse: MapDefinition = {
     },
   ],
   trainers: [],
+  objects: [],
   warps: [
     // Exit mat → Pallet Town (one tile below the door)
     { tileX: 4, tileY: 7, targetMap: 'pallet-town', targetSpawnId: 'from-player-house' },

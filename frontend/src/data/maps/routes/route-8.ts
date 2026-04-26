@@ -41,14 +41,12 @@ export const route8: MapDefinition = {
   displayName: 'Route 8 — Stormbreak Pass',
   weather: 'fog',
   npcs: [
-    { id: 'route8-sign', tileX: 11, tileY: 1, textureKey: 'sign-post', facing: 'down',
-      dialogue: ['ROUTE 8 — STORMBREAK PASS', 'Victory Road →  Cinderfall Town ↑'] },
     { id: 'route8-hiker-npc', name: 'Townsperson', tileX: 5, tileY: 14, textureKey: 'npc-hiker', facing: 'right',
       dialogue: [
         'The storms here are fierce. They say the Aether flow',
         'is disrupted by something deep underground.',
         'Strong Pokémon gather here to feed on the energy.',
-      ] },
+      ] }
   ],
   trainers: [
     { id: 'route8-ace-1', name: 'Ace Trainer', trainerId: 'ace-trainer-4', tileX: 14, tileY: 6, textureKey: 'npc-male-2', facing: 'left', lineOfSight: 4 },
@@ -56,6 +54,10 @@ export const route8: MapDefinition = {
     { id: 'route8-grunt-9', name: 'Synthesis Grunt', trainerId: 'synthesis-grunt-3', tileX: 14, tileY: 18, textureKey: 'npc-grunt', facing: 'left', lineOfSight: 3 },
     { id: 'route8-kael-4', name: 'Kael', trainerId: 'rival-4', tileX: 10, tileY: 22, textureKey: 'rival', facing: 'up', lineOfSight: 5,
       condition: '!rival-4' },
+  ],
+  objects: [
+    { id: 'route8-sign', tileX: 11, tileY: 1, textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['ROUTE 8 — STORMBREAK PASS', 'Victory Road →  Cinderfall Town ↑'] }
   ],
   warps: [
     { tileX: 8, tileY: 0, targetMap: 'cinderfall-town', targetSpawnId: 'from-route-8' },

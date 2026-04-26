@@ -56,6 +56,7 @@ export const cinderfallGym: MapDefinition = {
     { id: 'cinderfall-trainer-1', name: 'Kindler', trainerId: 'kindler-cinderfall-1', tileX: 3, tileY: 5, textureKey: 'npc-hiker', facing: 'right', lineOfSight: 3 },
     { id: 'cinderfall-trainer-2', name: 'Kindler', trainerId: 'kindler-cinderfall-2', tileX: 9, tileY: 8, textureKey: 'npc-ace-trainer-f', facing: 'left', lineOfSight: 3 },
   ],
+  objects: [],
   warps: [
     { tileX: 5, tileY: 13, targetMap: 'cinderfall-town', targetSpawnId: 'from-gym' },
     { tileX: 6, tileY: 13, targetMap: 'cinderfall-town', targetSpawnId: 'from-gym' },

@@ -69,15 +69,6 @@ export const palletTown: MapDefinition = {
       ],
     },
     {
-      id: 'pallet-sign-lab',
-      tileX: 10,
-      tileY: 13,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['OAK POKÉMON RESEARCH LAB'],
-    },
-    // ─── Quest NPC: Delivery Girl Pip ───
-    {
       id: 'pallet-pip',
       name: 'Pip',
       tileX: 3,
@@ -112,7 +103,6 @@ export const palletTown: MapDefinition = {
         },
       ],
     },
-    // ─── Fisherman Wade at the docks ───
     {
       id: 'pallet-wade',
       name: 'Wade',
@@ -139,16 +129,6 @@ export const palletTown: MapDefinition = {
         },
       ],
     },
-    // ─── Dock sign ───
-    {
-      id: 'pallet-dock-sign',
-      tileX: 8,
-      tileY: 22,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['LITTORAL TOWN PIER', '"Where the sea breeze begins"'],
-    },
-    // ─── Mom (heals party) ───
     {
       id: 'pallet-mom',
       name: 'Mom',
@@ -172,9 +152,23 @@ export const palletTown: MapDefinition = {
           ],
         },
       ],
-    },
+    }
   ],
   trainers: [],
+  objects: [
+    {
+      id: 'pallet-sign-lab',
+      tileX: 10,
+      tileY: 13,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['OAK POKÉMON RESEARCH LAB'] },
+    {
+      id: 'pallet-dock-sign',
+      tileX: 8,
+      tileY: 22,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['LITTORAL TOWN PIER', '"Where the sea breeze begins"'] }
+  ],
   warps: [
     // North exit → Route 1
     { tileX: 11, tileY: 0, targetMap: 'route-1', targetSpawnId: 'from-pallet' },

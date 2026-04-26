@@ -22,6 +22,7 @@ export const verdantiaPokemart: MapDefinition = {
     facing: 'right', dialogue: ['They sell Berry fertilizer here! Great for the gardens.'],
   }],
   trainers: [],
+  objects: [],
   warps: [
     { tileX: 4, tileY: 7, targetMap: 'verdantia-village', targetSpawnId: 'from-pokemart' },
     { tileX: 5, tileY: 7, targetMap: 'verdantia-village', targetSpawnId: 'from-pokemart' },

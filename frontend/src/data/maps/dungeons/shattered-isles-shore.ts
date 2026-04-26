@@ -81,6 +81,7 @@ export const shatteredIslesShore: MapDefinition = {
       condition: 'enteredHallOfFame',
     },
   ],
+  objects: [],
   warps: [
     // South dock → Coral Harbor
     { tileX: 11, tileY: 29, targetMap: 'coral-harbor', targetSpawnId: 'from-shattered-isles' },

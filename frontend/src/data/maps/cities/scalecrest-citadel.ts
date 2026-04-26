@@ -35,8 +35,6 @@ export const scalecrestCitadel: MapDefinition = {
   key: 'scalecrest-citadel', width: 24, height: 25, ground: scalecrestGround,
   encounterTableKey: '', battleBg: 'bg-citadel', displayName: 'Scalecrest Citadel',
   npcs: [
-    { id: 'scalecrest-sign', tileX: 13, tileY: 1, textureKey: 'sign-post', facing: 'down',
-      dialogue: ['SCALECREST CITADEL', '"Ancestral Fortress of the Dragon Keepers"'] },
     { id: 'scalecrest-npc', name: 'Townsperson', tileX: 16, tileY: 6, textureKey: 'npc-clerk', facing: 'left',
       dialogue: ['Drake is our Gym Leader. His dragons descend from ancient guardians.', 'Only the worthy may pass!'] },
     { id: 'tutor-scalecrest', name: 'Move Tutor', tileX: 8, tileY: 13, textureKey: 'npc-clerk', facing: 'right',
@@ -48,7 +46,6 @@ export const scalecrestCitadel: MapDefinition = {
         'Wren: If you could find an Aether Salve, it might help.',
         'Wren: The ingredients are in Verdantia and Ember Mines.'],
       setsFlag: 'quest_dragonLament_started' },
-    // ─── Veteran Knox (citadel gate, gives Scope Lens) ───
     { id: 'scalecrest-knox', name: 'Knox', tileX: 8, tileY: 23, textureKey: 'npc-ace-trainer', facing: 'right',
       dialogue: [
         'Veteran Knox: I\'ve stood guard at this citadel for thirty years.',
@@ -68,9 +65,13 @@ export const scalecrestCitadel: MapDefinition = {
           ],
         },
       ],
-    },
+    }
   ],
   trainers: [],
+  objects: [
+    { id: 'scalecrest-sign', tileX: 13, tileY: 1, textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['SCALECREST CITADEL', '"Ancestral Fortress of the Dragon Keepers"'] }
+  ],
   warps: [
     { tileX: 11, tileY: 0, targetMap: 'route-7', targetSpawnId: 'from-scalecrest' },
     { tileX: 12, tileY: 0, targetMap: 'route-7', targetSpawnId: 'from-scalecrest' },

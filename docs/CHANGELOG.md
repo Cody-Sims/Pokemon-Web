@@ -8,6 +8,9 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **NPC idle frame showing walk pose**: NPCs displayed frame 1 (mid-step walk) as their standing pose. Changed to frame 0 (feet-together standing) in constructor, `setDirectionFrame`, `stopWalkAnim`, and dialogue portrait
+- **NPC face-toward-player on interaction**: NPCs now turn to face the player's approach direction when talked to (front, left, right, behind)
+- **Objects separated from NPC array**: Signs, item balls, PCs, and doors moved from `npcs` array to dedicated `objects` array in all map definitions. `InteractableObject` entity handles rendering without walk animation frames. Prevents objects from displaying as broken NPC sprites
 - **Portrait HUD layout**: Clock now renders centered below the location bar in portrait mode instead of overlapping at top-left
 - **Portrait menu button not clickable**: Moved `#mobile-menu-btn` base styles out of landscape-only media query so the hamburger menu is visible and tappable in portrait DOM-controls mode
 - **Portrait dialogue cutoff**: Dialogue box positioned 120px from bottom in portrait (vs 80px in landscape) so text is not clipped by DOM controls or screen edge

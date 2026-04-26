@@ -10,7 +10,7 @@ by `CHAR_TO_TILE` from `map-parser.ts`.
 | `index.ts` | Barrel export: `mapRegistry` (all maps), shared types |
 | `tiles.ts` | `Tile` enum with 115 tile types and `LEDGE_TILES` |
 | `tile-metadata.ts` | `OVERLAY_BASE`, `FOREGROUND_TILES`, `TILE_COLORS`, `SOLID_TILES` |
-| `map-interfaces.ts` | `MapDefinition`, `NpcSpawn`, `TrainerSpawn`, `WarpDefinition`, `SpawnPoint` |
+| `map-interfaces.ts` | `MapDefinition`, `NpcSpawn`, `TrainerSpawn`, `ObjectSpawn`, `ObjectType`, `WarpDefinition`, `SpawnPoint` |
 | `map-parser.ts` | `CHAR_TO_TILE` mapping and `parseMap()` function |
 | `shared.ts` | Backwards-compatible re-exports from split modules |
 

@@ -52,37 +52,6 @@ export const viridianForest: MapDefinition = {
   encounterTableKey: 'viridian-forest',
   npcs: [
     {
-      id: 'forest-sign-south',
-      tileX: 12,
-      tileY: 38,
-      textureKey: 'sign-post',
-      facing: 'down',
-      dialogue: ['VIRIDIAN FOREST', 'Watch your step — Bug Pokémon everywhere!'],
-    },
-    // ─── Quest NPC: Jerome's Lost Geodude ───
-    {
-      id: 'forest-lost-geodude',
-      tileX: 18,
-      tileY: 22,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'The lost Pokémon appears to be a Geodude!',
-        'It seems startled and ready to fight!',
-      ],
-      requireFlag: 'quest_lostPokemon_started',
-      setsFlag: 'quest_lostPokemon_found',
-      interactionType: 'wild-encounter',
-      interactionData: '74-25',
-      flagDialogue: [
-        {
-          flag: 'quest_lostPokemon_found',
-          dialogue: ['The Geodude is waiting patiently for Jerome to pick it up.'],
-        },
-      ],
-    },
-    // ─── Story NPC: Rook's first forest appearance ───
-    {
       id: 'forest-rook-warning',
       name: 'Rook',
       tileX: 4,
@@ -96,21 +65,7 @@ export const viridianForest: MapDefinition = {
         '???: Stay sharp, kid.',
       ],
       requireFlag: 'receivedStarter',
-    },
-    // ─── Story NPC: Synthesis sensor device ───
-    {
-      id: 'forest-synthesis-device',
-      tileX: 20,
-      tileY: 8,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'There\'s a strange device implanted in this tree...',
-        'It hums with a faint teal glow.',
-        'It seems to be measuring something in the ground.',
-      ],
-      setsFlag: 'found_synthesis_sensor',
-    },
+    }
   ],
   trainers: [
     {
@@ -163,6 +118,43 @@ export const viridianForest: MapDefinition = {
       facing: 'up',
       lineOfSight: 4,
     },
+  ],
+  objects: [
+    {
+      id: 'forest-sign-south',
+      tileX: 12,
+      tileY: 38,
+      textureKey: 'sign-post', objectType: 'sign',
+      dialogue: ['VIRIDIAN FOREST', 'Watch your step — Bug Pokémon everywhere!'] },
+    {
+      id: 'forest-lost-geodude',
+      tileX: 18,
+      tileY: 22,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'The lost Pokémon appears to be a Geodude!',
+        'It seems startled and ready to fight!',
+      ],
+      requireFlag: 'quest_lostPokemon_started',
+      setsFlag: 'quest_lostPokemon_found',
+      interactionType: 'wild-encounter',
+      interactionData: '74-25',
+      flagDialogue: [
+        {
+          flag: 'quest_lostPokemon_found',
+          dialogue: ['The Geodude is waiting patiently for Jerome to pick it up.'] },
+      ] },
+    {
+      id: 'forest-synthesis-device',
+      tileX: 20,
+      tileY: 8,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'There\'s a strange device implanted in this tree...',
+        'It hums with a faint teal glow.',
+        'It seems to be measuring something in the ground.',
+      ],
+      setsFlag: 'found_synthesis_sensor' }
   ],
   warps: [
     // South exit → Route 2

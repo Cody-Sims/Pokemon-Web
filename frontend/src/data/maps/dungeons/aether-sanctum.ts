@@ -36,8 +36,6 @@ export const aetherSanctum: MapDefinition = {
   displayName: 'Aether Sanctum',
   isInterior: true,
   npcs: [
-    { id: 'sanctum-sign', tileX: 10, tileY: 23, textureKey: 'item-ball', facing: 'up',
-      dialogue: ['The air hums with raw Aether energy...', 'Ancient runes glow along the walls.'] },
     { id: 'sanctum-rook', name: 'Rook', tileX: 10, tileY: 2, textureKey: 'npc-male-5', facing: 'down',
       dialogue: [
         'Rook: You made it. This place is the convergence point.',
@@ -45,7 +43,7 @@ export const aetherSanctum: MapDefinition = {
         'Rook: The Collective tried to harness it. They failed.',
         'Rook: But the energy remains... and so do the powerful Pokémon it attracts.',
       ],
-      requireFlag: 'champion_defeated' },
+      requireFlag: 'champion_defeated' }
   ],
   trainers: [
     { id: 'sanctum-grunt-1', name: 'Synthesis Grunt', trainerId: 'synthesis-grunt-3', tileX: 5, tileY: 9, textureKey: 'npc-grunt', facing: 'right', lineOfSight: 4 },
@@ -53,6 +51,10 @@ export const aetherSanctum: MapDefinition = {
     { id: 'sanctum-grunt-3', name: 'Synthesis Grunt', trainerId: 'synthesis-grunt-3', tileX: 10, tileY: 17, textureKey: 'npc-grunt', facing: 'up', lineOfSight: 3 },
     { id: 'sanctum-kael-6', name: 'Kael', trainerId: 'rival-6', tileX: 10, tileY: 5, textureKey: 'rival', facing: 'down', lineOfSight: 5,
       condition: '!rival-6' },
+  ],
+  objects: [
+    { id: 'sanctum-sign', tileX: 10, tileY: 23, textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['The air hums with raw Aether energy...', 'Ancient runes glow along the walls.'] }
   ],
   warps: [
     // South entrance — leads back to Victory Road

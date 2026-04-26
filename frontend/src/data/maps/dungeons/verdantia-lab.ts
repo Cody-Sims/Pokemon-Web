@@ -32,45 +32,7 @@ export const verdantiaLab: MapDefinition = {
   encounterTableKey: 'verdantia-lab',
   battleBg: 'bg-cave',
   displayName: 'Verdantia Underground Lab',
-  npcs: [
-    {
-      id: 'lab-terminal-1',
-      tileX: 2,
-      tileY: 2,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'A Synthesis Collective data terminal...',
-        'Log Entry 47: Aether infusion into plant-type subjects shows promise.',
-        'The root network beneath this village is ideal for siphoning.',
-      ],
-    },
-    {
-      id: 'lab-terminal-2',
-      tileX: 12,
-      tileY: 3,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'A Synthesis Collective research terminal...',
-        'Log Entry 113: Subject V-07 exhibiting unstable Aether mutations.',
-        'Director has ordered containment protocols. Proceed with caution.',
-      ],
-    },
-    {
-      id: 'lab-terminal-3',
-      tileX: 3,
-      tileY: 11,
-      textureKey: 'item-ball',
-      facing: 'down',
-      dialogue: [
-        'A heavily encrypted terminal...',
-        'Fragment: "...Solatheon\'s seal weakens as we harvest more Aether..."',
-        'Fragment: "...the Director believes the Guardian can be controlled..."',
-      ],
-      setsFlag: 'found_lab_terminal_solatheon',
-    },
-  ],
+  npcs: [],
   trainers: [
     {
       id: 'lab-grunt-1',
@@ -102,6 +64,39 @@ export const verdantiaLab: MapDefinition = {
       facing: 'left',
       lineOfSight: 3,
     },
+  ],
+  objects: [
+    {
+      id: 'lab-terminal-1',
+      tileX: 2,
+      tileY: 2,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'A Synthesis Collective data terminal...',
+        'Log Entry 47: Aether infusion into plant-type subjects shows promise.',
+        'The root network beneath this village is ideal for siphoning.',
+      ] },
+    {
+      id: 'lab-terminal-2',
+      tileX: 12,
+      tileY: 3,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'A Synthesis Collective research terminal...',
+        'Log Entry 113: Subject V-07 exhibiting unstable Aether mutations.',
+        'Director has ordered containment protocols. Proceed with caution.',
+      ] },
+    {
+      id: 'lab-terminal-3',
+      tileX: 3,
+      tileY: 11,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: [
+        'A heavily encrypted terminal...',
+        'Fragment: "...Solatheon\'s seal weakens as we harvest more Aether..."',
+        'Fragment: "...the Director believes the Guardian can be controlled..."',
+      ],
+      setsFlag: 'found_lab_terminal_solatheon' }
   ],
   warps: [
     // South exit → Verdantia Village
