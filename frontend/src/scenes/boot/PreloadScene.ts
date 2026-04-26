@@ -4,13 +4,54 @@ import { BGM, SFX } from '@utils/audio-keys';
 import { AudioManager } from '@managers/AudioManager';
 import { mobileFontSize } from '@ui/theme';
 
+// ── Manifest types ───────────────────────────────────────────────────
+
+/** A single entry in the manifest's asset arrays. */
+interface ManifestAsset {
+  key: string;
+  /** For image / spritesheet / audio entries. */
+  path?: string;
+  /** For atlas entries — the .png texture path. */
+  texture?: string;
+  /** For atlas entries — the .json atlas path. */
+  atlas?: string;
+  /** Per-asset override when the category is "mixed". */
+  loadType?: string;
+  /** Spritesheet frame dimensions. */
+  frameWidth?: number;
+  frameHeight?: number;
+}
+
+/** A category grouping in the manifest. */
+interface ManifestCategory {
+  loadType: string;
+  /** If true this category is NOT loaded at boot (handled by MapPreloader). */
+  deferred?: boolean;
+  assets: ManifestAsset[];
+}
+
+/** Top-level manifest shape written by generate-atlas.js. */
+interface AssetManifest {
+  version: number;
+  categories: Record<string, ManifestCategory>;
+}
+
+// ── Scene ────────────────────────────────────────────────────────────
+
 export class PreloadScene extends Phaser.Scene {
+  private manifest: AssetManifest | null = null;
+
   constructor() {
     super({ key: 'PreloadScene' });
   }
 
+  /** Receive the manifest (or null) from BootScene. */
+  init(data: { manifest?: AssetManifest }): void {
+    this.manifest = data?.manifest ?? null;
+  }
+
   preload(): void {
-    // Progress bar
+    // ── Progress bar ─────────────────────────────────────────────
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
     const progressBar = this.add.graphics();
@@ -35,6 +76,48 @@ export class PreloadScene extends Phaser.Scene {
       loadingText.destroy();
     });
 
+    // ── Queue assets ─────────────────────────────────────────────
+    if (this.manifest?.version && this.manifest.categories) {
+      this.loadFromManifest(this.manifest);
+    } else {
+      this.loadFallback();
+    }
+  }
+
+  // ── Manifest-driven loading ────────────────────────────────────
+
+  /** Iterate every non-deferred category and queue the right loader call. */
+  private loadFromManifest(manifest: AssetManifest): void {
+    for (const category of Object.values(manifest.categories)) {
+      if (category.deferred) continue;
+
+      for (const asset of category.assets) {
+        const type = asset.loadType ?? category.loadType;
+
+        switch (type) {
+          case 'image':
+            this.load.image(asset.key, asset.path!);
+            break;
+          case 'atlas':
+            this.load.atlas(asset.key, asset.texture!, asset.atlas!);
+            break;
+          case 'spritesheet':
+            this.load.spritesheet(asset.key, asset.path!, {
+              frameWidth: asset.frameWidth!,
+              frameHeight: asset.frameHeight!,
+            });
+            break;
+          case 'audio':
+            this.load.audio(asset.key, asset.path!);
+            break;
+        }
+      }
+    }
+  }
+
+  // ── Hardcoded fallback (dev without running generate-atlas) ────
+
+  private loadFallback(): void {
     // Load Pokemon icon sprites (small; needed everywhere: menus, party, PC).
     // Front/back battle sprites are loaded on demand by MapPreloader as the
     // player approaches each route.
@@ -50,49 +133,16 @@ export class PreloadScene extends Phaser.Scene {
       frameHeight: 16,
     });
 
-    // Load player character atlases (male + female)
+    // Load player character atlases (male + female, walk + cycle)
     this.load.atlas('player-walk', 'assets/sprites/player/player-walk.png', 'assets/sprites/player/player-walk.json');
     this.load.atlas('player-walk-female', 'assets/sprites/player/player-walk-female.png', 'assets/sprites/player/player-walk-female.json');
+    this.load.atlas('player-cycle', 'assets/sprites/player/player-cycle.png', 'assets/sprites/player/player-cycle.json');
+    this.load.atlas('player-cycle-female', 'assets/sprites/player/player-cycle-female.png', 'assets/sprites/player/player-cycle-female.json');
 
     // Load a Pokemon front sprite for the intro scene
     this.load.image('pikachu-front', 'assets/sprites/pokemon/pikachu-front.png');
 
     // ── NPC Sprites ──
-    // Organized by subfolder under assets/sprites/npcs/
-    //
-    // Males/ — generic + role-based male NPCs (source: Males.png sheet)
-    //   npc-male-1  (M_01) — red-haired boy
-    //   npc-male-2  (M_03) — blue-haired boy        ← same sprite as generic-trainer
-    //   npc-male-3  (M_08) — dark-skinned man
-    //   npc-male-4  (M_10) — blond man
-    //   npc-male-5  (M_12) — dark-haired man
-    //   npc-clerk   (M_05) — brown-haired clerk (PokéMarts)
-    //   npc-oldman  (M_02) — elderly bald man
-    //   npc-hiker   (M_04) — bearded hiker w/ backpack
-    //   npc-scientist(M_07) — lab coat scientist
-    //   npc-swimmer (M_09) — shirtless swimmer
-    //   npc-sailor  (M_11) — uniformed sailor
-    //
-    // Females/ — generic + descriptive female NPCs (source: Females.png sheet)
-    //   npc-female-1 (F_03) — red-haired girl
-    //   npc-female-2 (F_04) — brown-haired girl
-    //   npc-female-3 (F_05) — blonde girl
-    //   npc-female-4 (F_06) — dark-haired girl
-    //   npc-female-5 (F_08) — green-haired woman
-    //   npc-female-6 (F_09) — purple-haired woman
-    //   npc-female-7 (F_10) — silver-haired woman
-    //   npc-female-8 (F_11) — red-dressed woman
-    //   npc-female-9 (F_12) — blue-dressed woman
-    //   npc-nurse   (F_02) — pink-haired nurse
-    //   npc-lass    (F_07) — young lass trainer
-    //
-    // story/     — rival, npc-oak, npc-mom, npc-marina, npc-blitz
-    // trainers/  — generic-trainer, sign-post, npc-ace-trainer, npc-ace-trainer-f, npc-bug-catcher, npc-psychic
-    // gym-leaders/ — npc-gym-{brock,blitz,ferris,coral,ivy,morwen,drake,solara,giovanni}
-    // elite-four/  — npc-e4-{nerida,theron,lysandra,ashborne}, npc-champion-aldric
-    // villains/    — npc-grunt, npc-admin-vex, npc-vex
-    //
-    // Load NPC sprites — organized by subfolder
     const npcBase = 'assets/sprites/npcs';
 
     // Generic male NPCs (Males/) — 5 generic + 6 role-based
@@ -104,7 +154,7 @@ export class PreloadScene extends Phaser.Scene {
       this.load.atlas(key, `${npcBase}/Males/${key}.png`, `${npcBase}/Males/${key}.json`);
     }
 
-    // Generic female NPCs (Females/) — 9 generic + 3 descriptive
+    // Generic female NPCs (Females/) — 9 generic + 2 descriptive
     for (let i = 1; i <= 9; i++) {
       const key = `npc-female-${i}`;
       this.load.atlas(key, `${npcBase}/Females/${key}.png`, `${npcBase}/Females/${key}.json`);
@@ -137,6 +187,7 @@ export class PreloadScene extends Phaser.Scene {
     for (const key of ['npc-grunt', 'npc-admin-vex', 'npc-vex']) {
       this.load.atlas(key, `${npcBase}/villains/${key}.png`, `${npcBase}/villains/${key}.json`);
     }
+
     // UI badge spritesheets
     this.load.spritesheet('type-badges', 'assets/ui/type-badges.png', {
       frameWidth: 32,
@@ -146,6 +197,7 @@ export class PreloadScene extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 14,
     });
+
     // ── Audio: BGM ──
     for (const key of Object.values(BGM)) {
       this.load.audio(key, `assets/audio/bgm/${key}.wav`);

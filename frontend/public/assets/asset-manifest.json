@@ -1,0 +1,2401 @@
+{
+  "version": 1,
+  "generated": "2026-04-26T17:35:59.953Z",
+  "categories": {
+    "pokemon-icons": {
+      "loadType": "image",
+      "assets": [
+        {
+          "key": "abra-icon",
+          "path": "assets/sprites/pokemon/abra-icon.png"
+        },
+        {
+          "key": "aerodactyl-icon",
+          "path": "assets/sprites/pokemon/aerodactyl-icon.png"
+        },
+        {
+          "key": "alakazam-icon",
+          "path": "assets/sprites/pokemon/alakazam-icon.png"
+        },
+        {
+          "key": "arbok-icon",
+          "path": "assets/sprites/pokemon/arbok-icon.png"
+        },
+        {
+          "key": "arcanine-icon",
+          "path": "assets/sprites/pokemon/arcanine-icon.png"
+        },
+        {
+          "key": "articuno-icon",
+          "path": "assets/sprites/pokemon/articuno-icon.png"
+        },
+        {
+          "key": "beedrill-icon",
+          "path": "assets/sprites/pokemon/beedrill-icon.png"
+        },
+        {
+          "key": "bellsprout-icon",
+          "path": "assets/sprites/pokemon/bellsprout-icon.png"
+        },
+        {
+          "key": "blastoise-icon",
+          "path": "assets/sprites/pokemon/blastoise-icon.png"
+        },
+        {
+          "key": "bulbasaur-icon",
+          "path": "assets/sprites/pokemon/bulbasaur-icon.png"
+        },
+        {
+          "key": "butterfree-icon",
+          "path": "assets/sprites/pokemon/butterfree-icon.png"
+        },
+        {
+          "key": "caterpie-icon",
+          "path": "assets/sprites/pokemon/caterpie-icon.png"
+        },
+        {
+          "key": "chansey-icon",
+          "path": "assets/sprites/pokemon/chansey-icon.png"
+        },
+        {
+          "key": "charizard-icon",
+          "path": "assets/sprites/pokemon/charizard-icon.png"
+        },
+        {
+          "key": "charmander-icon",
+          "path": "assets/sprites/pokemon/charmander-icon.png"
+        },
+        {
+          "key": "charmeleon-icon",
+          "path": "assets/sprites/pokemon/charmeleon-icon.png"
+        },
+        {
+          "key": "clefable-icon",
+          "path": "assets/sprites/pokemon/clefable-icon.png"
+        },
+        {
+          "key": "clefairy-icon",
+          "path": "assets/sprites/pokemon/clefairy-icon.png"
+        },
+        {
+          "key": "cloyster-icon",
+          "path": "assets/sprites/pokemon/cloyster-icon.png"
+        },
+        {
+          "key": "cubone-icon",
+          "path": "assets/sprites/pokemon/cubone-icon.png"
+        },
+        {
+          "key": "dewgong-icon",
+          "path": "assets/sprites/pokemon/dewgong-icon.png"
+        },
+        {
+          "key": "diglett-icon",
+          "path": "assets/sprites/pokemon/diglett-icon.png"
+        },
+        {
+          "key": "ditto-icon",
+          "path": "assets/sprites/pokemon/ditto-icon.png"
+        },
+        {
+          "key": "dodrio-icon",
+          "path": "assets/sprites/pokemon/dodrio-icon.png"
+        },
+        {
+          "key": "doduo-icon",
+          "path": "assets/sprites/pokemon/doduo-icon.png"
+        },
+        {
+          "key": "dragonair-icon",
+          "path": "assets/sprites/pokemon/dragonair-icon.png"
+        },
+        {
+          "key": "dragonite-icon",
+          "path": "assets/sprites/pokemon/dragonite-icon.png"
+        },
+        {
+          "key": "dratini-icon",
+          "path": "assets/sprites/pokemon/dratini-icon.png"
+        },
+        {
+          "key": "drowzee-icon",
+          "path": "assets/sprites/pokemon/drowzee-icon.png"
+        },
+        {
+          "key": "dugtrio-icon",
+          "path": "assets/sprites/pokemon/dugtrio-icon.png"
+        },
+        {
+          "key": "eevee-icon",
+          "path": "assets/sprites/pokemon/eevee-icon.png"
+        },
+        {
+          "key": "ekans-icon",
+          "path": "assets/sprites/pokemon/ekans-icon.png"
+        },
+        {
+          "key": "electabuzz-icon",
+          "path": "assets/sprites/pokemon/electabuzz-icon.png"
+        },
+        {
+          "key": "electrode-icon",
+          "path": "assets/sprites/pokemon/electrode-icon.png"
+        },
+        {
+          "key": "exeggcute-icon",
+          "path": "assets/sprites/pokemon/exeggcute-icon.png"
+        },
+        {
+          "key": "exeggutor-icon",
+          "path": "assets/sprites/pokemon/exeggutor-icon.png"
+        },
+        {
+          "key": "farfetchd-icon",
+          "path": "assets/sprites/pokemon/farfetchd-icon.png"
+        },
+        {
+          "key": "fearow-icon",
+          "path": "assets/sprites/pokemon/fearow-icon.png"
+        },
+        {
+          "key": "flareon-icon",
+          "path": "assets/sprites/pokemon/flareon-icon.png"
+        },
+        {
+          "key": "gastly-icon",
+          "path": "assets/sprites/pokemon/gastly-icon.png"
+        },
+        {
+          "key": "gengar-icon",
+          "path": "assets/sprites/pokemon/gengar-icon.png"
+        },
+        {
+          "key": "geodude-icon",
+          "path": "assets/sprites/pokemon/geodude-icon.png"
+        },
+        {
+          "key": "gloom-icon",
+          "path": "assets/sprites/pokemon/gloom-icon.png"
+        },
+        {
+          "key": "golbat-icon",
+          "path": "assets/sprites/pokemon/golbat-icon.png"
+        },
+        {
+          "key": "goldeen-icon",
+          "path": "assets/sprites/pokemon/goldeen-icon.png"
+        },
+        {
+          "key": "golduck-icon",
+          "path": "assets/sprites/pokemon/golduck-icon.png"
+        },
+        {
+          "key": "golem-icon",
+          "path": "assets/sprites/pokemon/golem-icon.png"
+        },
+        {
+          "key": "graveler-icon",
+          "path": "assets/sprites/pokemon/graveler-icon.png"
+        },
+        {
+          "key": "grimer-icon",
+          "path": "assets/sprites/pokemon/grimer-icon.png"
+        },
+        {
+          "key": "growlithe-icon",
+          "path": "assets/sprites/pokemon/growlithe-icon.png"
+        },
+        {
+          "key": "gyarados-icon",
+          "path": "assets/sprites/pokemon/gyarados-icon.png"
+        },
+        {
+          "key": "haunter-icon",
+          "path": "assets/sprites/pokemon/haunter-icon.png"
+        },
+        {
+          "key": "hitmonchan-icon",
+          "path": "assets/sprites/pokemon/hitmonchan-icon.png"
+        },
+        {
+          "key": "hitmonlee-icon",
+          "path": "assets/sprites/pokemon/hitmonlee-icon.png"
+        },
+        {
+          "key": "horsea-icon",
+          "path": "assets/sprites/pokemon/horsea-icon.png"
+        },
+        {
+          "key": "hypno-icon",
+          "path": "assets/sprites/pokemon/hypno-icon.png"
+        },
+        {
+          "key": "ivysaur-icon",
+          "path": "assets/sprites/pokemon/ivysaur-icon.png"
+        },
+        {
+          "key": "jigglypuff-icon",
+          "path": "assets/sprites/pokemon/jigglypuff-icon.png"
+        },
+        {
+          "key": "jolteon-icon",
+          "path": "assets/sprites/pokemon/jolteon-icon.png"
+        },
+        {
+          "key": "jynx-icon",
+          "path": "assets/sprites/pokemon/jynx-icon.png"
+        },
+        {
+          "key": "kabuto-icon",
+          "path": "assets/sprites/pokemon/kabuto-icon.png"
+        },
+        {
+          "key": "kabutops-icon",
+          "path": "assets/sprites/pokemon/kabutops-icon.png"
+        },
+        {
+          "key": "kadabra-icon",
+          "path": "assets/sprites/pokemon/kadabra-icon.png"
+        },
+        {
+          "key": "kakuna-icon",
+          "path": "assets/sprites/pokemon/kakuna-icon.png"
+        },
+        {
+          "key": "kangaskhan-icon",
+          "path": "assets/sprites/pokemon/kangaskhan-icon.png"
+        },
+        {
+          "key": "kingler-icon",
+          "path": "assets/sprites/pokemon/kingler-icon.png"
+        },
+        {
+          "key": "koffing-icon",
+          "path": "assets/sprites/pokemon/koffing-icon.png"
+        },
+        {
+          "key": "krabby-icon",
+          "path": "assets/sprites/pokemon/krabby-icon.png"
+        },
+        {
+          "key": "lapras-icon",
+          "path": "assets/sprites/pokemon/lapras-icon.png"
+        },
+        {
+          "key": "lickitung-icon",
+          "path": "assets/sprites/pokemon/lickitung-icon.png"
+        },
+        {
+          "key": "machamp-icon",
+          "path": "assets/sprites/pokemon/machamp-icon.png"
+        },
+        {
+          "key": "machoke-icon",
+          "path": "assets/sprites/pokemon/machoke-icon.png"
+        },
+        {
+          "key": "machop-icon",
+          "path": "assets/sprites/pokemon/machop-icon.png"
+        },
+        {
+          "key": "magikarp-icon",
+          "path": "assets/sprites/pokemon/magikarp-icon.png"
+        },
+        {
+          "key": "magmar-icon",
+          "path": "assets/sprites/pokemon/magmar-icon.png"
+        },
+        {
+          "key": "magnemite-icon",
+          "path": "assets/sprites/pokemon/magnemite-icon.png"
+        },
+        {
+          "key": "magneton-icon",
+          "path": "assets/sprites/pokemon/magneton-icon.png"
+        },
+        {
+          "key": "mankey-icon",
+          "path": "assets/sprites/pokemon/mankey-icon.png"
+        },
+        {
+          "key": "marowak-icon",
+          "path": "assets/sprites/pokemon/marowak-icon.png"
+        },
+        {
+          "key": "meowth-icon",
+          "path": "assets/sprites/pokemon/meowth-icon.png"
+        },
+        {
+          "key": "metapod-icon",
+          "path": "assets/sprites/pokemon/metapod-icon.png"
+        },
+        {
+          "key": "mew-icon",
+          "path": "assets/sprites/pokemon/mew-icon.png"
+        },
+        {
+          "key": "mewtwo-icon",
+          "path": "assets/sprites/pokemon/mewtwo-icon.png"
+        },
+        {
+          "key": "moltres-icon",
+          "path": "assets/sprites/pokemon/moltres-icon.png"
+        },
+        {
+          "key": "mr-mime-icon",
+          "path": "assets/sprites/pokemon/mr-mime-icon.png"
+        },
+        {
+          "key": "muk-icon",
+          "path": "assets/sprites/pokemon/muk-icon.png"
+        },
+        {
+          "key": "nidoking-icon",
+          "path": "assets/sprites/pokemon/nidoking-icon.png"
+        },
+        {
+          "key": "nidoqueen-icon",
+          "path": "assets/sprites/pokemon/nidoqueen-icon.png"
+        },
+        {
+          "key": "nidoran-f-icon",
+          "path": "assets/sprites/pokemon/nidoran-f-icon.png"
+        },
+        {
+          "key": "nidoran-m-icon",
+          "path": "assets/sprites/pokemon/nidoran-m-icon.png"
+        },
+        {
+          "key": "nidorina-icon",
+          "path": "assets/sprites/pokemon/nidorina-icon.png"
+        },
+        {
+          "key": "nidorino-icon",
+          "path": "assets/sprites/pokemon/nidorino-icon.png"
+        },
+        {
+          "key": "ninetales-icon",
+          "path": "assets/sprites/pokemon/ninetales-icon.png"
+        },
+        {
+          "key": "oddish-icon",
+          "path": "assets/sprites/pokemon/oddish-icon.png"
+        },
+        {
+          "key": "omanyte-icon",
+          "path": "assets/sprites/pokemon/omanyte-icon.png"
+        },
+        {
+          "key": "omastar-icon",
+          "path": "assets/sprites/pokemon/omastar-icon.png"
+        },
+        {
+          "key": "onix-icon",
+          "path": "assets/sprites/pokemon/onix-icon.png"
+        },
+        {
+          "key": "paras-icon",
+          "path": "assets/sprites/pokemon/paras-icon.png"
+        },
+        {
+          "key": "parasect-icon",
+          "path": "assets/sprites/pokemon/parasect-icon.png"
+        },
+        {
+          "key": "persian-icon",
+          "path": "assets/sprites/pokemon/persian-icon.png"
+        },
+        {
+          "key": "pidgeot-icon",
+          "path": "assets/sprites/pokemon/pidgeot-icon.png"
+        },
+        {
+          "key": "pidgeotto-icon",
+          "path": "assets/sprites/pokemon/pidgeotto-icon.png"
+        },
+        {
+          "key": "pidgey-icon",
+          "path": "assets/sprites/pokemon/pidgey-icon.png"
+        },
+        {
+          "key": "pikachu-icon",
+          "path": "assets/sprites/pokemon/pikachu-icon.png"
+        },
+        {
+          "key": "pinsir-icon",
+          "path": "assets/sprites/pokemon/pinsir-icon.png"
+        },
+        {
+          "key": "poliwag-icon",
+          "path": "assets/sprites/pokemon/poliwag-icon.png"
+        },
+        {
+          "key": "poliwhirl-icon",
+          "path": "assets/sprites/pokemon/poliwhirl-icon.png"
+        },
+        {
+          "key": "poliwrath-icon",
+          "path": "assets/sprites/pokemon/poliwrath-icon.png"
+        },
+        {
+          "key": "ponyta-icon",
+          "path": "assets/sprites/pokemon/ponyta-icon.png"
+        },
+        {
+          "key": "porygon-icon",
+          "path": "assets/sprites/pokemon/porygon-icon.png"
+        },
+        {
+          "key": "primeape-icon",
+          "path": "assets/sprites/pokemon/primeape-icon.png"
+        },
+        {
+          "key": "psyduck-icon",
+          "path": "assets/sprites/pokemon/psyduck-icon.png"
+        },
+        {
+          "key": "raichu-icon",
+          "path": "assets/sprites/pokemon/raichu-icon.png"
+        },
+        {
+          "key": "rapidash-icon",
+          "path": "assets/sprites/pokemon/rapidash-icon.png"
+        },
+        {
+          "key": "raticate-icon",
+          "path": "assets/sprites/pokemon/raticate-icon.png"
+        },
+        {
+          "key": "rattata-icon",
+          "path": "assets/sprites/pokemon/rattata-icon.png"
+        },
+        {
+          "key": "rhydon-icon",
+          "path": "assets/sprites/pokemon/rhydon-icon.png"
+        },
+        {
+          "key": "rhyhorn-icon",
+          "path": "assets/sprites/pokemon/rhyhorn-icon.png"
+        },
+        {
+          "key": "sandshrew-icon",
+          "path": "assets/sprites/pokemon/sandshrew-icon.png"
+        },
+        {
+          "key": "sandslash-icon",
+          "path": "assets/sprites/pokemon/sandslash-icon.png"
+        },
+        {
+          "key": "scyther-icon",
+          "path": "assets/sprites/pokemon/scyther-icon.png"
+        },
+        {
+          "key": "seadra-icon",
+          "path": "assets/sprites/pokemon/seadra-icon.png"
+        },
+        {
+          "key": "seaking-icon",
+          "path": "assets/sprites/pokemon/seaking-icon.png"
+        },
+        {
+          "key": "seel-icon",
+          "path": "assets/sprites/pokemon/seel-icon.png"
+        },
+        {
+          "key": "shellder-icon",
+          "path": "assets/sprites/pokemon/shellder-icon.png"
+        },
+        {
+          "key": "slowbro-icon",
+          "path": "assets/sprites/pokemon/slowbro-icon.png"
+        },
+        {
+          "key": "slowpoke-icon",
+          "path": "assets/sprites/pokemon/slowpoke-icon.png"
+        },
+        {
+          "key": "snorlax-icon",
+          "path": "assets/sprites/pokemon/snorlax-icon.png"
+        },
+        {
+          "key": "spearow-icon",
+          "path": "assets/sprites/pokemon/spearow-icon.png"
+        },
+        {
+          "key": "squirtle-icon",
+          "path": "assets/sprites/pokemon/squirtle-icon.png"
+        },
+        {
+          "key": "starmie-icon",
+          "path": "assets/sprites/pokemon/starmie-icon.png"
+        },
+        {
+          "key": "staryu-icon",
+          "path": "assets/sprites/pokemon/staryu-icon.png"
+        },
+        {
+          "key": "tangela-icon",
+          "path": "assets/sprites/pokemon/tangela-icon.png"
+        },
+        {
+          "key": "tauros-icon",
+          "path": "assets/sprites/pokemon/tauros-icon.png"
+        },
+        {
+          "key": "tentacool-icon",
+          "path": "assets/sprites/pokemon/tentacool-icon.png"
+        },
+        {
+          "key": "tentacruel-icon",
+          "path": "assets/sprites/pokemon/tentacruel-icon.png"
+        },
+        {
+          "key": "vaporeon-icon",
+          "path": "assets/sprites/pokemon/vaporeon-icon.png"
+        },
+        {
+          "key": "venomoth-icon",
+          "path": "assets/sprites/pokemon/venomoth-icon.png"
+        },
+        {
+          "key": "venonat-icon",
+          "path": "assets/sprites/pokemon/venonat-icon.png"
+        },
+        {
+          "key": "venusaur-icon",
+          "path": "assets/sprites/pokemon/venusaur-icon.png"
+        },
+        {
+          "key": "victreebel-icon",
+          "path": "assets/sprites/pokemon/victreebel-icon.png"
+        },
+        {
+          "key": "vileplume-icon",
+          "path": "assets/sprites/pokemon/vileplume-icon.png"
+        },
+        {
+          "key": "voltorb-icon",
+          "path": "assets/sprites/pokemon/voltorb-icon.png"
+        },
+        {
+          "key": "vulpix-icon",
+          "path": "assets/sprites/pokemon/vulpix-icon.png"
+        },
+        {
+          "key": "wartortle-icon",
+          "path": "assets/sprites/pokemon/wartortle-icon.png"
+        },
+        {
+          "key": "weedle-icon",
+          "path": "assets/sprites/pokemon/weedle-icon.png"
+        },
+        {
+          "key": "weepinbell-icon",
+          "path": "assets/sprites/pokemon/weepinbell-icon.png"
+        },
+        {
+          "key": "weezing-icon",
+          "path": "assets/sprites/pokemon/weezing-icon.png"
+        },
+        {
+          "key": "wigglytuff-icon",
+          "path": "assets/sprites/pokemon/wigglytuff-icon.png"
+        },
+        {
+          "key": "zapdos-icon",
+          "path": "assets/sprites/pokemon/zapdos-icon.png"
+        },
+        {
+          "key": "zubat-icon",
+          "path": "assets/sprites/pokemon/zubat-icon.png"
+        }
+      ]
+    },
+    "pokemon-front": {
+      "loadType": "image",
+      "deferred": true,
+      "assets": [
+        {
+          "key": "abra-front",
+          "path": "assets/sprites/pokemon/abra-front.png"
+        },
+        {
+          "key": "aerodactyl-front",
+          "path": "assets/sprites/pokemon/aerodactyl-front.png"
+        },
+        {
+          "key": "alakazam-front",
+          "path": "assets/sprites/pokemon/alakazam-front.png"
+        },
+        {
+          "key": "arbok-front",
+          "path": "assets/sprites/pokemon/arbok-front.png"
+        },
+        {
+          "key": "arcanine-front",
+          "path": "assets/sprites/pokemon/arcanine-front.png"
+        },
+        {
+          "key": "articuno-front",
+          "path": "assets/sprites/pokemon/articuno-front.png"
+        },
+        {
+          "key": "beedrill-front",
+          "path": "assets/sprites/pokemon/beedrill-front.png"
+        },
+        {
+          "key": "bellsprout-front",
+          "path": "assets/sprites/pokemon/bellsprout-front.png"
+        },
+        {
+          "key": "blastoise-front",
+          "path": "assets/sprites/pokemon/blastoise-front.png"
+        },
+        {
+          "key": "bulbasaur-front",
+          "path": "assets/sprites/pokemon/bulbasaur-front.png"
+        },
+        {
+          "key": "butterfree-front",
+          "path": "assets/sprites/pokemon/butterfree-front.png"
+        },
+        {
+          "key": "caterpie-front",
+          "path": "assets/sprites/pokemon/caterpie-front.png"
+        },
+        {
+          "key": "chansey-front",
+          "path": "assets/sprites/pokemon/chansey-front.png"
+        },
+        {
+          "key": "charizard-front",
+          "path": "assets/sprites/pokemon/charizard-front.png"
+        },
+        {
+          "key": "charmander-front",
+          "path": "assets/sprites/pokemon/charmander-front.png"
+        },
+        {
+          "key": "charmeleon-front",
+          "path": "assets/sprites/pokemon/charmeleon-front.png"
+        },
+        {
+          "key": "clefable-front",
+          "path": "assets/sprites/pokemon/clefable-front.png"
+        },
+        {
+          "key": "clefairy-front",
+          "path": "assets/sprites/pokemon/clefairy-front.png"
+        },
+        {
+          "key": "cloyster-front",
+          "path": "assets/sprites/pokemon/cloyster-front.png"
+        },
+        {
+          "key": "cubone-front",
+          "path": "assets/sprites/pokemon/cubone-front.png"
+        },
+        {
+          "key": "dewgong-front",
+          "path": "assets/sprites/pokemon/dewgong-front.png"
+        },
+        {
+          "key": "diglett-front",
+          "path": "assets/sprites/pokemon/diglett-front.png"
+        },
+        {
+          "key": "ditto-front",
+          "path": "assets/sprites/pokemon/ditto-front.png"
+        },
+        {
+          "key": "dodrio-front",
+          "path": "assets/sprites/pokemon/dodrio-front.png"
+        },
+        {
+          "key": "doduo-front",
+          "path": "assets/sprites/pokemon/doduo-front.png"
+        },
+        {
+          "key": "dragonair-front",
+          "path": "assets/sprites/pokemon/dragonair-front.png"
+        },
+        {
+          "key": "dragonite-front",
+          "path": "assets/sprites/pokemon/dragonite-front.png"
+        },
+        {
+          "key": "dratini-front",
+          "path": "assets/sprites/pokemon/dratini-front.png"
+        },
+        {
+          "key": "drowzee-front",
+          "path": "assets/sprites/pokemon/drowzee-front.png"
+        },
+        {
+          "key": "dugtrio-front",
+          "path": "assets/sprites/pokemon/dugtrio-front.png"
+        },
+        {
+          "key": "eevee-front",
+          "path": "assets/sprites/pokemon/eevee-front.png"
+        },
+        {
+          "key": "ekans-front",
+          "path": "assets/sprites/pokemon/ekans-front.png"
+        },
+        {
+          "key": "electabuzz-front",
+          "path": "assets/sprites/pokemon/electabuzz-front.png"
+        },
+        {
+          "key": "electrode-front",
+          "path": "assets/sprites/pokemon/electrode-front.png"
+        },
+        {
+          "key": "exeggcute-front",
+          "path": "assets/sprites/pokemon/exeggcute-front.png"
+        },
+        {
+          "key": "exeggutor-front",
+          "path": "assets/sprites/pokemon/exeggutor-front.png"
+        },
+        {
+          "key": "farfetchd-front",
+          "path": "assets/sprites/pokemon/farfetchd-front.png"
+        },
+        {
+          "key": "fearow-front",
+          "path": "assets/sprites/pokemon/fearow-front.png"
+        },
+        {
+          "key": "flareon-front",
+          "path": "assets/sprites/pokemon/flareon-front.png"
+        },
+        {
+          "key": "gastly-front",
+          "path": "assets/sprites/pokemon/gastly-front.png"
+        },
+        {
+          "key": "gengar-front",
+          "path": "assets/sprites/pokemon/gengar-front.png"
+        },
+        {
+          "key": "geodude-front",
+          "path": "assets/sprites/pokemon/geodude-front.png"
+        },
+        {
+          "key": "gloom-front",
+          "path": "assets/sprites/pokemon/gloom-front.png"
+        },
+        {
+          "key": "golbat-front",
+          "path": "assets/sprites/pokemon/golbat-front.png"
+        },
+        {
+          "key": "goldeen-front",
+          "path": "assets/sprites/pokemon/goldeen-front.png"
+        },
+        {
+          "key": "golduck-front",
+          "path": "assets/sprites/pokemon/golduck-front.png"
+        },
+        {
+          "key": "golem-front",
+          "path": "assets/sprites/pokemon/golem-front.png"
+        },
+        {
+          "key": "graveler-front",
+          "path": "assets/sprites/pokemon/graveler-front.png"
+        },
+        {
+          "key": "grimer-front",
+          "path": "assets/sprites/pokemon/grimer-front.png"
+        },
+        {
+          "key": "growlithe-front",
+          "path": "assets/sprites/pokemon/growlithe-front.png"
+        },
+        {
+          "key": "gyarados-front",
+          "path": "assets/sprites/pokemon/gyarados-front.png"
+        },
+        {
+          "key": "haunter-front",
+          "path": "assets/sprites/pokemon/haunter-front.png"
+        },
+        {
+          "key": "hitmonchan-front",
+          "path": "assets/sprites/pokemon/hitmonchan-front.png"
+        },
+        {
+          "key": "hitmonlee-front",
+          "path": "assets/sprites/pokemon/hitmonlee-front.png"
+        },
+        {
+          "key": "horsea-front",
+          "path": "assets/sprites/pokemon/horsea-front.png"
+        },
+        {
+          "key": "hypno-front",
+          "path": "assets/sprites/pokemon/hypno-front.png"
+        },
+        {
+          "key": "ivysaur-front",
+          "path": "assets/sprites/pokemon/ivysaur-front.png"
+        },
+        {
+          "key": "jigglypuff-front",
+          "path": "assets/sprites/pokemon/jigglypuff-front.png"
+        },
+        {
+          "key": "jolteon-front",
+          "path": "assets/sprites/pokemon/jolteon-front.png"
+        },
+        {
+          "key": "jynx-front",
+          "path": "assets/sprites/pokemon/jynx-front.png"
+        },
+        {
+          "key": "kabuto-front",
+          "path": "assets/sprites/pokemon/kabuto-front.png"
+        },
+        {
+          "key": "kabutops-front",
+          "path": "assets/sprites/pokemon/kabutops-front.png"
+        },
+        {
+          "key": "kadabra-front",
+          "path": "assets/sprites/pokemon/kadabra-front.png"
+        },
+        {
+          "key": "kakuna-front",
+          "path": "assets/sprites/pokemon/kakuna-front.png"
+        },
+        {
+          "key": "kangaskhan-front",
+          "path": "assets/sprites/pokemon/kangaskhan-front.png"
+        },
+        {
+          "key": "kingler-front",
+          "path": "assets/sprites/pokemon/kingler-front.png"
+        },
+        {
+          "key": "koffing-front",
+          "path": "assets/sprites/pokemon/koffing-front.png"
+        },
+        {
+          "key": "krabby-front",
+          "path": "assets/sprites/pokemon/krabby-front.png"
+        },
+        {
+          "key": "lapras-front",
+          "path": "assets/sprites/pokemon/lapras-front.png"
+        },
+        {
+          "key": "lickitung-front",
+          "path": "assets/sprites/pokemon/lickitung-front.png"
+        },
+        {
+          "key": "machamp-front",
+          "path": "assets/sprites/pokemon/machamp-front.png"
+        },
+        {
+          "key": "machoke-front",
+          "path": "assets/sprites/pokemon/machoke-front.png"
+        },
+        {
+          "key": "machop-front",
+          "path": "assets/sprites/pokemon/machop-front.png"
+        },
+        {
+          "key": "magikarp-front",
+          "path": "assets/sprites/pokemon/magikarp-front.png"
+        },
+        {
+          "key": "magmar-front",
+          "path": "assets/sprites/pokemon/magmar-front.png"
+        },
+        {
+          "key": "magnemite-front",
+          "path": "assets/sprites/pokemon/magnemite-front.png"
+        },
+        {
+          "key": "magneton-front",
+          "path": "assets/sprites/pokemon/magneton-front.png"
+        },
+        {
+          "key": "mankey-front",
+          "path": "assets/sprites/pokemon/mankey-front.png"
+        },
+        {
+          "key": "marowak-front",
+          "path": "assets/sprites/pokemon/marowak-front.png"
+        },
+        {
+          "key": "meowth-front",
+          "path": "assets/sprites/pokemon/meowth-front.png"
+        },
+        {
+          "key": "metapod-front",
+          "path": "assets/sprites/pokemon/metapod-front.png"
+        },
+        {
+          "key": "mew-front",
+          "path": "assets/sprites/pokemon/mew-front.png"
+        },
+        {
+          "key": "mewtwo-front",
+          "path": "assets/sprites/pokemon/mewtwo-front.png"
+        },
+        {
+          "key": "moltres-front",
+          "path": "assets/sprites/pokemon/moltres-front.png"
+        },
+        {
+          "key": "mr-mime-front",
+          "path": "assets/sprites/pokemon/mr-mime-front.png"
+        },
+        {
+          "key": "muk-front",
+          "path": "assets/sprites/pokemon/muk-front.png"
+        },
+        {
+          "key": "nidoking-front",
+          "path": "assets/sprites/pokemon/nidoking-front.png"
+        },
+        {
+          "key": "nidoqueen-front",
+          "path": "assets/sprites/pokemon/nidoqueen-front.png"
+        },
+        {
+          "key": "nidoran-f-front",
+          "path": "assets/sprites/pokemon/nidoran-f-front.png"
+        },
+        {
+          "key": "nidoran-m-front",
+          "path": "assets/sprites/pokemon/nidoran-m-front.png"
+        },
+        {
+          "key": "nidorina-front",
+          "path": "assets/sprites/pokemon/nidorina-front.png"
+        },
+        {
+          "key": "nidorino-front",
+          "path": "assets/sprites/pokemon/nidorino-front.png"
+        },
+        {
+          "key": "ninetales-front",
+          "path": "assets/sprites/pokemon/ninetales-front.png"
+        },
+        {
+          "key": "oddish-front",
+          "path": "assets/sprites/pokemon/oddish-front.png"
+        },
+        {
+          "key": "omanyte-front",
+          "path": "assets/sprites/pokemon/omanyte-front.png"
+        },
+        {
+          "key": "omastar-front",
+          "path": "assets/sprites/pokemon/omastar-front.png"
+        },
+        {
+          "key": "onix-front",
+          "path": "assets/sprites/pokemon/onix-front.png"
+        },
+        {
+          "key": "paras-front",
+          "path": "assets/sprites/pokemon/paras-front.png"
+        },
+        {
+          "key": "parasect-front",
+          "path": "assets/sprites/pokemon/parasect-front.png"
+        },
+        {
+          "key": "persian-front",
+          "path": "assets/sprites/pokemon/persian-front.png"
+        },
+        {
+          "key": "pidgeot-front",
+          "path": "assets/sprites/pokemon/pidgeot-front.png"
+        },
+        {
+          "key": "pidgeotto-front",
+          "path": "assets/sprites/pokemon/pidgeotto-front.png"
+        },
+        {
+          "key": "pidgey-front",
+          "path": "assets/sprites/pokemon/pidgey-front.png"
+        },
+        {
+          "key": "pikachu-front",
+          "path": "assets/sprites/pokemon/pikachu-front.png"
+        },
+        {
+          "key": "pinsir-front",
+          "path": "assets/sprites/pokemon/pinsir-front.png"
+        },
+        {
+          "key": "poliwag-front",
+          "path": "assets/sprites/pokemon/poliwag-front.png"
+        },
+        {
+          "key": "poliwhirl-front",
+          "path": "assets/sprites/pokemon/poliwhirl-front.png"
+        },
+        {
+          "key": "poliwrath-front",
+          "path": "assets/sprites/pokemon/poliwrath-front.png"
+        },
+        {
+          "key": "ponyta-front",
+          "path": "assets/sprites/pokemon/ponyta-front.png"
+        },
+        {
+          "key": "porygon-front",
+          "path": "assets/sprites/pokemon/porygon-front.png"
+        },
+        {
+          "key": "primeape-front",
+          "path": "assets/sprites/pokemon/primeape-front.png"
+        },
+        {
+          "key": "psyduck-front",
+          "path": "assets/sprites/pokemon/psyduck-front.png"
+        },
+        {
+          "key": "raichu-front",
+          "path": "assets/sprites/pokemon/raichu-front.png"
+        },
+        {
+          "key": "rapidash-front",
+          "path": "assets/sprites/pokemon/rapidash-front.png"
+        },
+        {
+          "key": "raticate-front",
+          "path": "assets/sprites/pokemon/raticate-front.png"
+        },
+        {
+          "key": "rattata-front",
+          "path": "assets/sprites/pokemon/rattata-front.png"
+        },
+        {
+          "key": "rhydon-front",
+          "path": "assets/sprites/pokemon/rhydon-front.png"
+        },
+        {
+          "key": "rhyhorn-front",
+          "path": "assets/sprites/pokemon/rhyhorn-front.png"
+        },
+        {
+          "key": "sandshrew-front",
+          "path": "assets/sprites/pokemon/sandshrew-front.png"
+        },
+        {
+          "key": "sandslash-front",
+          "path": "assets/sprites/pokemon/sandslash-front.png"
+        },
+        {
+          "key": "scyther-front",
+          "path": "assets/sprites/pokemon/scyther-front.png"
+        },
+        {
+          "key": "seadra-front",
+          "path": "assets/sprites/pokemon/seadra-front.png"
+        },
+        {
+          "key": "seaking-front",
+          "path": "assets/sprites/pokemon/seaking-front.png"
+        },
+        {
+          "key": "seel-front",
+          "path": "assets/sprites/pokemon/seel-front.png"
+        },
+        {
+          "key": "shellder-front",
+          "path": "assets/sprites/pokemon/shellder-front.png"
+        },
+        {
+          "key": "slowbro-front",
+          "path": "assets/sprites/pokemon/slowbro-front.png"
+        },
+        {
+          "key": "slowpoke-front",
+          "path": "assets/sprites/pokemon/slowpoke-front.png"
+        },
+        {
+          "key": "snorlax-front",
+          "path": "assets/sprites/pokemon/snorlax-front.png"
+        },
+        {
+          "key": "spearow-front",
+          "path": "assets/sprites/pokemon/spearow-front.png"
+        },
+        {
+          "key": "squirtle-front",
+          "path": "assets/sprites/pokemon/squirtle-front.png"
+        },
+        {
+          "key": "starmie-front",
+          "path": "assets/sprites/pokemon/starmie-front.png"
+        },
+        {
+          "key": "staryu-front",
+          "path": "assets/sprites/pokemon/staryu-front.png"
+        },
+        {
+          "key": "tangela-front",
+          "path": "assets/sprites/pokemon/tangela-front.png"
+        },
+        {
+          "key": "tauros-front",
+          "path": "assets/sprites/pokemon/tauros-front.png"
+        },
+        {
+          "key": "tentacool-front",
+          "path": "assets/sprites/pokemon/tentacool-front.png"
+        },
+        {
+          "key": "tentacruel-front",
+          "path": "assets/sprites/pokemon/tentacruel-front.png"
+        },
+        {
+          "key": "vaporeon-front",
+          "path": "assets/sprites/pokemon/vaporeon-front.png"
+        },
+        {
+          "key": "venomoth-front",
+          "path": "assets/sprites/pokemon/venomoth-front.png"
+        },
+        {
+          "key": "venonat-front",
+          "path": "assets/sprites/pokemon/venonat-front.png"
+        },
+        {
+          "key": "venusaur-front",
+          "path": "assets/sprites/pokemon/venusaur-front.png"
+        },
+        {
+          "key": "victreebel-front",
+          "path": "assets/sprites/pokemon/victreebel-front.png"
+        },
+        {
+          "key": "vileplume-front",
+          "path": "assets/sprites/pokemon/vileplume-front.png"
+        },
+        {
+          "key": "voltorb-front",
+          "path": "assets/sprites/pokemon/voltorb-front.png"
+        },
+        {
+          "key": "vulpix-front",
+          "path": "assets/sprites/pokemon/vulpix-front.png"
+        },
+        {
+          "key": "wartortle-front",
+          "path": "assets/sprites/pokemon/wartortle-front.png"
+        },
+        {
+          "key": "weedle-front",
+          "path": "assets/sprites/pokemon/weedle-front.png"
+        },
+        {
+          "key": "weepinbell-front",
+          "path": "assets/sprites/pokemon/weepinbell-front.png"
+        },
+        {
+          "key": "weezing-front",
+          "path": "assets/sprites/pokemon/weezing-front.png"
+        },
+        {
+          "key": "wigglytuff-front",
+          "path": "assets/sprites/pokemon/wigglytuff-front.png"
+        },
+        {
+          "key": "zapdos-front",
+          "path": "assets/sprites/pokemon/zapdos-front.png"
+        },
+        {
+          "key": "zubat-front",
+          "path": "assets/sprites/pokemon/zubat-front.png"
+        }
+      ]
+    },
+    "pokemon-back": {
+      "loadType": "image",
+      "deferred": true,
+      "assets": [
+        {
+          "key": "abra-back",
+          "path": "assets/sprites/pokemon/abra-back.png"
+        },
+        {
+          "key": "aerodactyl-back",
+          "path": "assets/sprites/pokemon/aerodactyl-back.png"
+        },
+        {
+          "key": "alakazam-back",
+          "path": "assets/sprites/pokemon/alakazam-back.png"
+        },
+        {
+          "key": "arbok-back",
+          "path": "assets/sprites/pokemon/arbok-back.png"
+        },
+        {
+          "key": "arcanine-back",
+          "path": "assets/sprites/pokemon/arcanine-back.png"
+        },
+        {
+          "key": "articuno-back",
+          "path": "assets/sprites/pokemon/articuno-back.png"
+        },
+        {
+          "key": "beedrill-back",
+          "path": "assets/sprites/pokemon/beedrill-back.png"
+        },
+        {
+          "key": "bellsprout-back",
+          "path": "assets/sprites/pokemon/bellsprout-back.png"
+        },
+        {
+          "key": "blastoise-back",
+          "path": "assets/sprites/pokemon/blastoise-back.png"
+        },
+        {
+          "key": "bulbasaur-back",
+          "path": "assets/sprites/pokemon/bulbasaur-back.png"
+        },
+        {
+          "key": "butterfree-back",
+          "path": "assets/sprites/pokemon/butterfree-back.png"
+        },
+        {
+          "key": "caterpie-back",
+          "path": "assets/sprites/pokemon/caterpie-back.png"
+        },
+        {
+          "key": "chansey-back",
+          "path": "assets/sprites/pokemon/chansey-back.png"
+        },
+        {
+          "key": "charizard-back",
+          "path": "assets/sprites/pokemon/charizard-back.png"
+        },
+        {
+          "key": "charmander-back",
+          "path": "assets/sprites/pokemon/charmander-back.png"
+        },
+        {
+          "key": "charmeleon-back",
+          "path": "assets/sprites/pokemon/charmeleon-back.png"
+        },
+        {
+          "key": "clefable-back",
+          "path": "assets/sprites/pokemon/clefable-back.png"
+        },
+        {
+          "key": "clefairy-back",
+          "path": "assets/sprites/pokemon/clefairy-back.png"
+        },
+        {
+          "key": "cloyster-back",
+          "path": "assets/sprites/pokemon/cloyster-back.png"
+        },
+        {
+          "key": "cubone-back",
+          "path": "assets/sprites/pokemon/cubone-back.png"
+        },
+        {
+          "key": "dewgong-back",
+          "path": "assets/sprites/pokemon/dewgong-back.png"
+        },
+        {
+          "key": "diglett-back",
+          "path": "assets/sprites/pokemon/diglett-back.png"
+        },
+        {
+          "key": "ditto-back",
+          "path": "assets/sprites/pokemon/ditto-back.png"
+        },
+        {
+          "key": "dodrio-back",
+          "path": "assets/sprites/pokemon/dodrio-back.png"
+        },
+        {
+          "key": "doduo-back",
+          "path": "assets/sprites/pokemon/doduo-back.png"
+        },
+        {
+          "key": "dragonair-back",
+          "path": "assets/sprites/pokemon/dragonair-back.png"
+        },
+        {
+          "key": "dragonite-back",
+          "path": "assets/sprites/pokemon/dragonite-back.png"
+        },
+        {
+          "key": "dratini-back",
+          "path": "assets/sprites/pokemon/dratini-back.png"
+        },
+        {
+          "key": "drowzee-back",
+          "path": "assets/sprites/pokemon/drowzee-back.png"
+        },
+        {
+          "key": "dugtrio-back",
+          "path": "assets/sprites/pokemon/dugtrio-back.png"
+        },
+        {
+          "key": "eevee-back",
+          "path": "assets/sprites/pokemon/eevee-back.png"
+        },
+        {
+          "key": "ekans-back",
+          "path": "assets/sprites/pokemon/ekans-back.png"
+        },
+        {
+          "key": "electabuzz-back",
+          "path": "assets/sprites/pokemon/electabuzz-back.png"
+        },
+        {
+          "key": "electrode-back",
+          "path": "assets/sprites/pokemon/electrode-back.png"
+        },
+        {
+          "key": "exeggcute-back",
+          "path": "assets/sprites/pokemon/exeggcute-back.png"
+        },
+        {
+          "key": "exeggutor-back",
+          "path": "assets/sprites/pokemon/exeggutor-back.png"
+        },
+        {
+          "key": "farfetchd-back",
+          "path": "assets/sprites/pokemon/farfetchd-back.png"
+        },
+        {
+          "key": "fearow-back",
+          "path": "assets/sprites/pokemon/fearow-back.png"
+        },
+        {
+          "key": "flareon-back",
+          "path": "assets/sprites/pokemon/flareon-back.png"
+        },
+        {
+          "key": "gastly-back",
+          "path": "assets/sprites/pokemon/gastly-back.png"
+        },
+        {
+          "key": "gengar-back",
+          "path": "assets/sprites/pokemon/gengar-back.png"
+        },
+        {
+          "key": "geodude-back",
+          "path": "assets/sprites/pokemon/geodude-back.png"
+        },
+        {
+          "key": "gloom-back",
+          "path": "assets/sprites/pokemon/gloom-back.png"
+        },
+        {
+          "key": "golbat-back",
+          "path": "assets/sprites/pokemon/golbat-back.png"
+        },
+        {
+          "key": "goldeen-back",
+          "path": "assets/sprites/pokemon/goldeen-back.png"
+        },
+        {
+          "key": "golduck-back",
+          "path": "assets/sprites/pokemon/golduck-back.png"
+        },
+        {
+          "key": "golem-back",
+          "path": "assets/sprites/pokemon/golem-back.png"
+        },
+        {
+          "key": "graveler-back",
+          "path": "assets/sprites/pokemon/graveler-back.png"
+        },
+        {
+          "key": "grimer-back",
+          "path": "assets/sprites/pokemon/grimer-back.png"
+        },
+        {
+          "key": "growlithe-back",
+          "path": "assets/sprites/pokemon/growlithe-back.png"
+        },
+        {
+          "key": "gyarados-back",
+          "path": "assets/sprites/pokemon/gyarados-back.png"
+        },
+        {
+          "key": "haunter-back",
+          "path": "assets/sprites/pokemon/haunter-back.png"
+        },
+        {
+          "key": "hitmonchan-back",
+          "path": "assets/sprites/pokemon/hitmonchan-back.png"
+        },
+        {
+          "key": "hitmonlee-back",
+          "path": "assets/sprites/pokemon/hitmonlee-back.png"
+        },
+        {
+          "key": "horsea-back",
+          "path": "assets/sprites/pokemon/horsea-back.png"
+        },
+        {
+          "key": "hypno-back",
+          "path": "assets/sprites/pokemon/hypno-back.png"
+        },
+        {
+          "key": "ivysaur-back",
+          "path": "assets/sprites/pokemon/ivysaur-back.png"
+        },
+        {
+          "key": "jigglypuff-back",
+          "path": "assets/sprites/pokemon/jigglypuff-back.png"
+        },
+        {
+          "key": "jolteon-back",
+          "path": "assets/sprites/pokemon/jolteon-back.png"
+        },
+        {
+          "key": "jynx-back",
+          "path": "assets/sprites/pokemon/jynx-back.png"
+        },
+        {
+          "key": "kabuto-back",
+          "path": "assets/sprites/pokemon/kabuto-back.png"
+        },
+        {
+          "key": "kabutops-back",
+          "path": "assets/sprites/pokemon/kabutops-back.png"
+        },
+        {
+          "key": "kadabra-back",
+          "path": "assets/sprites/pokemon/kadabra-back.png"
+        },
+        {
+          "key": "kakuna-back",
+          "path": "assets/sprites/pokemon/kakuna-back.png"
+        },
+        {
+          "key": "kangaskhan-back",
+          "path": "assets/sprites/pokemon/kangaskhan-back.png"
+        },
+        {
+          "key": "kingler-back",
+          "path": "assets/sprites/pokemon/kingler-back.png"
+        },
+        {
+          "key": "koffing-back",
+          "path": "assets/sprites/pokemon/koffing-back.png"
+        },
+        {
+          "key": "krabby-back",
+          "path": "assets/sprites/pokemon/krabby-back.png"
+        },
+        {
+          "key": "lapras-back",
+          "path": "assets/sprites/pokemon/lapras-back.png"
+        },
+        {
+          "key": "lickitung-back",
+          "path": "assets/sprites/pokemon/lickitung-back.png"
+        },
+        {
+          "key": "machamp-back",
+          "path": "assets/sprites/pokemon/machamp-back.png"
+        },
+        {
+          "key": "machoke-back",
+          "path": "assets/sprites/pokemon/machoke-back.png"
+        },
+        {
+          "key": "machop-back",
+          "path": "assets/sprites/pokemon/machop-back.png"
+        },
+        {
+          "key": "magikarp-back",
+          "path": "assets/sprites/pokemon/magikarp-back.png"
+        },
+        {
+          "key": "magmar-back",
+          "path": "assets/sprites/pokemon/magmar-back.png"
+        },
+        {
+          "key": "magnemite-back",
+          "path": "assets/sprites/pokemon/magnemite-back.png"
+        },
+        {
+          "key": "magneton-back",
+          "path": "assets/sprites/pokemon/magneton-back.png"
+        },
+        {
+          "key": "mankey-back",
+          "path": "assets/sprites/pokemon/mankey-back.png"
+        },
+        {
+          "key": "marowak-back",
+          "path": "assets/sprites/pokemon/marowak-back.png"
+        },
+        {
+          "key": "meowth-back",
+          "path": "assets/sprites/pokemon/meowth-back.png"
+        },
+        {
+          "key": "metapod-back",
+          "path": "assets/sprites/pokemon/metapod-back.png"
+        },
+        {
+          "key": "mew-back",
+          "path": "assets/sprites/pokemon/mew-back.png"
+        },
+        {
+          "key": "mewtwo-back",
+          "path": "assets/sprites/pokemon/mewtwo-back.png"
+        },
+        {
+          "key": "moltres-back",
+          "path": "assets/sprites/pokemon/moltres-back.png"
+        },
+        {
+          "key": "mr-mime-back",
+          "path": "assets/sprites/pokemon/mr-mime-back.png"
+        },
+        {
+          "key": "muk-back",
+          "path": "assets/sprites/pokemon/muk-back.png"
+        },
+        {
+          "key": "nidoking-back",
+          "path": "assets/sprites/pokemon/nidoking-back.png"
+        },
+        {
+          "key": "nidoqueen-back",
+          "path": "assets/sprites/pokemon/nidoqueen-back.png"
+        },
+        {
+          "key": "nidoran-f-back",
+          "path": "assets/sprites/pokemon/nidoran-f-back.png"
+        },
+        {
+          "key": "nidoran-m-back",
+          "path": "assets/sprites/pokemon/nidoran-m-back.png"
+        },
+        {
+          "key": "nidorina-back",
+          "path": "assets/sprites/pokemon/nidorina-back.png"
+        },
+        {
+          "key": "nidorino-back",
+          "path": "assets/sprites/pokemon/nidorino-back.png"
+        },
+        {
+          "key": "ninetales-back",
+          "path": "assets/sprites/pokemon/ninetales-back.png"
+        },
+        {
+          "key": "oddish-back",
+          "path": "assets/sprites/pokemon/oddish-back.png"
+        },
+        {
+          "key": "omanyte-back",
+          "path": "assets/sprites/pokemon/omanyte-back.png"
+        },
+        {
+          "key": "omastar-back",
+          "path": "assets/sprites/pokemon/omastar-back.png"
+        },
+        {
+          "key": "onix-back",
+          "path": "assets/sprites/pokemon/onix-back.png"
+        },
+        {
+          "key": "paras-back",
+          "path": "assets/sprites/pokemon/paras-back.png"
+        },
+        {
+          "key": "parasect-back",
+          "path": "assets/sprites/pokemon/parasect-back.png"
+        },
+        {
+          "key": "persian-back",
+          "path": "assets/sprites/pokemon/persian-back.png"
+        },
+        {
+          "key": "pidgeot-back",
+          "path": "assets/sprites/pokemon/pidgeot-back.png"
+        },
+        {
+          "key": "pidgeotto-back",
+          "path": "assets/sprites/pokemon/pidgeotto-back.png"
+        },
+        {
+          "key": "pidgey-back",
+          "path": "assets/sprites/pokemon/pidgey-back.png"
+        },
+        {
+          "key": "pikachu-back",
+          "path": "assets/sprites/pokemon/pikachu-back.png"
+        },
+        {
+          "key": "pinsir-back",
+          "path": "assets/sprites/pokemon/pinsir-back.png"
+        },
+        {
+          "key": "poliwag-back",
+          "path": "assets/sprites/pokemon/poliwag-back.png"
+        },
+        {
+          "key": "poliwhirl-back",
+          "path": "assets/sprites/pokemon/poliwhirl-back.png"
+        },
+        {
+          "key": "poliwrath-back",
+          "path": "assets/sprites/pokemon/poliwrath-back.png"
+        },
+        {
+          "key": "ponyta-back",
+          "path": "assets/sprites/pokemon/ponyta-back.png"
+        },
+        {
+          "key": "porygon-back",
+          "path": "assets/sprites/pokemon/porygon-back.png"
+        },
+        {
+          "key": "primeape-back",
+          "path": "assets/sprites/pokemon/primeape-back.png"
+        },
+        {
+          "key": "psyduck-back",
+          "path": "assets/sprites/pokemon/psyduck-back.png"
+        },
+        {
+          "key": "raichu-back",
+          "path": "assets/sprites/pokemon/raichu-back.png"
+        },
+        {
+          "key": "rapidash-back",
+          "path": "assets/sprites/pokemon/rapidash-back.png"
+        },
+        {
+          "key": "raticate-back",
+          "path": "assets/sprites/pokemon/raticate-back.png"
+        },
+        {
+          "key": "rattata-back",
+          "path": "assets/sprites/pokemon/rattata-back.png"
+        },
+        {
+          "key": "rhydon-back",
+          "path": "assets/sprites/pokemon/rhydon-back.png"
+        },
+        {
+          "key": "rhyhorn-back",
+          "path": "assets/sprites/pokemon/rhyhorn-back.png"
+        },
+        {
+          "key": "sandshrew-back",
+          "path": "assets/sprites/pokemon/sandshrew-back.png"
+        },
+        {
+          "key": "sandslash-back",
+          "path": "assets/sprites/pokemon/sandslash-back.png"
+        },
+        {
+          "key": "scyther-back",
+          "path": "assets/sprites/pokemon/scyther-back.png"
+        },
+        {
+          "key": "seadra-back",
+          "path": "assets/sprites/pokemon/seadra-back.png"
+        },
+        {
+          "key": "seaking-back",
+          "path": "assets/sprites/pokemon/seaking-back.png"
+        },
+        {
+          "key": "seel-back",
+          "path": "assets/sprites/pokemon/seel-back.png"
+        },
+        {
+          "key": "shellder-back",
+          "path": "assets/sprites/pokemon/shellder-back.png"
+        },
+        {
+          "key": "slowbro-back",
+          "path": "assets/sprites/pokemon/slowbro-back.png"
+        },
+        {
+          "key": "slowpoke-back",
+          "path": "assets/sprites/pokemon/slowpoke-back.png"
+        },
+        {
+          "key": "snorlax-back",
+          "path": "assets/sprites/pokemon/snorlax-back.png"
+        },
+        {
+          "key": "spearow-back",
+          "path": "assets/sprites/pokemon/spearow-back.png"
+        },
+        {
+          "key": "squirtle-back",
+          "path": "assets/sprites/pokemon/squirtle-back.png"
+        },
+        {
+          "key": "starmie-back",
+          "path": "assets/sprites/pokemon/starmie-back.png"
+        },
+        {
+          "key": "staryu-back",
+          "path": "assets/sprites/pokemon/staryu-back.png"
+        },
+        {
+          "key": "tangela-back",
+          "path": "assets/sprites/pokemon/tangela-back.png"
+        },
+        {
+          "key": "tauros-back",
+          "path": "assets/sprites/pokemon/tauros-back.png"
+        },
+        {
+          "key": "tentacool-back",
+          "path": "assets/sprites/pokemon/tentacool-back.png"
+        },
+        {
+          "key": "tentacruel-back",
+          "path": "assets/sprites/pokemon/tentacruel-back.png"
+        },
+        {
+          "key": "vaporeon-back",
+          "path": "assets/sprites/pokemon/vaporeon-back.png"
+        },
+        {
+          "key": "venomoth-back",
+          "path": "assets/sprites/pokemon/venomoth-back.png"
+        },
+        {
+          "key": "venonat-back",
+          "path": "assets/sprites/pokemon/venonat-back.png"
+        },
+        {
+          "key": "venusaur-back",
+          "path": "assets/sprites/pokemon/venusaur-back.png"
+        },
+        {
+          "key": "victreebel-back",
+          "path": "assets/sprites/pokemon/victreebel-back.png"
+        },
+        {
+          "key": "vileplume-back",
+          "path": "assets/sprites/pokemon/vileplume-back.png"
+        },
+        {
+          "key": "voltorb-back",
+          "path": "assets/sprites/pokemon/voltorb-back.png"
+        },
+        {
+          "key": "vulpix-back",
+          "path": "assets/sprites/pokemon/vulpix-back.png"
+        },
+        {
+          "key": "wartortle-back",
+          "path": "assets/sprites/pokemon/wartortle-back.png"
+        },
+        {
+          "key": "weedle-back",
+          "path": "assets/sprites/pokemon/weedle-back.png"
+        },
+        {
+          "key": "weepinbell-back",
+          "path": "assets/sprites/pokemon/weepinbell-back.png"
+        },
+        {
+          "key": "weezing-back",
+          "path": "assets/sprites/pokemon/weezing-back.png"
+        },
+        {
+          "key": "wigglytuff-back",
+          "path": "assets/sprites/pokemon/wigglytuff-back.png"
+        },
+        {
+          "key": "zapdos-back",
+          "path": "assets/sprites/pokemon/zapdos-back.png"
+        },
+        {
+          "key": "zubat-back",
+          "path": "assets/sprites/pokemon/zubat-back.png"
+        }
+      ]
+    },
+    "tilesets": {
+      "loadType": "mixed",
+      "assets": [
+        {
+          "key": "overworld-tiles",
+          "loadType": "image",
+          "path": "assets/tilesets/overworld.png"
+        },
+        {
+          "key": "tileset",
+          "loadType": "spritesheet",
+          "path": "assets/tilesets/tileset.png",
+          "frameWidth": 16,
+          "frameHeight": 16
+        }
+      ]
+    },
+    "player": {
+      "loadType": "atlas",
+      "assets": [
+        {
+          "key": "player-walk",
+          "texture": "assets/sprites/player/player-walk.png",
+          "atlas": "assets/sprites/player/player-walk.json"
+        },
+        {
+          "key": "player-walk-female",
+          "texture": "assets/sprites/player/player-walk-female.png",
+          "atlas": "assets/sprites/player/player-walk-female.json"
+        }
+      ]
+    },
+    "intro": {
+      "loadType": "image",
+      "assets": [
+        {
+          "key": "pikachu-front",
+          "path": "assets/sprites/pokemon/pikachu-front.png"
+        }
+      ]
+    },
+    "npc-males": {
+      "loadType": "atlas",
+      "assets": [
+        {
+          "key": "npc-clerk",
+          "texture": "assets/sprites/npcs/Males/npc-clerk.png",
+          "atlas": "assets/sprites/npcs/Males/npc-clerk.json"
+        },
+        {
+          "key": "npc-hiker",
+          "texture": "assets/sprites/npcs/Males/npc-hiker.png",
+          "atlas": "assets/sprites/npcs/Males/npc-hiker.json"
+        },
+        {
+          "key": "npc-male-1",
+          "texture": "assets/sprites/npcs/Males/npc-male-1.png",
+          "atlas": "assets/sprites/npcs/Males/npc-male-1.json"
+        },
+        {
+          "key": "npc-male-2",
+          "texture": "assets/sprites/npcs/Males/npc-male-2.png",
+          "atlas": "assets/sprites/npcs/Males/npc-male-2.json"
+        },
+        {
+          "key": "npc-male-3",
+          "texture": "assets/sprites/npcs/Males/npc-male-3.png",
+          "atlas": "assets/sprites/npcs/Males/npc-male-3.json"
+        },
+        {
+          "key": "npc-male-4",
+          "texture": "assets/sprites/npcs/Males/npc-male-4.png",
+          "atlas": "assets/sprites/npcs/Males/npc-male-4.json"
+        },
+        {
+          "key": "npc-male-5",
+          "texture": "assets/sprites/npcs/Males/npc-male-5.png",
+          "atlas": "assets/sprites/npcs/Males/npc-male-5.json"
+        },
+        {
+          "key": "npc-oldman",
+          "texture": "assets/sprites/npcs/Males/npc-oldman.png",
+          "atlas": "assets/sprites/npcs/Males/npc-oldman.json"
+        },
+        {
+          "key": "npc-sailor",
+          "texture": "assets/sprites/npcs/Males/npc-sailor.png",
+          "atlas": "assets/sprites/npcs/Males/npc-sailor.json"
+        },
+        {
+          "key": "npc-scientist",
+          "texture": "assets/sprites/npcs/Males/npc-scientist.png",
+          "atlas": "assets/sprites/npcs/Males/npc-scientist.json"
+        },
+        {
+          "key": "npc-swimmer",
+          "texture": "assets/sprites/npcs/Males/npc-swimmer.png",
+          "atlas": "assets/sprites/npcs/Males/npc-swimmer.json"
+        }
+      ]
+    },
+    "npc-females": {
+      "loadType": "atlas",
+      "assets": [
+        {
+          "key": "npc-female-1",
+          "texture": "assets/sprites/npcs/Females/npc-female-1.png",
+          "atlas": "assets/sprites/npcs/Females/npc-female-1.json"
+        },
+        {
+          "key": "npc-female-2",
+          "texture": "assets/sprites/npcs/Females/npc-female-2.png",
+          "atlas": "assets/sprites/npcs/Females/npc-female-2.json"
+        },
+        {
+          "key": "npc-female-3",
+          "texture": "assets/sprites/npcs/Females/npc-female-3.png",
+          "atlas": "assets/sprites/npcs/Females/npc-female-3.json"
+        },
+        {
+          "key": "npc-female-4",
+          "texture": "assets/sprites/npcs/Females/npc-female-4.png",
+          "atlas": "assets/sprites/npcs/Females/npc-female-4.json"
+        },
+        {
+          "key": "npc-female-5",
+          "texture": "assets/sprites/npcs/Females/npc-female-5.png",
+          "atlas": "assets/sprites/npcs/Females/npc-female-5.json"
+        },
+        {
+          "key": "npc-female-6",
+          "texture": "assets/sprites/npcs/Females/npc-female-6.png",
+          "atlas": "assets/sprites/npcs/Females/npc-female-6.json"
+        },
+        {
+          "key": "npc-female-7",
+          "texture": "assets/sprites/npcs/Females/npc-female-7.png",
+          "atlas": "assets/sprites/npcs/Females/npc-female-7.json"
+        },
+        {
+          "key": "npc-female-8",
+          "texture": "assets/sprites/npcs/Females/npc-female-8.png",
+          "atlas": "assets/sprites/npcs/Females/npc-female-8.json"
+        },
+        {
+          "key": "npc-female-9",
+          "texture": "assets/sprites/npcs/Females/npc-female-9.png",
+          "atlas": "assets/sprites/npcs/Females/npc-female-9.json"
+        },
+        {
+          "key": "npc-lass",
+          "texture": "assets/sprites/npcs/Females/npc-lass.png",
+          "atlas": "assets/sprites/npcs/Females/npc-lass.json"
+        },
+        {
+          "key": "npc-nurse",
+          "texture": "assets/sprites/npcs/Females/npc-nurse.png",
+          "atlas": "assets/sprites/npcs/Females/npc-nurse.json"
+        }
+      ]
+    },
+    "npc-story": {
+      "loadType": "atlas",
+      "assets": [
+        {
+          "key": "npc-blitz",
+          "texture": "assets/sprites/npcs/story/npc-blitz.png",
+          "atlas": "assets/sprites/npcs/story/npc-blitz.json"
+        },
+        {
+          "key": "npc-marina",
+          "texture": "assets/sprites/npcs/story/npc-marina.png",
+          "atlas": "assets/sprites/npcs/story/npc-marina.json"
+        },
+        {
+          "key": "npc-mom",
+          "texture": "assets/sprites/npcs/story/npc-mom.png",
+          "atlas": "assets/sprites/npcs/story/npc-mom.json"
+        },
+        {
+          "key": "npc-oak",
+          "texture": "assets/sprites/npcs/story/npc-oak.png",
+          "atlas": "assets/sprites/npcs/story/npc-oak.json"
+        },
+        {
+          "key": "rival",
+          "texture": "assets/sprites/npcs/story/rival.png",
+          "atlas": "assets/sprites/npcs/story/rival.json"
+        }
+      ]
+    },
+    "npc-trainers": {
+      "loadType": "atlas",
+      "assets": [
+        {
+          "key": "generic-trainer",
+          "texture": "assets/sprites/npcs/trainers/generic-trainer.png",
+          "atlas": "assets/sprites/npcs/trainers/generic-trainer.json"
+        },
+        {
+          "key": "item-ball",
+          "texture": "assets/sprites/npcs/trainers/item-ball.png",
+          "atlas": "assets/sprites/npcs/trainers/item-ball.json"
+        },
+        {
+          "key": "npc-ace-trainer",
+          "texture": "assets/sprites/npcs/trainers/npc-ace-trainer.png",
+          "atlas": "assets/sprites/npcs/trainers/npc-ace-trainer.json"
+        },
+        {
+          "key": "npc-ace-trainer-f",
+          "texture": "assets/sprites/npcs/trainers/npc-ace-trainer-f.png",
+          "atlas": "assets/sprites/npcs/trainers/npc-ace-trainer-f.json"
+        },
+        {
+          "key": "npc-bug-catcher",
+          "texture": "assets/sprites/npcs/trainers/npc-bug-catcher.png",
+          "atlas": "assets/sprites/npcs/trainers/npc-bug-catcher.json"
+        },
+        {
+          "key": "npc-psychic",
+          "texture": "assets/sprites/npcs/trainers/npc-psychic.png",
+          "atlas": "assets/sprites/npcs/trainers/npc-psychic.json"
+        },
+        {
+          "key": "sign-post",
+          "texture": "assets/sprites/npcs/trainers/sign-post.png",
+          "atlas": "assets/sprites/npcs/trainers/sign-post.json"
+        }
+      ]
+    },
+    "npc-gym-leaders": {
+      "loadType": "atlas",
+      "assets": [
+        {
+          "key": "npc-gym-blitz",
+          "texture": "assets/sprites/npcs/gym-leaders/npc-gym-blitz.png",
+          "atlas": "assets/sprites/npcs/gym-leaders/npc-gym-blitz.json"
+        },
+        {
+          "key": "npc-gym-brock",
+          "texture": "assets/sprites/npcs/gym-leaders/npc-gym-brock.png",
+          "atlas": "assets/sprites/npcs/gym-leaders/npc-gym-brock.json"
+        },
+        {
+          "key": "npc-gym-coral",
+          "texture": "assets/sprites/npcs/gym-leaders/npc-gym-coral.png",
+          "atlas": "assets/sprites/npcs/gym-leaders/npc-gym-coral.json"
+        },
+        {
+          "key": "npc-gym-drake",
+          "texture": "assets/sprites/npcs/gym-leaders/npc-gym-drake.png",
+          "atlas": "assets/sprites/npcs/gym-leaders/npc-gym-drake.json"
+        },
+        {
+          "key": "npc-gym-ferris",
+          "texture": "assets/sprites/npcs/gym-leaders/npc-gym-ferris.png",
+          "atlas": "assets/sprites/npcs/gym-leaders/npc-gym-ferris.json"
+        },
+        {
+          "key": "npc-gym-giovanni",
+          "texture": "assets/sprites/npcs/gym-leaders/npc-gym-giovanni.png",
+          "atlas": "assets/sprites/npcs/gym-leaders/npc-gym-giovanni.json"
+        },
+        {
+          "key": "npc-gym-ivy",
+          "texture": "assets/sprites/npcs/gym-leaders/npc-gym-ivy.png",
+          "atlas": "assets/sprites/npcs/gym-leaders/npc-gym-ivy.json"
+        },
+        {
+          "key": "npc-gym-morwen",
+          "texture": "assets/sprites/npcs/gym-leaders/npc-gym-morwen.png",
+          "atlas": "assets/sprites/npcs/gym-leaders/npc-gym-morwen.json"
+        },
+        {
+          "key": "npc-gym-solara",
+          "texture": "assets/sprites/npcs/gym-leaders/npc-gym-solara.png",
+          "atlas": "assets/sprites/npcs/gym-leaders/npc-gym-solara.json"
+        }
+      ]
+    },
+    "npc-elite-four": {
+      "loadType": "atlas",
+      "assets": [
+        {
+          "key": "npc-champion-aldric",
+          "texture": "assets/sprites/npcs/elite-four/npc-champion-aldric.png",
+          "atlas": "assets/sprites/npcs/elite-four/npc-champion-aldric.json"
+        },
+        {
+          "key": "npc-e4-ashborne",
+          "texture": "assets/sprites/npcs/elite-four/npc-e4-ashborne.png",
+          "atlas": "assets/sprites/npcs/elite-four/npc-e4-ashborne.json"
+        },
+        {
+          "key": "npc-e4-lysandra",
+          "texture": "assets/sprites/npcs/elite-four/npc-e4-lysandra.png",
+          "atlas": "assets/sprites/npcs/elite-four/npc-e4-lysandra.json"
+        },
+        {
+          "key": "npc-e4-nerida",
+          "texture": "assets/sprites/npcs/elite-four/npc-e4-nerida.png",
+          "atlas": "assets/sprites/npcs/elite-four/npc-e4-nerida.json"
+        },
+        {
+          "key": "npc-e4-theron",
+          "texture": "assets/sprites/npcs/elite-four/npc-e4-theron.png",
+          "atlas": "assets/sprites/npcs/elite-four/npc-e4-theron.json"
+        }
+      ]
+    },
+    "npc-villains": {
+      "loadType": "atlas",
+      "assets": [
+        {
+          "key": "npc-admin-vex",
+          "texture": "assets/sprites/npcs/villains/npc-admin-vex.png",
+          "atlas": "assets/sprites/npcs/villains/npc-admin-vex.json"
+        },
+        {
+          "key": "npc-grunt",
+          "texture": "assets/sprites/npcs/villains/npc-grunt.png",
+          "atlas": "assets/sprites/npcs/villains/npc-grunt.json"
+        },
+        {
+          "key": "npc-vex",
+          "texture": "assets/sprites/npcs/villains/npc-vex.png",
+          "atlas": "assets/sprites/npcs/villains/npc-vex.json"
+        }
+      ]
+    },
+    "ui": {
+      "loadType": "spritesheet",
+      "assets": [
+        {
+          "key": "type-badges",
+          "path": "assets/ui/type-badges.png",
+          "frameWidth": 32,
+          "frameHeight": 14
+        },
+        {
+          "key": "status-badges",
+          "path": "assets/ui/status-badges.png",
+          "frameWidth": 32,
+          "frameHeight": 14
+        }
+      ]
+    },
+    "bgm": {
+      "loadType": "audio",
+      "assets": [
+        {
+          "key": "bgm-battle-gym",
+          "path": "assets/audio/bgm/bgm-battle-gym.wav"
+        },
+        {
+          "key": "bgm-battle-trainer",
+          "path": "assets/audio/bgm/bgm-battle-trainer.wav"
+        },
+        {
+          "key": "bgm-battle-wild",
+          "path": "assets/audio/bgm/bgm-battle-wild.wav"
+        },
+        {
+          "key": "bgm-cinderfall",
+          "path": "assets/audio/bgm/bgm-cinderfall.wav"
+        },
+        {
+          "key": "bgm-coral-harbor",
+          "path": "assets/audio/bgm/bgm-coral-harbor.wav"
+        },
+        {
+          "key": "bgm-credits",
+          "path": "assets/audio/bgm/bgm-credits.wav"
+        },
+        {
+          "key": "bgm-dungeon",
+          "path": "assets/audio/bgm/bgm-dungeon.wav"
+        },
+        {
+          "key": "bgm-evolution",
+          "path": "assets/audio/bgm/bgm-evolution.wav"
+        },
+        {
+          "key": "bgm-gym-leader-battle",
+          "path": "assets/audio/bgm/bgm-gym-leader-battle.wav"
+        },
+        {
+          "key": "bgm-ironvale",
+          "path": "assets/audio/bgm/bgm-ironvale.wav"
+        },
+        {
+          "key": "bgm-legendary",
+          "path": "assets/audio/bgm/bgm-legendary.wav"
+        },
+        {
+          "key": "bgm-pallet-town",
+          "path": "assets/audio/bgm/bgm-pallet-town.wav"
+        },
+        {
+          "key": "bgm-pokemon-center",
+          "path": "assets/audio/bgm/bgm-pokemon-center.wav"
+        },
+        {
+          "key": "bgm-rival-battle",
+          "path": "assets/audio/bgm/bgm-rival-battle.wav"
+        },
+        {
+          "key": "bgm-route",
+          "path": "assets/audio/bgm/bgm-route.wav"
+        },
+        {
+          "key": "bgm-scalecrest",
+          "path": "assets/audio/bgm/bgm-scalecrest.wav"
+        },
+        {
+          "key": "bgm-title",
+          "path": "assets/audio/bgm/bgm-title.wav"
+        },
+        {
+          "key": "bgm-victory-road",
+          "path": "assets/audio/bgm/bgm-victory-road.wav"
+        },
+        {
+          "key": "bgm-victory",
+          "path": "assets/audio/bgm/bgm-victory.wav"
+        },
+        {
+          "key": "bgm-villain",
+          "path": "assets/audio/bgm/bgm-villain.wav"
+        },
+        {
+          "key": "bgm-voltara",
+          "path": "assets/audio/bgm/bgm-voltara.wav"
+        },
+        {
+          "key": "bgm-wraithmoor",
+          "path": "assets/audio/bgm/bgm-wraithmoor.wav"
+        }
+      ]
+    },
+    "sfx": {
+      "loadType": "audio",
+      "assets": [
+        {
+          "key": "sfx-badge-fanfare",
+          "path": "assets/audio/sfx/sfx-badge-fanfare.wav"
+        },
+        {
+          "key": "sfx-ball-shake",
+          "path": "assets/audio/sfx/sfx-ball-shake.wav"
+        },
+        {
+          "key": "sfx-ball-throw",
+          "path": "assets/audio/sfx/sfx-ball-throw.wav"
+        },
+        {
+          "key": "sfx-bump",
+          "path": "assets/audio/sfx/sfx-bump.wav"
+        },
+        {
+          "key": "sfx-cancel",
+          "path": "assets/audio/sfx/sfx-cancel.wav"
+        },
+        {
+          "key": "sfx-catch-success",
+          "path": "assets/audio/sfx/sfx-catch-success.wav"
+        },
+        {
+          "key": "sfx-confirm",
+          "path": "assets/audio/sfx/sfx-confirm.wav"
+        },
+        {
+          "key": "sfx-cursor",
+          "path": "assets/audio/sfx/sfx-cursor.wav"
+        },
+        {
+          "key": "sfx-door-close",
+          "path": "assets/audio/sfx/sfx-door-close.wav"
+        },
+        {
+          "key": "sfx-door-open",
+          "path": "assets/audio/sfx/sfx-door-open.wav"
+        },
+        {
+          "key": "sfx-encounter",
+          "path": "assets/audio/sfx/sfx-encounter.wav"
+        },
+        {
+          "key": "sfx-error",
+          "path": "assets/audio/sfx/sfx-error.wav"
+        },
+        {
+          "key": "sfx-exp-fill",
+          "path": "assets/audio/sfx/sfx-exp-fill.wav"
+        },
+        {
+          "key": "sfx-faint",
+          "path": "assets/audio/sfx/sfx-faint.wav"
+        },
+        {
+          "key": "sfx-heal-jingle",
+          "path": "assets/audio/sfx/sfx-heal-jingle.wav"
+        },
+        {
+          "key": "sfx-hit-crit",
+          "path": "assets/audio/sfx/sfx-hit-crit.wav"
+        },
+        {
+          "key": "sfx-hit-normal",
+          "path": "assets/audio/sfx/sfx-hit-normal.wav"
+        },
+        {
+          "key": "sfx-hit-super",
+          "path": "assets/audio/sfx/sfx-hit-super.wav"
+        },
+        {
+          "key": "sfx-hit-weak",
+          "path": "assets/audio/sfx/sfx-hit-weak.wav"
+        },
+        {
+          "key": "sfx-item-pickup",
+          "path": "assets/audio/sfx/sfx-item-pickup.wav"
+        },
+        {
+          "key": "sfx-ledge-jump",
+          "path": "assets/audio/sfx/sfx-ledge-jump.wav"
+        },
+        {
+          "key": "sfx-level-up",
+          "path": "assets/audio/sfx/sfx-level-up.wav"
+        },
+        {
+          "key": "sfx-low-hp",
+          "path": "assets/audio/sfx/sfx-low-hp.wav"
+        },
+        {
+          "key": "sfx-pc-off",
+          "path": "assets/audio/sfx/sfx-pc-off.wav"
+        },
+        {
+          "key": "sfx-pc-on",
+          "path": "assets/audio/sfx/sfx-pc-on.wav"
+        },
+        {
+          "key": "sfx-run-fail",
+          "path": "assets/audio/sfx/sfx-run-fail.wav"
+        },
+        {
+          "key": "sfx-run-success",
+          "path": "assets/audio/sfx/sfx-run-success.wav"
+        },
+        {
+          "key": "sfx-save",
+          "path": "assets/audio/sfx/sfx-save.wav"
+        },
+        {
+          "key": "sfx-stat-down",
+          "path": "assets/audio/sfx/sfx-stat-down.wav"
+        },
+        {
+          "key": "sfx-stat-up",
+          "path": "assets/audio/sfx/sfx-stat-up.wav"
+        }
+      ]
+    }
+  }
+}
