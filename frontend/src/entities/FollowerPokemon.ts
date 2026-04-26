@@ -19,8 +19,8 @@ export class FollowerPokemon extends Phaser.GameObjects.Image {
     this.gridX = tileX;
     this.gridY = tileY;
 
-    // Scale the icon (68x56) to roughly match the 32px tile
-    const iconScale = TILE_SIZE / 56;
+    // Scale the icon (68x56) to fill roughly 80% of a tile for good visibility
+    const iconScale = (TILE_SIZE / 56) * 1.6;
     this.setScale(iconScale);
     this.setDepth(py);
     this.setAlpha(0.92);
