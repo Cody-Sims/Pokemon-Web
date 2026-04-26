@@ -45,7 +45,7 @@ export const pewterCity: MapDefinition = {
       id: 'pewter-sign',
       tileX: 15,
       tileY: 28,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: ['PEWTER CITY', '"A Stone Gray City"'],
     },

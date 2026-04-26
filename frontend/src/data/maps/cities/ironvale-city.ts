@@ -50,7 +50,7 @@ export const ironvaleCity: MapDefinition = {
       id: 'ironvale-sign',
       tileX: 13,
       tileY: 1,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: ['IRONVALE CITY', '"Forged in Fire and Steel"'],
     },
@@ -107,7 +107,7 @@ export const ironvaleCity: MapDefinition = {
       id: 'ironvale-hologram',
       tileX: 10,
       tileY: 9,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: [
         'A holographic projection flickers to life...',
@@ -155,7 +155,7 @@ export const ironvaleCity: MapDefinition = {
       name: 'Apprentice',
       tileX: 8,
       tileY: 8,
-      textureKey: 'npc-male-6',
+      textureKey: 'npc-male-5',
       facing: 'right',
       dialogue: [
         'Apprentice: I work at Ferris\'s forge!',

@@ -60,7 +60,7 @@ export const route1: MapDefinition = {
       id: 'route1-sign-north',
       tileX: 11,
       tileY: 1,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: ['ROUTE 1', 'VIRIDIAN CITY ↑  LITTORAL TOWN ↓'],
     },
@@ -69,7 +69,7 @@ export const route1: MapDefinition = {
       name: 'Townsperson',
       tileX: 14,
       tileY: 2,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'left',
       dialogue: [
         'If your Pokémon are weak, don\'t go into the tall grass!',
@@ -95,7 +95,7 @@ export const route1: MapDefinition = {
       name: 'Rook',
       tileX: 12,
       tileY: 21,
-      textureKey: 'npc-male-6',
+      textureKey: 'npc-male-5',
       facing: 'left',
       dialogue: [
         '???: ...',

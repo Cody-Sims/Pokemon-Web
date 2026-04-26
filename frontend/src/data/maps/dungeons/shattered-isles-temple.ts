@@ -43,7 +43,7 @@ export const shatteredIslesTemple: MapDefinition = {
       id: 'solatheon-altar',
       tileX: 9,
       tileY: 2,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       requireFlag: '!solatheon_caught',
       dialogue: [

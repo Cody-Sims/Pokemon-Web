@@ -17,7 +17,7 @@ export const scalecrestPokecenter: MapDefinition = {
     name: 'Nurse Joy',
     facing: 'down', dialogue: ['Welcome! We\'ll heal your Pokémon!'], interactionType: 'heal',
   }, {
-    id: 'scalecrest-pc', tileX: 11, tileY: 2, textureKey: 'generic-trainer',
+    id: 'scalecrest-pc', tileX: 11, tileY: 2, textureKey: 'sign-post',
     facing: 'down', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc',
   }, {
     id: 'scalecrest-center-npc', tileX: 9, tileY: 5, textureKey: 'npc-female-1',

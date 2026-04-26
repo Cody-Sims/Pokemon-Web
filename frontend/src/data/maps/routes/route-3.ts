@@ -58,7 +58,7 @@ export const route3: MapDefinition = {
       id: 'route3-sign-north',
       tileX: 11,
       tileY: 1,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: ['ROUTE 3 — TIDE POOL PATH', 'Coral Harbor ↓  Pewter City ↑'],
     },

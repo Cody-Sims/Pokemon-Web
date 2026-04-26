@@ -36,7 +36,7 @@ export const abyssalSpireF4: MapDefinition = {
       name: 'Prof. Willow',
       tileX: 7,
       tileY: 7,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-oak',
       facing: 'down',
       triggerCutscene: 'willow-rescue',
       dialogue: [
@@ -60,7 +60,7 @@ export const abyssalSpireF4: MapDefinition = {
       name: 'Ancient Spirit',
       tileX: 2,
       tileY: 2,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-oldman',
       facing: 'down',
       dialogue: [
         'Ancient glyphs cover this pillar...',
@@ -74,7 +74,7 @@ export const abyssalSpireF4: MapDefinition = {
       name: 'Ancient Spirit',
       tileX: 12,
       tileY: 5,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-oldman',
       facing: 'down',
       dialogue: [
         'An aether crystal pulses with energy...',

@@ -49,7 +49,7 @@ export const route5: MapDefinition = {
       id: 'route5-sign',
       tileX: 13,
       tileY: 1,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: ['ROUTE 5 — CANOPY TRAIL', 'Verdantia Village ↓  Ironvale City ↑'],
     },
@@ -58,7 +58,7 @@ export const route5: MapDefinition = {
       id: 'route5-trap',
       tileX: 16,
       tileY: 8,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: [
         'A strange cage sits among the trees...',
@@ -73,7 +73,7 @@ export const route5: MapDefinition = {
       name: 'Marina',
       tileX: 6,
       tileY: 14,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-marina',
       facing: 'right',
       dialogue: [
         'Marina: There you are! I\'ve been tracking energy signatures.',

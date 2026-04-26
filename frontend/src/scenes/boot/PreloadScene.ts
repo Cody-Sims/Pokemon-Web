@@ -60,13 +60,13 @@ export class PreloadScene extends Phaser.Scene {
     // ── NPC Sprites ──
     // Organized by subfolder under assets/sprites/npcs/
     //
-    // Males/ — generic + descriptive male NPCs (source: Males.png sheet)
+    // Males/ — generic + role-based male NPCs (source: Males.png sheet)
     //   npc-male-1  (M_01) — red-haired boy
     //   npc-male-2  (M_03) — blue-haired boy        ← same sprite as generic-trainer
-    //   npc-male-3  (M_05) — brown-haired man
-    //   npc-male-4  (M_08) — dark-skinned man
-    //   npc-male-5  (M_10) — blond man
-    //   npc-male-6  (M_12) — dark-haired man
+    //   npc-male-3  (M_08) — dark-skinned man
+    //   npc-male-4  (M_10) — blond man
+    //   npc-male-5  (M_12) — dark-haired man
+    //   npc-clerk   (M_05) — brown-haired clerk (PokéMarts)
     //   npc-oldman  (M_02) — elderly bald man
     //   npc-hiker   (M_04) — bearded hiker w/ backpack
     //   npc-scientist(M_07) — lab coat scientist
@@ -87,7 +87,7 @@ export class PreloadScene extends Phaser.Scene {
     //   npc-lass    (F_07) — young lass trainer
     //
     // story/     — rival, npc-oak, npc-mom, npc-marina, npc-blitz
-    // trainers/  — generic-trainer, npc-ace-trainer, npc-ace-trainer-f, npc-bug-catcher, npc-psychic
+    // trainers/  — generic-trainer, sign-post, npc-ace-trainer, npc-ace-trainer-f, npc-bug-catcher, npc-psychic
     // gym-leaders/ — npc-gym-{brock,blitz,ferris,coral,ivy,morwen,drake,solara,giovanni}
     // elite-four/  — npc-e4-{nerida,theron,lysandra,ashborne}, npc-champion-aldric
     // villains/    — npc-grunt, npc-admin-vex, npc-vex
@@ -95,12 +95,12 @@ export class PreloadScene extends Phaser.Scene {
     // Load NPC sprites — organized by subfolder
     const npcBase = 'assets/sprites/npcs';
 
-    // Generic male NPCs (Males/) — 6 generic + 5 descriptive
-    for (let i = 1; i <= 6; i++) {
+    // Generic male NPCs (Males/) — 5 generic + 6 role-based
+    for (let i = 1; i <= 5; i++) {
       const key = `npc-male-${i}`;
       this.load.atlas(key, `${npcBase}/Males/${key}.png`, `${npcBase}/Males/${key}.json`);
     }
-    for (const key of ['npc-oldman', 'npc-hiker', 'npc-scientist', 'npc-swimmer', 'npc-sailor']) {
+    for (const key of ['npc-clerk', 'npc-oldman', 'npc-hiker', 'npc-scientist', 'npc-swimmer', 'npc-sailor']) {
       this.load.atlas(key, `${npcBase}/Males/${key}.png`, `${npcBase}/Males/${key}.json`);
     }
 
@@ -119,7 +119,7 @@ export class PreloadScene extends Phaser.Scene {
     }
 
     // Trainer classes (trainers/)
-    for (const key of ['generic-trainer', 'npc-ace-trainer', 'npc-ace-trainer-f', 'npc-bug-catcher', 'npc-psychic']) {
+    for (const key of ['generic-trainer', 'sign-post', 'npc-ace-trainer', 'npc-ace-trainer-f', 'npc-bug-catcher', 'npc-psychic']) {
       this.load.atlas(key, `${npcBase}/trainers/${key}.png`, `${npcBase}/trainers/${key}.json`);
     }
 

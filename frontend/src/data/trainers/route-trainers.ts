@@ -436,7 +436,7 @@ export const routeTrainers: Record<string, TrainerData> = {
 
   // ─── Ironvale Gym: Steel-themed trainers ───
   'blackbelt-1': {
-    id: 'blackbelt-1', name: 'Black Belt Koji', spriteKey: 'npc-male-4',
+    id: 'blackbelt-1', name: 'Black Belt Koji', spriteKey: 'npc-male-3',
     party: [
       { pokemonId: 67, level: 23, moves: ['karate-chop', 'seismic-toss', 'low-kick', 'leer'] },
       { pokemonId: 75, level: 24, moves: ['rock-throw', 'self-destruct', 'defense-curl', 'dig'] },
@@ -448,7 +448,7 @@ export const routeTrainers: Record<string, TrainerData> = {
     rewardMoney: 480,
   },
   'worker-1': {
-    id: 'worker-1', name: 'Foundry Worker Gil', spriteKey: 'npc-male-4',
+    id: 'worker-1', name: 'Foundry Worker Gil', spriteKey: 'npc-male-3',
     party: [
       { pokemonId: 81, level: 22, moves: ['thunder-shock', 'sonic-boom', 'tackle'] },
       { pokemonId: 82, level: 23, moves: ['thunder-shock', 'sonic-boom', 'supersonic'] },

@@ -49,7 +49,7 @@ export const viridianGym: MapDefinition = {
     },
   ],
   trainers: [
-    { id: 'viridian-gym-leader', name: 'Giovanni', trainerId: 'gym-giovanni', tileX: 7, tileY: 2, textureKey: 'generic-trainer', facing: 'down', lineOfSight: 4 },
+    { id: 'viridian-gym-leader', name: 'Giovanni', trainerId: 'gym-giovanni', tileX: 7, tileY: 2, textureKey: 'npc-gym-giovanni', facing: 'down', lineOfSight: 4 },
     {
       id: 'viridian-trainer-1',
       name: 'Cool Trainer',

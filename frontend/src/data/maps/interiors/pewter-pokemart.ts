@@ -26,7 +26,7 @@ export const pewterPokemart: MapDefinition = {
       name: 'Clerk',
       tileX: 5,
       tileY: 1,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-clerk',
       facing: 'down',
       dialogue: [
         'Welcome to the Pewter City PokéMart!',

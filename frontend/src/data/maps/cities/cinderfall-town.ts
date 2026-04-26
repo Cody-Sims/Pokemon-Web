@@ -36,7 +36,7 @@ export const cinderfallTown: MapDefinition = {
   encounterTableKey: '', battleBg: 'bg-fire', displayName: 'Cinderfall Town',
   weather: 'sandstorm',
   npcs: [
-    { id: 'cinderfall-sign', tileX: 13, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
+    { id: 'cinderfall-sign', tileX: 13, tileY: 1, textureKey: 'sign-post', facing: 'down',
       dialogue: ['CINDERFALL TOWN', '"Born From the Embers"'] },
     { id: 'cinderfall-npc', name: 'Townsperson', tileX: 16, tileY: 6, textureKey: 'npc-female-3', facing: 'left',
       dialogue: ['Solara is our Gym Leader. She was once Aldric\'s student.',

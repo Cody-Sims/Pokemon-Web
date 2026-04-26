@@ -39,7 +39,7 @@ export const abyssalSpireF1: MapDefinition = {
       id: 'spire-entrance-sign',
       tileX: 11,
       tileY: 18,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'up',
       dialogue: ['ABYSSAL SPIRE', 'Ancient warnings are carved into the stone...', '"Turn back. The abyss consumes all."'],
     },

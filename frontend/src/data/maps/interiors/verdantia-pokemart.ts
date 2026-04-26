@@ -14,7 +14,7 @@ export const verdantiaPokemart: MapDefinition = {
   key: 'verdantia-pokemart', width: 10, height: 8, ground: g,
   encounterTableKey: '', isInterior: true, displayName: 'Verdantia Poké Mart',
   npcs: [{
-    id: 'verdantia-clerk', tileX: 5, tileY: 1, textureKey: 'generic-trainer',
+    id: 'verdantia-clerk', tileX: 5, tileY: 1, textureKey: 'npc-clerk',
     name: 'Clerk',
     facing: 'down', dialogue: ['Welcome to the Poké Mart!'], interactionType: 'shop',
   }, {

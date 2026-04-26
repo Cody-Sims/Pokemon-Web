@@ -41,7 +41,7 @@ export const route8: MapDefinition = {
   displayName: 'Route 8 — Stormbreak Pass',
   weather: 'fog',
   npcs: [
-    { id: 'route8-sign', tileX: 11, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
+    { id: 'route8-sign', tileX: 11, tileY: 1, textureKey: 'sign-post', facing: 'down',
       dialogue: ['ROUTE 8 — STORMBREAK PASS', 'Victory Road →  Cinderfall Town ↑'] },
     { id: 'route8-hiker-npc', name: 'Townsperson', tileX: 5, tileY: 14, textureKey: 'npc-hiker', facing: 'right',
       dialogue: [

@@ -26,7 +26,7 @@ export const palletRivalHouse: MapDefinition = {
       name: "Rival's Sister",
       tileX: 5,
       tileY: 3,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-female-1',
       facing: 'left',
       dialogue: [
         "My brother left a while ago.",

@@ -8,6 +8,8 @@ All notable changes to the Pokemon Web project.
 
 ### Added
 
+- **Sign-post sprite**: Created dedicated `sign-post` sprite atlas for signs, items, terminals, and non-NPC interactable objects. Replaced `generic-trainer` in 65 sign/object entries across 40+ maps
+- **npc-clerk sprite**: Renamed `npc-male-3` (M_05) to `npc-clerk` to follow naming conventions — descriptive names for role-specific sprites. Used in all 9 PokéMart clerks
 - **NPC sprite reference map**: Added detailed sprite reference comment in PreloadScene documenting all 44 NPC sprites with their source sheet origins, visual descriptions, and folder organisation
 - **AI ingestion optimization plan**: Created `docs/AI-OPTIMIZATION-PLAN.md` with 7-phase plan for optimizing the codebase for AI agent consumption
 - **Directory CONTEXT.md files**: Added navigational context to all 8 major `frontend/src/` directories (`battle/`, `data/`, `entities/`, `managers/`, `systems/`, `scenes/`, `ui/`, `utils/`) so AI agents understand folder purpose without exploring every file

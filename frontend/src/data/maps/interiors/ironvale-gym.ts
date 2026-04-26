@@ -16,9 +16,9 @@ export const ironvaleGym: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'ironvale-gym-blackbelt', name: 'Black Belt', trainerId: 'blackbelt-1', tileX: 3, tileY: 10,
-      textureKey: 'npc-male-4', facing: 'right', lineOfSight: 3 },
+      textureKey: 'npc-male-3', facing: 'right', lineOfSight: 3 },
     { id: 'ironvale-gym-worker', name: 'Worker', trainerId: 'worker-1', tileX: 7, tileY: 7,
-      textureKey: 'npc-male-4', facing: 'left', lineOfSight: 3 },
+      textureKey: 'npc-male-3', facing: 'left', lineOfSight: 3 },
     { id: 'ironvale-gym-leader', name: 'Ferris', trainerId: 'gym-ferris', tileX: 4, tileY: 2,
       textureKey: 'npc-gym-ferris', facing: 'down', lineOfSight: 6 },
   ],

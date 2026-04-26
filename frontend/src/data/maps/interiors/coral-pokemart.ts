@@ -25,7 +25,7 @@ export const coralPokemart: MapDefinition = {
       name: 'Clerk',
       tileX: 3,
       tileY: 2,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-clerk',
       facing: 'down',
       dialogue: ['Welcome to the Poké Mart!'],
       interactionType: 'shop',

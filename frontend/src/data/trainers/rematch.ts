@@ -115,7 +115,7 @@ export const rematchTrainers: Record<string, TrainerData> = {
   },
 
   'rematch-drake': {
-    id: 'rematch-drake', name: 'Gym Leader Drake', spriteKey: 'npc-male-3',
+    id: 'rematch-drake', name: 'Gym Leader Drake', spriteKey: 'npc-clerk',
     party: [
       { pokemonId: 149, level: 62, moves: ['hyper-beam', 'dragon-rage', 'thunder', 'ice-beam'] },
       { pokemonId: 130, level: 61, moves: ['hydro-pump', 'ice-beam', 'earthquake', 'dragon-rage'] },
@@ -168,7 +168,7 @@ export const rematchTrainers: Record<string, TrainerData> = {
   },
 
   'rematch-theron': {
-    id: 'rematch-theron', name: 'Elite Four Theron', spriteKey: 'npc-male-3',
+    id: 'rematch-theron', name: 'Elite Four Theron', spriteKey: 'npc-clerk',
     party: [
       { pokemonId: 68, level: 70, moves: ['karate-chop', 'earthquake', 'rock-slide', 'body-slam'] },
       { pokemonId: 76, level: 71, moves: ['earthquake', 'rock-slide', 'explosion', 'body-slam'] },
@@ -202,7 +202,7 @@ export const rematchTrainers: Record<string, TrainerData> = {
   },
 
   'rematch-ashborne': {
-    id: 'rematch-ashborne', name: 'Elite Four Ashborne', spriteKey: 'npc-male-6',
+    id: 'rematch-ashborne', name: 'Elite Four Ashborne', spriteKey: 'npc-male-5',
     party: [
       { pokemonId: 6, level: 72, moves: ['flamethrower', 'dragon-rage', 'earthquake', 'slash'] },
       { pokemonId: 59, level: 71, moves: ['flamethrower', 'fire-blast', 'take-down', 'agility'] },
@@ -221,7 +221,7 @@ export const rematchTrainers: Record<string, TrainerData> = {
   // ─── Champion Aldric Rematch (Lv 72–78) ───
 
   'rematch-aldric': {
-    id: 'rematch-aldric', name: 'Champion Aldric', spriteKey: 'npc-male-6',
+    id: 'rematch-aldric', name: 'Champion Aldric', spriteKey: 'npc-male-5',
     party: [
       { pokemonId: 94, level: 72, moves: ['shadow-ball', 'psychic', 'hypnosis', 'dream-eater'] },
       { pokemonId: 65, level: 73, moves: ['psychic', 'recover', 'reflect', 'shadow-ball'] },

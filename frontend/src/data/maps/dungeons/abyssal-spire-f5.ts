@@ -34,7 +34,7 @@ export const abyssalSpireF5: MapDefinition = {
       name: 'Champion Aldric',
       tileX: 7,
       tileY: 7,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-champion-aldric',
       facing: 'down',
       triggerCutscene: 'aldric-spire-offer',
       dialogue: [

@@ -47,7 +47,7 @@ export const emberMines: MapDefinition = {
       id: 'mines-sign',
       tileX: 10,
       tileY: 23,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'up',
       dialogue: ['EMBER MINES', 'DANGER — Synthesis Collective Activity Detected'],
     },
@@ -56,7 +56,7 @@ export const emberMines: MapDefinition = {
       id: 'mines-terminal',
       tileX: 7,
       tileY: 17,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: [
         'A Synthesis Collective data terminal...',
@@ -77,7 +77,7 @@ export const emberMines: MapDefinition = {
       id: 'mines-cage',
       tileX: 14,
       tileY: 18,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: [
         'Pokémon are trapped in strange containment pods!',
@@ -91,7 +91,7 @@ export const emberMines: MapDefinition = {
       id: 'mines-mineral',
       tileX: 3,
       tileY: 8,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: [
         'A vein of rare mineral glints in the torchlight...',

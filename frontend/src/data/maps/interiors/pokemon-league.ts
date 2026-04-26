@@ -21,13 +21,13 @@ export const pokemonLeague: MapDefinition = {
   encounterTableKey: '', isInterior: true, battleBg: 'bg-league',
   displayName: 'Pokémon League',
   npcs: [
-    { id: 'league-guide', name: 'League Guide', tileX: 4, tileY: 9, textureKey: 'npc-male-4', facing: 'up',
+    { id: 'league-guide', name: 'League Guide', tileX: 4, tileY: 9, textureKey: 'npc-male-3', facing: 'up',
       dialogue: [
         'Welcome to the Pokémon League!',
         'Beyond this hall lie the Elite Four and the Champion.',
         'Are you prepared?',
       ] },
-    { id: 'tutor-league', name: 'Move Tutor', tileX: 8, tileY: 9, textureKey: 'npc-male-4', facing: 'left',
+    { id: 'tutor-league', name: 'Move Tutor', tileX: 8, tileY: 9, textureKey: 'npc-male-3', facing: 'left',
       dialogue: ['League Tutor: Only the strongest moves are taught here.', 'League Tutor: Are you ready to pay the price?'],
       interactionType: 'move-tutor', interactionData: 'tutor-league' },
   ],
@@ -117,7 +117,7 @@ export const pokemonLeagueTheron: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'elite-theron', name: 'Theron', trainerId: 'elite-theron', tileX: 5, tileY: 3,
-      textureKey: 'npc-male-3', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-clerk', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
     // Back to Nerida
@@ -201,7 +201,7 @@ export const pokemonLeagueAshborne: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'elite-ashborne', name: 'Ashborne', trainerId: 'elite-ashborne', tileX: 5, tileY: 3,
-      textureKey: 'npc-male-6', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-male-5', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
     // Back to Lysandra
@@ -247,7 +247,7 @@ export const pokemonLeagueChampion: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'champion-aldric', name: 'Aldric', trainerId: 'champion-aldric', tileX: 6, tileY: 4,
-      textureKey: 'npc-male-6', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-male-5', facing: 'down', lineOfSight: 5 },
   ],
   warps: [
     // Back to Ashborne

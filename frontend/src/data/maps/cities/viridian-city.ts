@@ -45,7 +45,7 @@ export const viridianCity: MapDefinition = {
       id: 'viridian-sign-south',
       tileX: 15,
       tileY: 28,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: ['VIRIDIAN CITY', '"The Eternally Green Paradise"'],
     },
@@ -87,7 +87,7 @@ export const viridianCity: MapDefinition = {
       name: 'Magnus',
       tileX: 24,
       tileY: 15,
-      textureKey: 'npc-male-4',
+      textureKey: 'npc-male-3',
       facing: 'left',
       dialogue: [
         'Magnus: I\'m a Pokémon Collector! I travel the world to see rare species.',

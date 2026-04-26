@@ -51,7 +51,7 @@ export const route4: MapDefinition = {
       id: 'route4-sign',
       tileX: 11,
       tileY: 1,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: ['ROUTE 4 — BASALT RIDGE', 'Ironvale City ↑  Coral Harbor ↓'],
     },
@@ -61,7 +61,7 @@ export const route4: MapDefinition = {
       name: 'Rook',
       tileX: 12,
       tileY: 12,
-      textureKey: 'npc-male-6',
+      textureKey: 'npc-male-5',
       facing: 'left',
       dialogue: [
         '???: ...That creature was no ordinary Pokémon.',

@@ -38,7 +38,7 @@ export const route6: MapDefinition = {
   key: 'route-6', width: 20, height: 30, ground: route6Ground,
   encounterTableKey: 'route-6', battleBg: 'bg-ruins',
   weather: 'rain',
-  npcs: [{ id: 'route6-sign', tileX: 11, tileY: 1, textureKey: 'generic-trainer', facing: 'down',
+  npcs: [{ id: 'route6-sign', tileX: 11, tileY: 1, textureKey: 'sign-post', facing: 'down',
     dialogue: ['ROUTE 6', 'Wraithmoor Town ↓  Voltara City ↑'] }],
   trainers: [
     { id: 'route6-psychic-1', name: 'Psychic', trainerId: 'psychic-1', tileX: 6, tileY: 12, textureKey: 'npc-psychic', facing: 'right', lineOfSight: 4 },

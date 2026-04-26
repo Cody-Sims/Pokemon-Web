@@ -55,7 +55,7 @@ export const viridianForest: MapDefinition = {
       id: 'forest-sign-south',
       tileX: 12,
       tileY: 38,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: ['VIRIDIAN FOREST', 'Watch your step — Bug Pokémon everywhere!'],
     },
@@ -64,7 +64,7 @@ export const viridianForest: MapDefinition = {
       id: 'forest-lost-geodude',
       tileX: 18,
       tileY: 22,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: [
         'The lost Pokémon appears to be a Geodude!',
@@ -87,7 +87,7 @@ export const viridianForest: MapDefinition = {
       name: 'Rook',
       tileX: 4,
       tileY: 14,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-5',
       facing: 'right',
       dialogue: [
         '???: ...',
@@ -102,7 +102,7 @@ export const viridianForest: MapDefinition = {
       id: 'forest-synthesis-device',
       tileX: 20,
       tileY: 8,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: [
         'There\'s a strange device implanted in this tree...',

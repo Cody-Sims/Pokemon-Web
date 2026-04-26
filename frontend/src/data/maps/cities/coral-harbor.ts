@@ -49,7 +49,7 @@ export const coralHarbor: MapDefinition = {
       id: 'coral-sign',
       tileX: 15,
       tileY: 1,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: ['CORAL HARBOR', '"Where the Tides Meet the Shore"'],
     },
@@ -58,7 +58,7 @@ export const coralHarbor: MapDefinition = {
       name: 'Townsperson',
       tileX: 8,
       tileY: 6,
-      textureKey: 'npc-male-3',
+      textureKey: 'npc-clerk',
       facing: 'left',
       dialogue: [
         'Coral is the Gym Leader here!',
@@ -120,7 +120,7 @@ export const coralHarbor: MapDefinition = {
       name: 'Marco',
       tileX: 8,
       tileY: 19,
-      textureKey: 'npc-male-6',
+      textureKey: 'npc-male-5',
       facing: 'right',
       dialogue: [
         'Chef Marco: Welcome to my seaside kitchen!',

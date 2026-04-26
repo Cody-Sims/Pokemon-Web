@@ -3,7 +3,7 @@ const g = parseMap(['#########','#w#III#w#','#IIkIII#I','#IIIIIII#','#IYIIYI##',
 export const wraithmoorPokemart: MapDefinition = {
   key: 'wraithmoor-pokemart', width: 9, height: 8, ground: g,
   encounterTableKey: '', isInterior: true, displayName: 'Wraithmoor Poké Mart',
-  npcs: [{ id: 'wraithmoor-clerk', name: 'Clerk', tileX: 3, tileY: 2, textureKey: 'generic-trainer',
+  npcs: [{ id: 'wraithmoor-clerk', name: 'Clerk', tileX: 3, tileY: 2, textureKey: 'npc-clerk',
     facing: 'down', dialogue: ['Welcome to the Poké Mart!'], interactionType: 'shop' }],
   trainers: [],
   warps: [

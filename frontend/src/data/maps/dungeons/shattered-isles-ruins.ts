@@ -46,7 +46,7 @@ export const shatteredIslesRuins: MapDefinition = {
       id: 'fathers-trail-clue-1',
       tileX: 4,
       tileY: 3,
-      textureKey: 'generic-trainer',
+      textureKey: 'sign-post',
       facing: 'down',
       dialogue: [
         'You find a weathered journal page wedged between the stones...',
