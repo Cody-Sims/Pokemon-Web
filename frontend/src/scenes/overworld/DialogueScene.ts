@@ -92,6 +92,11 @@ export class DialogueScene extends Phaser.Scene {
     const hintsEl = document.getElementById('desktop-hints');
     if (hintsEl) hintsEl.style.display = 'none';
 
+    // Hide HUD overlays (minimap, quest tracker, party quick-view) so they
+    // don't render on top of the dialogue box. Each scene is registered
+    // after DialogueScene in game-config so it draws above by default.
+    this.hideHudOverlays();
+
     // ── Determine portrait dimensions ─────────────────────────
     const hasPortrait = !!this.portraitKey && this.textures.exists(this.portraitKey);
     const portraitSize = 48;
@@ -476,5 +481,35 @@ export class DialogueScene extends Phaser.Scene {
     // Ensure hints are restored if scene is stopped externally
     const hintsEl = document.getElementById('desktop-hints');
     if (hintsEl) hintsEl.style.display = '';
+    // Restore HUD overlays that were hidden while the dialogue was open.
+    this.showHudOverlays();
+  }
+
+  /**
+   * HUD overlay scenes (Minimap, QuestTracker, PartyQuickView) are launched
+   * alongside the OverworldScene and render above DialogueScene because they
+   * are registered later in game-config. Sleep them so the dialogue panel
+   * (and the minimap-overlapping speaker name / portrait) are not occluded.
+   */
+  private readonly hudOverlayKeys = [
+    'MinimapScene',
+    'QuestTrackerScene',
+    'PartyQuickViewScene',
+  ];
+
+  private hideHudOverlays(): void {
+    for (const key of this.hudOverlayKeys) {
+      if (this.scene.isActive(key)) {
+        this.scene.sleep(key);
+      }
+    }
+  }
+
+  private showHudOverlays(): void {
+    for (const key of this.hudOverlayKeys) {
+      if (this.scene.isSleeping(key)) {
+        this.scene.wake(key);
+      }
+    }
   }
 }

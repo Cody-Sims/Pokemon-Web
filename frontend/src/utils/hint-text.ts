@@ -16,11 +16,11 @@ const MOBILE_HINTS: Record<HintAction, string> = {
 };
 
 const DESKTOP_HINTS: Record<HintAction, string> = {
-  confirm: 'Press Z',
-  back: 'Press X',
-  menu: 'Press Enter',
-  advance: 'Press Enter to continue',
-  select: 'Press Enter to select',
+  confirm: 'Press SPACE',
+  back: 'Press ESC',
+  menu: 'Press ESC',
+  advance: 'Press SPACE to continue',
+  select: 'Press SPACE to select',
   interact: 'SPACE = Talk',
 };
 

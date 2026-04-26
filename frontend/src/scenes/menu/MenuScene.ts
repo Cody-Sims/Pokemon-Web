@@ -40,9 +40,10 @@ export class MenuScene extends Phaser.Scene {
     // Menu panel — fully opaque so menu text always has its full contrast
     // ratio against the panel fill, even with bright/varied overworld scenes
     // bleeding through.
-    const rowH = Math.round(48 * MOBILE_SCALE);
-    const panelW = Math.round(220 * MOBILE_SCALE);
-    const panelH = this.menuLabels.length * rowH + 32;
+    const dims = this.computePanelDims(layout.w, layout.h);
+    const panelW = dims.panelW;
+    const panelH = dims.panelH;
+    const rowH = dims.rowH;
     const panelX = layout.w - panelW / 2 - 20;
     const panelY = layout.cy;
     this.menuPanel = new NinePatchPanel(this, panelX, panelY, panelW, panelH, {
@@ -60,8 +61,8 @@ export class MenuScene extends Phaser.Scene {
       stroke: '#000000', strokeThickness: 3,
     }).setOrigin(0.5).setDepth(2);
 
-    const menuFontSize = mobileFontSize(18);
-    const startY = panelY - panelH / 2 + 32;
+    const menuFontSize = mobileFontSize(dims.fontPx);
+    const startY = panelY - panelH / 2 + 24;
     this.menuItems = this.menuLabels.map((label, i) => {
       const item = this.add.text(panelX + 10, startY + i * rowH, label, {
         ...FONTS.menuItem, fontSize: menuFontSize,
@@ -69,7 +70,7 @@ export class MenuScene extends Phaser.Scene {
         stroke: '#000000', strokeThickness: 4,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(2);
 
-      item.setPadding(8, 6, 8, 6);
+      item.setPadding(8, 4, 8, 4);
       item.on('pointerover', () => { this.cursor = i; this.updateCursor(); });
       item.on('pointerdown', () => { this.cursor = i; this.selectOption(); });
       return item;
@@ -99,9 +100,10 @@ export class MenuScene extends Phaser.Scene {
     // Re-layout on resize / orientation change
     layoutOn(this, () => {
       const l = ui(this);
-      const rH = Math.round(48 * MOBILE_SCALE);
-      const pW = Math.round(220 * MOBILE_SCALE);
-      const pH = this.menuLabels.length * rH + 32;
+      const d = this.computePanelDims(l.w, l.h);
+      const rH = d.rowH;
+      const pW = d.panelW;
+      const pH = d.panelH;
       const pX = l.w - pW / 2 - 20;
       const pY = l.cy;
       this.overlay.setPosition(l.cx, l.cy).setSize(l.w, l.h);
@@ -111,10 +113,59 @@ export class MenuScene extends Phaser.Scene {
       });
       this.menuPanel.setDepth(0);
       this.moneyText.setPosition(pX, pY - pH / 2 - 16);
-      const sY = pY - pH / 2 + 32;
-      this.menuItems.forEach((item, i) => item.setPosition(pX + 10, sY + i * rH));
+      const sY = pY - pH / 2 + 24;
+      const fSize = mobileFontSize(d.fontPx);
+      this.menuItems.forEach((item, i) => {
+        item.setPosition(pX + 10, sY + i * rH);
+        item.setFontSize(fSize);
+      });
+      this.cursorIcon.setFontSize(fSize);
       this.updateCursor();
     });
+  }
+
+  /**
+   * Compute panel + row dimensions so the menu always fits inside the
+   * viewport. Both axes get a small safe-margin (top HUD, bottom touch
+   * controls), and the row height shrinks before the font does.
+   */
+  private computePanelDims(viewW: number, viewH: number): {
+    panelW: number; panelH: number; rowH: number; fontPx: number;
+  } {
+    // Reserve room for the location HUD at the top and any touch controls
+    // at the bottom of the viewport so the menu panel never overhangs.
+    const topReserve = 56;
+    const bottomReserve = 48;
+    const maxPanelH = Math.max(160, viewH - topReserve - bottomReserve);
+    const items = this.menuLabels.length;
+
+    // Default sizes (kept for landscape / desktop where there is plenty of
+    // vertical room).
+    const baseRowH = Math.round(48 * MOBILE_SCALE);
+    const baseFontPx = 18;
+    const baseW = Math.round(220 * MOBILE_SCALE);
+
+    // If the default row height already fits, use it.
+    let rowH = baseRowH;
+    let fontPx = baseFontPx;
+    let panelH = items * rowH + 32;
+    if (panelH > maxPanelH) {
+      // Shrink rowH first (preserve readable font), but never below 28px.
+      const fittedRowH = Math.max(28, Math.floor((maxPanelH - 32) / items));
+      rowH = fittedRowH;
+      panelH = items * rowH + 32;
+      // If even the smallest sensible rowH doesn't fit, also drop the font.
+      if (rowH <= 30) {
+        fontPx = 14;
+      } else if (rowH <= 36) {
+        fontPx = 16;
+      }
+    }
+
+    // Cap the panel width to the viewport so the side menu never spills
+    // past the screen on narrow portrait phones.
+    const panelW = Math.min(baseW, viewW - 32);
+    return { panelW, panelH, rowH, fontPx };
   }
 
   /** Poll touch B / hamburger button to close menu on mobile. */

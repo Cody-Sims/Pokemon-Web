@@ -309,17 +309,33 @@ export class OverworldScene extends Phaser.Scene {
       this.cameras.main.scrollX = (mapPixelW - layout.w) / 2;
       this.cameras.main.scrollY = (mapPixelH - layout.h) / 2;
     } else {
+      // Touch controls (A/B buttons + virtual joystick) overlay the bottom
+      // edge of the canvas via fixed-position DOM nodes, so reserve a
+      // bottom-pad in the camera bounds. This lets the camera scroll past
+      // the map's southern edge so the player can stand on the actual
+      // pier/edge tiles without being hidden behind the on-screen buttons.
+      const isTouch = TouchControls.isTouchDevice();
+      const isPortrait = layout.h > layout.w;
+      // Mobile portrait reserves ~140px for stacked controls; landscape
+      // reserves ~120px because the controls sit on the sides.
+      const touchPadBottom = isTouch ? (isPortrait ? 140 : 0) : 0;
+
       // Center the map when it's smaller than the viewport on either axis.
       // Expand bounds with padding so Phaser's built-in centering kicks in.
       const boundsW = Math.max(mapPixelW, layout.w);
-      const boundsH = Math.max(mapPixelH, layout.h);
+      const boundsH = Math.max(mapPixelH + touchPadBottom, layout.h);
       const boundsX = (mapPixelW - boundsW) / 2;
       const boundsY = (mapPixelH - boundsH) / 2;
       this.cameras.main.setBounds(boundsX, boundsY, boundsW, boundsH);
       this.cameras.main.startFollow(this.player, true);
-      // Dead zone keeps the player centered but allows margin for HUD
       this.cameras.main.setFollowOffset(0, 0);
-      this.cameras.main.setDeadzone(layout.w * 0.2, layout.h * 0.2);
+      // Use a very small deadzone (1 tile each axis) so the camera follows
+      // the player aggressively. The previous 20%-of-viewport deadzone
+      // (often 160-200px on mobile portrait) was larger than the available
+      // scroll range on tall maps like Pallet Town, which made the camera
+      // appear to "stop following" before the player reached the southern
+      // edge — the pier was rendered behind the touch controls overlay.
+      this.cameras.main.setDeadzone(TILE_SIZE, TILE_SIZE);
     }
 
     // Weather
@@ -375,9 +391,16 @@ export class OverworldScene extends Phaser.Scene {
     // the system font otherwise (test harnesses skip BootScene asset loads).
     const mapLabel = this.mapDef.displayName
       ?? this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    const hudHint = TouchControls.isTouchDevice()
-      ? `${mapLabel}  |  ${hintText('interact')}`
-      : `${mapLabel}  |  ${hintText('interact')}  |  ESC = Menu`;
+    // On portrait/mobile screens we only have ~400px of horizontal HUD room,
+    // which used to clip both the map name and the input hints. Show the
+    // location name on its own there and reserve the longer hint string for
+    // landscape/desktop layouts where there is space for it.
+    const isPortraitHud = this.cameras.main.height > this.cameras.main.width;
+    const hudHint = isPortraitHud
+      ? mapLabel
+      : TouchControls.isTouchDevice()
+        ? `${mapLabel}  |  ${hintText('interact')}`
+        : `${mapLabel}  |  ${hintText('interact')}  |  ESC = Menu`;
     if (this.cache.bitmapFont.exists('aurum-pixel')) {
       // BitmapText size needs a number; mobileFontSize returns "14px".
       const sizePx = parseInt(mobileFontSize(14), 10) || 14;
@@ -430,6 +453,13 @@ export class OverworldScene extends Phaser.Scene {
       const w = this.cameras.main.width;
       const h = this.cameras.main.height;
       const portrait = h > w;
+      // Refresh the HUD text so the input hint follows the orientation
+      // (portrait = location only; landscape = location + key hints).
+      const portraitHint = mapLabel;
+      const landscapeHint = TouchControls.isTouchDevice()
+        ? `${mapLabel}  |  ${hintText('interact')}`
+        : `${mapLabel}  |  ${hintText('interact')}  |  ESC = Menu`;
+      this.hudText?.setText(portrait ? portraitHint : landscapeHint);
       this.hudText?.setX(w / 2);
       if (this.clockText) {
         this.clockText.setPosition(portrait ? w / 2 : 8, portrait ? 38 : 8);
@@ -1142,7 +1172,10 @@ export class OverworldScene extends Phaser.Scene {
 
     if (showPrompt && !this.player.isMoving()) {
       if (!this.interactPrompt) {
-        const label = TouchControls.isTouchDevice() ? 'Tap' : 'Z';
+        // Match the actual confirm/talk binding: SPACE (or ENTER) on desktop,
+        // tap-to-talk on touch devices. Previously hard-coded 'Z' which is not
+        // bound to anything in InputManager.
+        const label = TouchControls.isTouchDevice() ? 'Tap' : 'SPACE';
         this.interactPrompt = this.add.text(0, 0, label, {
           fontSize: mobileFontSize(11),
           color: '#ffcc00',
