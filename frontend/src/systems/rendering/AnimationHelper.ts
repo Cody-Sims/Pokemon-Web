@@ -45,5 +45,49 @@ export class AnimationHelper {
         });
       }
     }
+
+    // Male cycling animations (using player-cycle atlas)
+    if (scene.textures.exists('player-cycle')) {
+      for (const dir of directions) {
+        scene.anims.create({
+          key: `player-cycle-${dir}`,
+          frames: scene.anims.generateFrameNames('player-cycle', {
+            prefix: `walk-${dir}-`,
+            start: 0,
+            end: 2,
+          }),
+          frameRate: 10,
+          repeat: -1,
+        });
+
+        scene.anims.create({
+          key: `player-cycle-idle-${dir}`,
+          frames: [{ key: 'player-cycle', frame: `walk-${dir}-0` }],
+          frameRate: 1,
+        });
+      }
+    }
+
+    // Female cycling animations (using player-cycle-female atlas)
+    if (scene.textures.exists('player-cycle-female')) {
+      for (const dir of directions) {
+        scene.anims.create({
+          key: `player-girl-cycle-${dir}`,
+          frames: scene.anims.generateFrameNames('player-cycle-female', {
+            prefix: `walk-${dir}-`,
+            start: 0,
+            end: 2,
+          }),
+          frameRate: 10,
+          repeat: -1,
+        });
+
+        scene.anims.create({
+          key: `player-girl-cycle-idle-${dir}`,
+          frames: [{ key: 'player-cycle-female', frame: `walk-${dir}-0` }],
+          frameRate: 1,
+        });
+      }
+    }
   }
 }

@@ -450,6 +450,8 @@ export function tryInteract(ctx: InteractionContext): void {
       ctx.showFieldAbilityPopup('SURF!');
       // AUDIT-016: Actually enable surfing
       (ctx as unknown as { surfing: boolean }).surfing = true;
+      // Auto-dismount bicycle when entering water
+      (ctx as unknown as { isCycling: boolean }).isCycling = false;
       AchievementManager.getInstance().unlock('surf-first');
       return;
     }
