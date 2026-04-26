@@ -1,6 +1,7 @@
 import { DifficultyMode, DifficultyConfig, DIFFICULTY_CONFIGS } from '@data/difficulty';
 import { ChallengeMode } from '@data/challenge-modes';
 import { PokemonType } from '@utils/type-helpers';
+import { SpeedrunRecords } from '@systems/engine/SpeedrunRecords';
 
 /** A speed-run split — playtime snapshot at a notable event. */
 export interface SpeedrunSplit {
@@ -197,6 +198,8 @@ export class PlayerStateManager {
       timestamp: Date.now(),
     };
     this.speedrunSplits.push(split);
+    // Update the lifetime personal-best store (no-op if the existing PB is faster).
+    SpeedrunRecords.recordIfBetter(id, label, this.playtime);
     return split;
   }
   clearSpeedrunSplits(): void { this.speedrunSplits = []; }

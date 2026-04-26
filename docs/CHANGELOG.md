@@ -6,6 +6,17 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-26]
 
+### Added — Speed-run personal-best tracking + JSON export (B.3)
+
+- **Lifetime PB store**: New [SpeedrunRecords](frontend/src/systems/engine/SpeedrunRecords.ts) helper persists per-split bests in a separate `pokemon-web-speedrun-pbs` localStorage key, so the lifetime "Champion" time survives a New Game.
+- **Auto-update**: `PlayerStateManager.recordSpeedrunSplit()` now calls `SpeedrunRecords.recordIfBetter()` after every badge / champion split, so PBs update silently in the background.
+- **Statistics scene polish**: The splits table now shows two columns — current run (cyan, gold when the split *is* the lifetime PB) and the lifetime PB (dim grey). New `[ Export Splits JSON ]` button (or press `E`) downloads `{ schema, exportedAt, run: { playerName, trainerId, difficulty, playtime, badges }, currentRunSplits, personalBests }` as `pokemon-aurum-splits-<timestamp>.json`.
+- Verified by [tests/unit/systems/speedrun-records.test.ts](tests/unit/systems/speedrun-records.test.ts) (6 cases covering PB monotonicity, NaN/negative rejection, GameManager wiring, and JSON shape).
+
+---
+
+## [2026-04-26]
+
 ### Added — Berry trees with GameClock-driven regrowth
 
 - **A.5 Berry trees**: Routes 1, 5, and 8 each gained a harvestable `berry-tree` map object. Picking yields one berry; the tree then regrows on a per-tree game-minute timer (Route 1 Oran 240m, Route 5 Pecha 300m, Route 8 Sitrus 480m).

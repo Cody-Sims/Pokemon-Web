@@ -126,7 +126,7 @@ interface RandomizerConfig {
 
 ### B.3 Speed-Run Timer
 
-> **Status (2026-04-26)**: Done. `PlayerStateManager` now persists a `SpeedrunSplit[]` log; `GameManager.addBadge` and `addHallOfFameEntry` auto-record splits (one per badge + a final `champion` split) idempotently. `Show Speed-Run Timer` toggle added to Settings; the OverworldScene HUD renders a live `H:MM:SS` overlay below the clock when enabled. Splits view rendered in StatisticsScene under the existing stats table. Verified by `tests/integration/managers/speedrun-splits.test.ts`. Personal-best tracking and JSON export still pending.
+> **Status (2026-04-26)**: Done. Splits log + live HUD shipped previously. Personal-best tracking now lives in a dedicated `SpeedrunRecords` helper that writes to a separate `pokemon-web-speedrun-pbs` localStorage key, so the lifetime "Champion" time survives a New Game. `recordSpeedrunSplit` automatically updates the PB store. Statistics scene shows current-run vs PB columns (gold when the current split *is* the lifetime PB) and an `[ Export Splits JSON ]` button that downloads `{ schema, exportedAt, run, currentRunSplits, personalBests }`. Verified by `tests/unit/systems/speedrun-records.test.ts`.
 
 - In-game timer overlay with splits at each gym, act transition, and champion defeat.
 - Personal-best tracking in `GameStats`.

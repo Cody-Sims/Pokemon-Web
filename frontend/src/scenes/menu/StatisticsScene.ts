@@ -3,6 +3,7 @@ import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
+import { SpeedrunRecords } from '@systems/engine/SpeedrunRecords';
 import { SFX } from '@utils/audio-keys';
 
 /**
@@ -81,12 +82,20 @@ export class StatisticsScene extends Phaser.Scene {
 
     // ── Speed-run splits (only when at least one is recorded) ──
     const splits = gm.getSpeedrunSplits();
+    const pbs = SpeedrunRecords.getAll();
     if (splits.length > 0) {
       const splitsTop = startY + rows.length * lineH + 12;
-      this.add.text(layout.cx, splitsTop, 'SPEED-RUN SPLITS', {
+      this.add.text(layout.cx, splitsTop, 'SPEED-RUN SPLITS  (PB ↘)', {
         ...FONTS.caption, color: COLORS.textHighlight, fontStyle: 'bold',
       }).setOrigin(0.5);
       const splitFont = mobileFontSize(12);
+      const fmt = (seconds: number) => {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
+      };
       splits.forEach((split, i) => {
         const sy = splitsTop + 18 + i * (lineH * 0.7);
         if (i % 2 === 0) {
@@ -95,15 +104,27 @@ export class StatisticsScene extends Phaser.Scene {
         this.add.text(labelX + 10, sy, split.label, {
           fontSize: splitFont, color: '#cccccc',
         }).setOrigin(0, 0.5);
-        const splitH = Math.floor(split.playtime / 3600);
-        const splitM = Math.floor((split.playtime % 3600) / 60);
-        const splitS = split.playtime % 60;
-        const pad = (n: number) => n.toString().padStart(2, '0');
-        const splitStr = splitH > 0 ? `${splitH}:${pad(splitM)}:${pad(splitS)}` : `${splitM}:${pad(splitS)}`;
-        this.add.text(valueX - 10, sy, splitStr, {
-          fontSize: splitFont, color: '#7fffd4', fontFamily: 'monospace', fontStyle: 'bold',
+        const splitStr = fmt(split.playtime);
+        const pb = pbs[split.id];
+        const isPb = pb && pb.timestamp === split.timestamp;
+        this.add.text(valueX - 90, sy, splitStr, {
+          fontSize: splitFont, color: isPb ? '#ffd86b' : '#7fffd4', fontFamily: 'monospace', fontStyle: 'bold',
+        }).setOrigin(1, 0.5);
+        const pbStr = pb ? fmt(pb.playtime) : '--';
+        this.add.text(valueX - 10, sy, pbStr, {
+          fontSize: splitFont, color: '#999999', fontFamily: 'monospace',
         }).setOrigin(1, 0.5);
       });
+
+      // Export Splits button (B.3)
+      const exportY = splitsTop + 18 + splits.length * (lineH * 0.7) + 12;
+      const exportBtn = this.add.text(layout.cx, exportY, '[ Export Splits JSON ]', {
+        ...FONTS.caption, color: COLORS.textHighlight,
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      exportBtn.on('pointerdown', () => this.exportSplits(splits));
+      exportBtn.on('pointerover', () => exportBtn.setColor('#ffd86b'));
+      exportBtn.on('pointerout', () => exportBtn.setColor(COLORS.textHighlight));
+      this.input.keyboard!.on('keydown-E', () => this.exportSplits(splits));
     }
 
     // Close hint
@@ -120,5 +141,24 @@ export class StatisticsScene extends Phaser.Scene {
   private close(): void {
     AudioManager.getInstance().playSFX(SFX.CANCEL);
     this.scene.stop();
+  }
+
+  /**
+   * B.3 — download the current run's splits + lifetime PBs as JSON.
+   * Uses the player's name + difficulty + playtime as `runMeta`.
+   */
+  private exportSplits(splits: { id: string; label: string; playtime: number; timestamp: number }[]): void {
+    AudioManager.getInstance().playSFX(SFX.CONFIRM);
+    const gm = GameManager.getInstance();
+    SpeedrunRecords.downloadJson(
+      {
+        playerName: gm.getPlayerName(),
+        trainerId: gm.getTrainerId(),
+        difficulty: gm.getDifficulty(),
+        playtime: gm.getPlaytime(),
+        badges: gm.getBadges(),
+      },
+      splits,
+    );
   }
 }
