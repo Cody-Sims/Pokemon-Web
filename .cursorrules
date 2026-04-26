@@ -1,0 +1,72 @@
+# Pokemon Web — Cursor Rules
+
+> See `AGENTS.md` for full project context, dependency graph, key interfaces,
+> file-finding shortcuts, common task recipes, and anti-patterns.
+
+## Project
+
+Browser-based Pokémon RPG: Phaser 3 + TypeScript 6.x + Vite 8.x. Client-side only.
+
+## Key Commands
+
+- `npm run dev` — Dev server
+- `npm run build` — Type-check + build (run before committing)
+- `npm run test` — Unit + integration tests (< 2s)
+- `npm run test:e2e` — Playwright E2E tests
+
+## Import Convention
+
+Use path aliases and barrel imports:
+```typescript
+import { BattleManager } from '@battle';       // NOT from '@battle/core/BattleManager'
+import { GameManager } from '@managers';
+import { pokemonData } from '@data/pokemon';
+```
+
+Aliases: `@scenes/*`, `@entities/*`, `@data/*`, `@managers/*`, `@systems/*`, `@ui/*`, `@utils/*`, `@config/*`, `@battle/*`
+
+## Code Style
+
+- `const` over `let`; never `var`
+- TypeScript interfaces for all data structures (see `frontend/src/data/interfaces.ts`)
+- One Phaser Scene per file
+- Data files = pure data, no logic
+- Scenes communicate via `EventManager`, never direct references
+- All game state through `GameManager`
+
+## File Placement
+
+| Type | Location |
+|---|---|
+| Scenes | `frontend/src/scenes/<domain>/` |
+| Entities | `frontend/src/entities/` |
+| Battle logic | `frontend/src/battle/` |
+| Pure data | `frontend/src/data/` |
+| Managers | `frontend/src/managers/` |
+| Systems | `frontend/src/systems/` |
+| UI | `frontend/src/ui/` |
+| Utils | `frontend/src/utils/` |
+| Tests | `tests/unit/`, `tests/integration/`, `tests/e2e/` |
+
+## Context Files
+
+Each `frontend/src/` directory has a `CONTEXT.md` with navigational information.
+Read these before exploring a directory.
+
+## Anti-Patterns
+
+- Don't import from files directly — use barrel `index.ts` exports
+- Don't reference scenes directly — use `EventManager`
+- Don't put logic in data files
+- Don't rewrite map grids from scratch — use the map toolchain
+- Don't skip `npm run build` before committing
+- Don't use `git add -A` — stage files individually
+
+## After Changes
+
+1. Run `npm run build` (zero errors required)
+2. Run `npm run test`
+3. Update `docs/CHANGELOG.md`
+4. Update affected `CONTEXT.md` if files were added/removed/renamed
+5. Update `docs/architecture.md` if structure changed
+6. Git: `git add <specific-files>` then commit with imperative mood

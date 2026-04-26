@@ -37,6 +37,8 @@ type safety, and Vite for fast bundling.
 - `.github/instructions/battle.instructions.md` — Battle subsystem rules
 - `.github/instructions/data-files.instructions.md` — Data file conventions
 - `.github/instructions/scenes.instructions.md` — Scene creation rules
+- `.github/instructions/entities.instructions.md` — Entity class rules
+- `.github/instructions/testing.instructions.md` — Test conventions and structure
 
 ## Commands
 

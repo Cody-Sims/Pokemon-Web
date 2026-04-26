@@ -8,14 +8,19 @@ All notable changes to the Pokemon Web project.
 
 ### Added
 
+- **NPC sprite reference map**: Added detailed sprite reference comment in PreloadScene documenting all 44 NPC sprites with their source sheet origins, visual descriptions, and folder organisation
 - **AI ingestion optimization plan**: Created `docs/AI-OPTIMIZATION-PLAN.md` with 7-phase plan for optimizing the codebase for AI agent consumption
 - **Directory CONTEXT.md files**: Added navigational context to all 8 major `frontend/src/` directories (`battle/`, `data/`, `entities/`, `managers/`, `systems/`, `scenes/`, `ui/`, `utils/`) so AI agents understand folder purpose without exploring every file
-- **Path-specific instruction files**: Created domain-scoped `.instructions.md` files for battle (`frontend/src/battle/**`), data files (`frontend/src/data/**`), and scenes (`frontend/src/scenes/**`)
+- **Data subdirectory CONTEXT.md files**: Added navigational context to `data/maps/`, `data/moves/`, `data/pokemon/`, `data/trainers/` with file catalogs and conventions
+- **Path-specific instruction files**: Created domain-scoped `.instructions.md` files for battle (`frontend/src/battle/**`), data files (`frontend/src/data/**`), scenes (`frontend/src/scenes/**`), entities (`frontend/src/entities/**`), and tests (`tests/**`)
 - **llms.txt**: Added project root `llms.txt` following the llmstxt.org standard for external AI context tools
+- **.cursorrules**: Added Cursor IDE rules file mirroring key conventions from AGENTS.md
+- **Context-freshness rules**: Added mandatory CONTEXT.md and AGENTS.md maintenance rules to copilot-instructions.md and AGENTS.md so AI agents keep documentation in sync with codebase changes
 - **AGENTS.md enhancements**: Added dependency graph, key interfaces reference table, file-finding shortcuts (20 keyword→file mappings), 5 new task recipes (adding Pokémon, trainers, items, maps, scenes), and anti-patterns table (9 common AI mistakes with corrections)
 
 ### Changed
 
+- **NPC sprite variety in maps**: Replaced `generic-trainer` with proper dedicated sprites for 7 story characters (Champion Aldric → `npc-champion-aldric`, Prof. Willow → `npc-oak`, Rook → `npc-male-6`, Marina → `npc-marina`, Giovanni → `npc-gym-giovanni`, Rival's Sister → `npc-female-1`) and 9 PokéMart clerks (→ `npc-male-3`). Ancient Spirits in Abyssal Spire now use `npc-oldman`
 - **copilot-instructions.md**: Refactored to remove ~70% duplicated content with AGENTS.md; now focuses on Copilot-specific behavioral rules (mandatory checks, import rules, file placement, scene/data patterns, testing, git workflow) and defers to AGENTS.md for project overview and architecture
 
 ### Changed (previous)
