@@ -8,11 +8,33 @@ All notable changes to the Pokemon Web project.
 
 ### Added
 
+- **AI ingestion optimization plan**: Created `docs/AI-OPTIMIZATION-PLAN.md` with 7-phase plan for optimizing the codebase for AI agent consumption
+- **Directory CONTEXT.md files**: Added navigational context to all 8 major `frontend/src/` directories (`battle/`, `data/`, `entities/`, `managers/`, `systems/`, `scenes/`, `ui/`, `utils/`) so AI agents understand folder purpose without exploring every file
+- **Path-specific instruction files**: Created domain-scoped `.instructions.md` files for battle (`frontend/src/battle/**`), data files (`frontend/src/data/**`), and scenes (`frontend/src/scenes/**`)
+- **llms.txt**: Added project root `llms.txt` following the llmstxt.org standard for external AI context tools
+- **AGENTS.md enhancements**: Added dependency graph, key interfaces reference table, file-finding shortcuts (20 keyword→file mappings), 5 new task recipes (adding Pokémon, trainers, items, maps, scenes), and anti-patterns table (9 common AI mistakes with corrections)
+
+### Changed
+
+- **copilot-instructions.md**: Refactored to remove ~70% duplicated content with AGENTS.md; now focuses on Copilot-specific behavioral rules (mandatory checks, import rules, file placement, scene/data patterns, testing, git workflow) and defers to AGENTS.md for project overview and architecture
+
+### Changed (previous)
+
+- **NPC sprite folder reorganization**: Reorganized `frontend/public/assets/sprites/npcs/` into categorized subfolders: `Males/`, `Females/`, `story/`, `trainers/`, `gym-leaders/`, `elite-four/`, `villains/`. Source sprites in Males/Females renamed from M_##/F_## to npc-male-#/npc-female-# with sequential numbering. Descriptive names (npc-hiker, npc-oldman, npc-scientist, npc-swimmer, npc-sailor, npc-nurse, npc-lass) preserved alongside generic numbered sprites. Removed duplicate root-level sprite files
+- **Removed npc-professor sprite**: Replaced all `npc-professor` references with `npc-oak` across cutscenes, maps, and the intro scene. Removed obsolete npc-professor asset files
+- **PreloadScene sprite loading**: Updated to load NPC sprites from organized subfolders instead of flat root directory
+
+### Added
+
 - **Pokemon follower system**: Lead party Pokemon now trails 1 tile behind the player on outdoor maps using its icon sprite (68x56, scaled to tile size). Follower moves via grid-tweens synced to player steps with y-depth sorting. Hidden on interior maps and while surfing. New `FollowerPokemon` entity class in `frontend/src/entities/`
 - **Rock Smash move**: Added `rock-smash` to fighting moves (power 40, 50% chance to lower Defense). Completes the field ability move set — Cut, Rock Smash, and Strength all have working move data now
+- **NPC walk cycle animations**: NPCs now play a 4-frame walk animation (step-left, stand, step-right, stand) when wandering, pacing, or moving during cutscenes. Trainers also animate during line-of-sight approach walks
+- **Trainer exclamation emote**: Replaced raw text exclamation with animated `EmoteBubble` pop-in when a trainer spots the player, matching the classic Pokemon "!" alert
 
 ### Fixed
 
+- **NPC idle frame showing walking pose**: NPC sprites used frame 0 (a mid-step walking frame) as their idle/standing pose. Changed to frame 1 (the correct standing pose) in the NPC entity constructor, direction-change logic, and dialogue portrait display
+- **NPC facing direction on interaction**: NPCs now visually turn to face the player correctly during dialogue (was broken by wrong idle frame)
 - **Interior map background color**: Stopped applying the day/night tint color to the camera background on interior maps so the void area outside small maps (e.g., Willow's Laboratory) stays black instead of turning purple/blue at night
 - **TypeScript build errors**: Added `portraitKey` optional field to `CutsceneAction` dialogue type in `CutsceneEngine.ts`, fixed double comma causing `undefined` in `cutscene-data.ts` Ashborne dialogue, and typed `animatedTiles` as `Set<number>` in `OverworldScene.ts` to resolve 16 build errors
 

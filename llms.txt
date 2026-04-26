@@ -1,0 +1,46 @@
+# Pokemon Web
+
+> A browser-based Pokémon-style RPG built with Phaser 3 + TypeScript + Vite.
+
+## Overview
+
+Client-side static web app featuring 153 Pokémon, 66 maps, turn-based battles, and a
+complete storyline. No backend. Built on Phaser 3 for 2D rendering, TypeScript for
+type safety, and Vite for fast bundling.
+
+## Key Documentation
+
+- [AGENTS.md](AGENTS.md): Complete project context for AI agents (layout, architecture, recipes, anti-patterns)
+- [docs/architecture.md](docs/architecture.md): Full architecture and folder structure
+- [docs/plan.md](docs/plan.md): Development plan and feature phases
+- [docs/storyline.md](docs/storyline.md): Game storyline, characters, and quest arcs
+- [docs/TestingArchitecture.md](docs/TestingArchitecture.md): 5-layer test suite architecture
+- [docs/CHANGELOG.md](docs/CHANGELOG.md): Completed work log
+
+## Source Structure
+
+- `frontend/src/main.ts` — Entry point
+- `frontend/src/config/game-config.ts` — Phaser game configuration
+- `frontend/src/scenes/` — Phaser scenes organized by domain (boot, title, overworld, battle, menu, pokemon, minigame)
+- `frontend/src/battle/` — Battle subsystem (isolated logic: FSM, damage, AI, effects)
+- `frontend/src/data/` — Pure data files (Pokémon, moves, items, maps, trainers)
+- `frontend/src/entities/` — Game entities (Player, NPC, Trainer)
+- `frontend/src/managers/` — Singleton services (GameManager, SaveManager, EventManager, AudioManager)
+- `frontend/src/systems/` — Gameplay systems (GridMovement, weather, lighting, audio, encounters)
+- `frontend/src/ui/` — Reusable UI components (widgets, controls, theme)
+- `frontend/src/utils/` — Pure helper functions (constants, math, type system)
+
+## Copilot Instructions
+
+- `.github/instructions/copilot-instructions.md` — Global coding rules
+- `.github/instructions/map-generation.instructions.md` — Map toolchain and rules
+- `.github/instructions/battle.instructions.md` — Battle subsystem rules
+- `.github/instructions/data-files.instructions.md` — Data file conventions
+- `.github/instructions/scenes.instructions.md` — Scene creation rules
+
+## Commands
+
+- `npm run dev` — Development server
+- `npm run build` — Type-check + production build
+- `npm run test` — Unit + integration tests
+- `npm run test:e2e` — Playwright end-to-end tests
