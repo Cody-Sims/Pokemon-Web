@@ -119,15 +119,15 @@ export class QuestManager {
 
     const em = EventManager.getInstance();
 
-    em.on('flag-set', (flag: unknown) => {
-      this.checkFlagTriggers(flag as string);
+    em.on('flag-set', (flag) => {
+      this.checkFlagTriggers(flag);
     });
 
-    em.on('map-entered', (mapKey: unknown) => {
+    em.on('map-entered', (mapKey) => {
       this.checkEventTriggers(`map-entered:${mapKey}`);
     });
 
-    em.on('trainer-defeated', (trainerId: unknown) => {
+    em.on('trainer-defeated', (trainerId) => {
       this.checkEventTriggers(`trainer-defeated:${trainerId}`);
     });
   }

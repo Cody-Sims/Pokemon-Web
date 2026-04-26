@@ -36,6 +36,7 @@ const SETTING_DEFS: SettingDef[] = [
   { key: 'swapAB', label: 'Swap A/B Buttons', type: 'cycle', options: ['false', 'true'] },
   { key: 'deadZone', label: 'Joystick Dead Zone', type: 'slider', min: 0.05, max: 0.4, step: 0.05, format: (v) => `${Math.round(v * 100)}%` },
   { key: 'highVisControls', label: 'High Vis Controls', type: 'cycle', options: ['false', 'true'] },
+  { key: 'showMinimap', label: 'Show Minimap', type: 'cycle', options: ['true', 'false'] },
 ];
 
 export class SettingsScene extends Phaser.Scene {
@@ -254,7 +255,7 @@ export class SettingsScene extends Phaser.Scene {
     if (def.type === 'slider' && def.format) {
       return def.format(typeof val === 'number' ? val : parseFloat(String(val)) || 0);
     }
-    if (def.key === 'battleAnimations' || def.key === 'reducedMotion') {
+    if (def.key === 'battleAnimations' || def.key === 'reducedMotion' || def.key === 'showMinimap') {
       return String(val) === 'true' ? 'ON' : 'OFF';
     }
     if (def.key === 'colorblindMode') {

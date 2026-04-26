@@ -1,5 +1,9 @@
 import { Direction } from '@utils/type-helpers';
 import { NPCBehaviorConfig } from '@systems/overworld/NPCBehavior';
+import type { TimePeriod } from '@systems/engine/GameClock';
+
+/** Position override or 'hidden' for an NPC during a specific time period. */
+export type NpcScheduleEntry = { x: number; y: number } | 'hidden';
 
 export interface NpcSpawn {
   id: string;
@@ -26,6 +30,11 @@ export interface NpcSpawn {
   behavior?: NPCBehaviorConfig;
   /** If set, play this cutscene (by key) when the player interacts instead of normal dialogue. */
   triggerCutscene?: string;
+  /**
+   * Time-based schedule: maps each TimePeriod to a position override or 'hidden'.
+   * Periods not listed use the default tileX/tileY and remain visible.
+   */
+  schedule?: Partial<Record<TimePeriod, NpcScheduleEntry>>;
 }
 
 export interface TrainerSpawn {

@@ -49,7 +49,13 @@ export const wraithmoorTown: MapDefinition = {
       dialogue: ['Morwen is our Gym Leader. She communes with spirits.', 'Her Ghost Pokémon are terrifying...', 'Normal and Fighting moves won\'t work!'] },
     { id: 'wraithmoor-ghost-girl', name: 'Ghost Girl', tileX: 11, tileY: 12, textureKey: 'npc-female-2', facing: 'down',
       dialogue: ['...Do you see them too?', 'The memories of those who came before...', 'Find the three fragments. They hold the truth.'],
-      setsFlag: 'quest_restlessSpirit_started' },
+      setsFlag: 'quest_restlessSpirit_started',
+      schedule: {
+        morning: 'hidden',
+        day: 'hidden',
+        evening: { x: 14, y: 11 },   // appears at the edge of the graveyard at dusk
+        night: { x: 11, y: 12 },     // wanders into the center at night
+      } },
     { id: 'tutor-wraithmoor', name: 'Move Tutor', tileX: 8, tileY: 14, textureKey: 'npc-female-2', facing: 'left',
       dialogue: ['Shadow Tutor: The spirits whisper their secrets to me...', 'Shadow Tutor: Bring Heart Scales and I will teach your Pokémon shadow moves.'],
       interactionType: 'move-tutor', interactionData: 'tutor-wraithmoor' },

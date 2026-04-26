@@ -128,6 +128,12 @@ export const palletTown: MapDefinition = {
           ],
         },
       ],
+      schedule: {
+        morning: { x: 13, y: 26 },   // at the dock early
+        day: { x: 13, y: 26 },        // fishing all day
+        evening: { x: 7, y: 7 },      // heads into town in the evening
+        night: 'hidden',               // goes home at night
+      },
     },
     {
       id: 'pallet-mom',

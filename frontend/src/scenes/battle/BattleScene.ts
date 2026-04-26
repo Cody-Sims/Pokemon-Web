@@ -46,8 +46,14 @@ export class BattleScene extends Phaser.Scene {
   public enemyPokemonSlots: (PokemonInstance | null)[] = [];
   public playerHpBars: Phaser.GameObjects.Rectangle[] = [];
   public enemyHpBars: Phaser.GameObjects.Rectangle[] = [];
+  public playerHpTexts: Phaser.GameObjects.Text[] = [];
+  public enemyHpTexts: Phaser.GameObjects.Text[] = [];
   public playerNameTexts: Phaser.GameObjects.Text[] = [];
   public enemyNameTexts: Phaser.GameObjects.Text[] = [];
+  public playerLevelTexts: Phaser.GameObjects.Text[] = [];
+  public enemyLevelTexts: Phaser.GameObjects.Text[] = [];
+  public playerHpBarBgs: Phaser.GameObjects.Rectangle[] = [];
+  public enemyHpBarBgs: Phaser.GameObjects.Rectangle[] = [];
 
   // Synthesis aura
   private synthesisAura?: Phaser.GameObjects.Ellipse;
@@ -353,6 +359,28 @@ export class BattleScene extends Phaser.Scene {
 
     this.playerHpText.setText(`${Math.max(0, this.playerPokemon.currentHp)}/${this.playerPokemon.stats.hp}`);
     this.updateStatusIndicators();
+
+    // ── Double battle: update partner and second enemy HP bars ──
+    if (this.isDouble) {
+      // Partner HP bar (slot index 0 in playerHpBars array = the partner, i.e., playerPokemonSlots[1])
+      const partner = this.playerPokemonSlots[1];
+      if (partner && this.playerHpBars.length > 0) {
+        const pPct = Math.max(0, partner.currentHp / partner.stats.hp);
+        this.tweens.add({ targets: this.playerHpBars[0], displayWidth: 150 * pPct, duration: 400 });
+        this.playerHpBars[0].fillColor = pPct > 0.5 ? 0x4caf50 : pPct > 0.2 ? 0xffeb3b : 0xf44336;
+        if (this.playerHpTexts.length > 0) {
+          this.playerHpTexts[0].setText(`${Math.max(0, partner.currentHp)}/${partner.stats.hp}`);
+        }
+      }
+
+      // Second enemy HP bar (slot index 0 in enemyHpBars array = enemyPokemonSlots[1])
+      const enemy2 = this.enemyPokemonSlots[1];
+      if (enemy2 && this.enemyHpBars.length > 0) {
+        const ePct = Math.max(0, enemy2.currentHp / enemy2.stats.hp);
+        this.tweens.add({ targets: this.enemyHpBars[0], displayWidth: 180 * ePct, duration: 400 });
+        this.enemyHpBars[0].fillColor = ePct > 0.5 ? 0x4caf50 : ePct > 0.2 ? 0xffeb3b : 0xf44336;
+      }
+    }
   }
 
   /** Update status condition labels shown next to HP bars. */
@@ -496,6 +524,8 @@ export class BattleScene extends Phaser.Scene {
     playerParty: PokemonInstance[],
     enemyParty: PokemonInstance[],
   ): void {
+    const { w, h } = ui(this);
+
     // Player slot 0: x=200, y=350 (already placed as playerSprite)
     // Player slot 1: x=350, y=370
     this.playerSprite.setScale(3);
@@ -528,6 +558,92 @@ export class BattleScene extends Phaser.Scene {
         this.enemySprites.push(spr);
         this.tweens.add({ targets: spr, alpha: 1, duration: 600, delay: 400, ease: 'Power2', onComplete: () => spr.clearTint() });
       }
+    }
+
+    // ── Double battle HUD: partner HP bar (below player's HUD) ──
+    if (this.playerPokemonSlots[1]) {
+      const p1 = this.playerPokemonSlots[1];
+      const p1Data = pokemonData[p1.dataId];
+      const partnerInfoX = Math.round(w * 0.78);
+      const partnerInfoY = Math.round(h * 0.62);
+      const partnerNameY = partnerInfoY - 10;
+      const partnerHpY = partnerInfoY + 8;
+
+      new NinePatchPanel(this, partnerInfoX, partnerInfoY, 240, 44, {
+        fillColor: COLORS.bgCard, fillAlpha: 0.85,
+        borderColor: 0x6688aa, borderWidth: 1, cornerRadius: 4, shadowAlpha: 0.2,
+      });
+
+      const nameText = this.add.text(
+        partnerInfoX - 100, partnerNameY,
+        `${p1.nickname ?? p1Data?.name ?? '???'}`,
+        { fontSize: mobileFontSize(13), color: '#aaddff', fontStyle: 'bold' },
+      );
+      this.playerNameTexts.push(nameText);
+
+      const lvlText = this.add.text(
+        partnerInfoX + 50, partnerNameY,
+        `Lv${p1.level}`,
+        { fontSize: mobileFontSize(11), color: '#aaddff' },
+      );
+      this.playerLevelTexts.push(lvlText);
+
+      const hpBg = this.add.rectangle(partnerInfoX - 100, partnerHpY, 150, 7, 0x333333).setOrigin(0, 0.5);
+      this.playerHpBarBgs.push(hpBg);
+
+      const hpPct = Math.max(0, p1.currentHp / p1.stats.hp);
+      const hpBar = this.add.rectangle(partnerInfoX - 100, partnerHpY, 150 * hpPct, 7, 0x4caf50).setOrigin(0, 0.5);
+      this.playerHpBars.push(hpBar);
+
+      const hpText = this.add.text(
+        partnerInfoX + 56, partnerHpY - 5,
+        `${p1.currentHp}/${p1.stats.hp}`,
+        { fontSize: mobileFontSize(10), color: '#aaddff' },
+      );
+      this.playerHpTexts.push(hpText);
+    }
+
+    // ── Double battle HUD: second enemy HP bar (right of first enemy's HUD) ──
+    if (this.enemyPokemonSlots[1]) {
+      const e1 = this.enemyPokemonSlots[1];
+      const e1Data = pokemonData[e1.dataId];
+      const enemyInfoX2 = Math.round(w * 0.55);
+      const enemyInfoY2 = Math.round(h * 0.09);
+      const enemyNameY2 = enemyInfoY2 - 10;
+      const enemyHpY2 = enemyInfoY2 + 8;
+
+      new NinePatchPanel(this, enemyInfoX2, enemyInfoY2, 240, 44, {
+        fillColor: COLORS.bgCard, fillAlpha: 0.85,
+        borderColor: 0xaa6666, borderWidth: 1, cornerRadius: 4, shadowAlpha: 0.2,
+      });
+
+      const nameText = this.add.text(
+        enemyInfoX2 - 100, enemyNameY2,
+        `${e1.nickname ?? e1Data?.name ?? '???'}`,
+        { fontSize: mobileFontSize(13), color: '#ffffff', fontStyle: 'bold' },
+      );
+      this.enemyNameTexts.push(nameText);
+
+      const lvlText = this.add.text(
+        enemyInfoX2 + 50, enemyNameY2,
+        `Lv${e1.level}`,
+        { fontSize: mobileFontSize(11), color: '#ffffff' },
+      );
+      this.enemyLevelTexts.push(lvlText);
+
+      const hpBg = this.add.rectangle(enemyInfoX2 - 100, enemyHpY2, 180, 7, 0x333333).setOrigin(0, 0.5);
+      this.enemyHpBarBgs.push(hpBg);
+
+      const hpPct = Math.max(0, e1.currentHp / e1.stats.hp);
+      const hpBar = this.add.rectangle(enemyInfoX2 - 100, enemyHpY2, 180 * hpPct, 7, 0x4caf50).setOrigin(0, 0.5);
+      this.enemyHpBars.push(hpBar);
+
+      const hpText = this.add.text(
+        enemyInfoX2 + 86, enemyHpY2 - 5,
+        '',
+        { fontSize: mobileFontSize(10), color: '#ffffff' },
+      );
+      this.enemyHpTexts.push(hpText);
     }
   }
 

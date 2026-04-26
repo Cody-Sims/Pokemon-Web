@@ -21,6 +21,7 @@ import { TouchControls } from '@ui/controls/TouchControls';
 import { SynthesisHandler } from '@battle/effects/SynthesisHandler';
 import { SYNTHESIS_ITEM, SYNTHESIS_ELIGIBLE } from '@data/synthesis-data';
 import { getMoveTarget } from '@battle/core/DoubleBattleManager';
+import { PartnerAI } from '@battle/core/PartnerAI';
 import { trainerData } from '@data/trainers';
 import { pickEnemyMove, calculateTurnOrder } from './BattleTurnRunner';
 import { showMessageQueue as showMsgQueue } from './BattleMessageQueue';
@@ -51,6 +52,7 @@ export class BattleUIScene extends Phaser.Scene {
   private targetCursor = 0;
   private bossSynthesisTriggered = false;
   private fleeAttempts = 0;
+  private partnerActionText?: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'BattleUIScene' });
@@ -127,6 +129,12 @@ export class BattleUIScene extends Phaser.Scene {
     this.synthText.setPadding(12, 8, 12, 8);
     this.synthText.on('pointerdown', () => { if (this.state === 'actions') this.activateSynthesis(); });
 
+    // ── Partner action indicator (double battles only) ──
+    this.partnerActionText = this.add.text(
+      30, h - (compact ? 112 : 152), '',
+      { ...FONTS.caption, fontSize: mobileFontSize(11), color: '#aaddff', fontStyle: 'italic' },
+    ).setDepth(50).setVisible(false);
+
     // Keyboard
     this.input.keyboard!.on('keydown-LEFT', () => this.nav('left'));
     this.input.keyboard!.on('keydown-RIGHT', () => this.nav('right'));
@@ -156,6 +164,7 @@ export class BattleUIScene extends Phaser.Scene {
         }
       });
       this.synthText?.setPosition(cx, h - 15);
+      this.partnerActionText?.setPosition(30, h - (cpt ? 112 : 152));
     });
   }
 
@@ -225,8 +234,9 @@ export class BattleUIScene extends Phaser.Scene {
     this.actionTexts.forEach(t => t.setVisible(true));
     this.updateSynthButton();
     this.updateCursor();
+    this.updatePartnerAction();
   }
-  private hideActions(): void { this.actionMenuBg.setVisible(false); this.actionTexts.forEach(t => t.setVisible(false)); this.synthText?.setVisible(false); }
+  private hideActions(): void { this.actionMenuBg.setVisible(false); this.actionTexts.forEach(t => t.setVisible(false)); this.synthText?.setVisible(false); this.partnerActionText?.setVisible(false); }
 
   private selectAction(): void {
     switch (this.actionTexts[this.cursor].text) {
@@ -332,6 +342,33 @@ export class BattleUIScene extends Phaser.Scene {
     this.synthText.setVisible(canSynth);
   }
 
+  /** Compute and display what the partner Pokemon plans to do this turn. */
+  private updatePartnerAction(): void {
+    if (!this.partnerActionText) return;
+    const b = this.battle();
+    if (!b.isDouble) {
+      this.partnerActionText.setVisible(false);
+      return;
+    }
+    const partner = b.playerPokemonSlots[1];
+    if (!partner || partner.currentHp <= 0) {
+      this.partnerActionText.setVisible(false);
+      return;
+    }
+    const partnerData = pokemonData[partner.dataId];
+    const partnerName = partner.nickname ?? partnerData?.name ?? 'Partner';
+
+    // Use PartnerAI to preview what move the partner will pick
+    const enemies = [b.enemyPokemonSlots[0] ?? null, b.enemyPokemonSlots[1] ?? null];
+    const ally = b.playerPokemon;
+    const { moveId } = PartnerAI.selectMove(partner, enemies, ally);
+    const md = moveData[moveId];
+    const moveName = md?.name ?? moveId;
+
+    this.partnerActionText.setText(`Partner ${partnerName} will use ${moveName}`);
+    this.partnerActionText.setVisible(true);
+  }
+
   private activateSynthesis(): void {
     const b = this.battle();
     const player = b.playerPokemon;
@@ -381,7 +418,12 @@ export class BattleUIScene extends Phaser.Scene {
     const targeting = getMoveTarget(moveId);
 
     if (targeting === 'self' || targeting === 'all-adjacent' || targeting === 'both-enemies' || targeting === 'all') {
-      // Auto-target, no selection needed
+      // Auto-target, no selection needed — show brief informational message for spread moves
+      if (targeting === 'all-adjacent' || targeting === 'both-enemies' || targeting === 'all') {
+        const md = moveData[moveId];
+        const moveName = md?.name ?? moveId;
+        this.msg(`${moveName} hits all targets!`);
+      }
       this.executeTurn(moveId);
       return;
     }
@@ -390,14 +432,18 @@ export class BattleUIScene extends Phaser.Scene {
     this.pendingMoveId = moveId;
     this.state = 'target-select';
     this.targetCursor = 0;
-    this.msg('Choose a target!');
+    const md = moveData[moveId];
+    const moveName = md?.name ?? moveId;
+    this.msg(`Choose a target for ${moveName}!`);
 
-    // Create arrows above enemy sprites
+    // Create arrows above enemy sprites with enemy names
     this.clearTargetArrows();
     b.enemySprites.forEach((spr, i) => {
-      const arrow = this.add.text(spr.x, spr.y - 40, '▼', {
-        fontSize: mobileFontSize(24), color: i === 0 ? COLORS.textHighlight : COLORS.textWhite,
-        fontStyle: 'bold',
+      const enemyPoke = b.enemyPokemonSlots[i];
+      const enemyName = enemyPoke ? (pokemonData[enemyPoke.dataId]?.name ?? '???') : '???';
+      const arrow = this.add.text(spr.x, spr.y - 50, `▼\n${enemyName}`, {
+        fontSize: mobileFontSize(18), color: i === 0 ? COLORS.textHighlight : COLORS.textWhite,
+        fontStyle: 'bold', align: 'center',
       }).setOrigin(0.5).setDepth(100);
       this.targetArrows.push(arrow);
     });
@@ -480,6 +526,29 @@ export class BattleUIScene extends Phaser.Scene {
       if (md) {
         const ppText = this.add.text(x + btnW / 2 - 8, y + 4, `${m.currentPp}/${md.pp}`, { fontSize: mobileFontSize(10), color: ppColor }).setOrigin(1, 0).setDepth(10);
         this.moveDecorations.push(ppText);
+      }
+
+      // Double battle: target label (shows "Hits all" for spread, "Pick target" for single-target)
+      if (this.battle().isDouble && md && !compactMoves) {
+        const targeting = getMoveTarget(m.moveId);
+        let targetLabel = '';
+        let labelColor = '#88ccff';
+        if (targeting === 'all-adjacent' || targeting === 'both-enemies' || targeting === 'all') {
+          targetLabel = 'Hits all';
+          labelColor = '#ffcc44';
+        } else if (targeting === 'single-enemy') {
+          targetLabel = 'Pick target';
+          labelColor = '#88ccff';
+        } else if (targeting === 'self') {
+          targetLabel = 'Self';
+          labelColor = '#88ff88';
+        }
+        if (targetLabel) {
+          const lbl = this.add.text(x + btnW / 2 - 8, y - btnH / 2 + 2, targetLabel, {
+            fontSize: mobileFontSize(8), color: labelColor, fontStyle: 'italic',
+          }).setOrigin(1, 0).setDepth(11);
+          this.moveDecorations.push(lbl);
+        }
       }
 
       // Move name text (bold, white, left-aligned inside button)

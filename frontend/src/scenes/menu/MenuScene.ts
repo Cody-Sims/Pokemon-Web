@@ -26,7 +26,7 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     // Build menu labels dynamically
-    this.menuLabels = ['POKEDEX', 'POKEMON', 'BAG', 'QUESTS', 'STATS', 'HALL OF FAME'];
+    this.menuLabels = ['POKEDEX', 'POKEMON', 'BAG', 'QUESTS', 'TOWN MAP', 'STATS', 'HALL OF FAME'];
     if (OverworldAbilities.canUse('fly')) {
       this.menuLabels.push('FLY');
     }
@@ -150,6 +150,13 @@ export class MenuScene extends Phaser.Scene {
         this.scene.sleep();
         this.scene.launch('QuestJournalScene');
         this.scene.get('QuestJournalScene').events.once('shutdown', () => {
+          this.scene.wake();
+        });
+        break;
+      case 'TOWN MAP':
+        this.scene.sleep();
+        this.scene.launch('TownMapScene');
+        this.scene.get('TownMapScene').events.once('shutdown', () => {
           this.scene.wake();
         });
         break;

@@ -1,26 +1,49 @@
 {
-  "name": "Pokemon Web",
-  "short_name": "PokéWeb",
-  "description": "A browser-based Pokémon-style RPG",
+  "name": "Pokemon Aurum",
+  "short_name": "PokéAurum",
+  "description": "A browser-based Pokémon-style RPG adventure",
   "start_url": "/Pokemon-Web/",
   "scope": "/Pokemon-Web/",
+  "id": "/Pokemon-Web/",
   "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
   "orientation": "landscape",
   "background_color": "#0f0f1a",
   "theme_color": "#ffcc00",
   "icons": [
     {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "assets/ui/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "assets/ui/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "assets/ui/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "assets/ui/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "categories": ["games", "entertainment"]
+  "categories": ["games", "entertainment"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }

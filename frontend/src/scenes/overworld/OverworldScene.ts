@@ -15,7 +15,7 @@ import { Direction } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { encounterTables } from '@data/encounter-tables';
-import { GameClock } from '@systems/engine/GameClock';
+import { GameClock, TimePeriod } from '@systems/engine/GameClock';
 import { WeatherRenderer } from '@systems/rendering/WeatherRenderer';
 import { TransitionManager } from '@managers/TransitionManager';
 import { PokemonInstance, SaveData } from '@data/interfaces';
@@ -52,6 +52,7 @@ import {
   spawnNPCs as spawnNPCsHelper,
   spawnTrainers as spawnTrainersHelper,
   spawnObjects as spawnObjectsHelper,
+  applyNpcSchedules,
 } from './OverworldNPCSpawner';
 import {
   redrawTile as redrawTileHelper,
@@ -95,6 +96,8 @@ export class OverworldScene extends Phaser.Scene {
   private ambientSFX!: AmbientSFX;
   /** O(1) lookup set for NPC-occupied tile positions. */
   private npcOccupiedTiles = new Set<string>();
+  /** Tracks the last time period to detect transitions and update NPC schedules. */
+  private lastTimePeriod: TimePeriod | null = null;
   private hudText?: Phaser.GameObjects.Text;
   private clockText?: Phaser.GameObjects.Text;
   private interactPrompt?: Phaser.GameObjects.Text;
@@ -128,6 +131,7 @@ export class OverworldScene extends Phaser.Scene {
     this.npcBehaviors = [];
     this.lastAnimKey = '';
     this.lastFlipX = false;
+    this.lastTimePeriod = null;
     this.interactPrompt?.destroy();
     this.interactPrompt = undefined;
     this.waterTileSprites = [];
@@ -150,6 +154,11 @@ export class OverworldScene extends Phaser.Scene {
     // Launch party quick-view HUD overlay
     if (!this.scene.isActive('PartyQuickViewScene') && !this.scene.isSleeping('PartyQuickViewScene')) {
       this.scene.launch('PartyQuickViewScene');
+    }
+
+    // Launch minimap HUD overlay
+    if (!this.scene.isActive('MinimapScene') && !this.scene.isSleeping('MinimapScene')) {
+      this.scene.launch('MinimapScene');
     }
 
     // Ensure player has a starter Pokemon (fallback — normally received from Oak)
@@ -207,6 +216,7 @@ export class OverworldScene extends Phaser.Scene {
     // Init encounter system
     this.encounterSystem = new EncounterSystem();
     this.gameClock = new GameClock(GameManager.getInstance().getGameClockMinutes());
+    this.lastTimePeriod = this.gameClock.getTimePeriod();
 
     // Register player animations and create player
     AnimationHelper.registerPlayerAnimations(this);
@@ -565,7 +575,8 @@ export class OverworldScene extends Phaser.Scene {
 
   // ── NPC / Trainer spawning ────────────────────────────────
   private spawnNPCs(): void {
-    const result = spawnNPCsHelper(this, this.mapDef, this.player, this.npcs);
+    const timePeriod = this.gameClock?.getTimePeriod();
+    const result = spawnNPCsHelper(this, this.mapDef, this.player, this.npcs, timePeriod);
     this.npcs.push(...result.npcs);
     this.npcBehaviors.push(...result.behaviors);
   }
@@ -1010,6 +1021,15 @@ export class OverworldScene extends Phaser.Scene {
       const period = this.gameClock.getTimePeriod();
       this.clockText.setText(`${periodEmoji[period] ?? '☀️'} ${this.gameClock.getClockString()}`);
       GameManager.getInstance().setGameClockMinutes(this.gameClock.getTotalElapsed());
+
+      // Detect time period change and update NPC schedules
+      if (this.lastTimePeriod !== null && this.lastTimePeriod !== period) {
+        const needsRespawn = applyNpcSchedules(this.npcs, this.mapDef, period);
+        if (needsRespawn) {
+          this.respawnNPCs();
+        }
+      }
+      this.lastTimePeriod = period;
     }
 
     // Animated tile effects (throttled: water/lava every 30 frames, grass every 60)

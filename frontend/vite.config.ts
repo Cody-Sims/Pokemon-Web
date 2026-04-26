@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import path from 'path';
+import swManifestPlugin from './plugins/vite-plugin-sw-manifest.js';
 
 export default defineConfig({
   root: path.resolve(__dirname),
@@ -35,6 +36,9 @@ export default defineConfig({
       },
     },
   },
+  plugins: [
+    swManifestPlugin({ basePath: '/Pokemon-Web/' }),
+  ],
   server: {
     port: 3020,
   },

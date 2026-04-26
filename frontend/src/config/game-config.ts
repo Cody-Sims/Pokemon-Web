@@ -23,10 +23,12 @@ import { PartyQuickViewScene } from '@scenes/menu/PartyQuickViewScene';
 import { MoveTutorScene } from '@scenes/pokemon/MoveTutorScene';
 import { NicknameScene } from '@scenes/pokemon/NicknameScene';
 import { FlyMapScene } from '@scenes/menu/FlyMapScene';
+import { TownMapScene } from '@scenes/menu/TownMapScene';
 import { StatisticsScene } from '@scenes/menu/StatisticsScene';
 import { HallOfFameScene } from '@scenes/menu/HallOfFameScene';
 import { AchievementScene } from '@scenes/menu/AchievementScene';
 import { TrainerCardScene } from '@scenes/menu/TrainerCardScene';
+import { MinimapScene } from '@scenes/menu/MinimapScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '@utils/constants';
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -74,9 +76,11 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     MoveTutorScene,
     NicknameScene,
     FlyMapScene,
+    TownMapScene,
     StatisticsScene,
     HallOfFameScene,
     AchievementScene,
     TrainerCardScene,
+    MinimapScene,
   ],
 };

@@ -7,18 +7,20 @@ import { trainerData } from '@data/trainer-data';
 import { SOLID_TILES } from '@data/maps';
 import type { MapDefinition, NpcSpawn, ObjectSpawn } from '@data/maps';
 import { TILE_SIZE } from '@utils/constants';
+import type { TimePeriod } from '@systems/engine/GameClock';
 
 export interface SpawnedNPCs {
   npcs: NPC[];
   behaviors: NPCBehaviorController[];
 }
 
-/** Spawn all flag-gated NPCs from the map definition. */
+/** Spawn all flag-gated NPCs from the map definition, applying time-based schedules. */
 export function spawnNPCs(
   scene: Phaser.Scene,
   mapDef: MapDefinition,
   player: { x: number; y: number },
   existingNpcs: NPC[],
+  timePeriod?: TimePeriod,
 ): SpawnedNPCs {
   const gm = GameManager.getInstance();
   const npcs: NPC[] = [];
@@ -31,8 +33,21 @@ export function spawnNPCs(
       const flagVal = gm.getFlag(flagName);
       if (negate ? flagVal : !flagVal) continue;
     }
+
+    // Apply time-based schedule: skip NPC if hidden, or override position
+    let spawnX = def.tileX;
+    let spawnY = def.tileY;
+    if (def.schedule && timePeriod) {
+      const entry = def.schedule[timePeriod];
+      if (entry === 'hidden') continue;
+      if (entry) {
+        spawnX = entry.x;
+        spawnY = entry.y;
+      }
+    }
+
     const npc = new NPC(
-      scene, def.tileX, def.tileY,
+      scene, spawnX, spawnY,
       def.textureKey, def.id, def.dialogue, def.facing,
     );
     npc.setScale(2);
@@ -116,4 +131,49 @@ export function spawnObjects(
   }
 
   return objects;
+}
+
+/**
+ * Apply NPC schedules when the time period changes.
+ * Repositions scheduled NPCs or hides/shows them as needed.
+ * Returns true if any NPC was added or removed (requiring a full respawn).
+ */
+export function applyNpcSchedules(
+  npcs: NPC[],
+  mapDef: MapDefinition,
+  timePeriod: TimePeriod,
+): boolean {
+  let needsRespawn = false;
+
+  for (const def of mapDef.npcs) {
+    if (!def.schedule) continue;
+
+    const entry = def.schedule[timePeriod];
+    const existing = npcs.find(n => n.npcId === def.id);
+
+    if (entry === 'hidden') {
+      // NPC should be hidden this period — if it exists, we need a respawn
+      if (existing) {
+        needsRespawn = true;
+      }
+    } else if (entry) {
+      // NPC should be at a specific position
+      if (existing) {
+        existing.setPosition(entry.x * TILE_SIZE + TILE_SIZE / 2, entry.y * TILE_SIZE + TILE_SIZE / 2);
+      } else {
+        // NPC was hidden last period but should now appear — need respawn
+        needsRespawn = true;
+      }
+    } else {
+      // No schedule entry for this period — use default position
+      if (existing) {
+        existing.setPosition(def.tileX * TILE_SIZE + TILE_SIZE / 2, def.tileY * TILE_SIZE + TILE_SIZE / 2);
+      } else {
+        // Was hidden, now should show at default — need respawn
+        needsRespawn = true;
+      }
+    }
+  }
+
+  return needsRespawn;
 }

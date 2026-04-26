@@ -155,6 +155,12 @@ export const viridianCity: MapDefinition = {
           ],
         },
       ],
+      schedule: {
+        morning: { x: 10, y: 1 },    // near Route 2 entrance in the morning
+        day: { x: 14, y: 12 },        // strolls to the town center during the day
+        evening: { x: 5, y: 4 },      // heads home near the houses in the evening
+        night: 'hidden',               // asleep at night
+      },
     }
   ],
   trainers: [],

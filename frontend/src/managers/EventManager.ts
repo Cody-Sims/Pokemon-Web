@@ -4,6 +4,7 @@ export interface EventMap {
   'flag-set': [flag: string];
   'trainer-defeated': [trainerId: string];
   'quest-completed': [questId: string];
+  'party-changed': [];
 }
 
 type EventName = keyof EventMap | (string & {});

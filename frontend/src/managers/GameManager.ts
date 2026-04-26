@@ -67,6 +67,7 @@ export class GameManager {
     textScale: 'medium',
     colorblindMode: 'off',
     reducedMotion: false,
+    showMinimap: true,
   };
 
   private constructor() {

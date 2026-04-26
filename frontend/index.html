@@ -6,9 +6,48 @@
   <meta name="theme-color" content="#ffcc00" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Pokemon Aurum" />
+  <meta name="application-name" content="Pokemon Aurum" />
+  <meta name="description" content="A browser-based Pokemon RPG adventure" />
   <link rel="manifest" href="/Pokemon-Web/manifest.json" />
-  <link rel="apple-touch-icon" href="/Pokemon-Web/assets/ui/icon-192.png" />
-  <title>Pokemon Web</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="/Pokemon-Web/assets/ui/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-icon" href="/Pokemon-Web/apple-touch-icon.png" />
+  <!-- iOS splash screens (landscape game — cover common device sizes) -->
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <link rel="apple-touch-startup-image"
+        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+        href="/Pokemon-Web/assets/ui/icon-512.png" />
+  <title>Pokemon Aurum</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100dvh; height: 100%; background: #000000; overflow: hidden; touch-action: none;
@@ -321,8 +360,25 @@
   </script>
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Pokemon-Web/sw.js').catch(() => {});
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/Pokemon-Web/sw.js').then(function(reg) {
+          // When a new SW is installed, notify user so they can refresh
+          reg.addEventListener('updatefound', function() {
+            var newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', function() {
+                if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                  // New version available — the page will use it on next navigation
+                  console.log('[SW] New version available. Refresh to update.');
+                }
+              });
+            }
+          });
+          // Periodically ask the SW to trim its runtime cache
+          if (reg.active) {
+            reg.active.postMessage({ type: 'TRIM_CACHES' });
+          }
+        }).catch(function() {});
       });
     }
   </script>
