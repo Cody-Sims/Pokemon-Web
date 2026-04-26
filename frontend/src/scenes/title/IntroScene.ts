@@ -448,10 +448,9 @@ export class IntroScene extends Phaser.Scene {
     boySprite.setInteractive({ useHandCursor: true });
     girlSprite.setInteractive({ useHandCursor: true });
     boyPreviewBg.on('pointerdown', () => { this.selectedAppearance = 0; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
-    girlPreviewBg.on('pointerdown', () => { this.selectedAppearance = 0; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
     boySprite.on('pointerdown', () => { this.selectedAppearance = 0; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
-    girlSprite.on('pointerdown', () => { this.selectedAppearance = 1; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
     girlPreviewBg.on('pointerdown', () => { this.selectedAppearance = 1; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
+    girlSprite.on('pointerdown', () => { this.selectedAppearance = 1; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
 
     // DONE button
     const doneBtn = this.add.text(width / 2, height * 0.78, '[ DONE ]', {

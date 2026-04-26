@@ -2,6 +2,7 @@
 export { TouchControls } from './controls/TouchControls';
 export { VirtualJoystick } from './controls/VirtualJoystick';
 export { MenuController } from './controls/MenuController';
+export { MobileTapMenu } from './controls/MobileTapMenu';
 
 // ── Widgets ──────────────────────────────────────────────────
 export { HealthBar } from './widgets/HealthBar';

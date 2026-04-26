@@ -6,7 +6,7 @@ Reusable UI widgets and input controls shared across scenes. Themed via `theme.t
 
 | Path | Purpose |
 |---|---|
-| `controls/` | Input handling: `TouchControls.ts`, `VirtualJoystick.ts`, `MenuController.ts` |
+| `controls/` | Input handling: `TouchControls.ts`, `VirtualJoystick.ts`, `MenuController.ts`, `MobileTapMenu.ts` |
 | `widgets/` | Display components: `NinePatchPanel.ts`, `HealthBar.ts`, `TextBox.ts`, `MenuList.ts`, `ConfirmBox.ts`, `ScrollContainer.ts`, `BattleHUD.ts`, `AchievementToast.ts` |
 | `theme.ts` | Shared color palette, font sizes, spacing constants |
 | `index.ts` | Barrel re-exports for all UI components |

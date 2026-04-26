@@ -8,6 +8,8 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **System dialogue showing ghost speaker/portrait**: DialogueScene `shutdown()` was never bound to the Phaser `'shutdown'` event, causing stale speaker name plate and portrait references to leak into subsequent system dialogues. Registered the handler via `this.events.once('shutdown', ...)` and added defensive cleanup in `init()`
+- **Trainer pre-battle dialogue missing speaker name**: Trainer encounter dialogue passed `portraitKey` but not `speaker`, showing portrait with no name plate. Now passes `tData.name` as speaker
 - **NPC idle frame showing walk pose**: NPCs displayed frame 1 (mid-step walk) as their standing pose. Changed to frame 0 (feet-together standing) in constructor, `setDirectionFrame`, `stopWalkAnim`, and dialogue portrait
 - **NPC face-toward-player on interaction**: NPCs now turn to face the player's approach direction when talked to (front, left, right, behind)
 - **Objects separated from NPC array**: Signs, item balls, PCs, and doors moved from `npcs` array to dedicated `objects` array in all map definitions. `InteractableObject` entity handles rendering without walk animation frames. Prevents objects from displaying as broken NPC sprites
@@ -18,6 +20,13 @@ All notable changes to the Pokemon Web project.
 - **Same-tap menu activation on mobile**: Added frame delay before registering scene-level tap handlers so the touch that dismisses "Press Start" no longer immediately selects a menu item
 - **Lost touch handler after difficulty cancel**: `restoreTitle()` now re-registers the scene-level menu tap handler so mobile touch continues to work after backing out of difficulty select
 - **Difficulty select double-fire**: Applied the same per-item handler removal and frame-delay fix to the difficulty select overlay
+- **DialogueScene choice double-fire**: Scene-level `pointerdown` handler now skips `handleInput()` when in choice mode, preventing `selectChoice()` from executing twice on a single tap
+- **IntroScene girl preview handler**: Fixed `girlPreviewBg` having two conflicting `pointerdown` handlers (both set `selectedAppearance = 0` then `= 1`), consolidated to four clean handlers
+
+### Added
+
+- **MobileTapMenu utility**: Extracted reusable `MobileTapMenu` class in `frontend/src/ui/controls/MobileTapMenu.ts` for scene-level touch menus with generous hit zones and frame-delayed registration
+- **TitleScene refactored to MobileTapMenu**: Replaced inline tap-handler logic in `TitleScene` with `MobileTapMenu` instances for both main menu and difficulty select
 
 ### Added
 

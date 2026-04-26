@@ -5,35 +5,14 @@ import { GameManager } from '@managers/GameManager';
 import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
 import { BGM, SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
+import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
 import { DifficultyMode, DIFFICULTY_CONFIGS } from '@data/difficulty';
 
 export class TitleScene extends Phaser.Scene {
   private cursor!: number;
   private menuItems!: Phaser.GameObjects.Text[];
   private cursorIcon!: Phaser.GameObjects.Text;
-  private menuSpacing!: number;
-
-  /** Scene-level tap handler with generous hit zones for reliable mobile input. */
-  private handleMenuTap = (pointer: Phaser.Input.Pointer): void => {
-    let bestIdx = -1;
-    let bestDist = Infinity;
-    for (let i = 0; i < this.menuItems.length; i++) {
-      const item = this.menuItems[i];
-      const dy = Math.abs(pointer.y - item.y);
-      const dx = Math.abs(pointer.x - item.x);
-      if (dx < item.width / 2 + 80 && dy < this.menuSpacing / 2 + 10) {
-        if (dy < bestDist) {
-          bestDist = dy;
-          bestIdx = i;
-        }
-      }
-    }
-    if (bestIdx >= 0) {
-      this.cursor = bestIdx;
-      this.updateCursor();
-      this.selectOption();
-    }
-  };
+  private mobileTap?: MobileTapMenu;
 
   constructor() {
     super({ key: 'TitleScene' });
@@ -103,10 +82,10 @@ export class TitleScene extends Phaser.Scene {
 
     this.cursor = 0;
     const menuStartY = height * 0.54;
-    this.menuSpacing = Math.round(44 * MOBILE_SCALE);
+    const menuSpacing = Math.round(44 * MOBILE_SCALE);
     const menuFontSize = mobileFontSize(22);
     this.menuItems = options.map((label, i) => {
-      const item = this.add.text(width / 2 + 16, menuStartY + i * this.menuSpacing, label, {
+      const item = this.add.text(width / 2 + 16, menuStartY + i * menuSpacing, label, {
         ...FONTS.menuItem, fontSize: menuFontSize,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -170,8 +149,10 @@ export class TitleScene extends Phaser.Scene {
       // ── Scene-level tap handler for menu items ──
       // Register after a frame delay so the tap that dismissed "Press Start"
       // does not immediately select a menu item on mobile.
-      this.time.delayedCall(0, () => {
-        this.input.on('pointerdown', this.handleMenuTap);
+      this.mobileTap = new MobileTapMenu(this, this.menuItems, (idx) => {
+        this.cursor = idx;
+        this.updateCursor();
+        this.selectOption();
       });
 
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
@@ -262,6 +243,7 @@ export class TitleScene extends Phaser.Scene {
     // Disable title menu interaction
     this.input.keyboard!.removeAllListeners();
     this.input.removeAllListeners(); // Remove title menu tap handler
+    this.mobileTap?.destroy();
     this.menuItems.forEach(item => item.disableInteractive());
     this.cursorIcon.setVisible(false);
 
@@ -315,26 +297,15 @@ export class TitleScene extends Phaser.Scene {
     // ── Mobile-friendly: scene-level tap for difficulty items ──
     // Register after a frame delay so the tap that selected "New Game"
     // does not immediately select a difficulty on mobile.
-    const onDiffTap = (pointer: Phaser.Input.Pointer) => {
-      for (let i = 0; i < diffItems.length; i++) {
-        const item = diffItems[i];
-        const dy = Math.abs(pointer.y - item.y);
-        const dx = Math.abs(pointer.x - item.x);
-        if (dx < item.width / 2 + 60 && dy < 30) {
-          diffCursor = i;
-          updateDiff();
-          AudioManager.getInstance().playSFX(SFX.CONFIRM);
-          confirmDiff();
-          return;
-        }
-      }
-    };
-    this.time.delayedCall(0, () => {
-      this.input.on('pointerdown', onDiffTap);
-    });
+    const diffTap = new MobileTapMenu(this, diffItems, (idx) => {
+      diffCursor = idx;
+      updateDiff();
+      AudioManager.getInstance().playSFX(SFX.CONFIRM);
+      confirmDiff();
+    }, 60, 0);
 
     const cleanup = () => {
-      this.input.off('pointerdown', onDiffTap);
+      diffTap.destroy();
       this.input.keyboard!.off('keydown-UP', onUp);
       this.input.keyboard!.off('keydown-DOWN', onDown);
       this.input.keyboard!.off('keydown-ENTER', onEnter);
@@ -351,7 +322,7 @@ export class TitleScene extends Phaser.Scene {
       this.menuItems.forEach(item => item.setInteractive({ useHandCursor: true }));
       this.cursorIcon.setVisible(true);
       this.rebindTitleKeys();
-      this.input.on('pointerdown', this.handleMenuTap);
+      this.mobileTap?.reattach();
     };
 
     const onUp = () => {

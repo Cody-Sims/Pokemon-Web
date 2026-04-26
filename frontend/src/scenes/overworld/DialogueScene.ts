@@ -68,6 +68,13 @@ export class DialogueScene extends Phaser.Scene {
     this.callingScene = data.callingScene ?? 'OverworldScene';
     this.inChoiceMode = false;
     this.choiceTexts = [];
+
+    // Clear stale UI references from previous scene runs to prevent
+    // speaker/portrait elements leaking into system dialogues.
+    this.portrait = undefined;
+    this.portraitBg = undefined;
+    this.speakerPanel = undefined;
+    this.speakerText = undefined;
   }
 
   create(): void {
@@ -226,6 +233,10 @@ export class DialogueScene extends Phaser.Scene {
       }
     });
 
+    // Register shutdown handler so cleanup runs when the scene stops.
+    // Phaser does not auto-bind shutdown() like init/create/update.
+    this.events.once('shutdown', this.shutdown, this);
+
     this.showLine(this.queue[this.currentIndex]);
 
     // Input — keyboard
@@ -243,7 +254,10 @@ export class DialogueScene extends Phaser.Scene {
     });
 
     // Input — tap to advance on touch devices
-    this.input.on('pointerdown', () => this.handleInput());
+    // Skip when in choice mode — per-item handlers on choice texts handle taps directly.
+    this.input.on('pointerdown', () => {
+      if (!this.inChoiceMode) this.handleInput();
+    });
   }
 
   /** Poll touch A button each frame (raw DOM events bypass Phaser scenes). */
