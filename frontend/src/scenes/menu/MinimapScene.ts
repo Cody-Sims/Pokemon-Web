@@ -148,23 +148,28 @@ export class MinimapScene extends Phaser.Scene {
   }
 
   /**
-   * Bottom-right anchor position. In portrait, the action buttons live in the
-   * bottom-right corner pushed up by ~120px from the screen edge with a 72px
-   * button size, so the minimap must clear the top of those buttons or it ends
-   * up sitting on top of A/B and the user can't tap them.
+   * Compute the minimap anchor position. In portrait the action buttons sit
+   * in the bottom-right and the clock + location HUD takes the top-center,
+   * so we anchor the minimap to the top-left where it stays clear of every
+   * other interactive element. In landscape (or desktop) we keep the
+   * traditional bottom-right corner.
    */
   private computePosition(w: number, h: number, totalSize: number): { x: number; y: number } {
     const mobile = isMobile();
     const isPortrait = h > w;
     const margin = mobile ? 10 : 12;
-    // Action button top in portrait = h - 120 (offset) - 72 (btn) = h - 192.
-    // Add an extra gap so the minimap doesn't visually butt against the button.
-    const portraitButtonClear = 120 + 72 + 16; // offset + btnSize + gap
-    const landscapeMobileClear = 130;          // legacy mobile landscape gap
-    let bottomGap = margin;
-    if (mobile) {
-      bottomGap = isPortrait ? portraitButtonClear : landscapeMobileClear;
+
+    if (isPortrait) {
+      // Top-left, pushed down past the location-text strip (~28px) so it
+      // doesn't overlap the map name banner at the top of the screen.
+      const topGap = 32;
+      return { x: margin, y: topGap };
     }
+
+    // Landscape / desktop: keep the legacy bottom-right placement, but
+    // clear the action buttons on landscape phones.
+    const landscapeMobileClear = 130; // legacy mobile landscape gap
+    const bottomGap = mobile ? landscapeMobileClear : margin;
     return {
       x: w - totalSize - margin,
       y: h - totalSize - bottomGap,

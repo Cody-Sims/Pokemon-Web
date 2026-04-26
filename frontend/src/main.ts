@@ -123,22 +123,44 @@ let resizeTimer: ReturnType<typeof setTimeout> | null = null;
 function handleViewportResize(): void {
   if (resizeTimer) clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
+    resetSafeAreaCache();
     const { width, height } = computeGameDimensions();
     const current = game.scale.gameSize;
     if (current.width !== width || current.height !== height) {
       game.scale.resize(width, height);
     }
     game.scale.refresh();
-  }, 150);
+  }, 120);
+}
+function scheduleOrientationResize(): void {
+  // iOS Safari reports stale viewport dimensions immediately after rotation.
+  // Fire several times to catch the eventual updated layout.
+  handleViewportResize();
+  setTimeout(handleViewportResize, 60);
+  setTimeout(handleViewportResize, 200);
+  setTimeout(handleViewportResize, 500);
+  setTimeout(handleViewportResize, 1000);
 }
 window.addEventListener('resize', handleViewportResize);
-window.addEventListener('orientationchange', () => {
-  // Fire multiple times to catch delayed viewport updates from the OS
-  handleViewportResize();
-  setTimeout(handleViewportResize, 100);
-  setTimeout(handleViewportResize, 400);
-  setTimeout(handleViewportResize, 800);
-});
+window.addEventListener('orientationchange', scheduleOrientationResize);
+// `screen.orientation.change` is more reliable than the legacy event on
+// modern browsers, especially in installed PWAs where orientation is locked.
+try {
+  screen.orientation?.addEventListener?.('change', scheduleOrientationResize);
+} catch { /* not supported */ }
+// `visualViewport` reports the actual visible viewport (excluding browser
+// chrome) and fires when the iOS address bar collapses or device rotates.
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', handleViewportResize);
+}
+// Listen on orientation media-query changes — fires reliably on rotation
+// even when `orientationchange` is throttled by the browser.
+try {
+  const mq = window.matchMedia('(orientation: portrait)');
+  const onMQ = () => scheduleOrientationResize();
+  if ('addEventListener' in mq) mq.addEventListener('change', onMQ);
+  else (mq as MediaQueryList & { addListener: (cb: () => void) => void }).addListener(onMQ);
+} catch { /* not supported */ }
 // Fullscreen changes also alter the viewport — trigger resize
 document.addEventListener('fullscreenchange', () => {
   handleViewportResize();

@@ -45,6 +45,8 @@ export class TouchControls {
   private swipeUpPressed = false;
   private swipeDownPressed = false;
   private menuBtn!: Phaser.GameObjects.Container;
+  /** Background circle of the menu button so we can adjust press feedback. */
+  private menuBtnBg!: Phaser.GameObjects.Arc;
   private readonly menuBtnSize = 48;
   private readonly btnSize = 72;
   private readonly padding = 16;
@@ -599,7 +601,7 @@ export class TouchControls {
     const gy = (clientY - rect.top) * scaleY;
     const dx = gx - this.menuBtn.x;
     const dy = gy - this.menuBtn.y;
-    const r = this.menuBtnSize / 2 + 10; // generous hit margin
+    const r = this.menuBtnSize / 2 + 16; // generous hit margin
     return dx * dx + dy * dy <= r * r;
   }
 
@@ -607,8 +609,9 @@ export class TouchControls {
     const r = this.menuBtnSize / 2;
     // Higher-opacity dark plate gives the white hamburger icon usable contrast
     // against bright overworld backgrounds.
-    const bg = this.scene.add.circle(0, 0, r, 0x101820, 0.85);
-    bg.setStrokeStyle(2, 0xffd060, 0.9);
+    const bg = this.scene.add.circle(0, 0, r, 0x101820, 0.92);
+    bg.setStrokeStyle(2, 0xffd060, 0.95);
+    this.menuBtnBg = bg;
 
     // Draw three horizontal bars (hamburger icon) — fully opaque white for contrast
     const barW = r * 0.9;
@@ -624,14 +627,50 @@ export class TouchControls {
       .setSize(this.menuBtnSize, this.menuBtnSize);
     this.container.add(this.menuBtn);
 
-    // Make interactive
-    bg.setInteractive({ useHandCursor: true });
-    bg.on('pointerdown', () => {
+    // Direct touch handling (more reliable than setInteractive on shapes
+    // nested in containers — see bindActionPointer for the same pattern).
+    this.bindMenuButtonPointer();
+  }
+
+  /**
+   * Hit-test taps against the menu button area directly on canvas events.
+   * This is more reliable than Phaser's setInteractive on a circle nested
+   * inside multiple containers, and matches how the A/B buttons are wired.
+   */
+  private bindMenuButtonPointer(): void {
+    const canvas = this.scene.game.canvas;
+
+    const press = () => {
       this.cancelPressed = true;
-      bg.fillAlpha = 1;
-    });
-    bg.on('pointerup', () => { bg.fillAlpha = 0.85; });
-    bg.on('pointerout', () => { bg.fillAlpha = 0.85; });
+      this.menuBtnBg.fillAlpha = 1;
+      hapticTap();
+    };
+    const release = () => { this.menuBtnBg.fillAlpha = 0.92; };
+
+    const onTouchStart = (e: Event) => {
+      if (!this.container.visible) return;
+      const te = e as TouchEvent;
+      for (let i = 0; i < te.changedTouches.length; i++) {
+        const t = te.changedTouches[i];
+        if (this.isMenuButtonHit(t.clientX, t.clientY)) {
+          press();
+          return;
+        }
+      }
+    };
+    const onTouchEnd = () => release();
+    const onMouseDown = (e: Event) => {
+      if (!this.container.visible) return;
+      const me = e as MouseEvent;
+      if (this.isMenuButtonHit(me.clientX, me.clientY)) press();
+    };
+    const onMouseUp = () => release();
+
+    this.trackListener(canvas, 'touchstart', onTouchStart, { passive: true });
+    this.trackListener(canvas, 'touchend', onTouchEnd, { passive: true });
+    this.trackListener(canvas, 'touchcancel', onTouchEnd, { passive: true });
+    this.trackListener(canvas, 'mousedown', onMouseDown);
+    this.trackListener(canvas, 'mouseup', onMouseUp);
   }
 
   private layoutMenuButton(): void {
@@ -641,8 +680,11 @@ export class TouchControls {
     // otherwise occlude it. In landscape phone DOM mode the in-canvas button is
     // hidden anyway, so this position only applies to in-canvas overlay mode.
     const isPortrait = height > width;
-    const yOffset = isPortrait ? this.menuBtnSize / 2 + 70 : this.menuBtnSize / 2 + 12;
-    this.menuBtn.setPosition(width - this.menuBtnSize / 2 - 12, yOffset);
+    // In portrait we push the button further down past the HUD strip + clock
+    // widget so it's well clear of iOS top-edge gesture areas and easy to tap.
+    const yOffset = isPortrait ? this.menuBtnSize / 2 + 72 : this.menuBtnSize / 2 + 12;
+    const xOffset = this.menuBtnSize / 2 + 12;
+    this.menuBtn.setPosition(width - xOffset, yOffset);
   }
 
   private setupDOMButtons(): void {

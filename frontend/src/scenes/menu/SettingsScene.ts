@@ -58,52 +58,68 @@ export class SettingsScene extends Phaser.Scene {
     const gm = GameManager.getInstance();
     const isMobile = TouchControls.isTouchDevice();
     const layout = ui(this);
+    const portrait = layout.h > layout.w;
 
     // Background
     this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
-    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 60, layout.h - 60, {
+    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 32, layout.h - 32, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
     });
 
     // Title
-    this.add.text(layout.cx, 50, 'SETTINGS', { ...FONTS.heading, fontSize: mobileFontSize(26) }).setOrigin(0.5);
-    this.add.rectangle(layout.cx, 70, 180, 2, COLORS.borderHighlight, 0.4);
+    const titleSize = portrait ? 22 : 26;
+    this.add.text(layout.cx, portrait ? 38 : 50, 'SETTINGS', { ...FONTS.heading, fontSize: mobileFontSize(titleSize) }).setOrigin(0.5);
+    this.add.rectangle(layout.cx, portrait ? 56 : 70, 180, 2, COLORS.borderHighlight, 0.4);
 
-    // Settings rows
-    const startY = 100;
-    const rowH = 40;
+    // Settings rows — compact layout in portrait so labels never overlap
+    // the value/arrow column on narrow screens.
+    const startY = portrait ? 78 : 100;
+    // Reserve room for the back button + hint at the bottom of the panel.
+    const bottomReserve = portrait ? 64 : 90;
+    const allItemCount = SETTING_DEFS.length + 1; // +1 for fullscreen
+    const availH = layout.h - startY - bottomReserve;
+    const idealRowH = portrait ? 30 : 40;
+    const rowH = Math.max(24, Math.min(idealRowH, Math.floor(availH / allItemCount)));
+    const rowFontPx = portrait ? 14 : 17;
+
+    // Column anchors (right-aligned controls so long labels have room).
+    const labelX = portrait ? 24 : 100;
+    const rightArrowX = layout.w - (portrait ? 28 : 95);
+    const valueX = rightArrowX - (portrait ? 30 : 55);
+    const leftArrowX = valueX - (portrait ? 38 : 60);
+
     this.settingTexts = [];
     const rowHitAreas: Phaser.GameObjects.Rectangle[] = [];
 
     SETTING_DEFS.forEach((def, i) => {
       const y = startY + i * rowH;
-      const label = this.add.text(100, y, def.label, { ...FONTS.body, fontSize: mobileFontSize(17) });
+      const label = this.add.text(labelX, y, def.label, { ...FONTS.body, fontSize: mobileFontSize(rowFontPx) });
       const currentVal = gm.getSetting(def.key);
       const displayVal = this.formatValue(def, currentVal);
 
       // Tappable left arrow — enforce MIN_TOUCH_TARGET
-      const leftArrow = this.add.text(layout.w - 210, y, '◀', {
-        ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
-      }).setInteractive({ useHandCursor: true });
-      leftArrow.setPadding(14, 14, 14, 14);
+      const leftArrow = this.add.text(leftArrowX, y, '◀', {
+        ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
+      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
+      leftArrow.setPadding(12, 10, 12, 10);
       leftArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(-1); });
 
       // Value display
-      const value = this.add.text(layout.w - 150, y, displayVal, {
-        ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
+      const value = this.add.text(valueX, y, displayVal, {
+        ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
       }).setOrigin(0.5, 0);
 
       // Tappable right arrow — enforce MIN_TOUCH_TARGET
-      const rightArrow = this.add.text(layout.w - 95, y, '▶', {
-        ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
-      }).setInteractive({ useHandCursor: true });
-      rightArrow.setPadding(14, 14, 14, 14);
+      const rightArrow = this.add.text(rightArrowX, y, '▶', {
+        ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
+      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
+      rightArrow.setPadding(12, 10, 12, 10);
       rightArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(1); });
 
       // Invisible row hit area for touch selection
-      const hitArea = this.add.rectangle(layout.cx, y + 10, layout.w - 80, rowH, 0x000000, 0)
+      const hitArea = this.add.rectangle(layout.cx, y + rowH / 2 - 4, layout.w - 40, rowH, 0x000000, 0)
         .setInteractive({ useHandCursor: true });
       hitArea.on('pointerover', () => { this.controller?.setCursor(i); this.highlightRow(i); });
       rowHitAreas.push(hitArea);
@@ -113,27 +129,27 @@ export class SettingsScene extends Phaser.Scene {
 
     // Fullscreen row
     const fsY = startY + SETTING_DEFS.length * rowH;
-    const fsLabel = this.add.text(100, fsY, 'Fullscreen', { ...FONTS.body, fontSize: mobileFontSize(17) });
+    const fsLabel = this.add.text(labelX, fsY, 'Fullscreen', { ...FONTS.body, fontSize: mobileFontSize(rowFontPx) });
     this.isFullscreen = this.scale.isFullscreen;
     const fsState = this.isFullscreen ? 'ON' : 'OFF';
 
-    const fsLeftArrow = this.add.text(layout.w - 210, fsY, '◀', {
-      ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
-    }).setInteractive({ useHandCursor: true });
-    fsLeftArrow.setPadding(14, 14, 14, 14);
+    const fsLeftArrow = this.add.text(leftArrowX, fsY, '◀', {
+      ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
+    }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
+    fsLeftArrow.setPadding(12, 10, 12, 10);
     fsLeftArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(-1); });
 
-    const fsValue = this.add.text(layout.w - 150, fsY, fsState, {
-      ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
+    const fsValue = this.add.text(valueX, fsY, fsState, {
+      ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
     }).setOrigin(0.5, 0);
 
-    const fsRightArrow = this.add.text(layout.w - 95, fsY, '▶', {
-      ...FONTS.body, fontSize: mobileFontSize(17), color: COLORS.textHighlight,
-    }).setInteractive({ useHandCursor: true });
-    fsRightArrow.setPadding(14, 14, 14, 14);
+    const fsRightArrow = this.add.text(rightArrowX, fsY, '▶', {
+      ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
+    }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
+    fsRightArrow.setPadding(12, 10, 12, 10);
     fsRightArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(1); });
 
-    const fsHitArea = this.add.rectangle(layout.cx, fsY + 10, layout.w - 80, rowH, 0x000000, 0)
+    const fsHitArea = this.add.rectangle(layout.cx, fsY + rowH / 2 - 4, layout.w - 40, rowH, 0x000000, 0)
       .setInteractive({ useHandCursor: true });
     fsHitArea.on('pointerover', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); });
     rowHitAreas.push(fsHitArea);
@@ -141,18 +157,20 @@ export class SettingsScene extends Phaser.Scene {
     this.settingTexts.push({ label: fsLabel, value: fsValue, leftArrow: fsLeftArrow, rightArrow: fsRightArrow });
 
     // Back button (visible for touch users, always works)
-    const backBtn = this.add.text(layout.cx, layout.h - 70, '[ Back ]', {
-      ...FONTS.body, fontSize: mobileFontSize(20), color: COLORS.textHighlight,
+    const backY = layout.h - (portrait ? 44 : 70);
+    const backBtn = this.add.text(layout.cx, backY, '[ Back ]', {
+      ...FONTS.body, fontSize: mobileFontSize(portrait ? 16 : 20), color: COLORS.textHighlight,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     backBtn.on('pointerdown', () => this.closeSettings());
     backBtn.on('pointerover', () => backBtn.setColor(COLORS.textWhite));
     backBtn.on('pointerout', () => backBtn.setColor(COLORS.textHighlight));
 
     // Close hint
-    const hintText = isMobile ? 'Tap ◀ ▶ to change  •  Tap [ Back ] to return' : 'ESC to go back   ◀ ▶ to change values';
-    this.add.text(layout.cx, layout.h - 40, hintText, FONTS.caption).setOrigin(0.5);
-
-    const allItemCount = SETTING_DEFS.length + 1; // +1 for fullscreen
+    const hintTxt = isMobile ? 'Tap ◀ ▶ to change  •  Tap [ Back ] to return' : 'ESC to go back   ◀ ▶ to change values';
+    this.add.text(layout.cx, layout.h - (portrait ? 22 : 40), hintTxt, {
+      ...FONTS.caption,
+      fontSize: mobileFontSize(portrait ? 10 : 12),
+    }).setOrigin(0.5);
 
     this.controller = new MenuController(this, {
       columns: 1,

@@ -77,6 +77,7 @@ export class IntroScene extends Phaser.Scene {
 
   create(): void {
     const { width, height } = this.cameras.main;
+    const portrait = height > width;
 
     // Black background
     this.add.rectangle(width / 2, height / 2, width, height, 0x000000);
@@ -84,30 +85,35 @@ export class IntroScene extends Phaser.Scene {
     // Container for slide content
     this.slideContainer = this.add.container(0, 0);
 
-    // Professor sprite (using npc-oak atlas)
-    this.professorSprite = this.add.image(width / 2, height * 0.35, 'npc-oak', 0)
-      .setScale(6)
+    // Professor sprite — kept in the upper third so it never overlaps text
+    // even when slide copy spans 4+ lines on portrait phones.
+    const professorY = portrait ? height * 0.28 : height * 0.35;
+    this.professorSprite = this.add.image(width / 2, professorY, 'npc-oak', 0)
+      .setScale(portrait ? 5 : 6)
       .setAlpha(0);
     this.slideContainer.add(this.professorSprite);
 
     // Pokemon display sprite (Pikachu/Nidoran as intro pokemon)
     this.pokemonSprite = null;
 
-    // Text display
-    this.textObject = this.add.text(width / 2, height * 0.72, '', {
+    // Text display — bottom-anchored in portrait so multi-line slides
+    // never get clipped by the iOS Safari toolbar overlapping the canvas.
+    const textY = portrait ? height - 80 : height * 0.72;
+    const textOriginY = portrait ? 1 : 0;
+    this.textObject = this.add.text(width / 2, textY, '', {
       ...FONTS.body,
-      fontSize: mobileFontSize(18),
+      fontSize: mobileFontSize(portrait ? 16 : 18),
       color: COLORS.textWhite,
       align: 'center',
-      wordWrap: { width: width * 0.8 },
-      lineSpacing: 8,
-    }).setOrigin(0.5, 0).setAlpha(0);
+      wordWrap: { width: width * 0.86 },
+      lineSpacing: 6,
+    }).setOrigin(0.5, textOriginY).setAlpha(0);
 
-    // Hint text
-    this.add.text(width / 2, height - 20, hintText('advance'), {
+    // Hint text — keep clear of the bottom safe-area inset.
+    this.add.text(width / 2, height - 24, hintText('advance'), {
       ...FONTS.caption,
       color: COLORS.textDim,
-    }).setOrigin(0.5);
+    }).setOrigin(0.5, 1);
 
     // Start first slide
     this.showSlide(0);
@@ -138,6 +144,8 @@ export class IntroScene extends Phaser.Scene {
     this.isAnimating = true;
     const slide = this.slides[index];
     const { width, height } = this.cameras.main;
+    const portrait = height > width;
+    const spriteY = portrait ? height * 0.28 : height * 0.35;
 
     // Fade out current content
     this.tweens.add({
@@ -150,7 +158,7 @@ export class IntroScene extends Phaser.Scene {
 
         // Update professor visibility
         if (slide.showProfessor) {
-          this.professorSprite.setPosition(width / 2, height * 0.35);
+          this.professorSprite.setPosition(width / 2, spriteY);
           this.tweens.add({ targets: this.professorSprite, alpha: 1, duration: 300 });
         }
 
@@ -159,12 +167,12 @@ export class IntroScene extends Phaser.Scene {
           if (!this.pokemonSprite) {
             // Show Pikachu as the intro pokemon (preloaded in PreloadScene)
             const spriteKey = this.textures.exists('pikachu-front') ? 'pikachu-front' : 'pikachu-icon';
-            this.pokemonSprite = this.add.image(width / 2, height * 0.35, spriteKey)
+            this.pokemonSprite = this.add.image(width / 2, spriteY, spriteKey)
               .setScale(this.textures.exists('pikachu-front') ? 3 : 6)
               .setAlpha(0);
             this.slideContainer.add(this.pokemonSprite);
           }
-          this.pokemonSprite.setPosition(width / 2, height * 0.35);
+          this.pokemonSprite.setPosition(width / 2, spriteY);
           this.tweens.add({ targets: this.pokemonSprite, alpha: 1, duration: 300 });
         }
 
@@ -491,6 +499,7 @@ export class IntroScene extends Phaser.Scene {
 
   private showConfirmation(name: string): void {
     const { width, height } = this.cameras.main;
+    const portrait = height > width;
 
     // Clear naming UI — fade out everything and rebuild
     this.isAnimating = true;
@@ -509,17 +518,21 @@ export class IntroScene extends Phaser.Scene {
         this.add.rectangle(width / 2, height / 2, width, height, 0x000000);
 
         // Professor
-        this.professorSprite.setPosition(width / 2, height * 0.35).setScale(6).setAlpha(1);
+        const profY = portrait ? height * 0.28 : height * 0.35;
+        this.professorSprite.setPosition(width / 2, profY).setScale(portrait ? 5 : 6).setAlpha(1);
 
-        // Confirmation text
-        const confirmText = this.add.text(width / 2, height * 0.68, `Right! So your name is ${name}!\n\nYour very own POKéMON legend\nis about to unfold!\n\nA world of dreams and\nadventures with POKéMON\nawaits! Let's go!`, {
+        // Confirmation text — bottom-anchored in portrait so the multi-line
+        // copy never falls below the visible viewport on iOS.
+        const confirmY = portrait ? height - 56 : height * 0.68;
+        const confirmOriginY = portrait ? 1 : 0;
+        const confirmText = this.add.text(width / 2, confirmY, `Right! So your name is ${name}!\n\nYour very own POKéMON legend\nis about to unfold!\n\nA world of dreams and\nadventures with POKéMON\nawaits! Let's go!`, {
           ...FONTS.body,
-          fontSize: mobileFontSize(16),
+          fontSize: mobileFontSize(portrait ? 14 : 16),
           color: COLORS.textWhite,
           align: 'center',
-          wordWrap: { width: width * 0.8 },
-          lineSpacing: 6,
-        }).setOrigin(0.5, 0).setAlpha(0);
+          wordWrap: { width: width * 0.86 },
+          lineSpacing: 5,
+        }).setOrigin(0.5, confirmOriginY).setAlpha(0);
 
         this.tweens.add({
           targets: confirmText,
