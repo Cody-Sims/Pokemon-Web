@@ -6,6 +6,11 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-25]
 
+### Added
+
+- **Pokemon follower system**: Lead party Pokemon now trails 1 tile behind the player on outdoor maps using its icon sprite (68x56, scaled to tile size). Follower moves via grid-tweens synced to player steps with y-depth sorting. Hidden on interior maps and while surfing. New `FollowerPokemon` entity class in `frontend/src/entities/`
+- **Rock Smash move**: Added `rock-smash` to fighting moves (power 40, 50% chance to lower Defense). Completes the field ability move set — Cut, Rock Smash, and Strength all have working move data now
+
 ### Fixed
 
 - **Interior map background color**: Stopped applying the day/night tint color to the camera background on interior maps so the void area outside small maps (e.g., Willow's Laboratory) stays black instead of turning purple/blue at night

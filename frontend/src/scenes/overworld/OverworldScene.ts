@@ -4,6 +4,7 @@ import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { startFpsMonitor } from '@utils/perf-profile';
 import { Player } from '@entities/Player';
+import { FollowerPokemon } from '@entities/FollowerPokemon';
 import { NPC } from '@entities/NPC';
 import { Trainer } from '@entities/Trainer';
 import { AnimationHelper } from '@systems/rendering/AnimationHelper';
@@ -93,6 +94,8 @@ export class OverworldScene extends Phaser.Scene {
   private hudText?: Phaser.GameObjects.Text;
   private clockText?: Phaser.GameObjects.Text;
   private interactPrompt?: Phaser.GameObjects.Text;
+  private follower?: FollowerPokemon;
+  private followerPrevPos = { x: 0, y: 0 };
 
   constructor() {
     super({ key: 'OverworldScene' });
@@ -238,6 +241,9 @@ export class OverworldScene extends Phaser.Scene {
 
     // On each step complete: check warps, encounters, trainer LoS
     this.player.gridMovement.setMoveCompleteCallback(() => this.onPlayerStep());
+
+    // Create Pokemon follower (lead party Pokemon trails 1 tile behind)
+    this.createFollower(spawnX, spawnY);
 
     // Camera
     const mapPixelW = mapW * TILE_SIZE;
@@ -533,11 +539,46 @@ export class OverworldScene extends Phaser.Scene {
     this.npcs.push(...newTrainers);
   }
 
+  /** Create a follower Pokemon sprite trailing 1 tile behind the player. */
+  private createFollower(playerX: number, playerY: number): void {
+    // Clean up previous follower if re-entering a map
+    this.follower?.destroy();
+    this.follower = undefined;
+
+    const party = GameManager.getInstance().getParty();
+    if (!party.length) return;
+
+    const lead = party[0];
+    const data = pokemonData[lead.dataId];
+    if (!data?.spriteKeys?.icon) return;
+
+    // Place follower 1 tile behind the player's spawn position
+    const followerX = playerX;
+    const followerY = Math.min(playerY + 1, (this.mapDef?.height ?? 25) - 1);
+
+    this.follower = new FollowerPokemon(this, followerX, followerY, data.spriteKeys.icon);
+    this.followerPrevPos = { x: playerX, y: playerY };
+
+    // Hide follower in interior maps (too cramped) or while surfing
+    if (this.mapDef?.isInterior || this.surfing) {
+      this.follower.hideFollower();
+    }
+  }
+
   // ── Per-step hooks ────────────────────────────────────────
   private onPlayerStep(): void {
     if (this.transitioning) return;
 
+    // Move follower to the player's previous position (1-tile trail)
+    if (this.follower?.visible) {
+      this.follower.moveTo(this.followerPrevPos.x, this.followerPrevPos.y);
+    }
+
     const { x: tx, y: ty } = this.player.getTilePosition();
+
+    // Record current position as the "previous" for next step
+    this.followerPrevPos = { x: tx, y: ty };
+
     const gm = GameManager.getInstance();
 
     // Proximity-based preloading for nearby warp targets
