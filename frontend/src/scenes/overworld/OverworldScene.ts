@@ -28,8 +28,6 @@ import {
   NpcSpawn,
   Tile,
   SOLID_TILES,
-  OVERLAY_BASE,
-  FOREGROUND_TILES,
   LEDGE_TILES,
 } from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
@@ -63,6 +61,7 @@ import { getBestRod, attemptFish } from './OverworldFishing';
 import { healParty as healPartyHelper } from './OverworldHealing';
 import { getFootstepSFX as getFootstepSFXHelper } from './OverworldFootsteps';
 import { tryInteract as tryInteractHelper, InteractionContext } from './OverworldInteraction';
+import { buildTilemap, redrawTilemapTile, TilemapResult } from '@systems/rendering/TilemapBuilder';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
@@ -86,11 +85,8 @@ export class OverworldScene extends Phaser.Scene {
   private resumeCooldown = 0;
   private isCycling = false;
   private surfing = false;
-  private waterTileSprites: Phaser.GameObjects.Image[] = [];
-  private tallGrassTileSprites: Phaser.GameObjects.Image[] = [];
-  private lavaTileSprites: Phaser.GameObjects.Image[] = [];
-  /** Lookup tall grass sprites by "tileX,tileY" for rustle effects. */
-  private grassSpriteByTile = new Map<string, Phaser.GameObjects.Image>();
+  /** Tilemap layers + animated sprite references created by TilemapBuilder. */
+  private tilemapResult: TilemapResult | null = null;
   private tileAnimFrame = 0;
   private mapPixelH = 0;
   private ambientSFX!: AmbientSFX;
@@ -134,10 +130,7 @@ export class OverworldScene extends Phaser.Scene {
     this.lastTimePeriod = null;
     this.interactPrompt?.destroy();
     this.interactPrompt = undefined;
-    this.waterTileSprites = [];
-    this.tallGrassTileSprites = [];
-    this.grassSpriteByTile.clear();
-    this.lavaTileSprites = [];
+    this.tilemapResult = null;
     this.tileAnimFrame = 0;
   }
 
@@ -205,8 +198,8 @@ export class OverworldScene extends Phaser.Scene {
     const mapH = this.mapDef.height;
     this.mapPixelH = mapH * TILE_SIZE;
 
-    // Draw tile map
-    this.drawMap(mapW, mapH);
+    // Draw tile map via TilemapBuilder (three tilemap layers + animated sprites)
+    this.tilemapResult = buildTilemap(this, this.mapDef.ground, mapW, mapH);
 
     // Preload Pokémon sprites for this map + player party, then adjacent maps
     MapPreloader.ensureMapReady(this, this.mapKey).then(() => {
@@ -247,7 +240,7 @@ export class OverworldScene extends Phaser.Scene {
     this.player.setScale(2);
     // Depth is set dynamically per-frame by y-based sorting in update()
     const animDir = spawnDir === 'right' ? 'left' : spawnDir;
-    this.player.play(`${this.animPrefix()}idle-${animDir}`);
+    this.player.play(`${this.animPrefix()}${this.animAction('idle')}-${animDir}`);
     if (spawnDir === 'right') this.player.setFlipX(true);
 
     gm.setPlayerPosition({ x: spawnX, y: spawnY, direction: spawnDir });
@@ -479,100 +472,6 @@ export class OverworldScene extends Phaser.Scene {
     startFpsMonitor();
   }
 
-  // ── Map rendering (tileset-based) ──────────────────────────
-  private drawMap(mapW: number, mapH: number): void {
-    // Scale factor: tileset is 16px, game tiles are TILE_SIZE (32px)
-    const scale = TILE_SIZE / 16;
-
-    // Set of tile IDs that need individual sprites (animated or overlays)
-    const animatedTiles = new Set<number>([
-      Tile.WATER, Tile.TIDE_POOL, Tile.TALL_GRASS,
-      Tile.MAGMA_CRACK, Tile.EMBER_VENT, Tile.LAVA_ROCK,
-    ]);
-
-    // Build a Phaser Tilemap for the static ground layer (batch rendering)
-    const tileData: number[][] = [];
-    for (let y = 0; y < mapH; y++) {
-      const row: number[] = [];
-      for (let x = 0; x < mapW; x++) {
-        const tile = this.mapDef.ground[y][x];
-        const isOverlay = OVERLAY_BASE[tile] !== undefined;
-        const isAnimated = animatedTiles.has(tile);
-        // Static ground tiles go into the tilemap; overlays and animated tiles use sprites
-        row.push((!isOverlay && !isAnimated) ? tile : -1);
-      }
-      tileData.push(row);
-    }
-
-    const tilemapData = new Phaser.Tilemaps.MapData({
-      width: mapW,
-      height: mapH,
-      tileWidth: 16,
-      tileHeight: 16,
-    });
-    const tilemap = new Phaser.Tilemaps.Tilemap(this, tilemapData);
-    const tileset = tilemap.addTilesetImage('tileset', 'tileset', 16, 16) as Phaser.Tilemaps.Tileset;
-
-    // Create a layer from the static tile data
-    const staticLayer = tilemap.createBlankLayer('ground', tileset, 0, 0, mapW, mapH, 16, 16);
-    if (staticLayer) {
-      for (let y = 0; y < mapH; y++) {
-        for (let x = 0; x < mapW; x++) {
-          const id = tileData[y][x];
-          if (id >= 0) {
-            staticLayer.putTileAt(id, x, y);
-          }
-        }
-      }
-      staticLayer.setScale(scale);
-      staticLayer.setDepth(0);
-    }
-
-    // Now handle overlay tiles and animated tiles as individual sprites
-    for (let y = 0; y < mapH; y++) {
-      for (let x = 0; x < mapW; x++) {
-        const tile = this.mapDef.ground[y][x];
-        const px = x * TILE_SIZE + TILE_SIZE / 2;
-        const py = y * TILE_SIZE + TILE_SIZE / 2;
-        const isOverlay = OVERLAY_BASE[tile] !== undefined;
-        const isAnimated = animatedTiles.has(tile);
-
-        if (!isOverlay && !isAnimated) continue; // Handled by tilemap layer
-
-        // If this tile is an overlay object, draw the base ground tile first
-        const baseTile = OVERLAY_BASE[tile];
-        if (baseTile !== undefined) {
-          const base = this.add.image(px, py, 'tileset', baseTile);
-          base.setScale(scale);
-          base.setDepth(0);
-        }
-
-        // Draw the tile (or overlay) itself
-        const sprite = this.add.image(px, py, 'tileset', tile);
-        sprite.setScale(scale);
-        if (baseTile !== undefined) {
-          sprite.setDepth(FOREGROUND_TILES.has(tile) ? 2 : 0.5);
-        }
-
-        // Explicit depth for animated ground tiles without an overlay base
-        if (baseTile === undefined) {
-          sprite.setDepth(0);
-        }
-
-        // Collect references for animated tile effects
-        if (tile === Tile.WATER || tile === Tile.TIDE_POOL) {
-          this.waterTileSprites.push(sprite);
-        } else if (tile === Tile.TALL_GRASS) {
-          this.tallGrassTileSprites.push(sprite);
-          this.grassSpriteByTile.set(`${x},${y}`, sprite);
-        } else if (tile === Tile.MAGMA_CRACK || tile === Tile.EMBER_VENT || tile === Tile.LAVA_ROCK) {
-          (sprite as Phaser.GameObjects.Image & { _baseTile?: number })._baseTile = tile;
-          this.lavaTileSprites.push(sprite);
-        }
-      }
-    }
-  }
-
   // ── NPC / Trainer spawning ────────────────────────────────
   private spawnNPCs(): void {
     const timePeriod = this.gameClock?.getTimePeriod();
@@ -679,7 +578,7 @@ export class OverworldScene extends Phaser.Scene {
 
     // Grass rustle effect when stepping into tall grass
     if (currentTile === Tile.TALL_GRASS || currentTile === Tile.DARK_GRASS) {
-      const grassSprite = this.grassSpriteByTile.get(`${tx},${ty}`);
+      const grassSprite = this.tilemapResult?.grassByTile.get(`${tx},${ty}`);
       if (grassSprite) {
         this.tweens.add({
           targets: grassSprite,
@@ -902,7 +801,11 @@ export class OverworldScene extends Phaser.Scene {
 
   /** Redraw a single tile after a field ability changes it. */
   private redrawTile(tx: number, ty: number): void {
-    redrawTileHelper(this, this.mapDef, tx, ty);
+    if (this.tilemapResult) {
+      redrawTilemapTile(this.tilemapResult, this.mapDef.ground, tx, ty);
+    } else {
+      redrawTileHelper(this, this.mapDef, tx, ty);
+    }
   }
 
   /** Show a brief text popup for a field ability use. */
@@ -912,7 +815,13 @@ export class OverworldScene extends Phaser.Scene {
 
   /** Push a Strength boulder one tile in the player's facing direction. */
   private pushBoulder(bx: number, by: number, dir: Direction): void {
-    pushBoulderHelper(this, this.mapDef, bx, by, dir);
+    if (this.tilemapResult) {
+      // Tilemap-aware push: pass tilemap result so the helper can
+      // extract a temporary sprite from the decoration layer for animation.
+      pushBoulderHelper(this, this.mapDef, bx, by, dir, this.tilemapResult);
+    } else {
+      pushBoulderHelper(this, this.mapDef, bx, by, dir);
+    }
     this.showFieldAbilityPopup('Used STRENGTH!');
   }
 
@@ -977,6 +886,12 @@ export class OverworldScene extends Phaser.Scene {
     return GameManager.getInstance().getPlayerGender() === 'girl' ? 'player-girl-' : 'player-';
   }
 
+  /** Return the action token for the current movement mode. */
+  private animAction(action: 'walk' | 'idle'): string {
+    if (this.isCycling) return action === 'walk' ? 'cycle' : 'cycle-idle';
+    return action;
+  }
+
   private playAnim(key: string, flipX: boolean): void {
     if (this.lastAnimKey !== key) {
       this.player.play(key);
@@ -1034,18 +949,19 @@ export class OverworldScene extends Phaser.Scene {
 
     // Animated tile effects (throttled: water/lava every 30 frames, grass every 60)
     this.tileAnimFrame++;
-    if (this.tileAnimFrame % 30 === 0) {
+    const tm = this.tilemapResult;
+    if (tm && this.tileAnimFrame % 30 === 0) {
       const waterTints = [0x3090e0, 0x40a0f0, 0x2080d0];
       const lavaTints = [0xe06020, 0xf07030, 0xd05010];
       const idx = Math.floor(this.tileAnimFrame / 30) % 3;
       const waterFrames = [Tile.WATER, Tile.WATER_FRAME_1, Tile.WATER_FRAME_2];
       const lavaFrames = [Tile.LAVA_ROCK, Tile.LAVA_FRAME_1, Tile.LAVA_FRAME_2];
-      for (const s of this.waterTileSprites) {
+      for (const s of tm.waterSprites) {
         s.setTint(waterTints[idx]);
         s.setFrame(waterFrames[idx]);
       }
       const emberFrames = [Tile.EMBER_VENT, Tile.EMBER_FRAME_1, Tile.EMBER_FRAME_2];
-      for (const s of this.lavaTileSprites) {
+      for (const s of tm.lavaSprites) {
         const baseTile = (s as Phaser.GameObjects.Image & { _baseTile?: number })._baseTile;
         if (baseTile === Tile.EMBER_VENT) {
           s.setTint(lavaTints[idx]);
@@ -1056,8 +972,8 @@ export class OverworldScene extends Phaser.Scene {
         }
       }
     }
-    if (this.tileAnimFrame % 60 === 0) {
-      for (const s of this.tallGrassTileSprites) {
+    if (tm && this.tileAnimFrame % 60 === 0) {
+      for (const s of tm.grassSprites) {
         s.setAlpha(0.85 + Math.random() * 0.15);
       }
     }
@@ -1106,25 +1022,26 @@ export class OverworldScene extends Phaser.Scene {
       return;
     }
 
-    if (!input.direction) {
-      const facing = this.player.getFacing();
-      this.playAnim(`${this.animPrefix()}idle-${facing}`, false);
-      this.player.gridMovement.setRunning(false);
-      this.player.gridMovement.setCycling(false);
-      return;
-    }
-
-    // Bicycle toggle: B key toggles cycling on/off (requires bicycle item, not indoors)
+    // Bicycle toggle: B key toggles cycling on/off (requires bicycle item, not indoors, not surfing)
+    // Placed before the direction check so the player can mount/dismount while standing still.
     const hasBicycle = GameManager.getInstance().getItemCount('bicycle') > 0;
-    if (input.bicycle && hasBicycle) {
+    if (input.bicycle && hasBicycle && !this.surfing) {
       this.isCycling = !this.isCycling;
       if (this.isCycling) {
         AchievementManager.getInstance().unlock('use-bicycle');
       }
     }
-    // Auto-dismount indoors
-    if (this.isCycling && this.mapDef.isInterior) {
+    // Auto-dismount indoors or on water
+    if (this.isCycling && (this.mapDef.isInterior || this.surfing)) {
       this.isCycling = false;
+    }
+
+    if (!input.direction) {
+      const facing = this.player.getFacing();
+      this.playAnim(`${this.animPrefix()}${this.animAction('idle')}-${facing}`, false);
+      this.player.gridMovement.setRunning(false);
+      this.player.gridMovement.setCycling(false);
+      return;
     }
 
     // Running shoes: hold SHIFT, B button, or double-tap joystick to run
@@ -1136,8 +1053,8 @@ export class OverworldScene extends Phaser.Scene {
     this.player.gridMovement.setRunning(shouldRun);
     this.player.gridMovement.setCycling(this.isCycling);
 
-    // Walk / Run
-    this.playAnim(`${this.animPrefix()}walk-${input.direction}`, false);
+    // Walk / Run / Cycle
+    this.playAnim(`${this.animPrefix()}${this.animAction('walk')}-${input.direction}`, false);
     this.player.move(input.direction);
   }
 
@@ -1219,6 +1136,11 @@ export class OverworldScene extends Phaser.Scene {
     this.npcOccupiedTiles.clear();
     this.interactPrompt?.destroy();
     this.interactPrompt = undefined;
+    // Destroy tilemap layers + animated sprites
+    if (this.tilemapResult) {
+      this.tilemapResult.tilemap.destroy();
+      this.tilemapResult = null;
+    }
   }
 
 }
