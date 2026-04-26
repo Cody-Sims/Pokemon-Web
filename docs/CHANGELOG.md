@@ -4,6 +4,19 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-26]
+
+### Fixed
+
+- **Portrait mode A/B buttons clipped**: In-canvas touch buttons now use a larger bottom offset (120px) in portrait mode so they aren't cut off by the screen edge or safe area
+- **Portrait mode dialogue cut off**: Dialogue box moved from 120px to 180px from bottom in portrait mode; choice panel also repositioned higher to stay visible
+- **Hamburger menu button not opening menu**: `InputManager.menu` now fires from both ESC key and touch cancel (hamburger button), so tapping the hamburger in the overworld opens the menu on mobile
+- **MenuScene not closeable on mobile**: Added `update()` polling of `TouchControls.consumeCancel()` so tapping the B button or hamburger closes the in-game menu
+- **Fullscreen request consuming tap gesture**: Deferred `requestFullscreen()` via `setTimeout` so it doesn't block/consume the user gesture that triggered it (e.g. tapping "Press Start")
+- **Orientation change not resizing game**: Added immediate + 800ms delayed resize on orientation change, and a `fullscreenchange` listener that triggers resize when entering/exiting fullscreen
+
+---
+
 ## [2026-04-25]
 
 ### Fixed

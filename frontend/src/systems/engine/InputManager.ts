@@ -67,8 +67,11 @@ export class InputManager {
       confirm: Phaser.Input.Keyboard.JustDown(this.confirmKey) || Phaser.Input.Keyboard.JustDown(this.spaceKey) || touchConfirm,
       cancel: cancelActive,
       bicycle: Phaser.Input.Keyboard.JustDown(this.bicycleKey),
-      // AUDIT-051: menu only fires from raw ESC, not touch cancel, to avoid double-trigger
-      menu: escPressed,
+      // Menu fires from ESC key or touch cancel (hamburger button).
+      // Both cancel and menu share the same gesture — consumers that check
+      // cancel (e.g. BattleUI back) won't conflict because the OverworldScene
+      // checks menu first and returns, consuming the frame.
+      menu: escPressed || touchCancel,
       _escRaw: escPressed,
     };
   }

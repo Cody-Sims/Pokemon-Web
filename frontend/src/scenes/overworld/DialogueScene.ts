@@ -7,6 +7,7 @@ import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { COLORS, FONTS, mobileFontSize, isMobile, MIN_TOUCH_TARGET } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
+import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
 
 /** Text speed options: delay (ms) per character. 0 = instant. */
 const TEXT_SPEEDS: Record<string, number> = {
@@ -52,6 +53,8 @@ export class DialogueScene extends Phaser.Scene {
   private choiceCursor = 0;
   private inChoiceMode = false;
   private choicePanel?: NinePatchPanel;
+  private mobileTapMenu?: MobileTapMenu;
+  private lastChoiceMoveTick = 0;
   private callingScene = 'OverworldScene';
 
   constructor() {
@@ -99,7 +102,7 @@ export class DialogueScene extends Phaser.Scene {
     const boxH = 100;
     const boxX = layout.cx;
     const isPortraitOrientation = layout.h > layout.w;
-    const boxY = isPortraitOrientation ? layout.h - 120 : layout.h - 80;
+    const boxY = isPortraitOrientation ? layout.h - 180 : layout.h - 80;
     this.panel = new NinePatchPanel(this, boxX, boxY, boxW, boxH, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.98,
@@ -195,7 +198,7 @@ export class DialogueScene extends Phaser.Scene {
     layoutOn(this, () => {
       const l = ui(this);
       const rIsPortrait = l.h > l.w;
-      const rBoxY = rIsPortrait ? l.h - 120 : l.h - 80;
+      const rBoxY = rIsPortrait ? l.h - 180 : l.h - 80;
       this.panel.destroy();
       this.panel = new NinePatchPanel(this, l.cx, rBoxY, l.w - 20, 100, {
         fillColor: 0x0a0a18, fillAlpha: 0.98, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 8,
@@ -268,6 +271,14 @@ export class DialogueScene extends Phaser.Scene {
     }
     if (tc?.consumeCancel()) {
       if (!this.inChoiceMode) this.closeDialogue();
+    }
+    if (this.inChoiceMode && tc) {
+      const dir = tc.getDirection();
+      const now = this.time.now;
+      if ((dir === 'up' || dir === 'down') && now - this.lastChoiceMoveTick > 200) {
+        this.lastChoiceMoveTick = now;
+        this.moveChoice(dir === 'up' ? -1 : 1);
+      }
     }
   }
 
@@ -343,7 +354,8 @@ export class DialogueScene extends Phaser.Scene {
     const choiceW = isMobile() ? 180 : 150;
     const choiceH = this.choices.length * choiceRowH + 16;
     const choiceX = layout.w - 100;
-    const choiceY = layout.h - 140 - choiceH / 2;
+    const isChoicePortrait = layout.h > layout.w;
+    const choiceY = (isChoicePortrait ? layout.h - 200 : layout.h - 140) - choiceH / 2;
 
     this.choicePanel = new NinePatchPanel(this, choiceX, choiceY, choiceW, choiceH, {
       fillColor: 0x0a0a18,
@@ -366,6 +378,13 @@ export class DialogueScene extends Phaser.Scene {
       return t;
     });
     this.updateChoiceCursor();
+
+    if (isMobile()) {
+      this.mobileTapMenu = new MobileTapMenu(this, this.choiceTexts, (index: number) => {
+        this.choiceCursor = index;
+        this.selectChoice();
+      });
+    }
   }
 
   private moveChoice(dir: number): void {
@@ -393,6 +412,8 @@ export class DialogueScene extends Phaser.Scene {
   }
 
   private cleanupChoices(): void {
+    this.mobileTapMenu?.destroy();
+    this.mobileTapMenu = undefined;
     this.choiceTexts.forEach(t => t.destroy());
     this.choiceTexts = [];
     this.choicePanel?.destroy();

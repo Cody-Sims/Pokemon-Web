@@ -4,6 +4,7 @@ import { resetSafeAreaCache } from '@utils/safe-area';
 import { syncAccessibilitySettings } from '@utils/accessibility';
 import { computeGameDimensions } from '@utils/constants';
 import { AudioManager } from '@managers/AudioManager';
+import { isMobile } from '@ui/theme';
 
 const game = new Phaser.Game(gameConfig);
 
@@ -60,16 +61,20 @@ function onFirstInteraction(): void {
 }
 
 function requestFullscreenOnce(): void {
-  if (navigator.maxTouchPoints > 0) {
-    const el = document.documentElement;
-    const rfs = el.requestFullscreen ?? (el as unknown as Record<string, () => Promise<void>>).webkitRequestFullscreen;
-    if (rfs) {
-      rfs.call(el).then(() => tryLockOrientation()).catch(() => {
+  if (isMobile()) {
+    // Defer the fullscreen request so it doesn't consume/block the current
+    // user gesture (e.g. tapping "Press Start" on the title screen).
+    setTimeout(() => {
+      const el = document.documentElement;
+      const rfs = el.requestFullscreen ?? (el as unknown as Record<string, () => Promise<void>>).webkitRequestFullscreen;
+      if (rfs) {
+        rfs.call(el).then(() => tryLockOrientation()).catch(() => {
+          collapseIOSSafariChrome();
+        });
+      } else {
         collapseIOSSafariChrome();
-      });
-    } else {
-      collapseIOSSafariChrome();
-    }
+      }
+    }, 100);
   }
 }
 
@@ -128,8 +133,16 @@ function handleViewportResize(): void {
 }
 window.addEventListener('resize', handleViewportResize);
 window.addEventListener('orientationchange', () => {
+  // Fire multiple times to catch delayed viewport updates from the OS
+  handleViewportResize();
   setTimeout(handleViewportResize, 100);
   setTimeout(handleViewportResize, 400);
+  setTimeout(handleViewportResize, 800);
+});
+// Fullscreen changes also alter the viewport — trigger resize
+document.addEventListener('fullscreenchange', () => {
+  handleViewportResize();
+  setTimeout(handleViewportResize, 200);
 });
 
 // ── iOS "Add to Home Screen" install prompt ──
@@ -179,8 +192,8 @@ function updateOrientationPrompt(): void {
   const dismissed = (() => { try { return sessionStorage.getItem('pokemon-web-rotate-dismissed') === '1'; } catch { return false; } })();
   if (dismissed) { overlay.style.display = 'none'; return; }
   const isPortrait = window.innerHeight > window.innerWidth;
-  const isMobile = navigator.maxTouchPoints > 0;
-  overlay.style.display = isMobile && isPortrait ? 'flex' : 'none';
+  const mobile = isMobile();
+  overlay.style.display = mobile && isPortrait ? 'flex' : 'none';
 }
 
 window.addEventListener('resize', updateOrientationPrompt);

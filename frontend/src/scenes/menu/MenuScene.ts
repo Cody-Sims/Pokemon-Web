@@ -9,6 +9,7 @@ import { SaveManager } from '@managers/SaveManager';
 import { SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
+import { TouchControls } from '@ui/controls/TouchControls';
 
 export class MenuScene extends Phaser.Scene {
   private cursor = 0;
@@ -103,6 +104,14 @@ export class MenuScene extends Phaser.Scene {
       this.menuItems.forEach((item, i) => item.setPosition(pX + 10, sY + i * rH));
       this.updateCursor();
     });
+  }
+
+  /** Poll touch B / hamburger button to close menu on mobile. */
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeCancel()) {
+      this.closeMenu();
+    }
   }
 
   private updateCursor(): void {

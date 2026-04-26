@@ -7,6 +7,10 @@ import { hapticTap } from '@utils/haptics';
 const TAP_TIME_THRESHOLD = 300;
 /** Max movement (px) during a touch to count as a tap. */
 const TAP_DIST_THRESHOLD = 15;
+/** Min vertical distance (px) for a touch to count as a swipe. */
+const SWIPE_DIST_THRESHOLD = 30;
+/** Max time (ms) for a touch to count as a swipe. */
+const SWIPE_TIME_THRESHOLD = 400;
 
 interface TrackedTouch {
   startTime: number;
@@ -38,6 +42,8 @@ export class TouchControls {
   private joystickEnabled = true;
   private confirmPressed = false;
   private cancelPressed = false;
+  private swipeUpPressed = false;
+  private swipeDownPressed = false;
   private menuBtn!: Phaser.GameObjects.Container;
   private readonly menuBtnSize = 48;
   private readonly btnSize = 72;
@@ -143,6 +149,10 @@ export class TouchControls {
         if (elapsed < TAP_TIME_THRESHOLD && dist < TAP_DIST_THRESHOLD) {
           this.confirmPressed = true;
           hapticTap();
+        } else if (Math.abs(dy) > SWIPE_DIST_THRESHOLD && Math.abs(dy) > Math.abs(dx) && elapsed < SWIPE_TIME_THRESHOLD) {
+          if (dy < 0) this.swipeUpPressed = true;
+          else this.swipeDownPressed = true;
+          hapticTap();
         }
       }
     };
@@ -173,6 +183,9 @@ export class TouchControls {
       if (elapsed < TAP_TIME_THRESHOLD && dist < TAP_DIST_THRESHOLD) {
         this.confirmPressed = true;
         hapticTap();
+      } else if (Math.abs(dy) > SWIPE_DIST_THRESHOLD && Math.abs(dy) > Math.abs(dx) && elapsed < SWIPE_TIME_THRESHOLD) {
+        if (dy < 0) this.swipeUpPressed = true;
+        else this.swipeDownPressed = true;
       }
     };
 
@@ -204,6 +217,24 @@ export class TouchControls {
   consumeCancel(): boolean {
     if (this.cancelPressed) {
       this.cancelPressed = false;
+      return true;
+    }
+    return false;
+  }
+
+  /** Poll and consume swipe-up gesture (finger moved upward). */
+  consumeSwipeUp(): boolean {
+    if (this.swipeUpPressed) {
+      this.swipeUpPressed = false;
+      return true;
+    }
+    return false;
+  }
+
+  /** Poll and consume swipe-down gesture (finger moved downward). */
+  consumeSwipeDown(): boolean {
+    if (this.swipeDownPressed) {
+      this.swipeDownPressed = false;
       return true;
     }
     return false;
@@ -258,10 +289,12 @@ export class TouchControls {
     return TouchControls.activeInstance;
   }
 
-  /** Drain any pending confirm/cancel without returning them. */
+  /** Drain any pending confirm/cancel/swipe without returning them. */
   drain(): void {
     this.confirmPressed = false;
     this.cancelPressed = false;
+    this.swipeUpPressed = false;
+    this.swipeDownPressed = false;
   }
 
   /** Check if the device supports touch. */
@@ -400,12 +433,15 @@ export class TouchControls {
 
   private layout(): void {
     const { width, height } = this.scene.cameras.main;
+    const isPortrait = height > width;
+    // In portrait mode, move buttons further up so they aren't clipped by
+    // the bottom edge / safe-area / dialogue box.
+    const bottomOffset = isPortrait ? 120 : 40;
     const oneHanded = this.readSetting('oneHandedMode') ?? 'off';
     if (oneHanded === 'left') {
-      // Buttons on the left side for one-handed left grip
-      this.buttonContainer.setPosition(this.padding + this.btnSize / 2 + 8, height - this.padding - this.btnSize - 40);
+      this.buttonContainer.setPosition(this.padding + this.btnSize / 2 + 8, height - this.padding - this.btnSize - bottomOffset);
     } else {
-      this.buttonContainer.setPosition(width - this.padding - this.btnSize / 2 - 8, height - this.padding - this.btnSize - 40);
+      this.buttonContainer.setPosition(width - this.padding - this.btnSize / 2 - 8, height - this.padding - this.btnSize - bottomOffset);
     }
     this.recalcButtonPositions();
   }
