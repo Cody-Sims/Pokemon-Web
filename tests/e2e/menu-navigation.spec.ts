@@ -1,32 +1,24 @@
-import { test, expect, Page } from '@playwright/test';
-
-async function pressKey(page: Page, key: string, duration = 200) {
-  await page.keyboard.down(key);
-  await page.waitForTimeout(duration);
-  await page.keyboard.up(key);
-  await page.waitForTimeout(50);
-}
+import { test, expect } from '@playwright/test';
+import { pressKey, bootToTitleMenu, startNewGame, skipIntro, selectStarter } from './helpers';
 
 test('menu can be opened and closed', async ({ page }) => {
+  test.setTimeout(120_000);
+
   const errors: string[] = [];
   page.on('pageerror', err => errors.push(err.message));
 
-  await page.goto('/');
-  await page.waitForTimeout(3000);
-
-  // Try to start game
-  await pressKey(page, 'Enter');
-  await page.waitForTimeout(2000);
+  await bootToTitleMenu(page);
+  await startNewGame(page);
+  await skipIntro(page);
+  await selectStarter(page);
 
   // Try opening menu with Escape
   await pressKey(page, 'Escape');
   await page.waitForTimeout(500);
-  await page.screenshot({ path: 'tests/e2e/screenshots/menu-open.png' });
 
   // Close menu
   await pressKey(page, 'Escape');
   await page.waitForTimeout(500);
-  await page.screenshot({ path: 'tests/e2e/screenshots/menu-closed.png' });
 
   expect(errors).toEqual([]);
 });

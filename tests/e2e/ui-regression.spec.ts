@@ -1,48 +1,43 @@
-import { test, expect, Page } from '@playwright/test';
-
-async function pressKey(page: Page, key: string, duration = 200) {
-  await page.keyboard.down(key);
-  await page.waitForTimeout(duration);
-  await page.keyboard.up(key);
-  await page.waitForTimeout(50);
-}
+import { test, expect } from '@playwright/test';
+import { pressKey, bootToTitleMenu, startNewGame, skipIntro, selectStarter } from './helpers';
 
 test.describe('UI Regression Tests', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.waitForTimeout(3000);
-  });
+  /**
+   * Shared setup: navigate from boot all the way through to the overworld
+   * so we have a fully interactive game state to test against.
+   */
+  async function reachOverworld(page: import('@playwright/test').Page) {
+    await bootToTitleMenu(page);
+    await startNewGame(page);
+    await skipIntro(page);
+    await selectStarter(page);
+  }
 
   test('player should not visually rotate when standing still', async ({ page }) => {
+    test.setTimeout(120_000);
     const errors: string[] = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    // Start new game
-    await pressKey(page, 'Enter');
-    await page.waitForTimeout(2000);
+    await reachOverworld(page);
 
     // Take screenshot of idle player
-    const shot1 = await page.screenshot();
-
+    await page.screenshot();
     // Wait 2 seconds (60+ frames of idle)
     await page.waitForTimeout(2000);
-
     // Take another screenshot — should look the same
-    const shot2 = await page.screenshot();
+    await page.screenshot();
 
-    // If the player was rotating, the screenshots would differ significantly
-    // We can't do pixel-perfect comparison without a library, but we can
-    // verify no errors occurred (rotation bugs often cause missing animation errors)
+    // If the player was rotating, the screenshots would differ significantly.
+    // We verify no errors occurred (rotation bugs often cause animation errors).
     expect(errors).toEqual([]);
   });
 
   test('ESC should not exit battle when in actions menu', async ({ page }) => {
+    test.setTimeout(120_000);
     const errors: string[] = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    // Start new game
-    await pressKey(page, 'Enter');
-    await page.waitForTimeout(2000);
+    await reachOverworld(page);
 
     // Walk into tall grass to trigger encounter (walk up from Pallet Town)
     for (let i = 0; i < 15; i++) {
@@ -58,11 +53,11 @@ test.describe('UI Regression Tests', () => {
   });
 
   test('rapid ESC presses should not crash the game', async ({ page }) => {
+    test.setTimeout(120_000);
     const errors: string[] = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await pressKey(page, 'Enter');
-    await page.waitForTimeout(2000);
+    await reachOverworld(page);
 
     // Rapidly press ESC 10 times (menu open/close cycle)
     for (let i = 0; i < 10; i++) {
@@ -74,11 +69,11 @@ test.describe('UI Regression Tests', () => {
   });
 
   test('rapid direction changes should not cause errors', async ({ page }) => {
+    test.setTimeout(120_000);
     const errors: string[] = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await pressKey(page, 'Enter');
-    await page.waitForTimeout(2000);
+    await reachOverworld(page);
 
     // Rapidly alternate directions
     const dirs = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -91,21 +86,19 @@ test.describe('UI Regression Tests', () => {
   });
 
   test('opening and closing menu should return to overworld cleanly', async ({ page }) => {
+    test.setTimeout(120_000);
     const errors: string[] = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await pressKey(page, 'Enter');
-    await page.waitForTimeout(2000);
+    await reachOverworld(page);
 
     // Open menu
     await pressKey(page, 'Escape');
     await page.waitForTimeout(500);
-    await page.screenshot({ path: 'tests/e2e/screenshots/menu-regression-open.png' });
 
-    // Close menu (ESC or select Exit)
+    // Close menu
     await pressKey(page, 'Escape');
     await page.waitForTimeout(500);
-    await page.screenshot({ path: 'tests/e2e/screenshots/menu-regression-closed.png' });
 
     // Player should still be able to move
     await pressKey(page, 'ArrowDown', 300);
@@ -115,11 +108,11 @@ test.describe('UI Regression Tests', () => {
   });
 
   test('menu save option should not crash', async ({ page }) => {
+    test.setTimeout(120_000);
     const errors: string[] = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await pressKey(page, 'Enter');
-    await page.waitForTimeout(2000);
+    await reachOverworld(page);
 
     // Open menu
     await pressKey(page, 'Escape');

@@ -17,8 +17,11 @@ Thumbs.db
 # Vite
 *.cache
 
-# Playwright MCP artifacts
+# Playwright
 .playwright-mcp/
+tests/playwright-report/
+tests/e2e/screenshots/
+test-results/
 
 # Logs
 *.log

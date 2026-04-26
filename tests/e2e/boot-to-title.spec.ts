@@ -1,14 +1,13 @@
 import { test, expect } from '@playwright/test';
+import { waitForCanvas } from './helpers';
 
 test('game boots and reaches title screen', async ({ page }) => {
   await page.goto('/');
 
   // Wait for canvas to appear (Phaser renders to <canvas>)
+  await waitForCanvas(page);
   const canvas = page.locator('canvas');
-  await expect(canvas).toBeVisible({ timeout: 10_000 });
-
-  // Take a screenshot to verify rendering
-  await page.screenshot({ path: 'tests/e2e/screenshots/title-screen.png' });
+  await expect(canvas).toBeVisible();
 });
 
 test('game does not throw console errors on boot', async ({ page }) => {
@@ -24,10 +23,9 @@ test('game does not throw console errors on boot', async ({ page }) => {
 
 test('canvas has correct dimensions', async ({ page }) => {
   await page.goto('/');
-  const canvas = page.locator('canvas');
-  await expect(canvas).toBeVisible({ timeout: 10_000 });
+  await waitForCanvas(page);
 
-  const box = await canvas.boundingBox();
+  const box = await page.locator('canvas').boundingBox();
   expect(box).not.toBeNull();
   expect(box!.width).toBeGreaterThan(0);
   expect(box!.height).toBeGreaterThan(0);
