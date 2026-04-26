@@ -51,24 +51,28 @@ function tryLockOrientation(): void {
 // Attempt lock on first user interaction (browsers require a gesture)
 function onFirstInteraction(): void {
   tryLockOrientation();
+  // Don't request fullscreen on the first tap — it disrupts the title screen
+  // interaction by consuming the gesture and triggering viewport changes.
+  // Fullscreen will be requested on a subsequent interaction instead.
+  document.removeEventListener('pointerdown', onFirstInteraction);
+  // Re-register for a second tap to do fullscreen
+  document.addEventListener('pointerdown', requestFullscreenOnce, { once: true });
+}
 
-  // Also request fullscreen on mobile to maximise viewport
+function requestFullscreenOnce(): void {
   if (navigator.maxTouchPoints > 0) {
     const el = document.documentElement;
     const rfs = el.requestFullscreen ?? (el as unknown as Record<string, () => Promise<void>>).webkitRequestFullscreen;
     if (rfs) {
       rfs.call(el).then(() => tryLockOrientation()).catch(() => {
-        // Fullscreen API not supported (e.g. iOS Safari) — use scroll trick
         collapseIOSSafariChrome();
       });
     } else {
-      // No fullscreen API at all (iOS Safari) — use scroll trick
       collapseIOSSafariChrome();
     }
   }
-
-  document.removeEventListener('pointerdown', onFirstInteraction);
 }
+
 document.addEventListener('pointerdown', onFirstInteraction, { once: true });
 
 // ── iOS Safari chrome collapse ──

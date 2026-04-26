@@ -134,35 +134,27 @@ export class TitleScene extends Phaser.Scene {
       // Fade out press start
       this.tweens.add({ targets: pressStart, alpha: 0, duration: 200, onComplete: () => pressStart.destroy() });
 
-      // Fade in menu and enable interaction after fade completes
+      // Show menu items immediately and enable interaction — no fade delay
+      // that could cause touch taps to be ignored during the transition.
       this.menuItems.forEach(item => {
-        this.tweens.add({
-          targets: item,
-          alpha: 1,
-          duration: 300,
-          onComplete: () => {
-            item.setInteractive({ useHandCursor: true });
-          },
-        });
+        item.setAlpha(1);
+        item.setInteractive({ useHandCursor: true });
       });
-      this.tweens.add({ targets: this.cursorIcon, alpha: 1, duration: 300 });
+      this.cursorIcon.setAlpha(1);
 
       // Bind menu navigation (keyboard)
       this.bindMenuKeys();
 
-      // ── Mobile-friendly: scene-level tap handler that maps Y coordinate to menu items ──
-      // This is more reliable than per-item interactive hit areas on touch devices.
+      // ── Scene-level tap handler for menu items ──
+      // Uses a generous hit zone so taps work reliably on all screen sizes.
       this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-        // Find which menu item is closest to the tap Y position
         let bestIdx = -1;
         let bestDist = Infinity;
         for (let i = 0; i < this.menuItems.length; i++) {
           const item = this.menuItems[i];
-          if (item.alpha < 0.5) continue; // not yet visible
           const dy = Math.abs(pointer.y - item.y);
           const dx = Math.abs(pointer.x - item.x);
-          // Must be within reasonable tap range of the item
-          if (dx < item.width / 2 + 60 && dy < menuSpacing / 2) {
+          if (dx < item.width / 2 + 80 && dy < menuSpacing / 2 + 10) {
             if (dy < bestDist) {
               bestDist = dy;
               bestIdx = i;
