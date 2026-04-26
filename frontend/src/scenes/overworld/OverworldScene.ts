@@ -62,6 +62,7 @@ import { healParty as healPartyHelper } from './OverworldHealing';
 import { getFootstepSFX as getFootstepSFXHelper } from './OverworldFootsteps';
 import { tryInteract as tryInteractHelper, InteractionContext } from './OverworldInteraction';
 import { buildTilemap, redrawTilemapTile, TilemapResult } from '@systems/rendering/TilemapBuilder';
+import { GlowEmitterSystem } from '@systems/rendering/GlowEmitterSystem';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
@@ -88,14 +89,18 @@ export class OverworldScene extends Phaser.Scene {
   /** Tilemap layers + animated sprite references created by TilemapBuilder. */
   private tilemapResult: TilemapResult | null = null;
   private tileAnimFrame = 0;
+  /** Pulse-glow overlays for crystal/conduit/window tiles. */
+  private glowEmitters?: GlowEmitterSystem;
   private mapPixelH = 0;
   private ambientSFX!: AmbientSFX;
   /** O(1) lookup set for NPC-occupied tile positions. */
   private npcOccupiedTiles = new Set<string>();
   /** Tracks the last time period to detect transitions and update NPC schedules. */
   private lastTimePeriod: TimePeriod | null = null;
-  private hudText?: Phaser.GameObjects.Text;
+  private hudText?: Phaser.GameObjects.Text | Phaser.GameObjects.BitmapText;
   private clockText?: Phaser.GameObjects.Text;
+  /** Optional speed-run timer overlay; only created when the setting is on. */
+  private speedrunTimerText?: Phaser.GameObjects.Text;
   private interactPrompt?: Phaser.GameObjects.Text;
   private follower?: FollowerPokemon;
   private followerPrevPos = { x: 0, y: 0 };
@@ -200,6 +205,10 @@ export class OverworldScene extends Phaser.Scene {
 
     // Draw tile map via TilemapBuilder (three tilemap layers + animated sprites)
     this.tilemapResult = buildTilemap(this, this.mapDef.ground, mapW, mapH);
+
+    // Pulse glow overlays for aether crystals, voltara conduits, and window light shafts.
+    this.glowEmitters = new GlowEmitterSystem(this);
+    this.glowEmitters.scanMap(this.mapDef.ground, mapW, mapH);
 
     // Preload Pokémon sprites for this map + player party, then adjacent maps
     MapPreloader.ensureMapReady(this, this.mapKey).then(() => {
@@ -362,16 +371,25 @@ export class OverworldScene extends Phaser.Scene {
     this.ambientSFX = new AmbientSFX(this);
     this.ambientSFX.setAmbient(this.mapDef.ambientSfx ?? 'none');
 
-    // HUD label
+    // HUD label — uses the Aurum Pixel BMFont when loaded, falls back to
+    // the system font otherwise (test harnesses skip BootScene asset loads).
     const mapLabel = this.mapDef.displayName
       ?? this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const hudHint = TouchControls.isTouchDevice()
       ? `${mapLabel}  |  ${hintText('interact')}`
       : `${mapLabel}  |  ${hintText('interact')}  |  ESC = Menu`;
-    this.hudText = this.add.text(this.cameras.main.width / 2, 20, hudHint, {
-      fontSize: mobileFontSize(14),
-      color: '#ffffff',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
+    if (this.cache.bitmapFont.exists('aurum-pixel')) {
+      // BitmapText size needs a number; mobileFontSize returns "14px".
+      const sizePx = parseInt(mobileFontSize(14), 10) || 14;
+      this.hudText = this.add.bitmapText(
+        this.cameras.main.width / 2, 14, 'aurum-pixel', hudHint, sizePx,
+      ).setOrigin(0.5, 0).setScrollFactor(0).setDepth(100).setTint(0xffffff);
+    } else {
+      this.hudText = this.add.text(this.cameras.main.width / 2, 20, hudHint, {
+        fontSize: mobileFontSize(14),
+        color: '#ffffff',
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
+    }
 
     // Clock widget — below location text in portrait, top-left in landscape
     const periodEmoji: Record<string, string> = { morning: '🌅', day: '☀️', evening: '🌆', night: '🌙' };
@@ -390,6 +408,23 @@ export class OverworldScene extends Phaser.Scene {
       },
     ).setOrigin(isPortrait ? 0.5 : 0, 0).setScrollFactor(0).setDepth(100);
 
+    // Optional speed-run timer (sits just below the clock, same alignment).
+    const showTimer = GameManager.getInstance().getSetting('speedrunTimer') === true
+      || GameManager.getInstance().getSetting('speedrunTimer') === 'true';
+    if (showTimer) {
+      this.speedrunTimerText = this.add.text(
+        isPortrait ? this.cameras.main.width / 2 : 8,
+        isPortrait ? 60 : 28,
+        this.formatPlaytime(GameManager.getInstance().getPlaytime()), {
+          fontSize: mobileFontSize(11),
+          color: '#7fffd4',
+          fontFamily: 'monospace',
+          backgroundColor: '#0f0f1abb',
+          padding: { x: 6, y: 3 },
+        },
+      ).setOrigin(isPortrait ? 0.5 : 0, 0).setScrollFactor(0).setDepth(100);
+    }
+
     // Re-layout HUD elements on resize / orientation change
     layoutOn(this, () => {
       const w = this.cameras.main.width;
@@ -399,6 +434,10 @@ export class OverworldScene extends Phaser.Scene {
       if (this.clockText) {
         this.clockText.setPosition(portrait ? w / 2 : 8, portrait ? 38 : 8);
         this.clockText.setOrigin(portrait ? 0.5 : 0, 0);
+      }
+      if (this.speedrunTimerText) {
+        this.speedrunTimerText.setPosition(portrait ? w / 2 : 8, portrait ? 60 : 28);
+        this.speedrunTimerText.setOrigin(portrait ? 0.5 : 0, 0);
       }
     });
 
@@ -947,6 +986,10 @@ export class OverworldScene extends Phaser.Scene {
       this.lastTimePeriod = period;
     }
 
+    if (this.speedrunTimerText) {
+      this.speedrunTimerText.setText(this.formatPlaytime(GameManager.getInstance().getPlaytime()));
+    }
+
     // Animated tile effects (throttled: water/lava every 30 frames, grass every 60)
     this.tileAnimFrame++;
     const tm = this.tilemapResult;
@@ -991,6 +1034,9 @@ export class OverworldScene extends Phaser.Scene {
 
     // Update lighting overlay
     this.lightingSystem.update(this.player.x, this.player.y);
+
+    // Update glow emitters (aether crystals, voltara conduits, window light shafts)
+    this.glowEmitters?.update(delta, this.gameClock);
 
     // Update day/night tint (skip for interiors — keep void area black)
     if (!this.mapDef.isInterior) {
@@ -1127,11 +1173,23 @@ export class OverworldScene extends Phaser.Scene {
     }
   }
 
+  /** Format a playtime in seconds as `H:MM:SS` (or `M:SS` if < 1 hour). */
+  private formatPlaytime(totalSeconds: number): string {
+    const s = Math.max(0, Math.floor(totalSeconds));
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+  }
+
   shutdown(): void {
     this.input.keyboard?.removeAllListeners();
     this.lightingSystem?.destroy();
     this.ambientSFX?.destroy();
     this.weatherRenderer?.destroy();
+    this.glowEmitters?.destroy();
+    this.glowEmitters = undefined;
     this.npcBehaviors = [];
     this.npcOccupiedTiles.clear();
     this.interactPrompt?.destroy();

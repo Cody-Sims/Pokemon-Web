@@ -54,6 +54,11 @@ export class BattleUIScene extends Phaser.Scene {
 
   private bossSynthesisTriggered = false;
 
+  /** Per-battle counter: damaging player moves used (used for status-master achievement). */
+  playerDamagingMovesUsed = 0;
+  /** Per-battle counter: status player moves used (used for status-master achievement). */
+  playerStatusMovesUsed = 0;
+
   constructor() {
     super({ key: 'BattleUIScene' });
   }
@@ -61,6 +66,8 @@ export class BattleUIScene extends Phaser.Scene {
   create(): void {
     this.state = 'actions';
     this.bossSynthesisTriggered = false;
+    this.playerDamagingMovesUsed = 0;
+    this.playerStatusMovesUsed = 0;
     resetBallThrowCount();
 
     // Use the StatusEffectHandler from BattleManager (single source of truth)
@@ -323,6 +330,13 @@ export class BattleUIScene extends Phaser.Scene {
     const b = this.battle();
     const name = pokemonData[attacker.dataId]?.name ?? '???';
     const moveName = moveData[moveId]?.name ?? moveId;
+
+    // ── Track player move category for status-master achievement ──
+    if (isPlayer) {
+      const md = moveData[moveId];
+      if (md?.category === 'status') this.playerStatusMovesUsed++;
+      else if (md) this.playerDamagingMovesUsed++;
+    }
 
     // ── Flinch check ──
     const flinchMsg = idx > 0 ? this.statusHandler.checkFlinch(attacker) : null;

@@ -1,38 +1,49 @@
 import { MapDefinition, parseMap } from '../shared';
 
 // Voltara City — Town 6 (24 wide × 30 tall)
-// Neon-lit tech hub. Gym 5 (Electric — Blitz), Conduit network
-// Biome tiles: ¥=CONDUIT, ¦=ELECTRIC_PANEL, §=WIRE_FLOOR,
-//              Ʃ=METAL_FLOOR, Ɯ=METAL_WALL
+// Neon-lit tech hub. Gym 5 (Electric — Blitz), Conduit network.
+//
+// Visual signature (2026-04-26 redesign):
+//   - Aether Conduit Pillar setpiece (Ɖ) flanked by AETHER_CRYSTAL (÷) at the
+//     center of the plaza, visible immediately from the south entry corridor.
+//   - South entry corridor framed by GEAR (Ω) and PIPE (π) decorations + an
+//     uplit ELECTRIC_PANEL band, breaking the symmetric grid feel.
+//   - Asymmetric green pockets and tech alleys around the core plaza.
+//   - All warp / building / gym door / spawn-point coordinates preserved so
+//     existing routes, save files, and quest flags continue to work.
+//
+// Biome tiles: ¥=CONDUIT, ¦=ELECTRIC_PANEL, §=WIRE_FLOOR, Ʃ=METAL_FLOOR,
+//              Ɯ=METAL_WALL, Ɖ=AETHER_CONDUIT (solid setpiece),
+//              ÷=AETHER_CRYSTAL (solid setpiece), π=PIPE, Ω=GEAR
 const voltaraGround = parseMap([
   'ƜƜƜƜƜƜƜƜƜƜ¥PP¥ƜƜƜƜƜƜƜƜƜƜ', // 0  south exit
-  'Ɯ§§.......¥PP¥.......§§Ɯ', // 1  entry avenue
-  'Ɯ§.¦.....¥¥PP¥¥.....¦.§Ɯ', // 2  conduit approach + panels
+  'Ɯ§§..π....¥PP¥....π..§§Ɯ', // 1  entry avenue (pipe accents flank)
+  'Ɯ§.¦Ω....¥¥PP¥¥....Ω¦.§Ɯ', // 2  conduit approach + gear/panel pairs
   'Ɯ.¥¥¥¥¥¥¥¥¥PP¥¥¥¥¥¥¥¥¥.Ɯ', // 3  east-west conduit channel
   'Ɯ..§§§.§§§.PP.§§§.§§§..Ɯ', // 4  wire floor promenade
   'Ɯ.CCCCCCC.¥PP¥.MMMMMM..Ɯ', // 5  PokéCenter (NW) + Mart (NE)
   'Ɯ.c$ccccc.¥PP¥.mm&mmm..Ɯ', // 6  walls + windows
   'Ɯ.ccecccc.¥PP¥.mmnmmm..Ɯ', // 7  doors (PC col4, Mart col17)
   'Ɯ.f..¦§§§¥¥PP¥¥§§..¦.f.Ɯ', // 8  tech alley + panels
-  'Ɯ§.........PP.........§Ɯ', // 9  open transition
+  'Ɯ§....f....PP....f....§Ɯ', // 9  open transition w/ flora
   'Ɯ§.¦ƩƩƩƩƩƩƩƩƩƩƩƩƩƩƩƩ¦.§Ɯ', // 10 tech plaza north edge
-  'Ɯ.¥ƩƩƩ¥ƩƩƩ¥ƩƩ¥ƩƩƩ¥ƩƩƩ¥.Ɯ', // 11 conduit grid
-  'Ɯ.¥Ʃ¦ƩƩƩ¥¥¥ƩƩ¥¥¥ƩƩƩ¦Ʃ¥.Ɯ', // 12 conduit hub arms
-  'Ɯ.¥ƩƩƩ¥¥¥ƩƩƩƩƩƩ¥¥¥ƩƩƩ¥.Ɯ', // 13 hub center (open cross)
-  'Ɯ.¥Ʃ¦ƩƩƩ¥¥¥ƩƩ¥¥¥ƩƩƩ¦Ʃ¥.Ɯ', // 14 conduit hub arms
-  'Ɯ.¥ƩƩƩ¥ƩƩƩ¥ƩƩ¥ƩƩƩ¥ƩƩƩ¥.Ɯ', // 15 conduit grid
+  'Ɯ.¥ƩƩƩƩ¥Ʃ÷ƩƩƩƩ÷Ʃ¥ƩƩƩƩ¥.Ɯ', // 11 plaza w/ aether crystal accents
+  'Ɯ.¥ƩƩƩƩ¥Ʃ÷ƉƉƉƉ÷Ʃ¥ƩƩƩƩ¥.Ɯ', // 12 ── CENTRAL CONDUIT PILLAR (rows 12–13) ──
+  'Ɯ.¥ƩƩƩƩ¥ƩƩƉƉƉƉƩƩ¥ƩƩƩƩ¥.Ɯ', // 13 plaza floor + spawn at (11,13)
+  'Ɯ.¥ƩƩƩƩ¥Ʃ÷ƉƉƉƉ÷Ʃ¥ƩƩƩƩ¥.Ɯ', // 14 mirror of row 12 (south face)
+  'Ɯ.¥ƩƩƩƩ¥Ʃ÷ƩƩƩƩ÷Ʃ¥ƩƩƩƩ¥.Ɯ', // 15 plaza w/ aether crystal accents
   'Ɯ§.¦ƩƩƩƩƩƩƩƩƩƩƩƩƩƩƩƩ¦.§Ɯ', // 16 tech plaza south edge
   'Ɯ§..§§....¥PP¥..RRRRRRRƜ', // 17 house roof (east)
   'Ɯ§........¥PP¥..HH&HHHHƜ', // 18 house wall
   'Ɯ.........¥PP¥..HHHDHHHƜ', // 19 house door (col19)
-  'Ɯ§.¦..§§..¥PP¥......¦.§Ɯ', // 20 transition + panels
+  'Ɯ§.¦.f§§..¥PP¥...f..¦.§Ɯ', // 20 transition + green pocket asymmetry
   'Ɯ¥¥¥¥¥¥¥¥¥¥PP¥¥¥¥¥¥¥¥¥¥Ɯ', // 21 conduit ring (gym approach)
-  'Ɯ¥.AAAAAAA.PP...§§§...¥Ɯ', // 22 gym roof (cols 3-9)
+  'Ɯ¥.AAAAAAA.PP...§§§.f.¥Ɯ', // 22 gym roof (cols 3-9) + planter
   'Ɯ¥.ggg&ggg.PP...§§§...¥Ɯ', // 23 gym wall + window
-  'Ɯ¥.gggaggg.PP.¦..§..¦.¥Ɯ', // 24 gym door (col6)
+  'Ɯ¥.gggaggg.PP.¦.π§π.¦.¥Ɯ', // 24 gym door (col6) + decor pipes
   'Ɯ¥¥¥¥¥¥¥¥¥¥PP¥¥.......¥Ɯ', // 25 conduit channel south
   'Ɯ§..f.....¥PP¥.....f..§Ɯ', // 26 green pocket
-  'Ɯ§........¥PP¥........§Ɯ', // 27 north approach
+  'Ɯ§...Ω....¥PP¥....Ω...§Ɯ', // 27 north approach w/ gear accents
   'Ɯ§§.......¥PP¥.......§§Ɯ', // 28 north approach
   'ƜƜƜƜƜƜƜƜƜƜ¥PP¥ƜƜƜƜƜƜƜƜƜƜ', // 29 north exit
 ]);
@@ -109,10 +120,12 @@ export const voltaraCity: MapDefinition = {
     {
       id: 'voltara-blitz-story',
       name: 'Blitz',
-      tileX: 11,
-      tileY: 13,
+      // Moved to plaza floor adjacent to the new central Aether Conduit Pillar
+      // (rows 12–13 cols 10–13 are now solid Ɖ).
+      tileX: 8,
+      tileY: 12,
       textureKey: 'npc-gym-blitz',
-      facing: 'down',
+      facing: 'right',
       dialogue: [
         'Blitz: I\'ve been running diagnostics all night!',
         'Blitz: Someone is siphoning power from my grid!',
@@ -189,7 +202,10 @@ export const voltaraCity: MapDefinition = {
     { tileX: 19, tileY: 19, targetMap: 'voltara-city-house-1', targetSpawnId: 'default' },
   ],
   spawnPoints: {
-    'default':          { x: 11, y: 13, direction: 'up' },
+    // 'default' first-visit spawn faces the new central Aether Conduit Pillar
+    // setpiece (rows 12–13). 'from-verdantia' / 'from-route-6' keep the
+    // original entry-corridor positions so save data continues to load cleanly.
+    'default':          { x: 11, y: 17, direction: 'up' },
     'from-verdantia':   { x: 12, y: 1, direction: 'up' },
     'from-route-6':     { x: 12, y: 28, direction: 'down' },
     'from-pokecenter':  { x: 4, y: 8, direction: 'down' },

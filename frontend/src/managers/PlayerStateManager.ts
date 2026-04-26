@@ -1,5 +1,17 @@
 import { DifficultyMode, DifficultyConfig, DIFFICULTY_CONFIGS } from '@data/difficulty';
 
+/** A speed-run split — playtime snapshot at a notable event. */
+export interface SpeedrunSplit {
+  /** Stable identifier (e.g. badge id, trainer id, 'champion'). */
+  id: string;
+  /** Human-readable label shown in the splits list. */
+  label: string;
+  /** Playtime in seconds when the split was recorded. */
+  playtime: number;
+  /** Wall-clock timestamp when the split was recorded. */
+  timestamp: number;
+}
+
 /**
  * Manages player identity, position, inventory, money, settings, and
  * miscellaneous player-specific state (difficulty, trainer ID, playtime, etc.).
@@ -17,6 +29,7 @@ export class PlayerStateManager {
   private difficulty: DifficultyMode = 'classic';
   private berryPlots: Record<string, unknown[]> = {};
   private gameClockMinutes = 0;
+  private speedrunSplits: SpeedrunSplit[] = [];
   private settings: Record<string, string | number | boolean> = {
     textSpeed: 'medium',
     musicVolume: 0.5,
@@ -27,6 +40,7 @@ export class PlayerStateManager {
     reducedMotion: false,
     showMinimap: true,
     showTypeHints: true,
+    speedrunTimer: false,
   };
 
   constructor() {
@@ -55,6 +69,7 @@ export class PlayerStateManager {
     this.difficulty = 'classic';
     this.berryPlots = {};
     this.gameClockMinutes = 0;
+    this.speedrunSplits = [];
   }
 
   // ── Identity ───────────────────────────────────────────
@@ -134,6 +149,22 @@ export class PlayerStateManager {
   getGameClockMinutes(): number { return this.gameClockMinutes; }
   setGameClockMinutes(minutes: number): void { this.gameClockMinutes = minutes; }
 
+  // ── Speed-run splits ──────────────────────────────────
+
+  getSpeedrunSplits(): SpeedrunSplit[] { return this.speedrunSplits; }
+  /** Record a split if one for this id has not already been recorded. */
+  recordSpeedrunSplit(id: string, label: string): SpeedrunSplit | null {
+    if (this.speedrunSplits.some(s => s.id === id)) return null;
+    const split: SpeedrunSplit = {
+      id, label,
+      playtime: this.playtime,
+      timestamp: Date.now(),
+    };
+    this.speedrunSplits.push(split);
+    return split;
+  }
+  clearSpeedrunSplits(): void { this.speedrunSplits = []; }
+
   // ── Serialization helpers ──────────────────────────────
 
   serialize() {
@@ -150,6 +181,7 @@ export class PlayerStateManager {
       settings: this.settings,
       berryPlots: this.berryPlots,
       gameClockMinutes: this.gameClockMinutes,
+      speedrunSplits: this.speedrunSplits,
     };
   }
 
@@ -166,6 +198,7 @@ export class PlayerStateManager {
     settings?: Record<string, string | number | boolean>;
     berryPlots?: Record<string, unknown[]>;
     gameClockMinutes?: number;
+    speedrunSplits?: SpeedrunSplit[];
   }): void {
     this.playerName = data.playerName;
     if (data.playerGender) this.playerGender = data.playerGender;
@@ -179,5 +212,6 @@ export class PlayerStateManager {
     if (data.settings) this.settings = { ...this.settings, ...data.settings };
     if (data.berryPlots) this.berryPlots = data.berryPlots;
     if (data.gameClockMinutes != null) this.gameClockMinutes = data.gameClockMinutes;
+    if (data.speedrunSplits) this.speedrunSplits = data.speedrunSplits;
   }
 }

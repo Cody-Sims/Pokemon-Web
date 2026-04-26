@@ -128,7 +128,10 @@ export class MoveExecutor {
       const weatherCondition = move.effect.weather;
       const weatherMessages: string[] = [];
       if (weatherCondition && weatherManager) {
-        weatherMessages.push(...weatherManager.setWeather(weatherCondition));
+        // Weather-extending rocks (Heat/Damp/Smooth/Icy) add 3 turns to the
+        // base 5-turn duration when the attacker is holding the matching rock.
+        const bonus = HeldItemHandler.getWeatherDurationBonus(attacker, weatherCondition);
+        weatherMessages.push(...weatherManager.setWeather(weatherCondition, 5 + bonus));
       }
       return {
         damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false },

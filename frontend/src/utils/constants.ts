@@ -33,8 +33,14 @@ const PORTRAIT_WIDTH = 400;
 export function computeGameDimensions(): { width: number; height: number } {
   if (typeof window === 'undefined') return { width: 800, height: 600 };
 
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  // Prefer document.body's content-box size when available — the body has
+  // `padding: env(safe-area-inset-…)` applied (see index.html), so its
+  // client size is the safe-area-aware viewport that the canvas actually
+  // renders into. Fall back to `window.innerWidth/innerHeight` for tests
+  // where document.body may not yet be styled.
+  const body = typeof document !== 'undefined' ? document.body : null;
+  const vw = body?.clientWidth || window.innerWidth;
+  const vh = body?.clientHeight || window.innerHeight;
   const isPortrait = vh > vw;
 
   if (isPortrait) {

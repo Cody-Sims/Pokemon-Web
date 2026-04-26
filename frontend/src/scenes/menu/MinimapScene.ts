@@ -4,6 +4,7 @@ import { layoutOn } from '@utils/layout-on';
 import { isMobile } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { mapRegistry, MapDefinition, TILE_COLORS } from '@data/maps';
+import { getGameSafeAreaInsets } from '@utils/safe-area';
 
 /**
  * Minimap radius in tiles from the player center.
@@ -158,12 +159,13 @@ export class MinimapScene extends Phaser.Scene {
     const mobile = isMobile();
     const isPortrait = h > w;
     const margin = mobile ? 10 : 12;
+    const insets = getGameSafeAreaInsets(this.cameras.main);
 
     if (isPortrait) {
       // Top-left, pushed down past the location-text strip (~28px) so it
       // doesn't overlap the map name banner at the top of the screen.
       const topGap = 32;
-      return { x: margin, y: topGap };
+      return { x: margin + insets.left, y: topGap + insets.top };
     }
 
     // Landscape / desktop: keep the legacy bottom-right placement, but
@@ -171,8 +173,8 @@ export class MinimapScene extends Phaser.Scene {
     const landscapeMobileClear = 130; // legacy mobile landscape gap
     const bottomGap = mobile ? landscapeMobileClear : margin;
     return {
-      x: w - totalSize - margin,
-      y: h - totalSize - bottomGap,
+      x: w - totalSize - margin - insets.right,
+      y: h - totalSize - bottomGap - insets.bottom,
     };
   }
 

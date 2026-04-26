@@ -82,6 +82,13 @@ export class PreloadScene extends Phaser.Scene {
     } else {
       this.loadFallback();
     }
+
+    // ── Pixel font (always loaded; 1.1 KB shared by all scenes) ──
+    this.load.bitmapFont(
+      'aurum-pixel',
+      'assets/fonts/aurum-pixel.png',
+      'assets/fonts/aurum-pixel.xml',
+    );
   }
 
   // ── Manifest-driven loading ────────────────────────────────────

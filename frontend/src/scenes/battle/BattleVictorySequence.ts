@@ -282,6 +282,17 @@ function showTrainerRewardsThenEnd(ctx: VictoryContext): void {
   const b = ctx.battle();
   const messages: string[] = [];
 
+  // ── Status Master achievement: won this battle using only status moves ──
+  // Read counters off the BattleUIScene (ctx.scene) — only awarded when at
+  // least one status move was used and zero damaging moves were used.
+  const ui = ctx.scene as Phaser.Scene & {
+    playerStatusMovesUsed?: number;
+    playerDamagingMovesUsed?: number;
+  };
+  if ((ui.playerStatusMovesUsed ?? 0) > 0 && (ui.playerDamagingMovesUsed ?? 0) === 0) {
+    AchievementManager.getInstance().unlock('status-master');
+  }
+
   if (b.isTrainerBattle && b.trainerId) {
     const { messages: rewardMsgs } = processTrainerRewards(b.trainerId, b.victoryFlag);
     messages.push(...rewardMsgs);

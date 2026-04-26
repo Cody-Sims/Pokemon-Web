@@ -10,6 +10,14 @@ import { BGM, SFX } from '@utils/audio-keys';
 import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
 import { COLORS, STATUS_BADGE_FRAMES, mobileFontSize } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
+import { BarFrame } from '@ui/widgets/BarFrame';
+import {
+  BattlePlatform,
+  PLATFORM_PALETTE_CAVE,
+  PLATFORM_PALETTE_SAND,
+  PLATFORM_PALETTE_VOLCANIC,
+  PLATFORM_PALETTE_TECH,
+} from '@ui/widgets/BattlePlatform';
 
 export class BattleScene extends Phaser.Scene {
   public battleManager!: BattleManager;
@@ -155,16 +163,23 @@ export class BattleScene extends Phaser.Scene {
     }
 
     // Enemy battle platform (layered pixel-art style)
-    this.add.ellipse(enemyX, enemyY + platformYOffset + 3, 200, 50, 0x1a2e14, 0.5);
-    this.add.ellipse(enemyX, enemyY + platformYOffset, 200, 50, 0x2d4a22);
-    this.add.ellipse(enemyX, enemyY + platformYOffset - 2, 180, 40, 0x3a6030, 0.6);
-    this.add.ellipse(enemyX, enemyY + platformYOffset - 5, 140, 25, 0x4a7a3e, 0.3);
+    const platformPalette = pickPlatformPalette(battleBg);
+    const enemyPlatform = new BattlePlatform(this, enemyX, enemyY + platformYOffset, 200, 50, {
+      variant: 'enemy',
+      palette: platformPalette,
+      spriteShadowY: enemyY + platformYOffset - 4,
+      spriteShadowWidth: 130,
+    });
+    enemyPlatform.setDepth(0);
 
     // Player battle platform (layered pixel-art style)
-    this.add.ellipse(playerX, playerY + platformYOffset + 3, 240, 60, 0x1a2e14, 0.5);
-    this.add.ellipse(playerX, playerY + platformYOffset, 240, 60, 0x2d4a22);
-    this.add.ellipse(playerX, playerY + platformYOffset - 2, 220, 48, 0x3a6030, 0.6);
-    this.add.ellipse(playerX, playerY + platformYOffset - 5, 170, 30, 0x4a7a3e, 0.3);
+    const playerPlatform = new BattlePlatform(this, playerX, playerY + platformYOffset, 240, 60, {
+      variant: 'player',
+      palette: platformPalette,
+      spriteShadowY: playerY + platformYOffset - 4,
+      spriteShadowWidth: 170,
+    });
+    playerPlatform.setDepth(0);
 
     // ── Trainer sprites behind Pokémon (trainer battles only) ──
     const trainerSpriteKey = data?.trainerSpriteKey as string | undefined;
@@ -198,6 +213,7 @@ export class BattleScene extends Phaser.Scene {
     const enemyLvlText = this.add.text(enemyInfoX + 70, -80, `Lv${this.enemyPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
     this.enemyHpBg = this.add.rectangle(enemyInfoX - 130, -55, 220, 10, 0x333333).setOrigin(0, 0.5);
     this.enemyHpBar = this.add.rectangle(enemyInfoX - 130, -55, 220, 10, 0x4caf50).setOrigin(0, 0.5);
+    new BarFrame(this, enemyInfoX - 130, -55, 220, 10, { accentColor: 0xff5544 });
     this.enemyStatusImg = this.add.image(enemyInfoX + 100, -80, 'status-badges', 0).setScale(2).setVisible(false);
 
     // ── Player info box (bottom-right) — starts below screen ──
@@ -215,6 +231,7 @@ export class BattleScene extends Phaser.Scene {
     this.playerLevelText = this.add.text(playerInfoX + 90, h + 40, `Lv${this.playerPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
     this.playerHpBg = this.add.rectangle(playerInfoX - 140, h + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
     this.playerHpBar = this.add.rectangle(playerInfoX - 140, h + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
+    new BarFrame(this, playerInfoX - 140, h + 70, 180, 10, { accentColor: 0x44d068 });
     this.playerHpText = this.add.text(playerInfoX + 48, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: mobileFontSize(12), color: '#ffffff' });
     this.playerStatusImg = this.add.image(playerInfoX - 140, h + 85, 'status-badges', 0).setScale(2).setVisible(false);
 
@@ -222,6 +239,7 @@ export class BattleScene extends Phaser.Scene {
     this.expBarBg = this.add.rectangle(playerInfoX - 140, h + 82, 180, 4, 0x222233).setOrigin(0, 0.5);
     const expPct = this.getExpPercent();
     this.expBarFill = this.add.rectangle(playerInfoX - 140, h + 82, 180 * expPct, 4, 0x4488ff).setOrigin(0, 0.5);
+    new BarFrame(this, playerInfoX - 140, h + 82, 180, 4, { shadowAlpha: 0.4 });
 
     // ── Slide-in animation ──
     const introDelay = 200;
@@ -594,6 +612,7 @@ export class BattleScene extends Phaser.Scene {
       const hpPct = Math.max(0, p1.currentHp / p1.stats.hp);
       const hpBar = this.add.rectangle(partnerInfoX - 100, partnerHpY, 150 * hpPct, 7, 0x4caf50).setOrigin(0, 0.5);
       this.playerHpBars.push(hpBar);
+      new BarFrame(this, partnerInfoX - 100, partnerHpY, 150, 7, { accentColor: 0x44d068 });
 
       const hpText = this.add.text(
         partnerInfoX + 56, partnerHpY - 5,
@@ -637,6 +656,7 @@ export class BattleScene extends Phaser.Scene {
       const hpPct = Math.max(0, e1.currentHp / e1.stats.hp);
       const hpBar = this.add.rectangle(enemyInfoX2 - 100, enemyHpY2, 180 * hpPct, 7, 0x4caf50).setOrigin(0, 0.5);
       this.enemyHpBars.push(hpBar);
+      new BarFrame(this, enemyInfoX2 - 100, enemyHpY2, 180, 7, { accentColor: 0xff5544 });
 
       const hpText = this.add.text(
         enemyInfoX2 + 86, enemyHpY2 - 5,
@@ -652,4 +672,17 @@ export class BattleScene extends Phaser.Scene {
     this.tweens.killAll();
     this.time.removeAllEvents();
   }
+}
+
+/**
+ * Pick a battle platform palette based on the active battle background key.
+ * Falls back to the default grass palette when the background isn't recognised.
+ */
+function pickPlatformPalette(battleBg: string | undefined): [number, number, number, number] | undefined {
+  if (!battleBg) return undefined;
+  if (battleBg.includes('cave') || battleBg.includes('dungeon')) return PLATFORM_PALETTE_CAVE;
+  if (battleBg.includes('coast') || battleBg.includes('beach') || battleBg.includes('sand')) return PLATFORM_PALETTE_SAND;
+  if (battleBg.includes('volcan') || battleBg.includes('ember') || battleBg.includes('fire')) return PLATFORM_PALETTE_VOLCANIC;
+  if (battleBg.includes('industrial') || battleBg.includes('lab') || battleBg.includes('synthesis')) return PLATFORM_PALETTE_TECH;
+  return undefined;
 }

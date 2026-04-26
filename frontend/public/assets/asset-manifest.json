@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-26T17:35:59.953Z",
+  "generated": "2026-04-26T20:05:02.329Z",
   "categories": {
     "pokemon-icons": {
       "loadType": "image",
@@ -1851,6 +1851,16 @@
     "player": {
       "loadType": "atlas",
       "assets": [
+        {
+          "key": "player-cycle",
+          "texture": "assets/sprites/player/player-cycle.png",
+          "atlas": "assets/sprites/player/player-cycle.json"
+        },
+        {
+          "key": "player-cycle-female",
+          "texture": "assets/sprites/player/player-cycle-female.png",
+          "atlas": "assets/sprites/player/player-cycle-female.json"
+        },
         {
           "key": "player-walk",
           "texture": "assets/sprites/player/player-walk.png",

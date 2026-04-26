@@ -98,10 +98,13 @@ export class DialogueScene extends Phaser.Scene {
     const portraitPad = hasPortrait ? portraitSize + 20 : 0;
 
     // ── Nine-patch dialogue box ───────────────────────────────
-    const boxW = layout.w - 20;
-    const boxH = 100;
-    const boxX = layout.cx;
     const isPortraitOrientation = layout.h > layout.w;
+    // Portrait viewports use a much narrower line width which means more
+    // wraps per dialogue, so the box needs to be taller or the text gets
+    // visually clipped at the bottom edge.
+    const boxW = layout.w - 20;
+    const boxH = isPortraitOrientation ? 130 : 100;
+    const boxX = layout.cx;
     const boxY = isPortraitOrientation ? layout.h - 180 : layout.h - 80;
     this.panel = new NinePatchPanel(this, boxX, boxY, boxW, boxH, {
       fillColor: 0x0a0a18,
@@ -148,7 +151,7 @@ export class DialogueScene extends Phaser.Scene {
     }
 
     // ── Text display ──────────────────────────────────────────
-    const baseFontPx = layout.w < 900 ? 15 : layout.w > 1200 ? 19 : 17;
+    const baseFontPx = isPortraitOrientation ? 14 : (layout.w < 900 ? 15 : layout.w > 1200 ? 19 : 17);
     const textX = 30 + portraitPad;
     this.dialogueText = this.add.text(textX, boxY - boxH / 2 + 10, '', {
       ...FONTS.body,
@@ -198,15 +201,16 @@ export class DialogueScene extends Phaser.Scene {
     layoutOn(this, () => {
       const l = ui(this);
       const rIsPortrait = l.h > l.w;
+      const rBoxH = rIsPortrait ? 130 : 100;
       const rBoxY = rIsPortrait ? l.h - 180 : l.h - 80;
       this.panel.destroy();
-      this.panel = new NinePatchPanel(this, l.cx, rBoxY, l.w - 20, 100, {
+      this.panel = new NinePatchPanel(this, l.cx, rBoxY, l.w - 20, rBoxH, {
         fillColor: 0x0a0a18, fillAlpha: 0.98, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 8,
       });
       this.panel.setDepth(DIALOGUE_DEPTH);
-      this.dialogueText.setPosition(30 + portraitPad, rBoxY - 40);
+      this.dialogueText.setPosition(30 + portraitPad, rBoxY - rBoxH / 2 + 10);
       this.dialogueText.setWordWrapWidth(l.w - 60 - portraitPad);
-      this.advanceIndicator.setPosition(l.w - 40, rBoxY + 62);
+      this.advanceIndicator.setPosition(l.w - 40, rBoxY + rBoxH / 2 + 12);
       if (this.portrait) {
         const pX = l.cx - (l.w - 20) / 2 + 12 + portraitSize / 2;
         this.portrait.setPosition(pX, rBoxY);
@@ -221,14 +225,14 @@ export class DialogueScene extends Phaser.Scene {
       if (this.speakerText) {
         const sw = Math.max(100, (this.speaker?.length ?? 0) * 10 + 24);
         const sx = 20 + sw / 2;
-        const sy = rBoxY - 66;
+        const sy = rBoxY - rBoxH / 2 - 16;
         this.speakerText.setPosition(sx, sy);
       }
       if (this.speakerPanel) {
         this.speakerPanel.destroy();
         const sw = Math.max(100, (this.speaker?.length ?? 0) * 10 + 24);
         const sx = 20 + sw / 2;
-        const sy = rBoxY - 66;
+        const sy = rBoxY - rBoxH / 2 - 16;
         this.speakerPanel = new NinePatchPanel(this, sx, sy, sw, 26, {
           fillColor: COLORS.bgCard, fillAlpha: 0.95, borderColor: COLORS.borderHighlight, borderWidth: 1, cornerRadius: 4,
         });

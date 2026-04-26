@@ -207,6 +207,93 @@ export const itemData: Record<string, ItemData> = {
     description: 'Cures poison when afflicted. Consumed on use.',
     effect: { type: 'heal-status', status: 'poison' },
   },
+  'persim-berry': {
+    id: 'persim-berry', name: 'Persim Berry', category: 'medicine',
+    description: 'Snaps a Pokémon out of confusion. Consumed on use.',
+    effect: { type: 'held-passive', held: 'persim-berry' },
+  },
+  'leppa-berry': {
+    id: 'leppa-berry', name: 'Leppa Berry', category: 'medicine',
+    description: 'A tangy berry. Restores PP when used outside of battle (lore item).',
+    effect: { type: 'held-passive', held: 'leppa-berry' },
+  },
+  'figy-berry': {
+    id: 'figy-berry', name: 'Figy Berry', category: 'medicine',
+    description: 'Restores 1/3 HP when below half. Spicy — confuses Pokémon that dislike spice.',
+    effect: { type: 'held-passive', held: 'figy-berry' },
+  },
+  'wiki-berry': {
+    id: 'wiki-berry', name: 'Wiki Berry', category: 'medicine',
+    description: 'Restores 1/3 HP when below half. Dry — confuses Pokémon that dislike dryness.',
+    effect: { type: 'held-passive', held: 'wiki-berry' },
+  },
+  'mago-berry': {
+    id: 'mago-berry', name: 'Mago Berry', category: 'medicine',
+    description: 'Restores 1/3 HP when below half. Sweet — confuses Pokémon that dislike sweetness.',
+    effect: { type: 'held-passive', held: 'mago-berry' },
+  },
+  'aguav-berry': {
+    id: 'aguav-berry', name: 'Aguav Berry', category: 'medicine',
+    description: 'Restores 1/3 HP when below half. Bitter — confuses Pokémon that dislike bitterness.',
+    effect: { type: 'held-passive', held: 'aguav-berry' },
+  },
+  'iapapa-berry': {
+    id: 'iapapa-berry', name: 'Iapapa Berry', category: 'medicine',
+    description: 'Restores 1/3 HP when below half. Sour — confuses Pokémon that dislike sourness.',
+    effect: { type: 'held-passive', held: 'iapapa-berry' },
+  },
+
+  // ─── Competitive Held Items ───
+  'black-sludge': {
+    id: 'black-sludge', name: 'Black Sludge', category: 'battle',
+    description: 'Restores HP each turn for Poison-types, but hurts other Pokémon.',
+    effect: { type: 'held-passive', held: 'black-sludge' },
+  },
+  'rocky-helmet': {
+    id: 'rocky-helmet', name: 'Rocky Helmet', category: 'battle',
+    description: 'Damages the attacker for 1/6 of its max HP whenever the holder is hit by a move.',
+    effect: { type: 'held-passive', held: 'rocky-helmet' },
+  },
+  'assault-vest': {
+    id: 'assault-vest', name: 'Assault Vest', category: 'battle',
+    description: 'Boosts the holder\u2019s Sp. Def, but prevents it from selecting status moves.',
+    effect: { type: 'held-passive', held: 'assault-vest' },
+  },
+  'eviolite': {
+    id: 'eviolite', name: 'Eviolite', category: 'battle',
+    description: 'Boosts Defense and Sp. Def of a Pokémon that can still evolve.',
+    effect: { type: 'held-passive', held: 'eviolite' },
+  },
+  'weakness-policy': {
+    id: 'weakness-policy', name: 'Weakness Policy', category: 'battle',
+    description: 'Sharply raises Attack and Sp. Atk when hit by a super-effective move. Single use.',
+    effect: { type: 'held-passive', held: 'weakness-policy' },
+  },
+  'light-clay': {
+    id: 'light-clay', name: 'Light Clay', category: 'battle',
+    description: 'Lengthens the duration of the holder\u2019s screen moves (Reflect, Light Screen).',
+    effect: { type: 'held-passive', held: 'light-clay' },
+  },
+  'heat-rock': {
+    id: 'heat-rock', name: 'Heat Rock', category: 'battle',
+    description: 'Extends harsh sunlight set by the holder by 3 turns.',
+    effect: { type: 'held-passive', held: 'heat-rock' },
+  },
+  'damp-rock': {
+    id: 'damp-rock', name: 'Damp Rock', category: 'battle',
+    description: 'Extends rain set by the holder by 3 turns.',
+    effect: { type: 'held-passive', held: 'damp-rock' },
+  },
+  'smooth-rock': {
+    id: 'smooth-rock', name: 'Smooth Rock', category: 'battle',
+    description: 'Extends a sandstorm set by the holder by 3 turns.',
+    effect: { type: 'held-passive', held: 'smooth-rock' },
+  },
+  'icy-rock': {
+    id: 'icy-rock', name: 'Icy Rock', category: 'battle',
+    description: 'Extends hail set by the holder by 3 turns.',
+    effect: { type: 'held-passive', held: 'icy-rock' },
+  },
 
   // ─── Evolution Stones ───
   'fire-stone': {

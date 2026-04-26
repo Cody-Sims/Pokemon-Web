@@ -26,7 +26,9 @@ export const pokemonLeague: MapDefinition = {
         'Welcome to the Pokémon League!',
         'Beyond this hall lie the Elite Four and the Champion.',
         'Are you prepared?',
-      ] },
+      ],
+      // Plays the cinematic arrival sequence on first interaction; falls back to dialogue thereafter.
+      triggerCutscene: 'league-arrival' },
     { id: 'tutor-league', name: 'Move Tutor', tileX: 8, tileY: 9, textureKey: 'npc-male-3', facing: 'left',
       dialogue: ['League Tutor: Only the strongest moves are taught here.', 'League Tutor: Are you ready to pay the price?'],
       interactionType: 'move-tutor', interactionData: 'tutor-league' },

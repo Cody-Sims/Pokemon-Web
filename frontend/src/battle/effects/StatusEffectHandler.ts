@@ -3,6 +3,7 @@ import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { clamp, randomInt } from '@utils/math-helpers';
 import { Stats, StatStages, StatusCondition, VolatileStatus, MoveEffect, PokemonType } from '@utils/type-helpers';
+import { HeldItemHandler } from './HeldItemHandler';
 
 // ── Result types ────────────────────────────────────────────────
 
@@ -279,6 +280,14 @@ export class StatusEffectHandler {
             state.volatileStatuses.add('confusion');
             state.confusionTurns = randomInt(2, 5);
             messages.push(`${targetName} became confused!`);
+
+            // Berry-cures-on-apply (Persim, Lum) — undo immediately if held.
+            const cure = HeldItemHandler.onVolatileApplied(target, 'confusion');
+            if (cure.cured) {
+              state.volatileStatuses.delete('confusion');
+              state.confusionTurns = 0;
+              messages.push(...cure.messages);
+            }
           }
           break;
         }

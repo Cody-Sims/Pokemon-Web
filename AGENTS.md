@@ -113,6 +113,7 @@ npm run map:validate                    # Validate all maps
 npm run map:validate -- --map route-1   # Validate one map
 npm run map:preview -- --map route-1    # Render PPM preview
 npm run map:gen dungeon -- --width 31 --height 25 --seed 42 --biome cave
+npm run map:region                      # Render the Aurum Region overview to temp/region-map.ppm
 ```
 
 ## Dependency Graph

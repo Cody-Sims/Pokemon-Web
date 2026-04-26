@@ -367,4 +367,234 @@ export const cutsceneData: Record<string, CutsceneDefinition> = {
       { type: 'setFlag', flag: 'father_found' },
     ],
   },
+
+  // ─── Mother's farewell at Littoral Town (game start, post-game-intro) ───
+  'mother-farewell': {
+    id: 'mother-farewell',
+    actions: [
+      { type: 'playBGM', key: 'bgm-emotional' },
+      { type: 'dialogue', speaker: 'Mom', portraitKey: 'npc-female-1', lines: [
+        'So Professor Willow really gave you a Pokémon...',
+        'It feels like only yesterday you were running around the yard with your father.',
+        'Promise me you\'ll come home for dinner sometimes, alright?',
+      ]},
+      { type: 'wait', ms: 400 },
+      { type: 'dialogue', speaker: 'Mom', portraitKey: 'npc-female-1', lines: [
+        'And take this — your father left it in his desk before he went away.',
+        'I think he meant for you to have it when the time was right.',
+        'I love you. Be careful out there.',
+      ]},
+      { type: 'showEmote', targetId: 'player', emote: 'heart' },
+      { type: 'setFlag', flag: 'mother_farewell' },
+    ],
+  },
+
+  // ─── First Boulder Badge celebration (after defeating Brock) ───
+  'first-badge-celebration': {
+    id: 'first-badge-celebration',
+    actions: [
+      { type: 'playBGM', key: 'bgm-fanfare' },
+      { type: 'flashScreen', duration: 250 },
+      { type: 'dialogue', speaker: 'Narrator', lines: [
+        'You earned the BOULDER BADGE!',
+        'Pokémon up to level 25 will now obey you without question.',
+      ]},
+      { type: 'wait', ms: 400 },
+      { type: 'dialogue', speaker: 'Brock', portraitKey: 'npc-gym-brock', lines: [
+        'You\'ve got real grit, kid.',
+        'Word of advice: the road ahead gets rougher fast.',
+        'Stop by the Pewter Museum — Curator Dane has been digging into something strange near the coast.',
+      ]},
+      { type: 'setFlag', flag: 'first_badge_celebration' },
+    ],
+  },
+
+  // ─── Marina first meeting (Route 2) ───
+  'marina-first-meeting': {
+    id: 'marina-first-meeting',
+    actions: [
+      { type: 'showEmote', targetId: 'marina', emote: 'exclamation' },
+      { type: 'wait', ms: 300 },
+      { type: 'dialogue', speaker: 'Marina', portraitKey: 'npc-marina', lines: [
+        'Oh — you\'re the new trainer the Professor mentioned.',
+        'I\'m Marina. I picked the starter neither you nor Kael wanted.',
+        'I don\'t really battle for fun, but… I\'d like to see what your team can do.',
+      ]},
+      { type: 'wait', ms: 200 },
+      { type: 'dialogue', speaker: 'Marina', portraitKey: 'npc-marina', lines: [
+        'Watch the type matchups. The data tells me yours has a clear edge here.',
+        'Let\'s go!',
+      ]},
+      { type: 'setFlag', flag: 'metMarina' },
+    ],
+  },
+
+  // ─── Rook first encounter (Coral Harbor) ───
+  'rook-first-encounter': {
+    id: 'rook-first-encounter',
+    actions: [
+      { type: 'playBGM', key: 'bgm-mystery' },
+      { type: 'dialogue', speaker: 'Rook', lines: [
+        '...You walk light for someone carrying that much weight.',
+        'A father gone missing. A region pretending nothing\'s wrong.',
+        'Don\'t look so surprised — your eyes give you away.',
+      ]},
+      { type: 'wait', ms: 400 },
+      { type: 'dialogue', speaker: 'Rook', lines: [
+        'Watch the harbor at night. Boats come in that aren\'t on any manifest.',
+        'And keep your Pokémon close. The ones you trust will trust you back.',
+      ]},
+      { type: 'showEmote', targetId: 'player', emote: 'question' },
+      { type: 'setFlag', flag: 'metRook' },
+    ],
+  },
+
+  // ─── Aldric hologram (Ironvale City, post Ember Mines disruption) ───
+  'aldric-hologram': {
+    id: 'aldric-hologram',
+    actions: [
+      { type: 'playBGM', key: 'bgm-villain' },
+      { type: 'flashScreen', color: 0x66ccff, duration: 250 },
+      { type: 'screenShake', duration: 300, intensity: 0.006 },
+      { type: 'dialogue', speaker: 'Aldric', portraitKey: 'npc-champion-aldric', lines: [
+        'A child playing hero in my mines. How quaint.',
+        'I am Aldric Maren — Director of the Synthesis Collective.',
+        'I have watched your progress with curiosity.',
+      ]},
+      { type: 'wait', ms: 300 },
+      { type: 'dialogue', speaker: 'Aldric', portraitKey: 'npc-champion-aldric', lines: [
+        'Continue if you must. But understand this:',
+        'Every Pokémon I refine is one more saved from nature\'s cruelty.',
+        'You think you\'re fighting villains. You\'re fighting a kindness you cannot yet see.',
+      ]},
+      { type: 'flashScreen', color: 0x66ccff, duration: 250 },
+      { type: 'setFlag', flag: 'aldric_hologram_seen' },
+    ],
+  },
+
+  // ─── Kael tag-team commitment (Ironvale, joins as partner) ───
+  'kael-tag-team': {
+    id: 'kael-tag-team',
+    actions: [
+      { type: 'showEmote', targetId: 'kael', emote: 'exclamation' },
+      { type: 'dialogue', speaker: 'Kael', portraitKey: 'rival', lines: [
+        'I saw the Synthesis lab in Ember Mines. What they\'re doing to those Pokémon...',
+        'It\'s sick. It\'s wrong.',
+      ]},
+      { type: 'wait', ms: 300 },
+      { type: 'dialogue', speaker: 'Kael', portraitKey: 'rival', lines: [
+        'I\'ve been racing you this whole time like an idiot.',
+        'Today we fight together. Two trainers, one front.',
+        'Let\'s show these Synthesis suits what real bonds look like.',
+      ]},
+      { type: 'setFlag', flag: 'kael_tag_partner' },
+    ],
+  },
+
+  // ─── Marina rescue (Canopy Trail, freed from Synthesis trap) ───
+  'marina-rescue': {
+    id: 'marina-rescue',
+    actions: [
+      { type: 'screenShake', duration: 300, intensity: 0.008 },
+      { type: 'playSFX', key: 'sfx-cut' },
+      { type: 'dialogue', speaker: 'Narrator', lines: [
+        'You sever the Synthesis trap\'s vine restraints.',
+        'Marina staggers free, breathing hard.',
+      ]},
+      { type: 'dialogue', speaker: 'Marina', portraitKey: 'npc-marina', lines: [
+        'You came... I knew the readings here were too high.',
+        'They tried to take my notes — they know I\'ve been mapping the ley lines.',
+      ]},
+      { type: 'wait', ms: 400 },
+      { type: 'dialogue', speaker: 'Marina', portraitKey: 'npc-marina', lines: [
+        'Listen — the Aether convergence point isn\'t a coincidence.',
+        'Whoever\'s behind this is heading north. Toward the spire.',
+        'Take this data chip. Get it to the Professor. Hurry.',
+      ]},
+      { type: 'showEmote', targetId: 'player', emote: 'exclamation' },
+      { type: 'setFlag', flag: 'marina_rescued' },
+    ],
+  },
+
+  // ─── Aldric inner-sanctum confrontation (Synthesis HQ, Aldric retreats) ───
+  'aldric-inner-sanctum': {
+    id: 'aldric-inner-sanctum',
+    actions: [
+      { type: 'playBGM', key: 'bgm-villain' },
+      { type: 'dialogue', speaker: 'Aldric', portraitKey: 'npc-champion-aldric', lines: [
+        'You made it further than I expected.',
+        'You fight for a world that lets Pokémon suffer in silence.',
+        'I fight for one where they never have to.',
+      ]},
+      { type: 'wait', ms: 400 },
+      { type: 'dialogue', speaker: 'Aldric', portraitKey: 'npc-champion-aldric', lines: [
+        'Join me, and the next century of Pokémon history is yours to shape.',
+      ]},
+      { type: 'dialogue', speaker: 'Narrator', lines: [
+        'You shake your head, grip on your Poké Ball steady.',
+      ]},
+      { type: 'dialogue', speaker: 'Aldric', portraitKey: 'npc-champion-aldric', lines: [
+        'A pity.',
+        'When you understand what you\'ve refused, it will be too late.',
+      ]},
+      { type: 'flashScreen', duration: 400 },
+      { type: 'fadeToBlack', duration: 500 },
+      { type: 'wait', ms: 400 },
+      { type: 'fadeFromBlack', duration: 500 },
+      { type: 'dialogue', speaker: 'Narrator', lines: [
+        'When the light fades, Aldric is gone.',
+        'A subordinate steps forward — the next obstacle between you and the Director.',
+      ]},
+      { type: 'setFlag', flag: 'aldric_inner_sanctum' },
+    ],
+  },
+
+  // ─── Pokémon League arrival (Victory Road exit) ───
+  'league-arrival': {
+    id: 'league-arrival',
+    actions: [
+      { type: 'fadeToBlack', duration: 600 },
+      { type: 'playBGM', key: 'bgm-fanfare' },
+      { type: 'fadeFromBlack', duration: 800 },
+      { type: 'dialogue', speaker: 'Narrator', lines: [
+        'The doors of the Pokémon League grind open.',
+        'Marble columns rise toward a sky lit by Aether crystals.',
+        'Eight badges chime softly at your side.',
+      ]},
+      { type: 'wait', ms: 500 },
+      { type: 'dialogue', speaker: 'Kael', portraitKey: 'rival', lines: [
+        'You actually made it. I lost to the first Elite, you know.',
+        'Hah — I\'m supposed to be your rival, and here I am cheering for you.',
+      ]},
+      { type: 'wait', ms: 300 },
+      { type: 'dialogue', speaker: 'Kael', portraitKey: 'rival', lines: [
+        'Whatever\'s up there… don\'t flinch.',
+        'Show the Champion who you really are.',
+      ]},
+      { type: 'setFlag', flag: 'league_arrival' },
+    ],
+  },
+
+  // ─── Shattered Isles arrival (post-game) ───
+  'shattered-isles-arrival': {
+    id: 'shattered-isles-arrival',
+    actions: [
+      { type: 'fadeToBlack', duration: 800 },
+      { type: 'playBGM', key: 'bgm-mystery' },
+      { type: 'fadeFromBlack', duration: 1000 },
+      { type: 'dialogue', speaker: 'Narrator', lines: [
+        'Salt spray and silence.',
+        'The Shattered Isles rise from the sea like broken teeth.',
+        'Twenty years ago an Aether eruption tore this island apart.',
+        'Now the wind carries the same low hum that fills your father\'s journal.',
+      ]},
+      { type: 'wait', ms: 500 },
+      { type: 'dialogue', speaker: 'Narrator', lines: [
+        'A weathered footprint marks the dust at the shore.',
+        'Someone walked here recently.',
+      ]},
+      { type: 'showEmote', targetId: 'player', emote: 'exclamation' },
+      { type: 'setFlag', flag: 'shattered_isles_arrival' },
+    ],
+  },
 };

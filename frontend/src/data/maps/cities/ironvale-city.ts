@@ -168,7 +168,9 @@ export const ironvaleCity: MapDefinition = {
         'The hologram fades...',
       ],
       requireFlag: 'found_mines_terminal',
-      setsFlag: 'saw_aldric_hologram' }
+      setsFlag: 'saw_aldric_hologram',
+      // Cutscene plays once on first interaction; falls back to dialogue thereafter.
+      triggerCutscene: 'aldric-hologram' }
   ],
   warps: [
     // South exit → Route 4

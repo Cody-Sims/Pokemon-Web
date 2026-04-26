@@ -79,6 +79,33 @@ export class StatisticsScene extends Phaser.Scene {
       }).setOrigin(1, 0.5);
     });
 
+    // ── Speed-run splits (only when at least one is recorded) ──
+    const splits = gm.getSpeedrunSplits();
+    if (splits.length > 0) {
+      const splitsTop = startY + rows.length * lineH + 12;
+      this.add.text(layout.cx, splitsTop, 'SPEED-RUN SPLITS', {
+        ...FONTS.caption, color: COLORS.textHighlight, fontStyle: 'bold',
+      }).setOrigin(0.5);
+      const splitFont = mobileFontSize(12);
+      splits.forEach((split, i) => {
+        const sy = splitsTop + 18 + i * (lineH * 0.7);
+        if (i % 2 === 0) {
+          this.add.rectangle(layout.cx, sy, layout.w - 80, lineH * 0.7, COLORS.bgCard, 0.25);
+        }
+        this.add.text(labelX + 10, sy, split.label, {
+          fontSize: splitFont, color: '#cccccc',
+        }).setOrigin(0, 0.5);
+        const splitH = Math.floor(split.playtime / 3600);
+        const splitM = Math.floor((split.playtime % 3600) / 60);
+        const splitS = split.playtime % 60;
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        const splitStr = splitH > 0 ? `${splitH}:${pad(splitM)}:${pad(splitS)}` : `${splitM}:${pad(splitS)}`;
+        this.add.text(valueX - 10, sy, splitStr, {
+          fontSize: splitFont, color: '#7fffd4', fontFamily: 'monospace', fontStyle: 'bold',
+        }).setOrigin(1, 0.5);
+      });
+    }
+
     // Close hint
     const closeBtn = this.add.text(layout.cx, layout.h - 25, '[ CLOSE ]', {
       ...FONTS.caption, color: COLORS.textDim,

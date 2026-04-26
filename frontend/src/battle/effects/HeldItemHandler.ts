@@ -1,6 +1,7 @@
 import { PokemonInstance, MoveData } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { itemData } from '@data/item-data';
+import { WeatherCondition } from '@utils/type-helpers';
 
 /**
  * Held item effect system for Pokémon battles.
@@ -59,18 +60,19 @@ export class HeldItemHandler {
     return { messages };
   }
 
-  /** Called after a move deals damage to this Pokémon. Handles Focus Sash, etc. */
+  /** Called after a move deals damage to this Pokémon. Handles Focus Sash, Rocky Helmet, etc. */
   static onAfterDamage(
     pokemon: PokemonInstance,
     attacker: PokemonInstance,
     damage: number,
     hpBeforeHit: number,
-  ): { messages: string[]; damagePrevented: number } {
+  ): { messages: string[]; damagePrevented: number; rockyHelmetRecoil: number } {
     const item = HeldItemHandler.getHeldItem(pokemon);
-    if (!item) return { messages: [], damagePrevented: 0 };
+    if (!item) return { messages: [], damagePrevented: 0, rockyHelmetRecoil: 0 };
     const name = pokemon.nickname ?? pokemonData[pokemon.dataId]?.name ?? '???';
     const messages: string[] = [];
     let damagePrevented = 0;
+    let rockyHelmetRecoil = 0;
 
     switch (item) {
       case 'focus-sash': {
@@ -83,9 +85,20 @@ export class HeldItemHandler {
         }
         break;
       }
+      case 'rocky-helmet': {
+        // Damage the attacker for 1/6 of their max HP whenever the holder
+        // takes damage from a move (assumed contact for simplicity).
+        if (damage > 0 && attacker.currentHp > 0) {
+          const attName = attacker.nickname ?? pokemonData[attacker.dataId]?.name ?? '???';
+          rockyHelmetRecoil = Math.max(1, Math.floor(attacker.stats.hp / 6));
+          attacker.currentHp = Math.max(0, attacker.currentHp - rockyHelmetRecoil);
+          messages.push(`${attName} was hurt by ${name}'s Rocky Helmet!`);
+        }
+        break;
+      }
     }
 
-    return { messages, damagePrevented };
+    return { messages, damagePrevented, rockyHelmetRecoil };
   }
 
   /** Called when attacker uses a damaging move. Handles Life Orb recoil. */
@@ -202,9 +215,75 @@ export class HeldItemHandler {
         }
         break;
       }
+      // Pinch berries — restore 1/3 of max HP at low HP. Each flavour exists
+      // for variety / breeding hooks; mechanically they share the heal.
+      case 'figy-berry':
+      case 'wiki-berry':
+      case 'mago-berry':
+      case 'aguav-berry':
+      case 'iapapa-berry': {
+        if (hpPct <= 0.5) {
+          const heal = Math.max(1, Math.floor(pokemon.stats.hp / 3));
+          pokemon.currentHp = Math.min(pokemon.stats.hp, pokemon.currentHp + heal);
+          const berryName = item.split('-')[0].replace(/^./, c => c.toUpperCase());
+          HeldItemHandler.consumeItem(pokemon);
+          messages.push(`${name} restored HP with its ${berryName} Berry!`);
+        }
+        break;
+      }
     }
 
     return { messages };
+  }
+
+  /**
+   * Called when a volatile status (confusion, etc.) is applied. Returns
+   * `cured: true` if a held berry removed the volatile, in which case the
+   * caller should also remove it from the Pokémon's volatile state set.
+   */
+  static onVolatileApplied(
+    pokemon: PokemonInstance,
+    volatile: 'confusion' | 'flinch' | 'leech-seed' | 'trapped' | 'protect',
+  ): { messages: string[]; cured: boolean } {
+    const item = HeldItemHandler.getHeldItem(pokemon);
+    if (!item) return { messages: [], cured: false };
+    const name = pokemon.nickname ?? pokemonData[pokemon.dataId]?.name ?? '???';
+
+    if (item === 'persim-berry' && volatile === 'confusion') {
+      HeldItemHandler.consumeItem(pokemon);
+      return {
+        messages: [`${name}'s Persim Berry snapped it out of confusion!`],
+        cured: true,
+      };
+    }
+    if (item === 'lum-berry' && volatile === 'confusion') {
+      HeldItemHandler.consumeItem(pokemon);
+      return {
+        messages: [`${name}'s Lum Berry cured its confusion!`],
+        cured: true,
+      };
+    }
+
+    return { messages: [], cured: false };
+  }
+
+  /**
+   * Returns the bonus duration (in turns) that the attacker's held weather
+   * rock adds when setting `weather`. Default rocks add 3 turns to the base 5.
+   */
+  static getWeatherDurationBonus(
+    attacker: PokemonInstance,
+    weather: WeatherCondition,
+  ): number {
+    const item = HeldItemHandler.getHeldItem(attacker);
+    if (!item) return 0;
+    const map: Record<string, WeatherCondition> = {
+      'heat-rock': 'sun',
+      'damp-rock': 'rain',
+      'smooth-rock': 'sandstorm',
+      'icy-rock': 'hail',
+    };
+    return map[item] === weather ? 3 : 0;
   }
 
   /** Modify damage output. Returns a multiplier for the attacker's held item. */

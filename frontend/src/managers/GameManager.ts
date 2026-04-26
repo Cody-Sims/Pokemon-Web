@@ -3,11 +3,11 @@ import { DifficultyMode, DifficultyConfig } from '@data/difficulty';
 
 import { PartyManager } from './PartyManager';
 import { ProgressManager, HallOfFameEntry } from './ProgressManager';
-import { PlayerStateManager } from './PlayerStateManager';
+import { PlayerStateManager, SpeedrunSplit } from './PlayerStateManager';
 import { StatsManager, GameStats, defaultStats } from './StatsManager';
 
 // Re-export types so existing `import { GameStats, HallOfFameEntry } from '@managers/GameManager'` still works
-export type { GameStats, HallOfFameEntry };
+export type { GameStats, HallOfFameEntry, SpeedrunSplit };
 export { defaultStats };
 
 /**
@@ -82,7 +82,13 @@ export class GameManager {
   // ══════════════════════════════════════════════════════
 
   getBadges(): string[] { return this._progress.getBadges(); }
-  addBadge(badge: string): void { this._progress.addBadge(badge); }
+  addBadge(badge: string): void {
+    if (this._progress.getBadges().includes(badge)) return;
+    this._progress.addBadge(badge);
+    // Auto-record speed-run split on first acquisition.
+    const pretty = badge.replace(/^./, c => c.toUpperCase());
+    this._player.recordSpeedrunSplit(`badge:${badge}`, `${pretty} Badge`);
+  }
 
   getFlag(flag: string): boolean { return this._progress.getFlag(flag); }
   setFlag(flag: string, value = true): void { this._progress.setFlag(flag, value); }
@@ -111,6 +117,8 @@ export class GameManager {
       this._player.getPlaytime(),
       this._party.getParty(),
     );
+    // Final speed-run split on first champion victory.
+    this._player.recordSpeedrunSplit('champion', 'Champion Defeated');
   }
 
   // ══════════════════════════════════════════════════════
@@ -154,6 +162,13 @@ export class GameManager {
 
   getGameClockMinutes(): number { return this._player.getGameClockMinutes(); }
   setGameClockMinutes(minutes: number): void { this._player.setGameClockMinutes(minutes); }
+
+  /** Read the recorded speed-run splits (badges + champion) in record order. */
+  getSpeedrunSplits(): SpeedrunSplit[] { return this._player.getSpeedrunSplits(); }
+  /** Manually record a split (e.g. for custom milestones); no-op if `id` already recorded. */
+  recordSpeedrunSplit(id: string, label: string): SpeedrunSplit | null {
+    return this._player.recordSpeedrunSplit(id, label);
+  }
 
   // ══════════════════════════════════════════════════════
   //  Delegation — Stats  (→ StatsManager)

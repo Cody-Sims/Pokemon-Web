@@ -7,7 +7,8 @@
     "dev": "vite --config frontend/vite.config.ts",
     "generate-icons": "node frontend/scripts/generate-icons.js",
     "generate-atlas": "node frontend/scripts/generate-atlas.js",
-    "build": "node frontend/scripts/generate-icons.js && node frontend/scripts/generate-atlas.js && tsc --project frontend/tsconfig.json --noEmit && vite build --config frontend/vite.config.ts",
+    "generate-pixel-font": "node frontend/scripts/generate-pixel-font.js",
+    "build": "node frontend/scripts/generate-icons.js && node frontend/scripts/generate-atlas.js && node frontend/scripts/generate-pixel-font.js && tsc --project frontend/tsconfig.json --noEmit && vite build --config frontend/vite.config.ts",
     "preview": "vite preview --config frontend/vite.config.ts",
     "test": "vitest run --config tests/vitest.config.ts",
     "test:watch": "vitest --config tests/vitest.config.ts",
@@ -26,6 +27,7 @@
     "map:preview-all": "npx tsx temp/scripts/map-gen/cli.ts preview --all",
     "map:gen": "npx tsx temp/scripts/map-gen/cli.ts",
     "map:compose": "npx tsx temp/scripts/map-gen/cli.ts compose",
+    "map:region": "npx tsx temp/scripts/map-gen/region/region-map.ts",
     "deploy": "npm run build && npx gh-pages -d dist"
   },
   "keywords": [],

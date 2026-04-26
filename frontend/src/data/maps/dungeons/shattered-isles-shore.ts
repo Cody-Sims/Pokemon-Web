@@ -81,7 +81,21 @@ export const shatteredIslesShore: MapDefinition = {
       condition: 'enteredHallOfFame',
     },
   ],
-  objects: [],
+  objects: [
+    {
+      id: 'shattered-isles-marker',
+      tileX: 11,
+      tileY: 27,
+      textureKey: 'sign-post',
+      objectType: 'sign',
+      dialogue: [
+        'A weathered marker reads:',
+        '"Shattered Isles — Beware the Aether tides."',
+      ],
+      // Plays the post-game arrival cinematic on first read.
+      triggerCutscene: 'shattered-isles-arrival',
+    },
+  ],
   warps: [
     // South dock → Coral Harbor
     { tileX: 11, tileY: 29, targetMap: 'coral-harbor', targetSpawnId: 'from-shattered-isles' },

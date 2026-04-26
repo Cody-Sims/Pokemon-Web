@@ -21,6 +21,10 @@ export class BattleMoveMenu {
   moveDecorations: Phaser.GameObjects.GameObject[] = [];
   moveCursor = 0;
   moveMenuBg?: Phaser.GameObjects.Rectangle;
+  /** Geometry of each move button: {x, y, w, h, typeColor} for cursor ring drawing. */
+  private moveButtons: { x: number; y: number; w: number; h: number; typeColor: number }[] = [];
+  /** Shared graphics object that draws a thicker bright ring around the selected button. */
+  private selectionRing?: Phaser.GameObjects.Graphics;
   targetArrows: Phaser.GameObjects.Text[] = [];
   targetCursor = 0;
   pendingMoveId?: string;
@@ -32,6 +36,7 @@ export class BattleMoveMenu {
   openMoveMenu(): void {
     this.scene.state = 'moves';
     this.moveCursor = 0;
+    this.moveButtons = [];
     this.scene.hideActions();
     const moves = this.scene.battle().playerPokemon.moves;
     const moveRowH = Math.round(35 * MOBILE_SCALE);
@@ -42,6 +47,10 @@ export class BattleMoveMenu {
     this.moveMenuBg = this.scene.add
       .rectangle(mcx, mh - moveMenuH / 2 - 10, mw - 20, moveMenuH, 0x1a1a2e, 0.95)
       .setStrokeStyle(2, COLORS.borderLight);
+
+    // Selection ring graphics — drawn on top of move buttons, repositioned by updateMoveCursor.
+    this.selectionRing?.destroy();
+    this.selectionRing = this.scene.add.graphics().setDepth(12);
 
     // Pre-compute enemy types for type effectiveness hints
     const typeHintSetting = GameManager.getInstance().getSetting('showTypeHints');
@@ -77,6 +86,7 @@ export class BattleMoveMenu {
       bg.strokeRoundedRect(x - btnW / 2, y - btnH / 2, btnW, btnH, 4);
       bg.setDepth(9);
       this.moveDecorations.push(bg);
+      this.moveButtons.push({ x, y, w: btnW, h: btnH, typeColor: typeCol });
 
       // Category indicator (P/S/St)
       if (md) {
@@ -225,6 +235,24 @@ export class BattleMoveMenu {
       if (i < moveCount)
         t.setColor(i === this.moveCursor ? COLORS.textHighlight : COLORS.textWhite);
     });
+
+    // Draw a bright ring on the active button using its move's type color.
+    if (this.selectionRing) {
+      this.selectionRing.clear();
+      const btn = this.moveButtons[this.moveCursor];
+      if (btn) {
+        const ringX = btn.x - btn.w / 2 - 1;
+        const ringY = btn.y - btn.h / 2 - 1;
+        const ringW = btn.w + 2;
+        const ringH = btn.h + 2;
+        // Outer dark shadow
+        this.selectionRing.lineStyle(4, 0x000000, 0.45);
+        this.selectionRing.strokeRoundedRect(ringX, ringY, ringW, ringH, 5);
+        // Bright type-colored ring
+        this.selectionRing.lineStyle(2, btn.typeColor, 1);
+        this.selectionRing.strokeRoundedRect(ringX, ringY, ringW, ringH, 5);
+      }
+    }
   }
 
   selectMove(): void {
@@ -248,6 +276,9 @@ export class BattleMoveMenu {
   closeMoveMenu(): void {
     this.scene.state = 'actions';
     this.moveMenuBg?.destroy();
+    this.selectionRing?.destroy();
+    this.selectionRing = undefined;
+    this.moveButtons = [];
     this.moveTexts.forEach(t => t.destroy());
     this.moveTexts = [];
     this.moveDecorations.forEach(d => d.destroy());

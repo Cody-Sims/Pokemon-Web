@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
 import { VirtualJoystick } from '@ui/controls/VirtualJoystick';
 import { hapticTap } from '@utils/haptics';
+import { getGameSafeAreaInsets } from '@utils/safe-area';
 
 /** Max time (ms) between touchstart and touchend to count as a tap. */
 const TAP_TIME_THRESHOLD = 300;
@@ -680,10 +681,14 @@ export class TouchControls {
     // otherwise occlude it. In landscape phone DOM mode the in-canvas button is
     // hidden anyway, so this position only applies to in-canvas overlay mode.
     const isPortrait = height > width;
+    // Add safe-area insets so the button stays clear of iOS notches in
+    // landscape and the home indicator/status bar in portrait PWA mode.
+    const insets = getGameSafeAreaInsets(this.scene.cameras.main);
     // In portrait we push the button further down past the HUD strip + clock
     // widget so it's well clear of iOS top-edge gesture areas and easy to tap.
-    const yOffset = isPortrait ? this.menuBtnSize / 2 + 72 : this.menuBtnSize / 2 + 12;
-    const xOffset = this.menuBtnSize / 2 + 12;
+    const baseY = isPortrait ? this.menuBtnSize / 2 + 72 : this.menuBtnSize / 2 + 12;
+    const yOffset = baseY + insets.top;
+    const xOffset = this.menuBtnSize / 2 + 12 + insets.right;
     this.menuBtn.setPosition(width - xOffset, yOffset);
   }
 

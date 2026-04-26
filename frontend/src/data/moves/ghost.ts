@@ -10,4 +10,5 @@ export const ghostMoves: Record<string, MoveData> = {
   'phantom-force':  { id: 'phantom-force', name: 'Phantom Force', type: 'ghost', category: 'physical', power: 90, accuracy: 100, pp: 10, effect: { type: 'two-turn', target: 'enemy', twoTurnMove: 'phantom-force' } },
   'will-o-wisp':    { id: 'will-o-wisp', name: 'Will-O-Wisp', type: 'ghost', category: 'status', power: null, accuracy: 85, pp: 15, effect: { type: 'status', target: 'enemy', status: 'burn', chance: 100 } },
   'destiny-bond':   { id: 'destiny-bond', name: 'Destiny Bond', type: 'ghost', category: 'status', power: null, accuracy: 100, pp: 5 },
+  'shadow-sneak':   { id: 'shadow-sneak', name: 'Shadow Sneak', type: 'ghost', category: 'physical', power: 40, accuracy: 100, pp: 30, priority: 1 },
 };

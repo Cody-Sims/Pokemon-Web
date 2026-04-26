@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
+import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
@@ -38,6 +39,7 @@ const SETTING_DEFS: SettingDef[] = [
   { key: 'highVisControls', label: 'High Vis Controls', type: 'cycle', options: ['false', 'true'] },
   { key: 'showMinimap', label: 'Show Minimap', type: 'cycle', options: ['true', 'false'] },
   { key: 'showTypeHints', label: 'Show Type Hints', type: 'cycle', options: ['true', 'false'] },
+  { key: 'speedrunTimer', label: 'Speed-Run Timer', type: 'cycle', options: ['false', 'true'] },
 ];
 
 export class SettingsScene extends Phaser.Scene {
@@ -45,6 +47,10 @@ export class SettingsScene extends Phaser.Scene {
   private settingTexts: { label: Phaser.GameObjects.Text; value: Phaser.GameObjects.Text; leftArrow: Phaser.GameObjects.Text; rightArrow: Phaser.GameObjects.Text }[] = [];
   private returnScene = 'TitleScene';
   private isFullscreen = false;
+  /** Layer holding every layout-derived game object so we can wipe + rebuild on resize. */
+  private layoutLayer?: Phaser.GameObjects.Container;
+  /** Cursor index preserved across re-layouts. */
+  private savedCursor = 0;
 
   constructor() {
     super({ key: 'SettingsScene' });
@@ -56,22 +62,63 @@ export class SettingsScene extends Phaser.Scene {
 
   create(): void {
     const gm = GameManager.getInstance();
+
+    // Re-layout on resize / orientation change. Everything inside builds the
+    // panel + rows from scratch using the current viewport dimensions, so the
+    // settings menu adapts cleanly when the device rotates while it's open.
+    layoutOn(this, () => this.buildLayout());
+
+    // LEFT/RIGHT to adjust value (registered once so the controller persists
+    // across re-layouts).
+    this.input.keyboard!.on('keydown-LEFT', () => this.adjustValue(-1));
+    this.input.keyboard!.on('keydown-RIGHT', () => this.adjustValue(1));
+
+    // Sync accessibility settings on scene create
+    syncAccessibilitySettings({
+      textScale: String(gm.getSetting('textScale') ?? 'medium'),
+      reducedMotion: String(gm.getSetting('reducedMotion') ?? 'false'),
+      colorblindMode: String(gm.getSetting('colorblindMode') ?? 'off'),
+    });
+    // Apply saved colorblind filter to canvas
+    const savedMode = String(gm.getSetting('colorblindMode') ?? 'off');
+    this.game.canvas.style.filter = savedMode === 'off' ? 'none' : colorblindFilter(savedMode);
+  }
+
+  /**
+   * Build (or rebuild) every layout-dependent UI element from current
+   * viewport dimensions. Safe to call repeatedly; existing layout objects
+   * are destroyed first so we don't leak duplicates after a rotation.
+   */
+  private buildLayout(): void {
+    const gm = GameManager.getInstance();
     const isMobile = TouchControls.isTouchDevice();
     const layout = ui(this);
     const portrait = layout.h > layout.w;
 
+    // Wipe previous layout so this method is idempotent on resize.
+    if (this.layoutLayer) {
+      this.savedCursor = this.controller?.getCursor() ?? this.savedCursor;
+      this.controller?.destroy();
+      this.controller = undefined;
+      this.layoutLayer.destroy(true);
+    }
+    this.layoutLayer = this.add.container(0, 0).setDepth(0);
+    this.settingTexts = [];
+
     // Background
-    this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
-    new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 32, layout.h - 32, {
+    const bgRect = this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
+    const panel = new NinePatchPanel(this, layout.cx, layout.cy, layout.w - 32, layout.h - 32, {
       fillColor: COLORS.bgPanel,
       borderColor: COLORS.border,
       cornerRadius: 8,
     });
+    this.layoutLayer.add([bgRect, panel.getGraphics()]);
 
     // Title
     const titleSize = portrait ? 22 : 26;
-    this.add.text(layout.cx, portrait ? 38 : 50, 'SETTINGS', { ...FONTS.heading, fontSize: mobileFontSize(titleSize) }).setOrigin(0.5);
-    this.add.rectangle(layout.cx, portrait ? 56 : 70, 180, 2, COLORS.borderHighlight, 0.4);
+    const title = this.add.text(layout.cx, portrait ? 38 : 50, 'SETTINGS', { ...FONTS.heading, fontSize: mobileFontSize(titleSize) }).setOrigin(0.5);
+    const titleRule = this.add.rectangle(layout.cx, portrait ? 56 : 70, 180, 2, COLORS.borderHighlight, 0.4);
+    this.layoutLayer.add([title, titleRule]);
 
     // Settings rows — compact layout in portrait so labels never overlap
     // the value/arrow column on narrow screens.
@@ -89,9 +136,6 @@ export class SettingsScene extends Phaser.Scene {
     const rightArrowX = layout.w - (portrait ? 28 : 95);
     const valueX = rightArrowX - (portrait ? 30 : 55);
     const leftArrowX = valueX - (portrait ? 38 : 60);
-
-    this.settingTexts = [];
-    const rowHitAreas: Phaser.GameObjects.Rectangle[] = [];
 
     SETTING_DEFS.forEach((def, i) => {
       const y = startY + i * rowH;
@@ -122,8 +166,8 @@ export class SettingsScene extends Phaser.Scene {
       const hitArea = this.add.rectangle(layout.cx, y + rowH / 2 - 4, layout.w - 40, rowH, 0x000000, 0)
         .setInteractive({ useHandCursor: true });
       hitArea.on('pointerover', () => { this.controller?.setCursor(i); this.highlightRow(i); });
-      rowHitAreas.push(hitArea);
 
+      this.layoutLayer!.add([label, leftArrow, value, rightArrow, hitArea]);
       this.settingTexts.push({ label, value, leftArrow, rightArrow });
     });
 
@@ -152,8 +196,8 @@ export class SettingsScene extends Phaser.Scene {
     const fsHitArea = this.add.rectangle(layout.cx, fsY + rowH / 2 - 4, layout.w - 40, rowH, 0x000000, 0)
       .setInteractive({ useHandCursor: true });
     fsHitArea.on('pointerover', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); });
-    rowHitAreas.push(fsHitArea);
 
+    this.layoutLayer!.add([fsLabel, fsLeftArrow, fsValue, fsRightArrow, fsHitArea]);
     this.settingTexts.push({ label: fsLabel, value: fsValue, leftArrow: fsLeftArrow, rightArrow: fsRightArrow });
 
     // Back button (visible for touch users, always works)
@@ -167,10 +211,11 @@ export class SettingsScene extends Phaser.Scene {
 
     // Close hint
     const hintTxt = isMobile ? 'Tap ◀ ▶ to change  •  Tap [ Back ] to return' : 'ESC to go back   ◀ ▶ to change values';
-    this.add.text(layout.cx, layout.h - (portrait ? 22 : 40), hintTxt, {
+    const hint = this.add.text(layout.cx, layout.h - (portrait ? 22 : 40), hintTxt, {
       ...FONTS.caption,
       fontSize: mobileFontSize(portrait ? 10 : 12),
     }).setOrigin(0.5);
+    this.layoutLayer!.add([backBtn, hint]);
 
     this.controller = new MenuController(this, {
       columns: 1,
@@ -179,22 +224,10 @@ export class SettingsScene extends Phaser.Scene {
       onMove: (idx) => this.highlightRow(idx),
       onCancel: () => this.closeSettings(),
     });
-
-    // LEFT/RIGHT to adjust value
-    this.input.keyboard!.on('keydown-LEFT', () => this.adjustValue(-1));
-    this.input.keyboard!.on('keydown-RIGHT', () => this.adjustValue(1));
-
-    this.highlightRow(0);
-
-    // Sync accessibility settings on scene create
-    syncAccessibilitySettings({
-      textScale: String(gm.getSetting('textScale') ?? 'medium'),
-      reducedMotion: String(gm.getSetting('reducedMotion') ?? 'false'),
-      colorblindMode: String(gm.getSetting('colorblindMode') ?? 'off'),
-    });
-    // Apply saved colorblind filter to canvas
-    const savedMode = String(gm.getSetting('colorblindMode') ?? 'off');
-    this.game.canvas.style.filter = savedMode === 'off' ? 'none' : colorblindFilter(savedMode);
+    // Restore cursor position from before the rebuild.
+    const restored = Math.min(this.savedCursor, allItemCount - 1);
+    this.controller.setCursor(restored);
+    this.highlightRow(restored);
   }
 
   private highlightRow(idx: number): void {
@@ -274,7 +307,7 @@ export class SettingsScene extends Phaser.Scene {
     if (def.type === 'slider' && def.format) {
       return def.format(typeof val === 'number' ? val : parseFloat(String(val)) || 0);
     }
-    if (def.key === 'battleAnimations' || def.key === 'reducedMotion' || def.key === 'showMinimap' || def.key === 'showTypeHints') {
+    if (def.key === 'battleAnimations' || def.key === 'reducedMotion' || def.key === 'showMinimap' || def.key === 'showTypeHints' || def.key === 'speedrunTimer') {
       return String(val) === 'true' ? 'ON' : 'OFF';
     }
     if (def.key === 'colorblindMode') {

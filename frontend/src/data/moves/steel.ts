@@ -9,4 +9,5 @@ export const steelMoves: Record<string, MoveData> = {
   'bullet-punch': { id: 'bullet-punch', name: 'Bullet Punch', type: 'steel', category: 'physical', power: 40, accuracy: 100, pp: 30, priority: 1 },
   'iron-head':    { id: 'iron-head', name: 'Iron Head', type: 'steel', category: 'physical', power: 80, accuracy: 100, pp: 15, effect: { type: 'flinch', target: 'enemy', chance: 30 } },
   'gyro-ball':    { id: 'gyro-ball', name: 'Gyro Ball', type: 'steel', category: 'physical', power: 60, accuracy: 100, pp: 5 },
+  'iron-defense': { id: 'iron-defense', name: 'Iron Defense', type: 'steel', category: 'status', power: null, accuracy: 100, pp: 15, effect: { type: 'stat-change', target: 'self', stat: 'defense', stages: 2 } },
 };
