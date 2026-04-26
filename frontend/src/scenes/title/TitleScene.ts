@@ -7,6 +7,7 @@ import { BGM, SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
 import { DifficultyMode, DIFFICULTY_CONFIGS } from '@data/difficulty';
+import { CHALLENGE_CONFIGS, ChallengeMode } from '@data/challenge-modes';
 
 export class TitleScene extends Phaser.Scene {
   private cursor!: number;
@@ -287,7 +288,7 @@ export class TitleScene extends Phaser.Scene {
 
     const confirmDiff = () => {
       cleanup();
-      this.scene.start('IntroScene', { difficulty: modes[diffCursor] });
+      this.showChallengeSelect(modes[diffCursor]);
     };
 
     const cancelDiff = () => {
@@ -346,6 +347,97 @@ export class TitleScene extends Phaser.Scene {
 
     this.input.keyboard!.on('keydown-UP', onUp);
     this.input.keyboard!.on('keydown-DOWN', onDown);
+    this.input.keyboard!.on('keydown-ENTER', onEnter);
+    this.input.keyboard!.on('keydown-ESC', onEsc);
+  }
+
+  /**
+   * Optional challenge-mode multi-select shown after difficulty selection.
+   * Players toggle any combination of monotype / soloRun / noItems /
+   * minimalCatches with SPACE (or tap), then press ENTER to begin.
+   */
+  private showChallengeSelect(difficulty: DifficultyMode): void {
+    const { width, height } = this.cameras.main;
+    const modes: ChallengeMode[] = ['monotype', 'soloRun', 'noItems', 'minimalCatches'];
+    const enabled = new Set<ChallengeMode>();
+    let cursor = 0;
+
+    const overlay = this.add.rectangle(width / 2, height / 2, width, height, COLORS.bgDark).setDepth(50);
+    const title = this.add.text(width / 2, height * 0.18, 'CHALLENGE MODES', {
+      ...FONTS.heading, fontSize: mobileFontSize(22),
+    }).setOrigin(0.5).setDepth(51);
+    const hint = this.add.text(width / 2, height * 0.25, 'Optional. Toggle with SPACE / tap. ENTER to begin.', {
+      ...FONTS.caption, fontSize: mobileFontSize(11), color: COLORS.textDim,
+    }).setOrigin(0.5).setDepth(51);
+
+    const items = modes.map((mode, i) => {
+      const cfg = CHALLENGE_CONFIGS[mode];
+      const label = this.add.text(width / 2, height * 0.34 + i * 44, `[ ] ${cfg.name}`, {
+        ...FONTS.menuItem, fontSize: mobileFontSize(18),
+      }).setOrigin(0.5).setDepth(51).setInteractive({ useHandCursor: true });
+      label.on('pointerover', () => { cursor = i; updateUI(); });
+      return label;
+    });
+
+    const desc = this.add.text(width / 2, height * 0.78, CHALLENGE_CONFIGS[modes[0]].description, {
+      ...FONTS.caption, fontSize: mobileFontSize(13), color: COLORS.textDim, wordWrap: { width: width * 0.8 },
+    }).setOrigin(0.5).setDepth(51);
+
+    const beginBtn = this.add.text(width / 2, height * 0.88, '▶ BEGIN', {
+      ...FONTS.menuItem, fontSize: mobileFontSize(18), color: COLORS.textHighlight,
+    }).setOrigin(0.5).setDepth(51).setInteractive({ useHandCursor: true });
+
+    const arrow = this.add.text(0, 0, '▸', {
+      ...FONTS.menuItem, fontSize: mobileFontSize(18), color: COLORS.textHighlight,
+    }).setDepth(51);
+
+    const updateUI = () => {
+      items.forEach((item, i) => {
+        const mark = enabled.has(modes[i]) ? '[X]' : '[ ]';
+        item.setText(`${mark} ${CHALLENGE_CONFIGS[modes[i]].name}`);
+        item.setColor(i === cursor ? COLORS.textHighlight : COLORS.textWhite);
+      });
+      const sel = items[cursor];
+      arrow.setPosition(sel.x - sel.width / 2 - 22, sel.y - 10);
+      desc.setText(CHALLENGE_CONFIGS[modes[cursor]].description);
+    };
+    updateUI();
+
+    const toggle = () => {
+      const m = modes[cursor];
+      if (enabled.has(m)) enabled.delete(m); else enabled.add(m);
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
+      updateUI();
+    };
+
+    items.forEach((item, i) => item.on('pointerdown', () => { cursor = i; toggle(); }));
+
+    const cleanup = () => {
+      this.input.keyboard!.off('keydown-UP', onUp);
+      this.input.keyboard!.off('keydown-DOWN', onDown);
+      this.input.keyboard!.off('keydown-SPACE', toggle);
+      this.input.keyboard!.off('keydown-ENTER', onEnter);
+      this.input.keyboard!.off('keydown-ESC', onEsc);
+      overlay.destroy(); title.destroy(); hint.destroy(); desc.destroy();
+      arrow.destroy(); beginBtn.destroy();
+      items.forEach(i => i.destroy());
+    };
+
+    const begin = () => {
+      AudioManager.getInstance().playSFX(SFX.CONFIRM);
+      cleanup();
+      this.scene.start('IntroScene', { difficulty, challengeModes: Array.from(enabled) });
+    };
+    beginBtn.on('pointerdown', begin);
+
+    const onUp = () => { cursor = (cursor - 1 + modes.length) % modes.length; AudioManager.getInstance().playSFX(SFX.CURSOR); updateUI(); };
+    const onDown = () => { cursor = (cursor + 1) % modes.length; AudioManager.getInstance().playSFX(SFX.CURSOR); updateUI(); };
+    const onEnter = () => begin();
+    const onEsc = () => { AudioManager.getInstance().playSFX(SFX.CANCEL); cleanup(); this.scene.start('IntroScene', { difficulty, challengeModes: [] }); };
+
+    this.input.keyboard!.on('keydown-UP', onUp);
+    this.input.keyboard!.on('keydown-DOWN', onDown);
+    this.input.keyboard!.on('keydown-SPACE', toggle);
     this.input.keyboard!.on('keydown-ENTER', onEnter);
     this.input.keyboard!.on('keydown-ESC', onEsc);
   }

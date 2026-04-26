@@ -3,6 +3,7 @@ import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
+import { SaveManager } from '@managers/SaveManager';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
@@ -209,13 +210,29 @@ export class SettingsScene extends Phaser.Scene {
     backBtn.on('pointerover', () => backBtn.setColor(COLORS.textWhite));
     backBtn.on('pointerout', () => backBtn.setColor(COLORS.textHighlight));
 
+    // Save Export / Import buttons (plan.md D.6) — flank the Back button.
+    const sideFont = mobileFontSize(portrait ? 12 : 14);
+    const exportBtn = this.add.text(layout.cx - (portrait ? 90 : 140), backY, '[ Export ]', {
+      ...FONTS.body, fontSize: sideFont, color: COLORS.textGray,
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    exportBtn.on('pointerdown', () => this.exportSave());
+    exportBtn.on('pointerover', () => exportBtn.setColor(COLORS.textHighlight));
+    exportBtn.on('pointerout', () => exportBtn.setColor(COLORS.textGray));
+
+    const importBtn = this.add.text(layout.cx + (portrait ? 90 : 140), backY, '[ Import ]', {
+      ...FONTS.body, fontSize: sideFont, color: COLORS.textGray,
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    importBtn.on('pointerdown', () => this.importSave());
+    importBtn.on('pointerover', () => importBtn.setColor(COLORS.textHighlight));
+    importBtn.on('pointerout', () => importBtn.setColor(COLORS.textGray));
+
     // Close hint
     const hintTxt = isMobile ? 'Tap ◀ ▶ to change  •  Tap [ Back ] to return' : 'ESC to go back   ◀ ▶ to change values';
     const hint = this.add.text(layout.cx, layout.h - (portrait ? 22 : 40), hintTxt, {
       ...FONTS.caption,
       fontSize: mobileFontSize(portrait ? 10 : 12),
     }).setOrigin(0.5);
-    this.layoutLayer!.add([backBtn, hint]);
+    this.layoutLayer!.add([backBtn, exportBtn, importBtn, hint]);
 
     this.controller = new MenuController(this, {
       columns: 1,
@@ -333,5 +350,59 @@ export class SettingsScene extends Phaser.Scene {
     } else {
       this.scene.resume(this.returnScene);
     }
+  }
+
+  /** Plan.md D.6 — download current save as JSON. */
+  private exportSave(): void {
+    AudioManager.getInstance().playSFX(SFX.CONFIRM);
+    try {
+      SaveManager.getInstance().downloadJson();
+      this.flashStatus('Save exported.');
+    } catch {
+      this.flashStatus('Export failed.');
+    }
+  }
+
+  /** Plan.md D.6 — pick a JSON file and import it. */
+  private importSave(): void {
+    if (typeof document === 'undefined') return;
+    AudioManager.getInstance().playSFX(SFX.CONFIRM);
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json,.json';
+    input.style.display = 'none';
+    input.addEventListener('change', () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const text = String(reader.result ?? '');
+        const err = SaveManager.getInstance().importJson(text);
+        if (err) {
+          this.flashStatus(`Import failed: ${err}`);
+        } else {
+          this.flashStatus('Save imported. Returning to title…');
+          this.time.delayedCall(900, () => {
+            this.scene.stop();
+            this.scene.start('TitleScene');
+          });
+        }
+      };
+      reader.onerror = () => this.flashStatus('Could not read file.');
+      reader.readAsText(file);
+    });
+    document.body.appendChild(input);
+    input.click();
+    setTimeout(() => input.remove(), 0);
+  }
+
+  /** Brief on-screen status toast for export/import results. */
+  private flashStatus(message: string): void {
+    const layout = ui(this);
+    const toast = this.add.text(layout.cx, layout.h - 90, message, {
+      ...FONTS.body, fontSize: mobileFontSize(13), color: COLORS.textHighlight,
+      backgroundColor: '#0f0f1add', padding: { x: 10, y: 6 },
+    }).setOrigin(0.5).setDepth(200);
+    this.time.delayedCall(2400, () => toast.destroy());
   }
 }

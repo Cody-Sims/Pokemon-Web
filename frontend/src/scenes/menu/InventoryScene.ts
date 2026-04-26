@@ -10,6 +10,7 @@ import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { ScrollContainer } from '@ui/widgets/ScrollContainer';
 import { COLORS, FONTS, SPACING, mobileFontSize, isMobile } from '@ui/theme';
+import { blockReasonForItemUse } from '@systems/engine/ChallengeRules';
 import { SFX } from '@utils/audio-keys';
 import { tmData } from '@data/tm-data';
 import type { ItemData } from '@data/interfaces';
@@ -356,6 +357,18 @@ export class InventoryScene extends Phaser.Scene {
   private useItem(idx: number): void {
     const entry = this.filteredItems[idx];
     const eff = entry.item.effect;
+
+    // Challenge-mode gate: No Items prevents item use outside Pokémon Centers.
+    // Pokéballs in battle are still allowed since the rule targets out-of-battle
+    // healing/buffing — but to keep the rule simple we apply it uniformly. Per
+    // the plan, "items disabled outside Pokémon Centers" applies to all uses.
+    if (!this.battleMode) {
+      const block = blockReasonForItemUse();
+      if (block) {
+        this.showMessage(block);
+        return;
+      }
+    }
 
     // TM items — launch MoveTutorScene in TM mode
     if (eff.type === 'teach-move' && eff.moveId) {

@@ -132,6 +132,8 @@ interface RandomizerConfig {
 
 ### B.4 Challenge Run Presets
 
+> **Status (2026-04-26)**: Four of five presets shipped (Monotype, Solo Run, No Items, Minimal Catches). New `frontend/src/data/challenge-modes.ts` defines preset metadata; `frontend/src/systems/engine/ChallengeRules.ts` centralizes the rule gates (catch / party-add / item-use); `PlayerStateManager` persists `challengeModes[]` and `monotypeLock`. UI: post-difficulty multi-select on the New Game screen toggles modes with SPACE/tap. Wired into `BattleCatchHandler`, `InventoryScene`, and `StarterSelectScene` (locks the monotype to the starter's primary type). Verified by `tests/unit/systems/challenge-rules.test.ts`. Randomizer Nuzlocke remains pending until the randomizer (B.1) lands.
+
 Extends the existing Classic/Hard/Nuzlocke difficulty system.
 
 | Mode | Rules |
@@ -264,6 +266,8 @@ Auto-generate a region map image from the warp graph — useful for the Town Map
 - Photo Album scene in the menu.
 
 ### D.6 Save System Cloud Sync
+
+> **Status (2026-04-26)**: JSON export/import shipped (zero-backend half). `SaveManager.exportJson()` returns a pretty-printed JSON of the current save; `downloadJson()` triggers a browser file download. `importJson()` validates JSON shape, required fields, and version, then applies via `loadAndApply()`. New `[ Export ]` / `[ Import ]` buttons in `SettingsScene`. Verified by `tests/integration/managers/save-export-import.test.ts`. Cloudflare Worker + KV cloud sync remains pending.
 
 - Export/import save as JSON file (zero-backend).
 - Optional: tiny backend (Cloudflare Worker + KV) for cloud saves.

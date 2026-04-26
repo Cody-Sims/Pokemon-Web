@@ -24,6 +24,7 @@ export class IntroScene extends Phaser.Scene {
   private phase: 'intro' | 'naming' | 'appearance' | 'confirm' = 'intro';
   private selectedAppearance = 0; // 0 = boy, 1 = girl
   private difficultyMode: import('@data/difficulty').DifficultyMode = 'classic';
+  private challengeModes: import('@data/challenge-modes').ChallengeMode[] = [];
   private hiddenInput?: HTMLInputElement;
 
   // Pre-built intro slides
@@ -72,6 +73,9 @@ export class IntroScene extends Phaser.Scene {
   init(data?: Record<string, unknown>): void {
     if (data?.difficulty) {
       this.difficultyMode = data.difficulty as import('@data/difficulty').DifficultyMode;
+    }
+    if (Array.isArray(data?.challengeModes)) {
+      this.challengeModes = data.challengeModes as import('@data/challenge-modes').ChallengeMode[];
     }
   }
 
@@ -377,6 +381,7 @@ export class IntroScene extends Phaser.Scene {
     const gm = GameManager.getInstance();
     gm.setPlayerName(name);
     gm.setDifficulty(this.difficultyMode);
+    gm.setChallengeModes(this.challengeModes);
 
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
 

@@ -170,6 +170,14 @@ export class GameManager {
     return this._player.recordSpeedrunSplit(id, label);
   }
 
+  // ── Challenge modes (delegation) ───────────────────────
+
+  getChallengeModes(): ReturnType<PlayerStateManager['getChallengeModes']> { return this._player.getChallengeModes(); }
+  setChallengeModes(modes: ReturnType<PlayerStateManager['getChallengeModes']>): void { this._player.setChallengeModes(modes); }
+  hasChallengeMode(mode: Parameters<PlayerStateManager['hasChallengeMode']>[0]): boolean { return this._player.hasChallengeMode(mode); }
+  getMonotypeLock(): ReturnType<PlayerStateManager['getMonotypeLock']> { return this._player.getMonotypeLock(); }
+  setMonotypeLock(type: Parameters<PlayerStateManager['setMonotypeLock']>[0]): void { this._player.setMonotypeLock(type); }
+
   // ══════════════════════════════════════════════════════
   //  Delegation — Stats  (→ StatsManager)
   // ══════════════════════════════════════════════════════

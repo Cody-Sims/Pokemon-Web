@@ -178,6 +178,14 @@ export class StarterSelectScene extends Phaser.Scene {
     gm.markSeen(choice.id);
     gm.markCaught(choice.id);
 
+    // Lock in the monotype rule from the starter's primary type so the
+    // catch/party gates know which type to enforce. Idempotent if not in
+    // monotype mode.
+    if (gm.hasChallengeMode('monotype') && !gm.getMonotypeLock()) {
+      const data = pokemonData[choice.id];
+      if (data?.types?.[0]) gm.setMonotypeLock(data.types[0]);
+    }
+
     // Achievement: first Pokémon received
     AchievementManager.getInstance().unlock('first-pokemon');
 

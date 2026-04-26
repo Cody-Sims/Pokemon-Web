@@ -6,6 +6,7 @@ import { pokemonData } from '@data/pokemon';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { AchievementManager } from '@managers/AchievementManager';
+import { blockReasonForCatch } from '@systems/engine/ChallengeRules';
 import { SFX, BGM } from '@utils/audio-keys';
 import { FONTS, COLORS, isMobile, mobileFontSize } from '@ui/theme';
 import { ui } from '@utils/ui-layout';
@@ -34,6 +35,14 @@ export function handlePokeBallUse(ctx: CatchContext, ballItemId: string): void {
 
   if (b.isTrainerBattle) {
     ctx.msg("You can't catch a trainer's Pokémon!");
+    ctx.setState('message');
+    return;
+  }
+
+  // Challenge-mode gate: monotype / solo / minimal-catches.
+  const blockMsg = blockReasonForCatch(b.enemyPokemon);
+  if (blockMsg) {
+    ctx.msg(blockMsg);
     ctx.setState('message');
     return;
   }

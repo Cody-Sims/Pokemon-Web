@@ -1,4 +1,6 @@
 import { DifficultyMode, DifficultyConfig, DIFFICULTY_CONFIGS } from '@data/difficulty';
+import { ChallengeMode } from '@data/challenge-modes';
+import { PokemonType } from '@utils/type-helpers';
 
 /** A speed-run split — playtime snapshot at a notable event. */
 export interface SpeedrunSplit {
@@ -27,6 +29,9 @@ export class PlayerStateManager {
   private trainerId = '00000';
   private playtime = 0;
   private difficulty: DifficultyMode = 'classic';
+  private challengeModes: ChallengeMode[] = [];
+  /** Locked-in monotype for `monotype` runs, captured from the chosen starter. */
+  private monotypeLock: PokemonType | null = null;
   private berryPlots: Record<string, unknown[]> = {};
   private gameClockMinutes = 0;
   private speedrunSplits: SpeedrunSplit[] = [];
@@ -67,6 +72,8 @@ export class PlayerStateManager {
     this.trainerId = String(10000 + Math.floor(Math.random() * 90000));
     this.playtime = 0;
     this.difficulty = 'classic';
+    this.challengeModes = [];
+    this.monotypeLock = null;
     this.berryPlots = {};
     this.gameClockMinutes = 0;
     this.speedrunSplits = [];
@@ -133,6 +140,16 @@ export class PlayerStateManager {
   setDifficulty(mode: DifficultyMode): void { this.difficulty = mode; }
   getDifficultyConfig(): DifficultyConfig { return DIFFICULTY_CONFIGS[this.difficulty]; }
 
+  // ── Challenge modes ────────────────────────────────────
+
+  /** Active challenge modes (any combination of monotype/soloRun/noItems/minimalCatches). */
+  getChallengeModes(): ChallengeMode[] { return this.challengeModes; }
+  setChallengeModes(modes: ChallengeMode[]): void { this.challengeModes = [...modes]; }
+  hasChallengeMode(mode: ChallengeMode): boolean { return this.challengeModes.includes(mode); }
+  /** Locked-in monotype for `monotype` runs (captured from the starter at game start). */
+  getMonotypeLock(): PokemonType | null { return this.monotypeLock; }
+  setMonotypeLock(type: PokemonType | null): void { this.monotypeLock = type; }
+
   // ── Settings ───────────────────────────────────────────
 
   getSettings(): Record<string, string | number | boolean> { return this.settings; }
@@ -178,6 +195,8 @@ export class PlayerStateManager {
       trainerId: this.trainerId,
       playtime: this.playtime,
       difficulty: this.difficulty,
+      challengeModes: this.challengeModes,
+      monotypeLock: this.monotypeLock,
       settings: this.settings,
       berryPlots: this.berryPlots,
       gameClockMinutes: this.gameClockMinutes,
@@ -195,6 +214,8 @@ export class PlayerStateManager {
     trainerId?: string;
     playtime: number;
     difficulty?: string;
+    challengeModes?: ChallengeMode[];
+    monotypeLock?: PokemonType | null;
     settings?: Record<string, string | number | boolean>;
     berryPlots?: Record<string, unknown[]>;
     gameClockMinutes?: number;
@@ -209,6 +230,8 @@ export class PlayerStateManager {
     if (data.trainerId) this.trainerId = data.trainerId;
     this.playtime = data.playtime;
     if (data.difficulty) this.difficulty = data.difficulty as DifficultyMode;
+    if (data.challengeModes) this.challengeModes = data.challengeModes;
+    if (data.monotypeLock !== undefined) this.monotypeLock = data.monotypeLock;
     if (data.settings) this.settings = { ...this.settings, ...data.settings };
     if (data.berryPlots) this.berryPlots = data.berryPlots;
     if (data.gameClockMinutes != null) this.gameClockMinutes = data.gameClockMinutes;
