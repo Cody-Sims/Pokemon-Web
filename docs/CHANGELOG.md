@@ -6,7 +6,30 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-25]
 
+### Fixed
+
+- **Portrait HUD layout**: Clock now renders centered below the location bar in portrait mode instead of overlapping at top-left
+- **Portrait menu button not clickable**: Moved `#mobile-menu-btn` base styles out of landscape-only media query so the hamburger menu is visible and tappable in portrait DOM-controls mode
+- **Portrait dialogue cutoff**: Dialogue box positioned 120px from bottom in portrait (vs 80px in landscape) so text is not clipped by DOM controls or screen edge
+- **Mobile title screen double-fire**: Removed duplicate per-item `pointerdown` handlers on menu items that caused `selectOption()` to fire twice (once from the game object handler, once from the scene-level tap handler), corrupting state when selecting "New Game"
+- **Same-tap menu activation on mobile**: Added frame delay before registering scene-level tap handlers so the touch that dismisses "Press Start" no longer immediately selects a menu item
+- **Lost touch handler after difficulty cancel**: `restoreTitle()` now re-registers the scene-level menu tap handler so mobile touch continues to work after backing out of difficulty select
+- **Difficulty select double-fire**: Applied the same per-item handler removal and frame-delay fix to the difficulty select overlay
+
 ### Added
+
+- **ObjectSpawn interface**: Added `ObjectSpawn` and `ObjectType` to `map-interfaces.ts` to differentiate static objects (signs, item balls, PCs, doors) from NPC entities
+- **objects array on MapDefinition**: Maps now have a dedicated `objects: ObjectSpawn[]` array separate from `npcs: NpcSpawn[]`
+- **Object spawning system**: Added `spawnObjects()` to `OverworldNPCSpawner`, spawns `InteractableObject` instances from map `objects[]`
+- **Object interaction handling**: `OverworldInteraction` now handles object interactions separately from NPCs — objects do not face the player on interact
+
+### Changed
+
+- **Migrated 65 sign/item-ball entries** from `npcs[]` to `objects[]` across all 66 map files; objects no longer have `facing` or `behavior` fields
+- **InteractableObject entity**: Updated to accept `ObjectSpawn` and store `spawnDef` for flag-gated dialogue and interaction dispatch
+- **OverworldScene**: Tracks `mapObjects: InteractableObject[]` separately; includes objects in occupied-tile collision and depth sorting
+
+### Fixed
 
 - **Item-ball sprite**: Created dedicated `item-ball` sprite atlas for item pickups, quest objects, crystals, and interactable lore objects. Replaced `sign-post` in 39 non-sign entries
 - **Sign-post sprite**: Created dedicated `sign-post` sprite atlas for signs, items, terminals, and non-NPC interactable objects. Replaced `generic-trainer` in 65 sign/object entries across 40+ maps
