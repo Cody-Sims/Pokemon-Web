@@ -18,14 +18,12 @@ export class NPC extends Phaser.GameObjects.Sprite {
     dialogue: string[],
     facing: Direction = 'down'
   ) {
-    const frameDir = facing === 'left' ? 'right' : facing;
-    super(scene, tileX * TILE_SIZE + TILE_SIZE / 2, tileY * TILE_SIZE + TILE_SIZE / 2, textureKey, `walk-${frameDir}-1`);
+    super(scene, tileX * TILE_SIZE + TILE_SIZE / 2, tileY * TILE_SIZE + TILE_SIZE / 2, textureKey, `walk-${facing}-1`);
     scene.add.existing(this);
 
     this.npcId = npcId;
     this.dialogue = dialogue;
     this.facing = facing;
-    if (facing === 'left') this.setFlipX(true);
   }
 
   /** Turn to face a direction (e.g., face the player during dialogue). */
@@ -36,9 +34,8 @@ export class NPC extends Phaser.GameObjects.Sprite {
 
   /** Set the sprite frame matching a cardinal direction. */
   private setDirectionFrame(dir: Direction): void {
-    const frameDir = dir === 'left' ? 'right' : dir;
-    const frame = `walk-${frameDir}-1`;
-    this.setFlipX(dir === 'left');
+    const frame = `walk-${dir}-1`;
+    this.setFlipX(false);
     if (this.scene.textures.exists(this.texture.key)) {
       const tex = this.scene.textures.get(this.texture.key);
       if (tex.has(frame)) {
@@ -50,11 +47,11 @@ export class NPC extends Phaser.GameObjects.Sprite {
   /** Start a walk animation cycle (frames 0→1→2→1) for the current facing direction. */
   playWalkAnim(duration: number): void {
     this.stopWalkAnim();
-    const frameDir = this.facing === 'left' ? 'right' : this.facing;
+    const frameDir = this.facing;
     const tex = this.scene.textures.exists(this.texture.key)
       ? this.scene.textures.get(this.texture.key)
       : null;
-    // 4-frame cycle: step-left(0), stand(1), step-right(2), stand(3)
+    // 3-frame walk cycle: step(0), stand(1), step(2), stand(1)
     const cycle = [0, 1, 2, 1];
     let idx = 0;
     const interval = duration / cycle.length;

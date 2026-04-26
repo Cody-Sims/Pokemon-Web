@@ -117,7 +117,7 @@ export const verdantiaVillage: MapDefinition = {
       dialogue: ['Move Tutor: I can teach your Pokémon powerful Grass-type moves!', 'Move Tutor: All I ask for are Heart Scales.'],
       interactionType: 'move-tutor', interactionData: 'tutor-verdantia' },
     // Dragon's Lament quest: herb pickup
-    { id: 'verdantia-herb', name: 'Herbalist', tileX: 18, tileY: 8, textureKey: 'sign-post', facing: 'down',
+    { id: 'verdantia-herb', name: 'Herbalist', tileX: 18, tileY: 8, textureKey: 'item-ball', facing: 'down',
       dialogue: ['A rare medicinal herb grows here...', 'You gathered the Aether Herb for the salve!'],
       requireFlag: '!dragon-herb-found', setsFlag: 'dragon-herb-found' },
     // Name Rater

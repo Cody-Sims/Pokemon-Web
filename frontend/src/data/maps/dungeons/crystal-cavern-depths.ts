@@ -48,14 +48,14 @@ export const crystalCavernDepths: MapDefinition = {
   npcs: [
     { id: 'depths-sign', tileX: 10, tileY: 28, textureKey: 'sign-post', facing: 'up',
       dialogue: ['The crystals pulse with an eerie blue light...', 'The air is thick with Aether energy.'] },
-    { id: 'depths-item-1', tileX: 3, tileY: 3, textureKey: 'sign-post', facing: 'down',
+    { id: 'depths-item-1', tileX: 3, tileY: 3, textureKey: 'item-ball', facing: 'down',
       dialogue: ['You found a Max Revive!'],
       requireFlag: '!crystalDepthsItem1', setsFlag: 'crystalDepthsItem1' },
-    { id: 'depths-item-2', tileX: 16, tileY: 20, textureKey: 'sign-post', facing: 'down',
+    { id: 'depths-item-2', tileX: 16, tileY: 20, textureKey: 'item-ball', facing: 'down',
       dialogue: ['You found a Rare Candy!'],
       requireFlag: '!crystalDepthsItem2', setsFlag: 'crystalDepthsItem2' },
     // ─── Noctharion encounter in the deepest chamber ───
-    { id: 'noctharion-depths', tileX: 10, tileY: 22, textureKey: 'sign-post', facing: 'down',
+    { id: 'noctharion-depths', tileX: 10, tileY: 22, textureKey: 'item-ball', facing: 'down',
       requireFlag: '!noctharion_caught',
       dialogue: [
         'A chilling darkness coalesces before you...',

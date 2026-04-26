@@ -41,6 +41,7 @@ export const pewterPokecenter: MapDefinition = {
       tileY: 5,
       textureKey: 'generic-trainer',
       facing: 'left',
+      behavior: { type: 'look-around' },
       dialogue: [
         "Brock's Gym is tough!",
         'Make sure your Pokémon are healed before going!',
@@ -52,6 +53,7 @@ export const pewterPokecenter: MapDefinition = {
       tileY: 2,
       textureKey: 'generic-trainer',
       facing: 'down',
+      behavior: { type: 'look-around' },
       dialogue: [
         'Someone\'s PC is booted up.',
         'Access the Pokémon Storage System?',

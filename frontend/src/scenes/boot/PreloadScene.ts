@@ -118,8 +118,8 @@ export class PreloadScene extends Phaser.Scene {
       this.load.atlas(key, `${npcBase}/story/${key}.png`, `${npcBase}/story/${key}.json`);
     }
 
-    // Trainer classes (trainers/)
-    for (const key of ['generic-trainer', 'sign-post', 'npc-ace-trainer', 'npc-ace-trainer-f', 'npc-bug-catcher', 'npc-psychic']) {
+    // Trainer classes & objects (trainers/)
+    for (const key of ['generic-trainer', 'sign-post', 'item-ball', 'npc-ace-trainer', 'npc-ace-trainer-f', 'npc-bug-catcher', 'npc-psychic']) {
       this.load.atlas(key, `${npcBase}/trainers/${key}.png`, `${npcBase}/trainers/${key}.json`);
     }
 

@@ -37,7 +37,7 @@ export const verdantiaLab: MapDefinition = {
       id: 'lab-terminal-1',
       tileX: 2,
       tileY: 2,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'A Synthesis Collective data terminal...',
@@ -49,7 +49,7 @@ export const verdantiaLab: MapDefinition = {
       id: 'lab-terminal-2',
       tileX: 12,
       tileY: 3,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'A Synthesis Collective research terminal...',
@@ -61,7 +61,7 @@ export const verdantiaLab: MapDefinition = {
       id: 'lab-terminal-3',
       tileX: 3,
       tileY: 11,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'A heavily encrypted terminal...',

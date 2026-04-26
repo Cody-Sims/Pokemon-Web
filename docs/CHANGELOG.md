@@ -8,6 +8,7 @@ All notable changes to the Pokemon Web project.
 
 ### Added
 
+- **Item-ball sprite**: Created dedicated `item-ball` sprite atlas for item pickups, quest objects, crystals, and interactable lore objects. Replaced `sign-post` in 39 non-sign entries
 - **Sign-post sprite**: Created dedicated `sign-post` sprite atlas for signs, items, terminals, and non-NPC interactable objects. Replaced `generic-trainer` in 65 sign/object entries across 40+ maps
 - **npc-clerk sprite**: Renamed `npc-male-3` (M_05) to `npc-clerk` to follow naming conventions — descriptive names for role-specific sprites. Used in all 9 PokéMart clerks
 - **NPC sprite reference map**: Added detailed sprite reference comment in PreloadScene documenting all 44 NPC sprites with their source sheet origins, visual descriptions, and folder organisation
@@ -41,6 +42,8 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **NPC atlas frame mapping**: All 49 NPC character atlas JSONs were using incorrect row-based frame coordinates (directions as rows, frames as columns). Fixed to match the player atlas column-based layout (col0=down, col1=right, col2=up, col3=left with 3 animation frame rows). NPCs now display and animate correctly in all directions
+- **NPC left-facing using flipX hack**: NPC entity used `walk-right-*` frames with `setFlipX(true)` for left-facing since atlases lacked left column. With corrected atlases having dedicated `walk-left-*` frames, removed the flip workaround — NPCs now use direct left frames
 - **NPC idle frame showing walking pose**: NPC sprites used frame 0 (a mid-step walking frame) as their idle/standing pose. Changed to frame 1 (the correct standing pose) in the NPC entity constructor, direction-change logic, and dialogue portrait display
 - **NPC facing direction on interaction**: NPCs now visually turn to face the player correctly during dialogue (was broken by wrong idle frame)
 - **Interior map background color**: Stopped applying the day/night tint color to the camera background on interior maps so the void area outside small maps (e.g., Willow's Laboratory) stays black instead of turning purple/blue at night

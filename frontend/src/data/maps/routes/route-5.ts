@@ -58,7 +58,7 @@ export const route5: MapDefinition = {
       id: 'route5-trap',
       tileX: 16,
       tileY: 8,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'A strange cage sits among the trees...',

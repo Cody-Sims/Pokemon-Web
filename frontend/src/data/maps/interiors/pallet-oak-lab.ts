@@ -101,6 +101,7 @@ export const palletOakLab: MapDefinition = {
       tileY: 10,
       textureKey: 'generic-trainer',
       facing: 'down',
+      behavior: { type: 'look-around' },
       dialogue: [
         "Oak's Lab PC is booted up.",
         'Access the Pokémon Storage System?',

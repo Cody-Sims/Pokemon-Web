@@ -69,7 +69,7 @@ export const route1: MapDefinition = {
       name: 'Townsperson',
       tileX: 14,
       tileY: 2,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'left',
       dialogue: [
         'If your Pokémon are weak, don\'t go into the tall grass!',

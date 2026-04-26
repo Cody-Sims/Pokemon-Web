@@ -36,7 +36,7 @@ export const aetherSanctum: MapDefinition = {
   displayName: 'Aether Sanctum',
   isInterior: true,
   npcs: [
-    { id: 'sanctum-sign', tileX: 10, tileY: 23, textureKey: 'sign-post', facing: 'up',
+    { id: 'sanctum-sign', tileX: 10, tileY: 23, textureKey: 'item-ball', facing: 'up',
       dialogue: ['The air hums with raw Aether energy...', 'Ancient runes glow along the walls.'] },
     { id: 'sanctum-rook', name: 'Rook', tileX: 10, tileY: 2, textureKey: 'npc-male-5', facing: 'down',
       dialogue: [

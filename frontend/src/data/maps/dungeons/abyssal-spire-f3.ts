@@ -62,6 +62,7 @@ export const abyssalSpireF3: MapDefinition = {
       tileY: 10,
       textureKey: 'generic-trainer',
       facing: 'down',
+      behavior: { type: 'look-around' },
       dialogue: [
         'A security console...',
         '"Level 5 clearance required for upper floors."',

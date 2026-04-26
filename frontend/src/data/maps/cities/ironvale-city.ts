@@ -107,7 +107,7 @@ export const ironvaleCity: MapDefinition = {
       id: 'ironvale-hologram',
       tileX: 10,
       tileY: 9,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'A holographic projection flickers to life...',
@@ -129,6 +129,7 @@ export const ironvaleCity: MapDefinition = {
       tileY: 15,
       textureKey: 'rival',
       facing: 'left',
+      behavior: { type: 'look-around' },
       dialogue: [
         'Kael: Those Synthesis creeps are trying to take the forge!',
         'Kael: I\'m not letting that happen. You with me?',

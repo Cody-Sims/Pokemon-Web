@@ -38,7 +38,7 @@ export const abyssalSpireF2: MapDefinition = {
       id: 'lab-terminal-1',
       tileX: 8,
       tileY: 11,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'A Synthesis data terminal...',
@@ -52,7 +52,7 @@ export const abyssalSpireF2: MapDefinition = {
       id: 'lab-terminal-2',
       tileX: 17,
       tileY: 11,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'Another terminal, still logged in...',
@@ -65,7 +65,7 @@ export const abyssalSpireF2: MapDefinition = {
       id: 'caged-pokemon-f2',
       tileX: 2,
       tileY: 2,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'Pokemon are locked in containment pods...',

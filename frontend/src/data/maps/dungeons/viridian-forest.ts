@@ -64,7 +64,7 @@ export const viridianForest: MapDefinition = {
       id: 'forest-lost-geodude',
       tileX: 18,
       tileY: 22,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'The lost Pokémon appears to be a Geodude!',
@@ -102,7 +102,7 @@ export const viridianForest: MapDefinition = {
       id: 'forest-synthesis-device',
       tileX: 20,
       tileY: 8,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'There\'s a strange device implanted in this tree...',

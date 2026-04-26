@@ -18,7 +18,7 @@ export const ironvalePokecenter: MapDefinition = {
     name: 'Nurse Joy',
     facing: 'down', dialogue: ['Welcome! We\'ll heal your Pokémon!'], interactionType: 'heal',
   }, {
-    id: 'ironvale-pc', tileX: 11, tileY: 2, textureKey: 'sign-post',
+    id: 'ironvale-pc', tileX: 11, tileY: 2, textureKey: 'item-ball',
     facing: 'down', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc',
   }, {
     id: 'ironvale-center-npc', tileX: 3, tileY: 5, textureKey: 'npc-male-1',

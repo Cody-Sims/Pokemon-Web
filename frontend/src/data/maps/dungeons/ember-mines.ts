@@ -56,7 +56,7 @@ export const emberMines: MapDefinition = {
       id: 'mines-terminal',
       tileX: 7,
       tileY: 17,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'A Synthesis Collective data terminal...',
@@ -77,7 +77,7 @@ export const emberMines: MapDefinition = {
       id: 'mines-cage',
       tileX: 14,
       tileY: 18,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'Pokémon are trapped in strange containment pods!',
@@ -91,7 +91,7 @@ export const emberMines: MapDefinition = {
       id: 'mines-mineral',
       tileX: 3,
       tileY: 8,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'A vein of rare mineral glints in the torchlight...',

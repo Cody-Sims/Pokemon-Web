@@ -41,6 +41,7 @@ export const viridianPokecenter: MapDefinition = {
       tileY: 5,
       textureKey: 'generic-trainer',
       facing: 'right',
+      behavior: { type: 'look-around' },
       dialogue: [
         'Pokémon Centers are free to use!',
         'You can heal your Pokémon here anytime.',
@@ -52,6 +53,7 @@ export const viridianPokecenter: MapDefinition = {
       tileY: 2,
       textureKey: 'generic-trainer',
       facing: 'down',
+      behavior: { type: 'look-around' },
       dialogue: [
         'Someone\'s PC is booted up.',
         'Access the Pokémon Storage System?',

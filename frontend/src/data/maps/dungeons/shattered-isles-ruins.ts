@@ -46,7 +46,7 @@ export const shatteredIslesRuins: MapDefinition = {
       id: 'fathers-trail-clue-1',
       tileX: 4,
       tileY: 3,
-      textureKey: 'sign-post',
+      textureKey: 'item-ball',
       facing: 'down',
       dialogue: [
         'You find a weathered journal page wedged between the stones...',
@@ -76,6 +76,7 @@ export const shatteredIslesRuins: MapDefinition = {
       tileY: 11,
       textureKey: 'generic-trainer',
       facing: 'down',
+      behavior: { type: 'look-around' },
       dialogue: [
         'A crumpled page is pinned under a fallen pillar...',
         '"Day 7 — I\'ve made contact with local Pokémon. They\'re drawn to the Aether energy."',
