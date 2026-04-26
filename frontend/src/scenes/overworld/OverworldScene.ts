@@ -952,9 +952,11 @@ export class OverworldScene extends Phaser.Scene {
     // Update lighting overlay
     this.lightingSystem.update(this.player.x, this.player.y);
 
-    // Update day/night tint
-    const tint = this.gameClock.getCurrentTint();
-    this.cameras.main.setBackgroundColor(tint);
+    // Update day/night tint (skip for interiors — keep void area black)
+    if (!this.mapDef.isInterior) {
+      const tint = this.gameClock.getCurrentTint();
+      this.cameras.main.setBackgroundColor(tint);
+    }
 
     // Update weather effects
     this.weatherRenderer.update();

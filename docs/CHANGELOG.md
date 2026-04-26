@@ -8,6 +8,7 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **Interior map background color**: Stopped applying the day/night tint color to the camera background on interior maps so the void area outside small maps (e.g., Willow's Laboratory) stays black instead of turning purple/blue at night
 - **TypeScript build errors**: Added `portraitKey` optional field to `CutsceneAction` dialogue type in `CutsceneEngine.ts`, fixed double comma causing `undefined` in `cutscene-data.ts` Ashborne dialogue, and typed `animatedTiles` as `Set<number>` in `OverworldScene.ts` to resolve 16 build errors
 
 ### Added
