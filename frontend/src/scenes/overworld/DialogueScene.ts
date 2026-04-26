@@ -91,7 +91,8 @@ export class DialogueScene extends Phaser.Scene {
     const boxW = layout.w - 20;
     const boxH = 100;
     const boxX = layout.cx;
-    const boxY = layout.h - 80;
+    const isPortraitOrientation = layout.h > layout.w;
+    const boxY = isPortraitOrientation ? layout.h - 120 : layout.h - 80;
     this.panel = new NinePatchPanel(this, boxX, boxY, boxW, boxH, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.98,
@@ -113,7 +114,7 @@ export class DialogueScene extends Phaser.Scene {
         cornerRadius: 4,
       });
       this.portraitBg.setDepth(DIALOGUE_DEPTH + 1);
-      this.portrait = this.add.sprite(pX, pY, this.portraitKey!, 'walk-down-1')
+      this.portrait = this.add.sprite(pX, pY, this.portraitKey!, 'walk-down-0')
         .setDisplaySize(portraitSize, portraitSize)
         .setDepth(DIALOGUE_DEPTH + 2);
     }
@@ -186,7 +187,8 @@ export class DialogueScene extends Phaser.Scene {
     // ── Re-layout on resize / orientation change ──────────────
     layoutOn(this, () => {
       const l = ui(this);
-      const rBoxY = l.h - 80;
+      const rIsPortrait = l.h > l.w;
+      const rBoxY = rIsPortrait ? l.h - 120 : l.h - 80;
       this.panel.destroy();
       this.panel = new NinePatchPanel(this, l.cx, rBoxY, l.w - 20, 100, {
         fillColor: 0x0a0a18, fillAlpha: 0.98, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 8,

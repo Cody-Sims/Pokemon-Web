@@ -7,6 +7,7 @@ import { Player } from '@entities/Player';
 import { FollowerPokemon } from '@entities/FollowerPokemon';
 import { NPC } from '@entities/NPC';
 import { Trainer } from '@entities/Trainer';
+import { InteractableObject } from '@entities/InteractableObject';
 import { AnimationHelper } from '@systems/rendering/AnimationHelper';
 import { InputManager } from '@systems/engine/InputManager';
 import { TouchControls } from '@ui/controls/TouchControls';
@@ -50,6 +51,7 @@ import { AchievementToast } from '@ui/widgets/AchievementToast';
 import {
   spawnNPCs as spawnNPCsHelper,
   spawnTrainers as spawnTrainersHelper,
+  spawnObjects as spawnObjectsHelper,
 } from './OverworldNPCSpawner';
 import {
   redrawTile as redrawTileHelper,
@@ -69,6 +71,7 @@ export class OverworldScene extends Phaser.Scene {
   private weatherRenderer!: WeatherRenderer;
   private npcs: NPC[] = [];
   private trainers: Trainer[] = [];
+  private mapObjects: InteractableObject[] = [];
   private npcBehaviors: NPCBehaviorController[] = [];
   private mapDef!: MapDefinition;
   private mapKey = 'pallet-town';
@@ -121,6 +124,7 @@ export class OverworldScene extends Phaser.Scene {
     this.isCycling = false;
     this.npcs = [];
     this.trainers = [];
+    this.mapObjects = [];
     this.npcBehaviors = [];
     this.lastAnimKey = '';
     this.lastFlipX = false;
@@ -209,6 +213,7 @@ export class OverworldScene extends Phaser.Scene {
     // Spawn Trainers first so NPC behaviors can see trainer positions for collision
     this.spawnTrainers();
     this.spawnNPCs();
+    this.spawnMapObjects();
 
     // Build O(1) NPC position lookup
     this.rebuildNpcOccupiedTiles();
@@ -333,23 +338,33 @@ export class OverworldScene extends Phaser.Scene {
       color: '#ffffff',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
 
-    // Clock widget (top-left)
+    // Clock widget — below location text in portrait, top-left in landscape
     const periodEmoji: Record<string, string> = { morning: '🌅', day: '☀️', evening: '🌆', night: '🌙' };
     const period = this.gameClock.getTimePeriod();
     const clockStr = `${periodEmoji[period] ?? '☀️'} ${this.gameClock.getClockString()}`;
-    this.clockText = this.add.text(8, 8, clockStr, {
-      fontSize: mobileFontSize(11),
-      color: '#ffcc00',
-      fontFamily: 'monospace',
-      backgroundColor: '#0f0f1abb',
-      padding: { x: 6, y: 3 },
-    }).setScrollFactor(0).setDepth(100);
+    const isPortrait = this.cameras.main.height > this.cameras.main.width;
+    this.clockText = this.add.text(
+      isPortrait ? this.cameras.main.width / 2 : 8,
+      isPortrait ? 38 : 8,
+      clockStr, {
+        fontSize: mobileFontSize(11),
+        color: '#ffcc00',
+        fontFamily: 'monospace',
+        backgroundColor: '#0f0f1abb',
+        padding: { x: 6, y: 3 },
+      },
+    ).setOrigin(isPortrait ? 0.5 : 0, 0).setScrollFactor(0).setDepth(100);
 
     // Re-layout HUD elements on resize / orientation change
     layoutOn(this, () => {
       const w = this.cameras.main.width;
+      const h = this.cameras.main.height;
+      const portrait = h > w;
       this.hudText?.setX(w / 2);
-      this.clockText?.setPosition(8, 8);
+      if (this.clockText) {
+        this.clockText.setPosition(portrait ? w / 2 : 8, portrait ? 38 : 8);
+        this.clockText.setOrigin(portrait ? 0.5 : 0, 0);
+      }
     });
 
     // Slide-in area name banner
@@ -523,6 +538,11 @@ export class OverworldScene extends Phaser.Scene {
     this.npcBehaviors.push(...result.behaviors);
   }
 
+  private spawnMapObjects(): void {
+    const newObjects = spawnObjectsHelper(this, this.mapDef);
+    this.mapObjects.push(...newObjects);
+  }
+
   /** Destroy and re-create NPCs so flag-gated spawns update. */
   private respawnNPCs(): void {
     for (const b of this.npcBehaviors) b.destroy();
@@ -530,8 +550,11 @@ export class OverworldScene extends Phaser.Scene {
     for (const npc of this.npcs) npc.destroy();
     this.npcs = [];
     this.trainers = [];
+    for (const obj of this.mapObjects) obj.destroy();
+    this.mapObjects = [];
     this.spawnTrainers();
     this.spawnNPCs();
+    this.spawnMapObjects();
   }
 
   private spawnTrainers(): void {
@@ -811,6 +834,7 @@ export class OverworldScene extends Phaser.Scene {
       mapDef: this.mapDef,
       player: this.player,
       npcs: this.npcs,
+      mapObjects: this.mapObjects,
       surfing: this.surfing,
       cutsceneEngine: this.cutsceneEngine,
       triggerTrainerBattle: (t) => this.triggerTrainerBattle(t),
@@ -933,6 +957,9 @@ export class OverworldScene extends Phaser.Scene {
     }
     for (const trainer of this.trainers) {
       trainer.setDepth(1 + (trainer.y / maxH) * 0.9);
+    }
+    for (const obj of this.mapObjects) {
+      obj.setDepth(1 + (obj.y / maxH) * 0.9);
     }
 
     // Refresh NPC occupied tile positions after behavior updates
@@ -1112,6 +1139,11 @@ export class OverworldScene extends Phaser.Scene {
     for (const npc of this.npcs) {
       const tx = Math.floor(npc.x / TILE_SIZE);
       const ty = Math.floor(npc.y / TILE_SIZE);
+      this.npcOccupiedTiles.add(`${tx},${ty}`);
+    }
+    for (const obj of this.mapObjects) {
+      const tx = Math.floor(obj.x / TILE_SIZE);
+      const ty = Math.floor(obj.y / TILE_SIZE);
       this.npcOccupiedTiles.add(`${tx},${ty}`);
     }
   }
