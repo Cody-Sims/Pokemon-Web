@@ -6,6 +6,15 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-26]
 
+### Fixed — Challenge Modes screen wraps and re-flows on rotation
+
+- **Hint text clipped on mobile portrait + no rotation re-flow**: The "Optional. Toggle with SPACE / tap. ENTER to begin." hint had no `wordWrap`, so on a ~400 px portrait canvas it spilled past both edges. The whole challenge-select panel was also positioned once from the snapshot dimensions in `cameras.main` and never re-laid out, so rotating the device left the layout stuck at the original aspect ratio (the user's screenshot showed the entire panel squeezed into a vertical strip in landscape).
+- [TitleScene.showChallengeSelect](frontend/src/scenes/title/TitleScene.ts) now wraps every layout-derived element (overlay, title, hint, items, description, BEGIN button) inside a `relayout()` closure registered through [layoutOn(...)](frontend/src/utils/layout-on.ts). Each text element gets a viewport-sized `wordWrap.width` (capped at 480 px), the items use orientation-aware spacing, and `relayout()` re-runs on every Phaser `resize` event so flipping between portrait and landscape re-positions the whole stack instantly.
+
+---
+
+## [2026-04-26]
+
 ### Fixed — Mobile portrait polish for battle, starter select, and bag
 
 - **HUD overlays bled through the battle scene**: The minimap, quest tracker, and party-quick-view scenes are launched alongside `OverworldScene`, so when a battle started they kept rendering on top of the battle view (the user reported a stray "Lv5" partner pokeball + tiny minimap floating over Charmander). [BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts) now sleeps the three HUD overlay scenes inside `create()` (`hideOverworldHud()`) and wakes them again in `shutdown()` (`showOverworldHud()`), so battles always own the full canvas.

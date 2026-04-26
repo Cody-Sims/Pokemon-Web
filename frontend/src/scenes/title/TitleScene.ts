@@ -8,6 +8,7 @@ import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
 import { DifficultyMode, DIFFICULTY_CONFIGS } from '@data/difficulty';
 import { CHALLENGE_CONFIGS, ChallengeMode } from '@data/challenge-modes';
+import { layoutOn } from '@utils/layout-on';
 
 export class TitleScene extends Phaser.Scene {
   private cursor!: number;
@@ -357,33 +358,38 @@ export class TitleScene extends Phaser.Scene {
    * minimalCatches with SPACE (or tap), then press ENTER to begin.
    */
   private showChallengeSelect(difficulty: DifficultyMode): void {
-    const { width, height } = this.cameras.main;
     const modes: ChallengeMode[] = ['monotype', 'soloRun', 'noItems', 'minimalCatches'];
     const enabled = new Set<ChallengeMode>();
     let cursor = 0;
 
+    // Initial dimensions; relayout() recomputes everything on rotation.
+    let { width, height } = this.cameras.main;
+
     const overlay = this.add.rectangle(width / 2, height / 2, width, height, COLORS.bgDark).setDepth(50);
-    const title = this.add.text(width / 2, height * 0.18, 'CHALLENGE MODES', {
+    const title = this.add.text(0, 0, 'CHALLENGE MODES', {
       ...FONTS.heading, fontSize: mobileFontSize(22),
     }).setOrigin(0.5).setDepth(51);
-    const hint = this.add.text(width / 2, height * 0.25, 'Optional. Toggle with SPACE / tap. ENTER to begin.', {
-      ...FONTS.caption, fontSize: mobileFontSize(11), color: COLORS.textDim,
+    // Hint string is long; let it wrap (and shrink to two lines on very
+    // narrow portrait viewports) instead of clipping at both ends.
+    const hint = this.add.text(0, 0, 'Optional. Toggle with SPACE / tap. ENTER to begin.', {
+      ...FONTS.caption, fontSize: mobileFontSize(11), color: COLORS.textDim, align: 'center',
     }).setOrigin(0.5).setDepth(51);
 
     const items = modes.map((mode, i) => {
       const cfg = CHALLENGE_CONFIGS[mode];
-      const label = this.add.text(width / 2, height * 0.34 + i * 44, `[ ] ${cfg.name}`, {
+      const label = this.add.text(0, 0, `[ ] ${cfg.name}`, {
         ...FONTS.menuItem, fontSize: mobileFontSize(18),
       }).setOrigin(0.5).setDepth(51).setInteractive({ useHandCursor: true });
       label.on('pointerover', () => { cursor = i; updateUI(); });
+      label.setData('index', i);
       return label;
     });
 
-    const desc = this.add.text(width / 2, height * 0.78, CHALLENGE_CONFIGS[modes[0]].description, {
-      ...FONTS.caption, fontSize: mobileFontSize(13), color: COLORS.textDim, wordWrap: { width: width * 0.8 },
+    const desc = this.add.text(0, 0, CHALLENGE_CONFIGS[modes[0]].description, {
+      ...FONTS.caption, fontSize: mobileFontSize(13), color: COLORS.textDim, align: 'center',
     }).setOrigin(0.5).setDepth(51);
 
-    const beginBtn = this.add.text(width / 2, height * 0.88, '▶ BEGIN', {
+    const beginBtn = this.add.text(0, 0, '▶ BEGIN', {
       ...FONTS.menuItem, fontSize: mobileFontSize(18), color: COLORS.textHighlight,
     }).setOrigin(0.5).setDepth(51).setInteractive({ useHandCursor: true });
 
@@ -401,7 +407,39 @@ export class TitleScene extends Phaser.Scene {
       arrow.setPosition(sel.x - sel.width / 2 - 22, sel.y - 10);
       desc.setText(CHALLENGE_CONFIGS[modes[cursor]].description);
     };
-    updateUI();
+
+    const relayout = () => {
+      const cam = this.cameras.main;
+      width = cam.width;
+      height = cam.height;
+      const isPortrait = height > width;
+      // Wrap widths sized to the viewport so text never spills past the
+      // canvas edge. Cap at 480 px for ultra-wide desktop monitors.
+      const wrapW = Math.min(480, width - 32);
+
+      overlay.setPosition(width / 2, height / 2).setSize(width, height);
+
+      title.setPosition(width / 2, height * (isPortrait ? 0.14 : 0.16));
+
+      hint.setPosition(width / 2, height * (isPortrait ? 0.22 : 0.24));
+      hint.setStyle({ wordWrap: { width: wrapW } });
+
+      // Items: stack vertically, but in landscape pull them tighter so
+      // the description + begin button stay visible without overlap.
+      const itemTop = height * (isPortrait ? 0.34 : 0.36);
+      const itemSpacing = isPortrait ? Math.min(44, (height * 0.36) / modes.length) : 36;
+      items.forEach((item, i) => {
+        item.setPosition(width / 2, itemTop + i * itemSpacing);
+      });
+
+      desc.setPosition(width / 2, height * (isPortrait ? 0.78 : 0.80));
+      desc.setStyle({ wordWrap: { width: wrapW } });
+
+      beginBtn.setPosition(width / 2, height * (isPortrait ? 0.90 : 0.92));
+
+      updateUI();
+    };
+    layoutOn(this, relayout);
 
     const toggle = () => {
       const m = modes[cursor];
