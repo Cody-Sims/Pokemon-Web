@@ -70,6 +70,10 @@ export default defineConfig({
   /* Start Vite dev server before the run. */
   webServer: {
     command: 'npm run dev',
+    // Resolve npm scripts from the project root (this config lives in
+    // tests/e2e/, so without `cwd` Playwright would invoke npm from there
+    // and fail to find package.json).
+    cwd: '../..',
     port: 3020,
     reuseExistingServer: !process.env.CI,
     /* The game loads many assets; give the server time to start. */

@@ -2,6 +2,27 @@ import { test, expect } from '@playwright/test';
 import { bootToTitleMenu, pressKey, waitForCanvas } from './helpers';
 
 /**
+ * Dismiss the portrait rotate-to-landscape prompt that the app shows on
+ * mobile + portrait. Returns once the overlay is hidden so the canvas
+ * underneath is interactive again.
+ */
+async function dismissRotatePrompt(page: import('@playwright/test').Page): Promise<void> {
+  const overlay = page.locator('#rotate-prompt');
+  if (await overlay.isVisible().catch(() => false)) {
+    await page.locator('#rotate-dismiss').click();
+    await overlay.waitFor({ state: 'hidden', timeout: 2_000 }).catch(() => undefined);
+  }
+}
+
+/**
+ * Filter that drops console errors known to fire from the headless WebGL
+ * stack rather than our application code. Keep this list narrow.
+ */
+function isIgnorableConsoleError(text: string): boolean {
+  return text.includes('Framebuffer status: Framebuffer Unsupported');
+}
+
+/**
  * Mobile UI regression tests covering portrait/landscape orientation
  * specifically. Forces a portrait viewport so the in-canvas hamburger
  * button, minimap top-left placement, settings layout, and intro text
@@ -21,10 +42,13 @@ test.describe('Mobile UI — portrait orientation', () => {
     const errors: string[] = [];
     page.on('pageerror', err => errors.push(err.message));
     page.on('console', msg => {
-      if (msg.type() === 'error') errors.push(`console.error: ${msg.text()}`);
+      if (msg.type() === 'error' && !isIgnorableConsoleError(msg.text())) {
+        errors.push(`console.error: ${msg.text()}`);
+      }
     });
 
     await bootToTitleMenu(page);
+    await dismissRotatePrompt(page);
 
     // Title menu has Settings as the second item on a fresh save.
     // Use down arrow + Enter to navigate to it.
@@ -55,6 +79,11 @@ test.describe('Mobile UI — portrait orientation', () => {
 
     const errors: string[] = [];
     page.on('pageerror', err => errors.push(err.message));
+    page.on('console', msg => {
+      if (msg.type() === 'error' && !isIgnorableConsoleError(msg.text())) {
+        errors.push(`console.error: ${msg.text()}`);
+      }
+    });
 
     await page.goto('/');
     await waitForCanvas(page);
@@ -80,6 +109,11 @@ test.describe('Mobile UI — portrait orientation', () => {
 
     const errors: string[] = [];
     page.on('pageerror', err => errors.push(err.message));
+    page.on('console', msg => {
+      if (msg.type() === 'error' && !isIgnorableConsoleError(msg.text())) {
+        errors.push(`console.error: ${msg.text()}`);
+      }
+    });
 
     await page.goto('/');
     await waitForCanvas(page);
