@@ -37,7 +37,9 @@ export class MenuScene extends Phaser.Scene {
     // Dim overlay
     this.overlay = this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgOverlay, 0.45);
 
-    // Menu panel
+    // Menu panel — fully opaque so menu text always has its full contrast
+    // ratio against the panel fill, even with bright/varied overworld scenes
+    // bleeding through.
     const rowH = Math.round(48 * MOBILE_SCALE);
     const panelW = Math.round(220 * MOBILE_SCALE);
     const panelH = this.menuLabels.length * rowH + 32;
@@ -45,22 +47,27 @@ export class MenuScene extends Phaser.Scene {
     const panelY = layout.cy;
     this.menuPanel = new NinePatchPanel(this, panelX, panelY, panelW, panelH, {
       fillColor: COLORS.bgPanel,
+      fillAlpha: 1,
       borderColor: COLORS.border,
       cornerRadius: 8,
     });
+    this.menuPanel.setDepth(0);
 
     // Money display above menu panel
     const gm = GameManager.getInstance();
     this.moneyText = this.add.text(panelX, panelY - panelH / 2 - 16, `₽ ${gm.getMoney()}`, {
-      ...FONTS.bodySmall, color: COLORS.textHighlight,
-    }).setOrigin(0.5);
+      ...FONTS.bodySmall, color: COLORS.textHighlight, fontStyle: 'bold',
+      stroke: '#000000', strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(2);
 
     const menuFontSize = mobileFontSize(18);
     const startY = panelY - panelH / 2 + 32;
     this.menuItems = this.menuLabels.map((label, i) => {
       const item = this.add.text(panelX + 10, startY + i * rowH, label, {
         ...FONTS.menuItem, fontSize: menuFontSize,
-      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        fontStyle: 'bold',
+        stroke: '#000000', strokeThickness: 4,
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(2);
 
       item.setPadding(8, 6, 8, 6);
       item.on('pointerover', () => { this.cursor = i; this.updateCursor(); });
@@ -68,7 +75,10 @@ export class MenuScene extends Phaser.Scene {
       return item;
     });
 
-    this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, fontSize: menuFontSize, color: COLORS.textHighlight });
+    this.cursorIcon = this.add.text(0, 0, '▸', {
+      ...FONTS.menuItem, fontSize: menuFontSize, color: COLORS.textHighlight,
+      fontStyle: 'bold', stroke: '#000000', strokeThickness: 4,
+    }).setDepth(2);
 
     this.cursor = 0;
     this.updateCursor();
@@ -97,8 +107,9 @@ export class MenuScene extends Phaser.Scene {
       this.overlay.setPosition(l.cx, l.cy).setSize(l.w, l.h);
       this.menuPanel.destroy();
       this.menuPanel = new NinePatchPanel(this, pX, pY, pW, pH, {
-        fillColor: COLORS.bgPanel, borderColor: COLORS.border, cornerRadius: 8,
+        fillColor: COLORS.bgPanel, fillAlpha: 1, borderColor: COLORS.border, cornerRadius: 8,
       });
+      this.menuPanel.setDepth(0);
       this.moneyText.setPosition(pX, pY - pH / 2 - 16);
       const sY = pY - pH / 2 + 32;
       this.menuItems.forEach((item, i) => item.setPosition(pX + 10, sY + i * rH));

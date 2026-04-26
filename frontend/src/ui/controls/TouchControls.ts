@@ -605,15 +605,17 @@ export class TouchControls {
 
   private createMenuButton(): void {
     const r = this.menuBtnSize / 2;
-    const bg = this.scene.add.circle(0, 0, r, 0x334466, 0.55);
-    bg.setStrokeStyle(1.5, 0x5577aa, 0.6);
+    // Higher-opacity dark plate gives the white hamburger icon usable contrast
+    // against bright overworld backgrounds.
+    const bg = this.scene.add.circle(0, 0, r, 0x101820, 0.85);
+    bg.setStrokeStyle(2, 0xffd060, 0.9);
 
-    // Draw three horizontal bars (hamburger icon)
+    // Draw three horizontal bars (hamburger icon) — fully opaque white for contrast
     const barW = r * 0.9;
-    const barH = 2;
-    const gap = 5;
+    const barH = 3;
+    const gap = 6;
     const bars = this.scene.add.graphics();
-    bars.fillStyle(0xffffff, 0.9);
+    bars.fillStyle(0xffffff, 1);
     for (let i = -1; i <= 1; i++) {
       bars.fillRect(-barW, i * gap - barH / 2, barW * 2, barH);
     }
@@ -626,15 +628,21 @@ export class TouchControls {
     bg.setInteractive({ useHandCursor: true });
     bg.on('pointerdown', () => {
       this.cancelPressed = true;
-      bg.fillAlpha = 0.85;
+      bg.fillAlpha = 1;
     });
-    bg.on('pointerup', () => { bg.fillAlpha = 0.55; });
-    bg.on('pointerout', () => { bg.fillAlpha = 0.55; });
+    bg.on('pointerup', () => { bg.fillAlpha = 0.85; });
+    bg.on('pointerout', () => { bg.fillAlpha = 0.85; });
   }
 
   private layoutMenuButton(): void {
-    const { width } = this.scene.cameras.main;
-    this.menuBtn.setPosition(width - this.menuBtnSize / 2 - 12, this.menuBtnSize / 2 + 12);
+    const { width, height } = this.scene.cameras.main;
+    // Top-right, but pushed down past the QuestTracker HUD strip (~54px tall + margin)
+    // so the icon is visible/tappable on portrait phones where the tracker would
+    // otherwise occlude it. In landscape phone DOM mode the in-canvas button is
+    // hidden anyway, so this position only applies to in-canvas overlay mode.
+    const isPortrait = height > width;
+    const yOffset = isPortrait ? this.menuBtnSize / 2 + 70 : this.menuBtnSize / 2 + 12;
+    this.menuBtn.setPosition(width - this.menuBtnSize / 2 - 12, yOffset);
   }
 
   private setupDOMButtons(): void {

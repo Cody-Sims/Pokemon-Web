@@ -12,6 +12,10 @@ All notable changes to the Pokemon Web project.
 
 ### Fixed
 
+- **In-canvas hamburger button hidden behind QuestTracker (mobile portrait)**: The Phaser overlay hamburger sat at top-right exactly under the QuestTracker HUD strip. Pushed it down to clear the tracker (`y = btnSize/2 + 70` in portrait) and made it stand out with an opaque dark plate, gold border, and 3px white bars so it reads as a clear, tappable target on bright tilemaps.
+- **DOM hamburger low contrast / hard to tap**: Enlarged `#mobile-menu-btn` to 56×56, switched to a near-opaque dark fill, added a gold border + drop shadow, and gave it a pressed-state colour so the menu button is clearly the affordance for opening the in-game menu in the portrait controls bar.
+- **Portrait minimap covering A/B buttons**: `MinimapScene` now computes its bottom offset from the action-button geometry (`buttonOffset + buttonSize + gap`) when the canvas is in portrait orientation, so the minimap sits above the A/B buttons instead of overlapping them. Also re-positions on viewport resize / orientation change via `layoutOn`.
+- **MenuScene text contrast**: Menu panel is now fully opaque (`fillAlpha: 1`) and pinned to a low z-depth so labels render on top. Menu items, money display, and selection cursor are bold with a 4px black stroke for readable contrast against the menu panel and any colour bleed-through during transitions.
 - **Portrait mode A/B buttons clipped**: In-canvas touch buttons now use a larger bottom offset (120px) in portrait mode so they aren't cut off by the screen edge or safe area
 - **Portrait mode dialogue cut off**: Dialogue box moved from 120px to 180px from bottom in portrait mode; choice panel also repositioned higher to stay visible
 - **Hamburger menu button not opening menu**: `InputManager.menu` now fires from both ESC key and touch cancel (hamburger button), so tapping the hamburger in the overworld opens the menu on mobile
