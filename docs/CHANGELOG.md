@@ -12,9 +12,9 @@ All notable changes to the Pokemon Web project.
 - **AI ingestion optimization plan**: Created `docs/AI-OPTIMIZATION-PLAN.md` with 7-phase plan for optimizing the codebase for AI agent consumption
 - **Directory CONTEXT.md files**: Added navigational context to all 8 major `frontend/src/` directories (`battle/`, `data/`, `entities/`, `managers/`, `systems/`, `scenes/`, `ui/`, `utils/`) so AI agents understand folder purpose without exploring every file
 - **Data subdirectory CONTEXT.md files**: Added navigational context to `data/maps/`, `data/moves/`, `data/pokemon/`, `data/trainers/` with file catalogs and conventions
-- **Path-specific instruction files**: Created domain-scoped `.instructions.md` files for battle (`frontend/src/battle/**`), data files (`frontend/src/data/**`), scenes (`frontend/src/scenes/**`), entities (`frontend/src/entities/**`), and tests (`tests/**`)
+- **Path-specific instruction files**: Created domain-scoped `.instructions.md` files for battle (`frontend/src/battle/**`), data files (`frontend/src/data/**`), scenes (`frontend/src/scenes/**`), entities (`frontend/src/entities/**`), managers (`frontend/src/managers/**`), and tests (`tests/**`)
+- **Scene subdirectory CONTEXT.md files**: Added navigational context to all 7 scene domain folders (`boot/`, `title/`, `overworld/`, `battle/`, `menu/`, `pokemon/`, `minigame/`) with file tables and architecture notes
 - **llms.txt**: Added project root `llms.txt` following the llmstxt.org standard for external AI context tools
-- **.cursorrules**: Added Cursor IDE rules file mirroring key conventions from AGENTS.md
 - **Context-freshness rules**: Added mandatory CONTEXT.md and AGENTS.md maintenance rules to copilot-instructions.md and AGENTS.md so AI agents keep documentation in sync with codebase changes
 - **AGENTS.md enhancements**: Added dependency graph, key interfaces reference table, file-finding shortcuts (20 keyword→file mappings), 5 new task recipes (adding Pokémon, trainers, items, maps, scenes), and anti-patterns table (9 common AI mistakes with corrections)
 
