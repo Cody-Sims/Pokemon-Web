@@ -21,6 +21,10 @@ Thumbs.db
 .playwright-mcp/
 tests/playwright-report/
 tests/e2e/screenshots/
+# Visual regression baselines are platform-specific (e.g. -darwin, -linux).
+# Don't commit local snapshots — generate them in CI on a fixed Linux runner
+# instead so they match across machines.
+tests/e2e/*-snapshots/
 test-results/
 
 # Logs
