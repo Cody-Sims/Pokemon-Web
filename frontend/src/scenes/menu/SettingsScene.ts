@@ -37,6 +37,7 @@ const SETTING_DEFS: SettingDef[] = [
   { key: 'deadZone', label: 'Joystick Dead Zone', type: 'slider', min: 0.05, max: 0.4, step: 0.05, format: (v) => `${Math.round(v * 100)}%` },
   { key: 'highVisControls', label: 'High Vis Controls', type: 'cycle', options: ['false', 'true'] },
   { key: 'showMinimap', label: 'Show Minimap', type: 'cycle', options: ['true', 'false'] },
+  { key: 'showTypeHints', label: 'Show Type Hints', type: 'cycle', options: ['true', 'false'] },
 ];
 
 export class SettingsScene extends Phaser.Scene {
@@ -255,7 +256,7 @@ export class SettingsScene extends Phaser.Scene {
     if (def.type === 'slider' && def.format) {
       return def.format(typeof val === 'number' ? val : parseFloat(String(val)) || 0);
     }
-    if (def.key === 'battleAnimations' || def.key === 'reducedMotion' || def.key === 'showMinimap') {
+    if (def.key === 'battleAnimations' || def.key === 'reducedMotion' || def.key === 'showMinimap' || def.key === 'showTypeHints') {
       return String(val) === 'true' ? 'ON' : 'OFF';
     }
     if (def.key === 'colorblindMode') {
