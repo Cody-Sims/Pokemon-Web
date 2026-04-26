@@ -108,22 +108,32 @@ export class StarterSelectScene extends Phaser.Scene {
       // legacy vertical layout (sprite on top, text below).
       const data = pokemonData[s.id];
       if (isPortrait) {
-        const spriteX = -cardW / 2 + cardH / 2;
+        // Sprite zone width — capped so wide cards don't push the text
+        // column off the right edge once `MOBILE_SCALE` (1.35) inflates
+        // the font sizes on mobile.
+        const spriteZone = Math.min(cardH, 84);
+        const spriteX = -cardW / 2 + spriteZone / 2;
         if (data) {
-          const sprite = this.add.image(spriteX, 0, data.spriteKeys.front).setScale(1.6);
+          const sprite = this.add.image(spriteX, 0, data.spriteKeys.front).setScale(1.4);
           container.add(sprite);
         }
-        const textX = spriteX + cardH / 2 + 12;
-        const nameText = this.add.text(textX, -cardH * 0.20, s.name, {
-          fontSize: mobileFontSize(18), color: '#ffffff', fontStyle: 'bold',
+        const textX = -cardW / 2 + spriteZone + 8;
+        // Wrap width = remaining card width - inner padding so even long
+        // species names ("Charmander", "Bulbasaur") stay inside the card
+        // border. Subtracting 16 gives 8 px breathing room on the right.
+        const wrapW = cardW - spriteZone - 16 - 8;
+        const nameText = this.add.text(textX, -cardH * 0.22, s.name, {
+          fontSize: mobileFontSize(15), color: '#ffffff', fontStyle: 'bold',
+          wordWrap: { width: wrapW },
         }).setOrigin(0, 0.5);
         container.add(nameText);
-        const typeText = this.add.text(textX, 4, s.type, {
-          fontSize: mobileFontSize(13), color: '#cccccc',
+        const typeText = this.add.text(textX, 2, s.type, {
+          fontSize: mobileFontSize(11), color: '#cccccc',
+          wordWrap: { width: wrapW },
         }).setOrigin(0, 0.5);
         container.add(typeText);
-        const lvlText = this.add.text(textX, cardH * 0.20, 'Lv. 5', {
-          fontSize: mobileFontSize(13), color: '#aaaaaa',
+        const lvlText = this.add.text(textX, cardH * 0.22, 'Lv. 5', {
+          fontSize: mobileFontSize(11), color: '#aaaaaa',
         }).setOrigin(0, 0.5);
         container.add(lvlText);
       } else {

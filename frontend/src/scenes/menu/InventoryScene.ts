@@ -71,14 +71,32 @@ export class InventoryScene extends Phaser.Scene {
     this.add.text(layout.cx, 28, 'BAG', { ...FONTS.heading, fontSize: mobileFontSize(24) }).setOrigin(0.5);
     this.add.rectangle(layout.cx, 46, 160, 2, COLORS.borderHighlight, 0.4);
 
-    // Category tabs — distribute evenly across the available width so the
-    // last tab doesn't overflow on narrow portrait viewports.
+    // Always-visible top-right close button — gives mobile users an
+    // unambiguous exit even if the bottom hint sits behind the on-screen
+    // touch controls / safe-area inset.
+    const topCloseBtn = this.add.text(layout.w - 16, 16, '✕', {
+      ...FONTS.heading, fontSize: mobileFontSize(20), color: COLORS.textHighlight,
+    }).setOrigin(1, 0).setInteractive({ useHandCursor: true }).setDepth(10);
+    topCloseBtn.setPadding(10, 6, 10, 6);
+    topCloseBtn.on('pointerdown', () => this.handleEsc());
+
+    // Category tabs — portrait shrinks to short labels so five tabs fit in
+    // the ~400 px viewport without colliding ("Poké Balls" at the full
+    // mobile-scaled 15 px font is wider than its slot).
     const isPortrait = layout.h > layout.w;
-    const tabPad = 16;
+    const tabPad = 12;
     const tabAreaW = layout.w - tabPad * 2;
     const tabSlotW = tabAreaW / CATEGORY_LABELS.length;
+    const PORTRAIT_TAB_LABELS: Record<ItemCategory, string> = {
+      medicine: 'Med',
+      pokeball: 'Balls',
+      battle: 'Btl',
+      key: 'Key',
+      tm: 'TMs',
+    };
     this.tabTexts = CATEGORY_LABELS.map((cat, i) => {
-      const t = this.add.text(tabPad + tabSlotW * i + tabSlotW / 2, 58, cat.label, {
+      const label = isPortrait ? PORTRAIT_TAB_LABELS[cat.key] : cat.label;
+      const t = this.add.text(tabPad + tabSlotW * i + tabSlotW / 2, 58, label, {
         ...FONTS.bodySmall, fontSize: mobileFontSize(isPortrait ? 11 : 13),
       }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
       t.on('pointerdown', () => { this.categoryIndex = i; this.switchCategory(); });
@@ -88,10 +106,15 @@ export class InventoryScene extends Phaser.Scene {
 
     // Detail panel — landscape uses a right-side rail; portrait stacks it
     // below the item list so neither pane gets clipped or overlaps.
+    // Reserve a bottom strip in portrait for the close button + money so
+    // they don't sit underneath the on-screen touch controls.
+    const bottomReserve = isPortrait ? 60 : 0;
     if (isPortrait) {
-      const listH = Math.floor((layout.h - 130) * 0.55);
-      new NinePatchPanel(this, layout.cx, 90 + listH + 10 + (layout.h - 130 - listH - 20) / 2,
-        layout.w - 30, layout.h - 130 - listH - 20, {
+      const usableH = layout.h - 90 - bottomReserve;
+      const listH = Math.floor(usableH * 0.55);
+      const detailH = usableH - listH - 16;
+      new NinePatchPanel(this, layout.cx, 90 + listH + 8 + detailH / 2,
+        layout.w - 30, detailH, {
           fillColor: COLORS.bgCard, fillAlpha: 0.7, borderColor: COLORS.border, cornerRadius: 6,
         });
     } else {
@@ -100,21 +123,25 @@ export class InventoryScene extends Phaser.Scene {
       });
     }
 
-    // Money display
+    // Money display — pulled inside the bottomReserve in portrait so it
+    // sits clear of the DOM touch-control band.
     const gm = GameManager.getInstance();
-    this.add.text(isPortrait ? 16 : layout.w - 280, layout.h - 50, `₽ ${gm.getMoney()}`, {
+    const moneyY = isPortrait ? layout.h - bottomReserve + 8 : layout.h - 50;
+    this.add.text(isPortrait ? 16 : layout.w - 280, moneyY, `₽ ${gm.getMoney()}`, {
       ...FONTS.body, color: COLORS.textHighlight,
     });
 
-    // Close hint / tappable close button
+    // Close hint / tappable close button (bottom). Top-right ✕ already
+    // covers the mobile case, so this is just a secondary affordance.
+    const closeY = isPortrait ? layout.h - bottomReserve + 32 : layout.h - 22;
     if (isMobile()) {
-      const closeBtn = this.add.text(layout.cx, layout.h - 22, '✕  CLOSE', {
+      const closeBtn = this.add.text(layout.cx, closeY, '✕  CLOSE', {
         ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textHighlight,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       closeBtn.setPadding(16, 8, 16, 8);
       closeBtn.on('pointerdown', () => this.handleEsc());
     } else {
-      this.add.text(layout.cx, layout.h - 22, 'ESC to close', FONTS.caption).setOrigin(0.5);
+      this.add.text(layout.cx, closeY, 'ESC to close', FONTS.caption).setOrigin(0.5);
     }
 
     this.switchCategory();

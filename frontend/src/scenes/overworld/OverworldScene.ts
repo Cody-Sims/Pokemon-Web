@@ -316,19 +316,29 @@ export class OverworldScene extends Phaser.Scene {
       // pier/edge tiles without being hidden behind the on-screen buttons.
       const isTouch = TouchControls.isTouchDevice();
       const isPortrait = layout.h > layout.w;
-      // Mobile portrait reserves ~140px for stacked controls; landscape
-      // reserves ~120px because the controls sit on the sides.
-      const touchPadBottom = isTouch ? (isPortrait ? 140 : 0) : 0;
+      // Mobile portrait reserves ~180px for stacked controls + bottom-pad
+      // headroom; landscape reserves 0 because the controls sit on the
+      // sides, not below.
+      const touchPadBottom = isTouch && isPortrait ? 180 : 0;
 
-      // Center the map when it's smaller than the viewport on either axis.
-      // Expand bounds with padding so Phaser's built-in centering kicks in.
+      // Horizontal bounds: centered if the map is narrower than the
+      // viewport, otherwise tight to the map.
       const boundsW = Math.max(mapPixelW, layout.w);
-      const boundsH = Math.max(mapPixelH + touchPadBottom, layout.h);
-      const boundsX = (mapPixelW - boundsW) / 2;
-      const boundsY = (mapPixelH - boundsH) / 2;
-      this.cameras.main.setBounds(boundsX, boundsY, boundsW, boundsH);
+      const boundsX = mapPixelW < layout.w ? (mapPixelW - boundsW) / 2 : 0;
+
+      // Vertical bounds: stretch DOWN by touchPadBottom (don't center the
+      // pad symmetrically) so the camera can scroll past the map's
+      // southern edge. The previous symmetric split sent half the pad
+      // above the map (where it didn't help) and only half below.
+      const boundsTop = mapPixelH < layout.h ? (mapPixelH - layout.h) / 2 : 0;
+      const boundsBottom = Math.max(mapPixelH, layout.h) + touchPadBottom;
+      const boundsH = boundsBottom - boundsTop;
+      this.cameras.main.setBounds(boundsX, boundsTop, boundsW, boundsH);
       this.cameras.main.startFollow(this.player, true);
-      this.cameras.main.setFollowOffset(0, 0);
+      // Push the camera down a bit so the player sits in the upper-middle
+      // of the viewport in mobile portrait — leaves more room for the
+      // pier/water tiles below the player to render above the touch UI.
+      this.cameras.main.setFollowOffset(0, isTouch && isPortrait ? -90 : 0);
       // Use a very small deadzone (1 tile each axis) so the camera follows
       // the player aggressively. The previous 20%-of-viewport deadzone
       // (often 160-200px on mobile portrait) was larger than the available

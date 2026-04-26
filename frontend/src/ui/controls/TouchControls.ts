@@ -684,9 +684,11 @@ export class TouchControls {
     // Add safe-area insets so the button stays clear of iOS notches in
     // landscape and the home indicator/status bar in portrait PWA mode.
     const insets = getGameSafeAreaInsets(this.scene.cameras.main);
-    // In portrait we push the button further down past the HUD strip + clock
-    // widget so it's well clear of iOS top-edge gesture areas and easy to tap.
-    const baseY = isPortrait ? this.menuBtnSize / 2 + 72 : this.menuBtnSize / 2 + 12;
+    // Portrait: hug the top-right corner just below the safe-area inset
+    // (8 px below it). The minimap now lives in the top-left so we no
+    // longer need to push past the QuestTracker strip — this makes the
+    // hamburger button reachable without a thumb stretch on tall phones.
+    const baseY = isPortrait ? this.menuBtnSize / 2 + 8 : this.menuBtnSize / 2 + 12;
     const yOffset = baseY + insets.top;
     const xOffset = this.menuBtnSize / 2 + 12 + insets.right;
     this.menuBtn.setPosition(width - xOffset, yOffset);

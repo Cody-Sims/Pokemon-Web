@@ -6,6 +6,18 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-26]
 
+### Fixed — Battle/bag/starter portrait polish + camera headroom
+
+- **Pier still hidden behind touch controls in Pallet Town**: The bottom-pad added in the previous fix was being split symmetrically by the camera-bounds centering math, so only ~70 px ended up below the map (vs the full 140 px intended). Reworked [OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts) to anchor camera bounds to the top edge and extend the pad purely downward (`boundsBottom = mapPixelH + touchPadBottom`), bumped the reserve to 180 px, and added a 90 px upward `setFollowOffset` in mobile portrait so the player sits in the upper-middle of the viewport with room for the pier/water tiles to render above the touch UI.
+- **Starter card text overflowed the card border**: The horizontal portrait layout used `cardH/2` as the sprite zone and `mobileFontSize(18)` for names — once `MOBILE_SCALE` (1.35) inflated "Charmander" to ~150 px, the text spilled past the card border. [StarterSelectScene.ts](frontend/src/scenes/pokemon/StarterSelectScene.ts) now caps the sprite zone at 84 px, drops name/type fonts to 15/11 px, and adds `wordWrap.width = cardW - spriteZone - 24` so even the longest species names stay inside the card.
+- **Battle info panels rendered off-canvas in portrait**: The 300 px enemy/player info panels were anchored at `w * 0.18` / `w * 0.78`. On a 400 px portrait canvas that pushed the enemy panel from x=-78 to x=222 (left half clipped) and the player panel from x=162 to x=462 (right half clipped). [BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts) now uses a portrait-aware `infoPanelW = min(260, w - 32)` and clamps the panel center to `infoMargin + panelW/2` (left) / `w - infoMargin - panelW/2` (right). All HP-bar text is positioned relative to the panel edges, the level + HP-text use right-aligned origins, and `updateHpBars()` reads bar widths from the bg rectangle so resizing stays in sync.
+- **Bag tabs collided + bottom hidden behind touch controls**: Five 73 px tab slots couldn't fit "Poké Balls" / "Key Items" at the mobile-scaled 15 px font, so they ran together as `Medicin@oké BallsBattle Key Items TMs`. [InventoryScene.ts](frontend/src/scenes/menu/InventoryScene.ts) now uses 3-letter portrait labels (`Med / Balls / Btl / Key / TMs`), reserves a 60 px bottom strip for the money + close hint so they sit above the DOM touch controls, and adds an always-visible top-right `✕` close button so mobile users have an unambiguous exit even when the bottom hint is occluded.
+- **Hamburger menu button sat too low**: The in-canvas overlay menu button reserved 72 px of headroom in portrait to avoid the legacy QuestTracker strip, but the minimap moved to the top-left corner two updates ago and the QuestTracker is hidden during dialogue/battle. [TouchControls.layoutMenuButton](frontend/src/ui/controls/TouchControls.ts) now uses 8 px headroom in portrait so the hamburger button hugs the top-right corner just below the iOS notch, making it reachable without a thumb stretch.
+
+---
+
+## [2026-04-26]
+
 ### Fixed — Challenge Modes screen wraps and re-flows on rotation
 
 - **Hint text clipped on mobile portrait + no rotation re-flow**: The "Optional. Toggle with SPACE / tap. ENTER to begin." hint had no `wordWrap`, so on a ~400 px portrait canvas it spilled past both edges. The whole challenge-select panel was also positioned once from the snapshot dimensions in `cameras.main` and never re-laid out, so rotating the device left the layout stuck at the original aspect ratio (the user's screenshot showed the entire panel squeezed into a vertical strip in landscape).

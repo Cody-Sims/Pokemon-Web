@@ -208,8 +208,18 @@ export class BattleScene extends Phaser.Scene {
       .setScale(4).setTint(0xffffff).setAlpha(0);
 
     // ── Enemy info box (top-left) — starts above screen ──
-    const enemyInfoX = Math.round(w * 0.18);
-    const enemyInfoPanel = new NinePatchPanel(this, enemyInfoX, -60, 300, 60, {
+    // Portrait viewports are too narrow for the legacy 300 px panel; shrink
+    // the panel + HP bar and clamp the panel center so neither edge runs
+    // off the canvas.
+    const infoMargin = 16;
+    const infoPanelW = isPortraitBattle ? Math.min(260, w - infoMargin * 2) : 300;
+    const enemyHpBarW = isPortraitBattle ? Math.min(180, infoPanelW - 70) : 220;
+    const playerHpBarW = isPortraitBattle ? Math.min(160, infoPanelW - 90) : 180;
+    // Anchor: enemy box hugs the left edge, player box hugs the right edge.
+    const enemyInfoX = isPortraitBattle ? infoMargin + infoPanelW / 2 : Math.round(w * 0.18);
+    const playerInfoX = isPortraitBattle ? w - infoMargin - infoPanelW / 2 : Math.round(w * 0.78);
+
+    const enemyInfoPanel = new NinePatchPanel(this, enemyInfoX, -60, infoPanelW, 60, {
       fillColor: COLORS.bgCard,
       fillAlpha: 0.92,
       borderColor: COLORS.borderLight,
@@ -218,16 +228,19 @@ export class BattleScene extends Phaser.Scene {
       shadowAlpha: 0.3,
     });
     const enemyInfoBox = enemyInfoPanel.getGraphics();
-    this.enemyNameText = this.add.text(enemyInfoX - 130, -80, `${this.enemyPokemon.nickname ?? enemyData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
-    const enemyLvlText = this.add.text(enemyInfoX + 70, -80, `Lv${this.enemyPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
-    this.enemyHpBg = this.add.rectangle(enemyInfoX - 130, -55, 220, 10, 0x333333).setOrigin(0, 0.5);
-    this.enemyHpBar = this.add.rectangle(enemyInfoX - 130, -55, 220, 10, 0x4caf50).setOrigin(0, 0.5);
-    new BarFrame(this, enemyInfoX - 130, -55, 220, 10, { accentColor: 0xff5544 });
-    this.enemyStatusImg = this.add.image(enemyInfoX + 100, -80, 'status-badges', 0).setScale(2).setVisible(false);
+    // Position child elements relative to the panel's left edge so they
+    // always sit inside the panel border, regardless of viewport width.
+    const enemyTextLeft = enemyInfoX - infoPanelW / 2 + 12;
+    const enemyTextRight = enemyInfoX + infoPanelW / 2 - 12;
+    this.enemyNameText = this.add.text(enemyTextLeft, -80, `${this.enemyPokemon.nickname ?? enemyData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
+    const enemyLvlText = this.add.text(enemyTextRight, -80, `Lv${this.enemyPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' }).setOrigin(1, 0);
+    this.enemyHpBg = this.add.rectangle(enemyTextLeft, -55, enemyHpBarW, 10, 0x333333).setOrigin(0, 0.5);
+    this.enemyHpBar = this.add.rectangle(enemyTextLeft, -55, enemyHpBarW, 10, 0x4caf50).setOrigin(0, 0.5);
+    new BarFrame(this, enemyTextLeft, -55, enemyHpBarW, 10, { accentColor: 0xff5544 });
+    this.enemyStatusImg = this.add.image(enemyTextRight - 30, -80, 'status-badges', 0).setScale(2).setVisible(false);
 
     // ── Player info box (bottom-right) — starts below screen ──
-    const playerInfoX = Math.round(w * 0.78);
-    const playerInfoPanel = new NinePatchPanel(this, playerInfoX, h + 60, 300, 70, {
+    const playerInfoPanel = new NinePatchPanel(this, playerInfoX, h + 60, infoPanelW, 70, {
       fillColor: COLORS.bgCard,
       fillAlpha: 0.92,
       borderColor: COLORS.borderLight,
@@ -236,19 +249,21 @@ export class BattleScene extends Phaser.Scene {
       shadowAlpha: 0.3,
     });
     const playerInfoBox = playerInfoPanel.getGraphics();
-    this.playerNameText = this.add.text(playerInfoX - 140, h + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
-    this.playerLevelText = this.add.text(playerInfoX + 90, h + 40, `Lv${this.playerPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
-    this.playerHpBg = this.add.rectangle(playerInfoX - 140, h + 70, 180, 10, 0x333333).setOrigin(0, 0.5);
-    this.playerHpBar = this.add.rectangle(playerInfoX - 140, h + 70, 180, 10, 0x4caf50).setOrigin(0, 0.5);
-    new BarFrame(this, playerInfoX - 140, h + 70, 180, 10, { accentColor: 0x44d068 });
-    this.playerHpText = this.add.text(playerInfoX + 48, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: mobileFontSize(12), color: '#ffffff' });
-    this.playerStatusImg = this.add.image(playerInfoX - 140, h + 85, 'status-badges', 0).setScale(2).setVisible(false);
+    const playerTextLeft = playerInfoX - infoPanelW / 2 + 12;
+    const playerTextRight = playerInfoX + infoPanelW / 2 - 12;
+    this.playerNameText = this.add.text(playerTextLeft, h + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
+    this.playerLevelText = this.add.text(playerTextRight, h + 40, `Lv${this.playerPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' }).setOrigin(1, 0);
+    this.playerHpBg = this.add.rectangle(playerTextLeft, h + 70, playerHpBarW, 10, 0x333333).setOrigin(0, 0.5);
+    this.playerHpBar = this.add.rectangle(playerTextLeft, h + 70, playerHpBarW, 10, 0x4caf50).setOrigin(0, 0.5);
+    new BarFrame(this, playerTextLeft, h + 70, playerHpBarW, 10, { accentColor: 0x44d068 });
+    this.playerHpText = this.add.text(playerTextRight, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: mobileFontSize(12), color: '#ffffff' }).setOrigin(1, 0);
+    this.playerStatusImg = this.add.image(playerTextLeft, h + 85, 'status-badges', 0).setScale(2).setVisible(false);
 
     // ── EXP bar (below player HP) ──
-    this.expBarBg = this.add.rectangle(playerInfoX - 140, h + 82, 180, 4, 0x222233).setOrigin(0, 0.5);
+    this.expBarBg = this.add.rectangle(playerTextLeft, h + 82, playerHpBarW, 4, 0x222233).setOrigin(0, 0.5);
     const expPct = this.getExpPercent();
-    this.expBarFill = this.add.rectangle(playerInfoX - 140, h + 82, 180 * expPct, 4, 0x4488ff).setOrigin(0, 0.5);
-    new BarFrame(this, playerInfoX - 140, h + 82, 180, 4, { shadowAlpha: 0.4 });
+    this.expBarFill = this.add.rectangle(playerTextLeft, h + 82, playerHpBarW * expPct, 4, 0x4488ff).setOrigin(0, 0.5);
+    new BarFrame(this, playerTextLeft, h + 82, playerHpBarW, 4, { shadowAlpha: 0.4 });
 
     // ── Slide-in animation ──
     const introDelay = 200;
@@ -378,8 +393,12 @@ export class BattleScene extends Phaser.Scene {
     const enemyPct = Math.max(0, this.enemyPokemon.currentHp / this.enemyPokemon.stats.hp);
     const playerPct = Math.max(0, this.playerPokemon.currentHp / this.playerPokemon.stats.hp);
 
-    this.tweens.add({ targets: this.enemyHpBar, displayWidth: 220 * enemyPct, duration: 400 });
-    this.tweens.add({ targets: this.playerHpBar, displayWidth: 180 * playerPct, duration: 400 });
+    // Use the matching background bar's width as the source of truth so
+    // these stay in sync if the panel is resized for portrait mobile.
+    const enemyMaxW = this.enemyHpBg.width;
+    const playerMaxW = this.playerHpBg.width;
+    this.tweens.add({ targets: this.enemyHpBar, displayWidth: enemyMaxW * enemyPct, duration: 400 });
+    this.tweens.add({ targets: this.playerHpBar, displayWidth: playerMaxW * playerPct, duration: 400 });
 
     this.enemyHpBar.fillColor = enemyPct > 0.5 ? 0x4caf50 : enemyPct > 0.2 ? 0xffeb3b : 0xf44336;
     this.playerHpBar.fillColor = playerPct > 0.5 ? 0x4caf50 : playerPct > 0.2 ? 0xffeb3b : 0xf44336;
