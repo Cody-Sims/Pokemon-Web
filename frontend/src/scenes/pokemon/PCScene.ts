@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { MAX_PARTY_SIZE } from '@utils/constants';
 import { ui } from '@utils/ui-layout';
+import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
@@ -99,6 +100,13 @@ export class PCScene extends Phaser.Scene {
     this.renderBox();
     this.renderParty();
     this.updateSelection();
+
+    // Re-layout on resize / orientation change
+    let resizeInit = false;
+    layoutOn(this, () => {
+      if (!resizeInit) { resizeInit = true; return; }
+      this.scene.restart();
+    });
   }
 
   private bindKeys(): void {
@@ -469,5 +477,10 @@ export class PCScene extends Phaser.Scene {
     const name = pokemon.nickname ?? pData?.name ?? '???';
     const types = pData?.types.join('/') ?? '???';
     this.detailText.setText(`${name}  Lv.${pokemon.level}  ${types}  HP: ${pokemon.currentHp}/${pokemon.stats.hp}`);
+  }
+
+  shutdown(): void {
+    this.input.keyboard?.removeAllListeners();
+    this.input.removeAllListeners();
   }
 }

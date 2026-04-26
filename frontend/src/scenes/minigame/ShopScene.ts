@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
+import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { itemData } from '@data/item-data';
@@ -14,6 +15,7 @@ type ShopTab = 'buy' | 'sell';
 export class ShopScene extends Phaser.Scene {
   private tab: ShopTab = 'buy';
   private shopItems: string[] = [];
+  private shopId = 'viridian-city';
   private filteredItems: { item: ItemData; qty: number }[] = [];
   private scrollOffset = 0;
   private readonly maxVisible = 7;
@@ -41,7 +43,8 @@ export class ShopScene extends Phaser.Scene {
   }
 
   create(data: { shopId?: string }): void {
-    const shopId = data.shopId ?? 'viridian-city';
+    this.shopId = data?.shopId ?? 'viridian-city';
+    const shopId = this.shopId;
     // Dynamically import shop data
     import('@data/shop-data').then(mod => {
       this.shopItems = mod.shopInventories[shopId] ?? mod.shopInventories['viridian-city'] ?? [];
@@ -146,6 +149,14 @@ export class ShopScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-RIGHT', switchToSell);
 
     this.switchTab();
+
+    // Re-layout on resize / orientation change
+    let resizeInit = false;
+    layoutOn(this, () => {
+      if (!resizeInit) { resizeInit = true; return; }
+      this.listController?.destroy();
+      this.scene.restart({ shopId: this.shopId });
+    });
   }
 
   private switchTab(): void {
@@ -451,5 +462,10 @@ export class ShopScene extends Phaser.Scene {
   private close(): void {
     this.listController?.destroy();
     this.scene.stop();
+  }
+
+  shutdown(): void {
+    this.input.keyboard?.removeAllListeners();
+    this.tweens.killAll();
   }
 }

@@ -5,6 +5,7 @@ import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
+import { AchievementManager } from '@managers/AchievementManager';
 import { SFX, BGM } from '@utils/audio-keys';
 import { FONTS, COLORS, isMobile, mobileFontSize } from '@ui/theme';
 import { ui } from '@utils/ui-layout';
@@ -37,6 +38,7 @@ export function handlePokeBallUse(ctx: CatchContext, ballItemId: string): void {
     return;
   }
 
+  ballThrowCount++;
   ctx.setState('animating');
   ctx.hideActions();
 
@@ -99,6 +101,17 @@ function runShakeSequence(ctx: CatchContext, totalShakes: number, caught: boolea
   }
 }
 
+// Gen-1 legendary Pokémon IDs
+const LEGENDARY_IDS = new Set([144, 145, 146, 150, 151]); // Articuno, Zapdos, Moltres, Mewtwo, Mew
+
+/** Tracks ball throws within the current battle for catch-first-ball achievement. */
+let ballThrowCount = 0;
+
+/** Reset ball throw count at the start of a new battle. */
+export function resetBallThrowCount(): void {
+  ballThrowCount = 0;
+}
+
 function onCatchSuccess(ctx: CatchContext): void {
   const b = ctx.battle();
   const audio = AudioManager.getInstance();
@@ -126,6 +139,29 @@ function onCatchSuccess(ctx: CatchContext): void {
     const added = gm.addToParty(enemy);
     gm.markSeen(enemy.dataId);
     gm.markCaught(enemy.dataId);
+
+    // ── Catch achievements ──
+    const am = AchievementManager.getInstance();
+    gm.incrementStat('totalCatches');
+    const caughtCount = gm.getPokedex().caught.length;
+    if (caughtCount >= 10) am.unlock('catch-10');
+    if (caughtCount >= 50) am.unlock('catch-50');
+    if (caughtCount >= 100) am.unlock('catch-100');
+    if (caughtCount >= 151) am.unlock('catch-all');
+    if (enemy.isShiny) am.unlock('shiny-catch');
+    if (LEGENDARY_IDS.has(enemy.dataId)) am.unlock('legendary-catch');
+    if (gm.getParty().length >= 6) am.unlock('full-party');
+
+    // catch-first-ball: only unlock if this was the very first ball thrown
+    if (ballThrowCount === 1) am.unlock('catch-first-ball');
+
+    // all-starters: check if player owns all 3 starter lines (Bulbasaur/Charmander/Squirtle families)
+    const STARTER_BASES = [1, 4, 7]; // Bulbasaur, Charmander, Squirtle
+    const allPokemon = [...gm.getParty(), ...gm.getBoxes().flat()];
+    const allIds = new Set(allPokemon.map(p => p.dataId));
+    if (STARTER_BASES.every(base => allIds.has(base) || allIds.has(base + 1) || allIds.has(base + 2))) {
+      am.unlock('all-starters');
+    }
 
     if (added && gm.getParty().length > 6) {
       ctx.msg(`${name} was sent to the PC!`);

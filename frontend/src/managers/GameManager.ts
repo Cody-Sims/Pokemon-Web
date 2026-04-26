@@ -13,6 +13,7 @@ export interface GameStats {
   pokemonEvolved: number;
   criticalHits: number;
   highestDamage: number;
+  superEffectiveHits: number;
 }
 
 export interface HallOfFameEntry {
@@ -27,7 +28,7 @@ function defaultStats(): GameStats {
     totalBattlesWon: 0, totalBattlesLost: 0, wildBattles: 0,
     trainerBattles: 0, totalCatches: 0, totalSteps: 0,
     moneyEarned: 0, moneySpent: 0, pokemonEvolved: 0,
-    criticalHits: 0, highestDamage: 0,
+    criticalHits: 0, highestDamage: 0, superEffectiveHits: 0,
   };
 }
 

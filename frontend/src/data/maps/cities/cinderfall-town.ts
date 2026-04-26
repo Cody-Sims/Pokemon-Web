@@ -34,7 +34,7 @@ const cinderfallGround = parseMap([
 export const cinderfallTown: MapDefinition = {
   key: 'cinderfall-town', width: 24, height: 25, ground: cinderfallGround,
   encounterTableKey: '', battleBg: 'bg-fire', displayName: 'Cinderfall Town',
-  weather: 'sandstorm',
+  weather: 'ash',
   npcs: [
     { id: 'cinderfall-npc', name: 'Townsperson', tileX: 16, tileY: 6, textureKey: 'npc-female-3', facing: 'left',
       dialogue: ['Solara is our Gym Leader. She was once Aldric\'s student.',

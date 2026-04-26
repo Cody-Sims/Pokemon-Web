@@ -5,6 +5,7 @@ import { pokemonData } from '@data/pokemon';
 import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
+import { AchievementManager } from '@managers/AchievementManager';
 import { SFX, BGM } from '@utils/audio-keys';
 import { isMobile, mobileFontSize } from '@ui/theme';
 import { processTrainerRewards, getContinueMessage } from './BattleRewardHandler';
@@ -39,6 +40,11 @@ export function runVictorySequence(ctx: VictoryContext): void {
   }
 
   AudioManager.getInstance().playBGM(BGM.VICTORY);
+
+  // Achievement: underdog win (defeated a Pokémon 10+ levels higher)
+  if (b.enemyPokemon.level >= player.level + 10) {
+    AchievementManager.getInstance().unlock('underdog-win');
+  }
 
   ctx.msg(`${name} gained ${expGained} EXP. Points!`);
   ctx.setState('animating');
@@ -256,6 +262,10 @@ function checkEvolutionThenEnd(ctx: VictoryContext): void {
       const gm = GameManager.getInstance();
       gm.markSeen(evolvesTo);
       gm.markCaught(evolvesTo);
+      gm.incrementStat('pokemonEvolved');
+
+      // Achievement: first evolution
+      AchievementManager.getInstance().unlock('evolve-first');
 
       ctx.msg(`Congratulations! ${oldName} evolved into ${newData.name}!`);
       b.updateHpBars();
@@ -275,9 +285,21 @@ function showTrainerRewardsThenEnd(ctx: VictoryContext): void {
   if (b.isTrainerBattle && b.trainerId) {
     const { messages: rewardMsgs } = processTrainerRewards(b.trainerId, b.victoryFlag);
     messages.push(...rewardMsgs);
-  } else if (b.victoryFlag) {
-    GameManager.getInstance().setFlag(b.victoryFlag);
-    EventManager.getInstance().emit('flag-set', b.victoryFlag);
+  } else {
+    // Wild battle win — track stats and achievements here
+    // (trainer battle stats are tracked inside processTrainerRewards)
+    const gm = GameManager.getInstance();
+    const am = AchievementManager.getInstance();
+    if (b.victoryFlag) {
+      gm.setFlag(b.victoryFlag);
+      EventManager.getInstance().emit('flag-set', b.victoryFlag);
+    }
+    gm.incrementStat('totalBattlesWon');
+    const wins = gm.getStat('totalBattlesWon');
+    am.unlock('first-battle');
+    if (wins >= 10) am.unlock('win-10');
+    if (wins >= 50) am.unlock('win-50');
+    if (wins >= 100) am.unlock('win-100');
   }
 
   const continueMsg = getContinueMessage();

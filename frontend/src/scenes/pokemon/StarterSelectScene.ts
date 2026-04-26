@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
+import { layoutOn } from '@utils/layout-on';
 import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
+import { AchievementManager } from '@managers/AchievementManager';
 import { pokemonData } from '@data/pokemon';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
@@ -47,6 +49,7 @@ export class StarterSelectScene extends Phaser.Scene {
   }
 
   private buildUI(): void {
+    this.cards = [];
     const layout = ui(this);
 
     // Darken background
@@ -128,6 +131,14 @@ export class StarterSelectScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-SPACE', () => this.selectStarter());
     // BUG-079: Add back/cancel handler
     this.input.keyboard!.on('keydown-ESC', () => this.goBack());
+
+    // Re-layout on resize / orientation change
+    let resizeInit = false;
+    layoutOn(this, () => {
+      if (!resizeInit) { resizeInit = true; return; }
+      this.cards = [];
+      this.scene.restart();
+    });
   }
 
   private updateCursor(): void {
@@ -166,6 +177,9 @@ export class StarterSelectScene extends Phaser.Scene {
     gm.setFlag(`starterChoice_${choice.id}`);
     gm.markSeen(choice.id);
     gm.markCaught(choice.id);
+
+    // Achievement: first Pokémon received
+    AchievementManager.getInstance().unlock('first-pokemon');
 
     // Flash and close
     this.cameras.main.flash(300, 255, 255, 255);

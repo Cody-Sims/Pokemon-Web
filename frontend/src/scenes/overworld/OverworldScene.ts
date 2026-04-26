@@ -147,6 +147,11 @@ export class OverworldScene extends Phaser.Scene {
       this.scene.launch('QuestTrackerScene');
     }
 
+    // Launch party quick-view HUD overlay
+    if (!this.scene.isActive('PartyQuickViewScene') && !this.scene.isSleeping('PartyQuickViewScene')) {
+      this.scene.launch('PartyQuickViewScene');
+    }
+
     // Ensure player has a starter Pokemon (fallback — normally received from Oak)
     if (gm.getParty().length === 0 && gm.getFlag('receivedStarter')) {
       const starter = EncounterSystem.createWildPokemon(1, 5);
@@ -164,6 +169,28 @@ export class OverworldScene extends Phaser.Scene {
     gm.setCurrentMap(this.mapKey);
     gm.markMapVisited(this.mapKey);
     EventManager.getInstance().emit('map-entered', this.mapKey);
+
+    // Wire AchievementToast to show on any achievement unlock
+    AchievementManager.getInstance().setOnUnlock((ach) => {
+      AchievementToast.show(this, ach);
+    });
+
+    // Exploration achievements: first-town / all-towns / first-cave
+    const am = AchievementManager.getInstance();
+    if (!this.mapDef?.isInterior) {
+      am.unlock('first-town');
+    }
+    const TOWN_KEYS = [
+      'pallet-town', 'viridian-city', 'pewter-city', 'coral-harbor',
+      'ironvale-city', 'verdantia-village', 'voltara-city',
+      'wraithmoor-town', 'scalecrest-citadel', 'cinderfall-town',
+    ];
+    if (TOWN_KEYS.every(k => gm.hasVisitedMap(k))) {
+      am.unlock('all-towns');
+    }
+    if (this.mapKey.includes('cave') || this.mapKey.includes('cavern') || this.mapKey.includes('tunnel')) {
+      am.unlock('first-cave');
+    }
 
     const mapW = this.mapDef.width;
     const mapH = this.mapDef.height;
@@ -199,6 +226,11 @@ export class OverworldScene extends Phaser.Scene {
       spawnX = spawn.x;
       spawnY = spawn.y;
       spawnDir = spawn.direction;
+    }
+
+    // Auto-enable surf if spawning on a water tile (fixes stuck-on-water after warp/battle)
+    if (this.mapDef.ground[spawnY]?.[spawnX] === Tile.WATER) {
+      this.surfing = true;
     }
 
     this.player = new Player(this, spawnX, spawnY, gm.getPlayerGender() === 'girl' ? 'player-walk-female' : 'player-walk');
@@ -618,6 +650,12 @@ export class OverworldScene extends Phaser.Scene {
     if (steps % 128 === 0 && gm.getParty().length > 0) {
       gm.adjustFriendship(0, 1);
     }
+
+    // Step achievements
+    const am = AchievementManager.getInstance();
+    if (steps >= 1000) am.unlock('steps-1000');
+    if (steps >= 10000) am.unlock('steps-10000');
+    if (steps >= 100000) am.unlock('steps-100000');
 
     // Terrain-based footstep SFX
     const currentTile = this.mapDef.ground[ty]?.[tx];
@@ -1060,6 +1098,9 @@ export class OverworldScene extends Phaser.Scene {
     const hasBicycle = GameManager.getInstance().getItemCount('bicycle') > 0;
     if (input.bicycle && hasBicycle) {
       this.isCycling = !this.isCycling;
+      if (this.isCycling) {
+        AchievementManager.getInstance().unlock('use-bicycle');
+      }
     }
     // Auto-dismount indoors
     if (this.isCycling && this.mapDef.isInterior) {

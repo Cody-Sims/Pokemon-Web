@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
+import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
 import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawStatusBadge, drawHpBar, drawButton, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
+import { TouchControls } from '@ui/controls/TouchControls';
 import { SFX } from '@utils/audio-keys';
 
 export class PartyScene extends Phaser.Scene {
@@ -137,6 +139,14 @@ export class PartyScene extends Phaser.Scene {
 
     this.add.text(layout.cx, layout.h - 52, this.selectMode ? 'Choose a Pokémon' : 'Select a Pokémon to view options', { ...FONTS.caption, fontSize: mobileFontSize(12) }).setOrigin(0.5);
     drawButton(this, layout.cx, layout.h - 30, 'Close (ESC)', () => this.closeScene(), 140, Math.max(MIN_TOUCH_TARGET, 30));
+
+    // Re-layout on resize / orientation change
+    let resizeInit = false;
+    layoutOn(this, () => {
+      if (!resizeInit) { resizeInit = true; return; }
+      this.controller?.destroy();
+      this.scene.restart({ selectMode: this.selectMode });
+    });
   }
 
   private updateCursor(): void {
@@ -259,5 +269,21 @@ export class PartyScene extends Phaser.Scene {
   private closeScene(): void {
     this.controller?.destroy();
     this.scene.stop();
+  }
+
+  update(): void {
+    const touch = TouchControls.getInstance();
+    if (!touch || this.contextMenu) return;
+    if (touch.consumeSwipeUp()) {
+      this.controller?.navigate('up');
+    } else if (touch.consumeSwipeDown()) {
+      this.controller?.navigate('down');
+    }
+  }
+
+  shutdown(): void {
+    this.input.keyboard?.removeAllListeners();
+    this.input.removeAllListeners();
+    this.tweens.killAll();
   }
 }

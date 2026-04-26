@@ -18,6 +18,7 @@ export class AudioManager {
   private lowHpTimer?: Phaser.Time.TimerEvent;
   private lowHpActive = false;
   private previousBGMKey = '';
+  private savedBgmKey = '';
   private bgmPaused = false;
 
   private constructor() {}
@@ -71,8 +72,21 @@ export class AudioManager {
   playBGM(key: string): void {
     if (!this.isSceneActive() || this.muted) return;
 
-    // Already playing this track
-    if (this.currentBGMKey === key && this.currentBGM) return;
+    // Already playing this track — ensure volume is correct
+    // (a scene transition may have killed the fade-in tween mid-crossfade)
+    if (this.currentBGMKey === key && this.currentBGM) {
+      if (this.scene && 'volume' in this.currentBGM) {
+        const cur = (this.currentBGM as Phaser.Sound.WebAudioSound).volume;
+        if (cur < this.bgmVolume - 0.01) {
+          this.scene.tweens.add({
+            targets: this.currentBGM,
+            volume: this.bgmVolume,
+            duration: 500,
+          });
+        }
+      }
+      return;
+    }
 
     // Audio not unlocked yet — queue it
     if (!this.unlocked) {
@@ -86,6 +100,7 @@ export class AudioManager {
       const oldBGM = this.currentBGM;
       this.previousBGMKey = this.currentBGMKey;
       this.currentBGMKey = key;
+      // Fade out old track while new track fades in concurrently
       this.scene!.tweens.add({
         targets: oldBGM,
         volume: 0,
@@ -93,9 +108,9 @@ export class AudioManager {
         onComplete: () => {
           oldBGM.stop();
           oldBGM.destroy();
-          this.startBGM(key);
         },
       });
+      this.startBGM(key);  // Start new track immediately for overlapping crossfade
     } else {
       this.previousBGMKey = this.currentBGMKey;
       this.currentBGMKey = key;
@@ -150,6 +165,73 @@ export class AudioManager {
     });
   }
 
+  /** Save the current BGM key so it can be restored later (e.g. after battle). */
+  saveBgmState(): void {
+    this.savedBgmKey = this.currentBGMKey;
+  }
+
+  /** Crossfade back to the BGM that was saved via saveBgmState(). */
+  restoreBgmState(): void {
+    if (this.savedBgmKey) {
+      const key = this.savedBgmKey;
+      this.savedBgmKey = '';
+      this.playBGM(key);
+    }
+  }
+
+  /** Get the saved BGM key (empty string if none). */
+  getSavedBgmKey(): string { return this.savedBgmKey; }
+
+  /**
+   * Fade out the current BGM, play a short stinger SFX, then start the
+   * target BGM after the stinger completes.  If the stinger audio doesn't
+   * exist in the cache the BGM starts immediately via a normal crossfade.
+   */
+  playBGMWithStinger(stingerKey: string, bgmKey: string): void {
+    if (!this.isSceneActive() || this.muted) return;
+
+    if (!this.unlocked) {
+      this.pendingBGM = bgmKey;
+      return;
+    }
+
+    // If the stinger audio is available, fade out current BGM and play stinger first
+    if (this.hasAudio(stingerKey)) {
+      // Fade out current BGM quickly
+      if (this.currentBGM) {
+        const old = this.currentBGM;
+        this.previousBGMKey = this.currentBGMKey;
+        this.currentBGM = undefined;
+        this.currentBGMKey = '';
+        this.scene!.tweens.add({
+          targets: old,
+          volume: 0,
+          duration: 300,
+          onComplete: () => { old.stop(); old.destroy(); },
+        });
+      }
+
+      // Play the stinger, then start the BGM when it completes
+      const stinger = this.scene!.sound.add(stingerKey, {
+        loop: false,
+        volume: this.sfxVolume,
+      });
+      stinger.play();
+      stinger.once('complete', () => {
+        stinger.destroy();
+        this.playBGM(bgmKey);
+      });
+      // Safety timeout in case the stinger has no duration metadata
+      this.scene!.time.delayedCall(3000, () => {
+        if (stinger.isPlaying) stinger.stop();
+        if (!this.currentBGMKey) this.playBGM(bgmKey);
+      });
+    } else {
+      // No stinger available — fall through to a normal crossfade
+      this.playBGM(bgmKey);
+    }
+  }
+
   /** Play a one-shot sound effect. Safe to call with missing keys. */
   playSFX(key: string): void {
     if (!this.isSceneActive() || this.muted || !this.unlocked) return;
@@ -172,7 +254,11 @@ export class AudioManager {
   /** Play a Pokémon cry for the given dex number. */
   async playCry(dexNumber: number): Promise<void> {
     if (this.muted) return;
-    return CryGenerator.getInstance().playCry(dexNumber, this.sfxVolume);
+    try {
+      return await CryGenerator.getInstance().playCry(dexNumber, this.sfxVolume);
+    } catch (err) {
+      console.warn('AudioManager: cry playback failed, skipping:', err);
+    }
   }
 
   /** Initialize the cry generator with the current scene. Call once after first setScene. */
@@ -365,5 +451,6 @@ export class AudioManager {
     this.bgmPaused = false;
     this.previousBGMKey = '';
     this.priorBGMKey = '';
+    this.savedBgmKey = '';
   }
 }

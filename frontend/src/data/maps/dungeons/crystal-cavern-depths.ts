@@ -39,6 +39,7 @@ export const crystalCavernDepths: MapDefinition = {
   key: 'crystal-cavern-depths', width: 20, height: 30, ground: depthsGround,
   encounterTableKey: 'crystal-cavern-depths', battleBg: 'bg-cave',
   displayName: 'Crystal Cavern — Depths',
+  weather: 'drip',
   isDark: true,
   lightSources: [
     { tileX: 10, tileY: 5, radius: 72 },

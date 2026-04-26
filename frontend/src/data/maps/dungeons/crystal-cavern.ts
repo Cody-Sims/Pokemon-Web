@@ -49,6 +49,7 @@ export const crystalCavern: MapDefinition = {
   encounterTableKey: 'crystal-cavern',
   displayName: 'Crystal Cavern',
   battleBg: 'bg-cave',
+  weather: 'drip',
   isDark: true,
   lightSources: [
     { tileX: 10, tileY: 5, radius: 80 },

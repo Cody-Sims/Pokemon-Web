@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { MoveData } from '@data/interfaces';
 import { moveData } from '@data/moves';
+import { GameObjectPool } from './GameObjectPool';
 
 /** Animation style for a battle move — determines the visual effect used. */
 export type MoveAnimStyle =
@@ -249,16 +250,15 @@ export function playMoveAnimation(
         const endX = defenderSprite.x;
         const endY = defenderSprite.y;
 
-        // Create a "projectile" cluster using pre-generated texture
-        ensureParticleTexture(scene);
+        // Create a "projectile" cluster using pooled particle images
+        const pool = ensurePool(scene);
         const projCount = Math.min(anim.particles.count, 6);
         const projParticles: Phaser.GameObjects.Arc[] = [];
         for (let i = 0; i < projCount; i++) {
           const color = anim.particles.colors[i % anim.particles.colors.length];
-          const p = scene.add.image(
+          const p = pool.acquire(
             startX + Phaser.Math.Between(-10, 10),
             startY + Phaser.Math.Between(-10, 10),
-            PARTICLE_TEXTURE_KEY,
           ).setDepth(90).setTint(color).setAlpha(0.9)
            .setScale(Phaser.Math.FloatBetween(0.4, 0.7));
           projParticles.push(p as unknown as Phaser.GameObjects.Arc);
@@ -273,7 +273,7 @@ export function playMoveAnimation(
           duration: 350,
           ease: 'Power1',
           onComplete: () => {
-            projParticles.forEach(p => p.destroy());
+            projParticles.forEach(p => pool.release(p as unknown as Phaser.GameObjects.Image));
             // Burst at defender
             spawnParticles(scene, endX, endY, anim.particles, particles);
             flashTarget(scene, defenderSprite);
@@ -285,7 +285,7 @@ export function playMoveAnimation(
 
       case 'beam': {
         // Draw a series of texture-based particles in a line from attacker to defender
-        ensureParticleTexture(scene);
+        const pool = ensurePool(scene);
         const sx = attackerSprite.x;
         const sy = attackerSprite.y;
         const ex = defenderSprite.x;
@@ -299,10 +299,9 @@ export function playMoveAnimation(
 
           scene.time.delayedCall(i * 30, () => {
             const color = anim.particles.colors[i % anim.particles.colors.length];
-            const p = scene.add.image(
+            const p = pool.acquire(
               bx + Phaser.Math.Between(-6, 6),
               by + Phaser.Math.Between(-6, 6),
-              PARTICLE_TEXTURE_KEY,
             ).setDepth(90).setTint(color).setAlpha(0.9)
              .setScale(Phaser.Math.FloatBetween(0.4, 0.8));
             particles.push(p as unknown as Phaser.GameObjects.Arc);
@@ -314,7 +313,7 @@ export function playMoveAnimation(
               scaleY: 0,
               duration: 300,
               delay: 100,
-              onComplete: () => p.destroy(),
+              onComplete: () => pool.release(p),
             });
           });
         }
@@ -329,7 +328,7 @@ export function playMoveAnimation(
 
       case 'area': {
         // Particles fill the defender's area broadly
-        ensureParticleTexture(scene);
+        const pool = ensurePool(scene);
         const cx = defenderSprite.x;
         const cy = defenderSprite.y;
         const count = anim.particles.count;
@@ -338,7 +337,7 @@ export function playMoveAnimation(
             const color = anim.particles.colors[i % anim.particles.colors.length];
             const px = cx + Phaser.Math.Between(-60, 60);
             const py = cy + Phaser.Math.Between(-50, 50);
-            const p = scene.add.image(px, py, PARTICLE_TEXTURE_KEY)
+            const p = pool.acquire(px, py)
               .setDepth(90).setTint(color).setAlpha(0.8)
               .setScale(Phaser.Math.FloatBetween(0.3, 0.8));
             particles.push(p as unknown as Phaser.GameObjects.Arc);
@@ -350,7 +349,7 @@ export function playMoveAnimation(
               scaleX: anim.particles.scale.end,
               scaleY: anim.particles.scale.end,
               duration: anim.particles.lifespan,
-              onComplete: () => p.destroy(),
+              onComplete: () => pool.release(p),
             });
           });
         }
@@ -364,17 +363,16 @@ export function playMoveAnimation(
 
       case 'self': {
         // Particles glow around the attacker (buffs/heals)
-        ensureParticleTexture(scene);
+        const pool = ensurePool(scene);
         const cx = attackerSprite.x;
         const cy = attackerSprite.y;
         for (let i = 0; i < anim.particles.count; i++) {
           const angle = (i / anim.particles.count) * Math.PI * 2;
           const dist = 20;
           const color = anim.particles.colors[i % anim.particles.colors.length];
-          const p = scene.add.image(
+          const p = pool.acquire(
             cx + Math.cos(angle) * dist,
             cy + Math.sin(angle) * dist,
-            PARTICLE_TEXTURE_KEY,
           ).setDepth(90).setTint(color).setAlpha(anim.particles.alpha.start)
            .setScale(0.5);
           particles.push(p as unknown as Phaser.GameObjects.Arc);
@@ -386,7 +384,7 @@ export function playMoveAnimation(
             alpha: 0,
             duration: anim.particles.lifespan,
             delay: i * 50,
-            onComplete: () => p.destroy(),
+            onComplete: () => pool.release(p),
           });
         }
 
@@ -440,6 +438,26 @@ function ensureParticleTexture(scene: Phaser.Scene): void {
   gfx.destroy();
 }
 
+/** Module-level singleton pool for move-particle images. */
+let _pool: GameObjectPool | null = null;
+
+/** Ensure the particle texture exists and return the shared pool. */
+function ensurePool(scene: Phaser.Scene): GameObjectPool {
+  ensureParticleTexture(scene);
+  if (!_pool) {
+    _pool = new GameObjectPool(scene, PARTICLE_TEXTURE_KEY);
+  }
+  return _pool;
+}
+
+/** Destroy the shared particle pool (call on scene shutdown). */
+export function destroyPool(): void {
+  if (_pool) {
+    _pool.destroy();
+    _pool = null;
+  }
+}
+
 /** Spawn burst particles at a given point using a pre-generated texture. */
 function spawnParticles(
   scene: Phaser.Scene,
@@ -448,14 +466,14 @@ function spawnParticles(
   config: ParticleConfig,
   tracker: Phaser.GameObjects.Arc[],
 ): void {
-  ensureParticleTexture(scene);
+  const pool = ensurePool(scene);
   const burstCount = Math.min(config.count, 12);
   for (let i = 0; i < burstCount; i++) {
     const angle = (i / burstCount) * Math.PI * 2 + Math.random() * 0.5;
     const speed = config.speed * (0.5 + Math.random() * 0.5);
     const color = config.colors[i % config.colors.length];
 
-    const p = scene.add.image(x, y, PARTICLE_TEXTURE_KEY).setDepth(90)
+    const p = pool.acquire(x, y).setDepth(90)
       .setTint(color)
       .setAlpha(config.alpha.start)
       .setScale(Phaser.Math.FloatBetween(0.3, 0.8));
@@ -470,7 +488,7 @@ function spawnParticles(
       scaleY: config.scale.end * 0.5,
       alpha: config.alpha.end,
       duration: config.lifespan,
-      onComplete: () => p.destroy(),
+      onComplete: () => pool.release(p),
     });
   }
 }

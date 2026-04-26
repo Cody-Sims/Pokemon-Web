@@ -3,6 +3,7 @@ import { Trainer } from '@entities/Trainer';
 import { InteractableObject } from '@entities/InteractableObject';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
+import { AchievementManager } from '@managers/AchievementManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { Tile } from '@data/maps';
@@ -121,6 +122,10 @@ export function tryInteract(ctx: InteractionContext): void {
         // Give item if configured (only once, gated by the flag)
         if (spawnDef.givesItem) {
           gm.addItem(spawnDef.givesItem);
+          // Achievement: hidden item discovery
+          if (spawnDef.setsFlag.startsWith('hidden-')) {
+            AchievementManager.getInstance().unlock('hidden-item');
+          }
         }
       }
 
@@ -355,6 +360,10 @@ export function tryInteract(ctx: InteractionContext): void {
         // Give item if configured (only once, gated by the flag)
         if (spawnDef.givesItem) {
           gm.addItem(spawnDef.givesItem);
+          // Achievement: hidden item discovery
+          if (spawnDef.setsFlag.startsWith('hidden-')) {
+            AchievementManager.getInstance().unlock('hidden-item');
+          }
         }
       }
 
@@ -441,6 +450,7 @@ export function tryInteract(ctx: InteractionContext): void {
       ctx.showFieldAbilityPopup('SURF!');
       // AUDIT-016: Actually enable surfing
       (ctx as unknown as { surfing: boolean }).surfing = true;
+      AchievementManager.getInstance().unlock('surf-first');
       return;
     }
 

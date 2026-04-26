@@ -24,11 +24,13 @@ export default defineConfig({
     cssMinify: true,
     rollupOptions: {
       output: {
-        manualChunks(id: string) {
-          if (id.includes('node_modules/phaser')) return 'phaser';
-          if (id.includes('/src/battle/')) return 'battle';
-          if (id.includes('/src/data/pokemon/') || id.includes('/src/data/moves/') || id.includes('/src/data/type-chart')) return 'data';
-          if (id.includes('/src/data/maps/')) return 'maps';
+        codeSplitting: {
+          groups: [
+            { name: 'phaser', test: /node_modules\/phaser/ },
+            { name: 'battle', test: /\/src\/battle\// },
+            { name: 'data', test: /\/src\/data\/pokemon\/|\/src\/data\/moves\/|\/src\/data\/type-chart/ },
+            { name: 'maps', test: /\/src\/data\/maps\// },
+          ],
         },
       },
     },

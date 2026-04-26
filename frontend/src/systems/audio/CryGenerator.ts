@@ -51,79 +51,84 @@ export class CryGenerator {
     // AUDIT-054: Support dex numbers beyond Gen I (cap at 1010 for future expansion)
     const dex = Math.max(1, Math.min(1010, dexNumber));
 
-    // ── Deterministic parameters seeded from dex number ──
-    const baseFreq = 800 - (dex * 3) + ((dex * 7) % 200);
-    const waveform = WAVEFORMS[dex % 3];
-    const duration = 0.3 + (dex % 5) * 0.1;
-    const segmentCount = (dex % 3 === 0) ? 3 : 2;
+    try {
+      // ── Deterministic parameters seeded from dex number ──
+      const baseFreq = 800 - (dex * 3) + ((dex * 7) % 200);
+      const waveform = WAVEFORMS[dex % 3];
+      const duration = 0.3 + (dex % 5) * 0.1;
+      const segmentCount = (dex % 3 === 0) ? 3 : 2;
 
-    const segmentFreqs = [
-      baseFreq,
-      baseFreq * (1.2 + (dex % 4) * 0.1),
-      baseFreq * 0.8,
-    ];
+      const segmentFreqs = [
+        baseFreq,
+        baseFreq * (1.2 + (dex % 4) * 0.1),
+        baseFreq * 0.8,
+      ];
 
-    const segmentDuration = duration / segmentCount;
-    const lfoRate = 5 + (dex % 11);  // 5–15 Hz
-    const lfoDepth = 20 + (dex % 31); // ±20–50 Hz
+      const segmentDuration = duration / segmentCount;
+      const lfoRate = 5 + (dex % 11);  // 5–15 Hz
+      const lfoDepth = 20 + (dex % 31); // ±20–50 Hz
 
-    const masterGain = this.ctx.createGain();
-    masterGain.gain.value = Math.max(0, Math.min(1, volume));
-    masterGain.connect(this.ctx.destination);
+      const masterGain = this.ctx.createGain();
+      masterGain.gain.value = Math.max(0, Math.min(1, volume));
+      masterGain.connect(this.ctx.destination);
 
-    const now = this.ctx.currentTime + 0.01;
-    let lastOsc: OscillatorNode | null = null;
+      const now = this.ctx.currentTime + 0.01;
+      let lastOsc: OscillatorNode | null = null;
 
-    for (let i = 0; i < segmentCount; i++) {
-      const segStart = now + i * segmentDuration;
-      const segEnd = segStart + segmentDuration;
-      const freq = segmentFreqs[i];
+      for (let i = 0; i < segmentCount; i++) {
+        const segStart = now + i * segmentDuration;
+        const segEnd = segStart + segmentDuration;
+        const freq = segmentFreqs[i];
 
-      // Main oscillator
-      const osc = this.ctx.createOscillator();
-      osc.type = waveform;
-      osc.frequency.setValueAtTime(freq, segStart);
+        // Main oscillator
+        const osc = this.ctx.createOscillator();
+        osc.type = waveform;
+        osc.frequency.setValueAtTime(freq, segStart);
 
-      // LFO for vibrato
-      const lfo = this.ctx.createOscillator();
-      const lfoGain = this.ctx.createGain();
-      lfo.frequency.value = lfoRate;
-      lfoGain.gain.value = lfoDepth;
-      lfo.connect(lfoGain);
-      lfoGain.connect(osc.frequency);
+        // LFO for vibrato
+        const lfo = this.ctx.createOscillator();
+        const lfoGain = this.ctx.createGain();
+        lfo.frequency.value = lfoRate;
+        lfoGain.gain.value = lfoDepth;
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
 
-      // Amplitude envelope: 20ms attack, sustain, 50ms decay
-      const envGain = this.ctx.createGain();
-      const attackEnd = Math.min(segStart + 0.02, segEnd);
-      const decayStart = Math.max(segEnd - 0.05, attackEnd);
+        // Amplitude envelope: 20ms attack, sustain, 50ms decay
+        const envGain = this.ctx.createGain();
+        const attackEnd = Math.min(segStart + 0.02, segEnd);
+        const decayStart = Math.max(segEnd - 0.05, attackEnd);
 
-      envGain.gain.setValueAtTime(0, segStart);
-      envGain.gain.linearRampToValueAtTime(1, attackEnd);
-      envGain.gain.setValueAtTime(1, decayStart);
-      envGain.gain.linearRampToValueAtTime(0, segEnd);
+        envGain.gain.setValueAtTime(0, segStart);
+        envGain.gain.linearRampToValueAtTime(1, attackEnd);
+        envGain.gain.setValueAtTime(1, decayStart);
+        envGain.gain.linearRampToValueAtTime(0, segEnd);
 
-      // Connect: osc → envelope → master gain → destination
-      osc.connect(envGain);
-      envGain.connect(masterGain);
+        // Connect: osc → envelope → master gain → destination
+        osc.connect(envGain);
+        envGain.connect(masterGain);
 
-      osc.start(segStart);
-      osc.stop(segEnd);
-      lfo.start(segStart);
-      lfo.stop(segEnd);
+        osc.start(segStart);
+        osc.stop(segEnd);
+        lfo.start(segStart);
+        lfo.stop(segEnd);
 
-      lastOsc = osc;
-    }
-
-    // Resolve when the last oscillator segment ends
-    return new Promise<void>((resolve) => {
-      if (lastOsc) {
-        lastOsc.onended = () => {
-          masterGain.disconnect();
-          resolve();
-        };
-      } else {
-        resolve();
+        lastOsc = osc;
       }
-    });
+
+      // Resolve when the last oscillator segment ends
+      return new Promise<void>((resolve) => {
+        if (lastOsc) {
+          lastOsc.onended = () => {
+            masterGain.disconnect();
+            resolve();
+          };
+        } else {
+          resolve();
+        }
+      });
+    } catch (err) {
+      console.warn('CryGenerator: cry synthesis failed, skipping:', err);
+      // Return silently — game continues without the cry
+    }
   }
 }

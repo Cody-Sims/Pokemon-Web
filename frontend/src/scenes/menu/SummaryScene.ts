@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
+import { layoutOn } from '@utils/layout-on';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
@@ -103,6 +104,13 @@ export class SummaryScene extends Phaser.Scene {
 
     this.updateTabs();
     this.drawContent();
+
+    // Re-layout on resize / orientation change
+    let resizeInit = false;
+    layoutOn(this, () => {
+      if (!resizeInit) { resizeInit = true; return; }
+      this.scene.restart({ pokemon: this.pokemon, partyIndex: this.partyIndex });
+    });
   }
 
   private updateTabs(): void {
@@ -387,5 +395,10 @@ export class SummaryScene extends Phaser.Scene {
 
       y += 100;
     });
+  }
+
+  shutdown(): void {
+    this.input.keyboard?.removeAllListeners();
+    this.input.removeAllListeners();
   }
 }

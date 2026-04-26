@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { particleMultiplier, maxParticleMultiplier } from '@utils/perf-profile';
 import { isReducedMotion } from '@utils/accessibility';
 
-export type OverworldWeather = 'none' | 'rain' | 'sandstorm' | 'snow' | 'fog' | 'sunshine';
+export type OverworldWeather = 'none' | 'rain' | 'sandstorm' | 'snow' | 'fog' | 'sunshine' | 'ash' | 'drip';
 
 /** Tint overlay colors and alpha per weather type. */
 const WEATHER_TINTS: Record<OverworldWeather, { color: number; alpha: number }> = {
@@ -12,6 +12,8 @@ const WEATHER_TINTS: Record<OverworldWeather, { color: number; alpha: number }> 
   snow:      { color: 0x8899bb, alpha: 0.15 },
   fog:       { color: 0x000000, alpha: 0 },       // fog uses its own overlay
   sunshine:  { color: 0xffdd44, alpha: 0.08 },
+  ash:       { color: 0x665544, alpha: 0.12 },
+  drip:      { color: 0x223344, alpha: 0.10 },
 };
 
 /**
@@ -66,6 +68,8 @@ export class WeatherRenderer {
       case 'snow':      this.createSnow(); break;
       case 'fog':       this.createFog(); break;
       case 'sunshine':  this.createSunshine(); break;
+      case 'ash':       this.createAsh(); break;
+      case 'drip':      this.createDrip(); break;
     }
   }
 
@@ -247,6 +251,56 @@ export class WeatherRenderer {
       quantity: Math.max(1, Math.round(1 * particleMultiplier())),
       frequency: 500,
       maxAliveParticles: Math.round(8 * maxParticleMultiplier()),
+    });
+    this.emitter.setScrollFactor(0);
+    this.emitter.setDepth(90);
+  }
+
+  // ── Ash ────────────────────────────────────────────────────
+
+  private createAsh(): void {
+    const key = this.makeTexture('weather-ash', (g) => {
+      g.fillStyle(0x888888, 0.7);
+      g.fillCircle(4, 4, 2);
+    });
+
+    const { width: w, height: h } = this.scene.cameras.main;
+    this.emitter = this.scene.add.particles(0, 0, key, {
+      x: { min: -20, max: w + 20 },
+      y: -10,
+      lifespan: 4000,
+      speedY: { min: 30, max: 60 },
+      speedX: { min: -15, max: 15 },
+      scale: { start: 0.5, end: 0.2 },
+      alpha: { start: 0.6, end: 0.1 },
+      quantity: Math.max(1, Math.round(1 * particleMultiplier())),
+      frequency: 50,
+      maxAliveParticles: Math.round(50 * maxParticleMultiplier()),
+    });
+    this.emitter.setScrollFactor(0);
+    this.emitter.setDepth(90);
+  }
+
+  // ── Drip ───────────────────────────────────────────────────
+
+  private createDrip(): void {
+    const key = this.makeTexture('weather-drip', (g) => {
+      g.fillStyle(0x6688aa, 0.6);
+      g.fillRect(3, 0, 2, 6);
+    });
+
+    const { width: w } = this.scene.cameras.main;
+    this.emitter = this.scene.add.particles(0, 0, key, {
+      x: { min: 0, max: w },
+      y: -10,
+      lifespan: 500,
+      speedY: { min: 200, max: 320 },
+      speedX: { min: -5, max: 5 },
+      scale: { start: 0.4, end: 0.2 },
+      alpha: { start: 0.5, end: 0.1 },
+      quantity: 1,
+      frequency: 200,
+      maxAliveParticles: Math.round(15 * maxParticleMultiplier()),
     });
     this.emitter.setScrollFactor(0);
     this.emitter.setDepth(90);

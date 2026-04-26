@@ -22,4 +22,5 @@ export { SynthesisHandler } from './effects/SynthesisHandler';
 // ── Execution ────────────────────────────────────────────────
 export { MoveExecutor } from './execution/MoveExecutor';
 export type { MoveExecutionResult } from './execution/MoveExecutor';
-export { playMoveAnimation } from './execution/MoveAnimationPlayer';
+export { playMoveAnimation, destroyPool } from './execution/MoveAnimationPlayer';
+export { GameObjectPool } from './execution/GameObjectPool';

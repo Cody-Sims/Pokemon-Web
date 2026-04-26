@@ -13,6 +13,7 @@ import type { BattleScene } from './BattleScene';
 import type { PokemonInstance } from '@data/interfaces';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
+import { AchievementManager } from '@managers/AchievementManager';
 import { SFX } from '@utils/audio-keys';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
@@ -25,7 +26,7 @@ import { pickEnemyMove, calculateTurnOrder } from './BattleTurnRunner';
 import { showMessageQueue as showMsgQueue } from './BattleMessageQueue';
 import { showDamagePopup as showDmgPopup } from './BattleDamageNumbers';
 import { collectEndOfTurnEffects } from './BattleEndOfTurn';
-import { handlePokeBallUse as doCatch, type CatchContext } from './BattleCatchHandler';
+import { handlePokeBallUse as doCatch, resetBallThrowCount, type CatchContext } from './BattleCatchHandler';
 import { runVictorySequence as doVictory, type VictoryContext } from './BattleVictorySequence';
 
 type UIState = 'actions' | 'moves' | 'animating' | 'message' | 'target-select';
@@ -58,6 +59,7 @@ export class BattleUIScene extends Phaser.Scene {
   create(): void {
     this.state = 'actions';
     this.fleeAttempts = 0;
+    resetBallThrowCount();
 
     // Use the StatusEffectHandler from BattleManager (single source of truth)
     this.statusHandler = this.battle().battleManager.getStatusHandler();
@@ -347,6 +349,9 @@ export class BattleUIScene extends Phaser.Scene {
 
     const { messages } = this.synthesisHandler.activate(player);
 
+    // Achievement: first synthesis activation
+    AchievementManager.getInstance().unlock('synthesis-first');
+
     // Tell BattleScene to show the aura
     b.showSynthesisAura();
 
@@ -616,6 +621,7 @@ export class BattleUIScene extends Phaser.Scene {
                   if (this.hasAlivePartyMember()) {
                     this.promptPartySwitch();
                   } else {
+                    AchievementManager.getInstance().unlock('full-team-faint');
                     this.msg('You blacked out...');
                     this.state = 'message';
                     this.time.delayedCall(2000, () => this.endBattle());
@@ -707,6 +713,21 @@ export class BattleUIScene extends Phaser.Scene {
         else if (result.damage.effectiveness === 0) extra = " No effect!";
         if (result.damage.isCritical) extra += ' Critical hit!';
         this.msg(`${name} used ${moveName}! ${result.damage.damage} dmg.${extra}`);
+        // ── Battle achievements: critical-hit, one-hit-ko (player moves only) ──
+        if (isPlayer) {
+          const am = AchievementManager.getInstance();
+          if (result.damage.isCritical) am.unlock('critical-hit');
+          // one-hit-ko: enemy went from full HP to 0 in a single hit
+          if (defender.currentHp <= 0 && result.damage.damage >= defender.stats.hp) {
+            am.unlock('one-hit-ko');
+          }
+          // type-master: track super-effective hits
+          if (result.damage.effectiveness > 1) {
+            const gm = GameManager.getInstance();
+            gm.incrementStat('superEffectiveHits');
+            if (gm.getStat('superEffectiveHits') >= 50) am.unlock('type-master');
+          }
+        }
       } else if (!result.moveHit) {
         this.msg(`${name}'s attack missed!`);
       } else {
@@ -785,6 +806,7 @@ export class BattleUIScene extends Phaser.Scene {
               b.updateHpBars();
               const survName = defender.nickname ?? pokemonData[defender.dataId]?.name ?? '???';
               this.msg(`${survName} held on so you wouldn't feel sad!`);
+              AchievementManager.getInstance().unlock('survive-1hp');
               this.time.delayedCall(1200, () => this.runTurnStep(order, idx + 1));
               return;
             }
@@ -804,6 +826,7 @@ export class BattleUIScene extends Phaser.Scene {
                   const gm = GameManager.getInstance();
                   const aliveParty = gm.getParty().filter(p => p.currentHp > 0);
                   if (aliveParty.length === 0) {
+                    AchievementManager.getInstance().unlock('full-team-faint');
                     this.msg('You blacked out...');
                     this.state = 'message';
                     this.time.delayedCall(2000, () => this.endBattle());
@@ -865,6 +888,7 @@ export class BattleUIScene extends Phaser.Scene {
                   if (this.hasAlivePartyMember()) {
                     this.promptPartySwitch();
                   } else {
+                    AchievementManager.getInstance().unlock('full-team-faint');
                     this.msg('You blacked out...');
                     this.state = 'message';
                     this.time.delayedCall(2000, () => this.endBattle());
@@ -1091,6 +1115,10 @@ export class BattleUIScene extends Phaser.Scene {
 
   // ─── Victory & EXP sequence (delegated to BattleVictorySequence) ───
   private runVictorySequence(): void {
+    // Achievement: first double battle win
+    if (this.battle().isDouble) {
+      AchievementManager.getInstance().unlock('first-double');
+    }
     doVictory(this.victoryContext());
   }
 
@@ -1150,7 +1178,9 @@ export class BattleUIScene extends Phaser.Scene {
   }
 
   private endBattle(): void {
-    AudioManager.getInstance().stopLowHpWarning();
+    const audio = AudioManager.getInstance();
+    audio.stopLowHpWarning();
+    audio.restoreBgmState();
     this.synthesisHandler.cleanup();
     this.battle().battleManager.cleanup();
     const b = this.battle();
@@ -1163,5 +1193,8 @@ export class BattleUIScene extends Phaser.Scene {
 
   shutdown(): void {
     this.input.keyboard?.removeAllListeners();
+    this.input.removeAllListeners();
+    this.tweens.killAll();
+    this.time.removeAllEvents();
   }
 }

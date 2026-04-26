@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
+import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
+import { TouchControls } from '@ui/controls/TouchControls';
 import { ScrollContainer } from '@ui/widgets/ScrollContainer';
 import { COLORS, FONTS, TYPE_COLORS, drawTypeBadge, mobileFontSize, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
@@ -108,6 +110,15 @@ export class PokedexScene extends Phaser.Scene {
 
     this.highlightItem(0);
     this.showDetail(0);
+
+    // Re-layout on resize / orientation change
+    let resizeInit = false;
+    layoutOn(this, () => {
+      if (!resizeInit) { resizeInit = true; return; }
+      this.controller?.destroy();
+      this.scrollContainer?.destroy();
+      this.scene.restart();
+    });
   }
 
   private renderList(): void {
@@ -272,5 +283,19 @@ export class PokedexScene extends Phaser.Scene {
         y += 18;
       });
     }
+  }
+
+  update(): void {
+    const touch = TouchControls.getInstance();
+    if (!touch) return;
+    if (touch.consumeSwipeUp()) {
+      this.controller?.navigate('up');
+    } else if (touch.consumeSwipeDown()) {
+      this.controller?.navigate('down');
+    }
+  }
+
+  shutdown(): void {
+    this.input.keyboard?.removeAllListeners();
   }
 }

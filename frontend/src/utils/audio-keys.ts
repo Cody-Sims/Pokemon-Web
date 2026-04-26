@@ -53,6 +53,7 @@ export const SFX = {
   CATCH_SUCCESS:    'sfx-catch-success',
   EXP_FILL:         'sfx-exp-fill',
   LEVEL_UP:         'sfx-level-up',
+  BATTLE_INTRO:     'sfx-battle-intro',
 
   // Additional Battle
   STAT_UP:          'sfx-stat-up',

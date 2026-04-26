@@ -71,6 +71,14 @@ export class CutsceneEngine {
       for (const action of cutscene.actions) {
         await this.executeAction(action);
       }
+    } catch (err) {
+      console.warn(`CutsceneEngine: playback of '${cutscene.id}' failed, resuming overworld:`, err);
+      // Ensure the overworld scene resumes if it was paused by a dialogue action
+      try {
+        if (!this.scene.scene.isActive()) {
+          this.scene.scene.resume(this.scene.scene.key);
+        }
+      } catch { /* scene may already be stopped */ }
     } finally {
       this.running = false;
     }

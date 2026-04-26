@@ -24,3 +24,6 @@ jobs:
 
       - name: Type-check & build
         run: npm run build
+
+      - name: Check bundle size budgets
+        run: bash scripts/check-bundle-size.sh

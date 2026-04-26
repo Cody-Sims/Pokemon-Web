@@ -6,7 +6,7 @@ import { BattleManager, BattleConfig } from '@battle/core/BattleManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
-import { BGM } from '@utils/audio-keys';
+import { BGM, SFX } from '@utils/audio-keys';
 import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
 import { COLORS, STATUS_BADGE_FRAMES, mobileFontSize } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
@@ -272,10 +272,11 @@ export class BattleScene extends Phaser.Scene {
     this.tweens.add({ targets: this.expBarBg, y: playerExpY, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
     this.tweens.add({ targets: this.expBarFill, y: playerExpY, duration: 400, delay: introDelay + slideDuration + 100, ease: 'Back.easeOut' });
 
-    // ── Audio: play battle BGM ──
+    // ── Audio: save route theme and play battle BGM with optional stinger ──
     const audio = AudioManager.getInstance();
     audio.setScene(this);
     audio.stopLowHpWarning();
+    audio.saveBgmState();
     let battleBgm: string = BGM.BATTLE_WILD;
     if (this.isTrainerBattle) {
       if (data?.isGymLeader) battleBgm = BGM.GYM_LEADER_BATTLE;
@@ -284,7 +285,7 @@ export class BattleScene extends Phaser.Scene {
       else if (data?.isVillain) battleBgm = BGM.VILLAIN;
       else battleBgm = BGM.BATTLE_TRAINER;
     }
-    audio.playBGM(battleBgm);
+    audio.playBGMWithStinger(SFX.BATTLE_INTRO, battleBgm);
 
     // Double battle layout setup
     if (this.isDouble && data?.enemyParty) {

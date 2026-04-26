@@ -20,13 +20,24 @@ export class TransitionManager {
       callback();
       return;
     }
-    scene.cameras.main.fadeOut(duration / 2, 0, 0, 0);
-    scene.cameras.main.once('camerafadeoutcomplete', () => {
-      callback();
-      // NEW-001: Check scene is still alive before fade-in
-      if (scene.scene.isActive()) {
-        scene.cameras.main.fadeIn(duration / 2, 0, 0, 0);
-      }
-    });
+    try {
+      scene.cameras.main.fadeOut(duration / 2, 0, 0, 0);
+      scene.cameras.main.once('camerafadeoutcomplete', () => {
+        try {
+          callback();
+        } catch (err) {
+          console.warn('TransitionManager: transition callback failed:', err);
+        }
+        // NEW-001: Check scene is still alive before fade-in
+        if (scene.scene.isActive()) {
+          scene.cameras.main.fadeIn(duration / 2, 0, 0, 0);
+        }
+      });
+    } catch (err) {
+      console.warn('TransitionManager: fade transition failed, invoking callback directly:', err);
+      try {
+        callback();
+      } catch { /* callback itself failed — nothing more we can do */ }
+    }
   }
 }

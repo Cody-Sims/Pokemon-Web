@@ -19,6 +19,7 @@ import { PokedexScene } from '@scenes/menu/PokedexScene';
 import { IntroScene } from '@scenes/title/IntroScene';
 import { QuestJournalScene } from '@scenes/menu/QuestJournalScene';
 import { QuestTrackerScene } from '@scenes/menu/QuestTrackerScene';
+import { PartyQuickViewScene } from '@scenes/menu/PartyQuickViewScene';
 import { MoveTutorScene } from '@scenes/pokemon/MoveTutorScene';
 import { NicknameScene } from '@scenes/pokemon/NicknameScene';
 import { FlyMapScene } from '@scenes/menu/FlyMapScene';
@@ -69,6 +70,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     IntroScene,
     QuestJournalScene,
     QuestTrackerScene,
+    PartyQuickViewScene,
     MoveTutorScene,
     NicknameScene,
     FlyMapScene,
