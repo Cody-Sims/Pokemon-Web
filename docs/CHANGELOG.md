@@ -6,6 +6,10 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-26]
 
+### Changed
+
+- **Documentation consolidation**: Merged eight completed plan documents into a single [plan.md](plan.md) covering only remaining work. Removed `docs/AI-OPTIMIZATION-PLAN.md`, `docs/IMPROVEMENT_PLAN.md`, `docs/LEVEL_UP_PLAN.md`, `docs/MapGenerationPlan.md`, `docs/TileSpriteAssetPlan.md`, `docs/UI_IMPROVEMENT_PLAN.md`, `docs/mobile-improvements-plan.md`, `docs/performance-improvements.md`, and `docs/bugs.md` (all items either complete or moved into `plan.md`'s remaining-work tiers). Reference docs preserved: `architecture.md`, `storyline.md`, `TestingArchitecture.md`, `CHANGELOG.md`. Map-generation and tile-sprite knowledge already lives in `.github/skills/tile-sprite-gen/SKILL.md` and `.github/instructions/map-generation.instructions.md`.
+
 ### Fixed
 
 - **Portrait mode A/B buttons clipped**: In-canvas touch buttons now use a larger bottom offset (120px) in portrait mode so they aren't cut off by the screen edge or safe area

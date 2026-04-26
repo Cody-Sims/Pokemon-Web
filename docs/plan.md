@@ -1,204 +1,266 @@
-# Pokemon Web Game — Development Plan
+# Pokemon Web — Plan
 
-## Project Overview
+> **Single source of truth for remaining work.** | April 2026
+>
+> A browser-based Pokémon-style RPG built with **Phaser 3 + TypeScript + Vite**, set in the **Aurum Region**. The game is functionally complete — story, mechanics, performance, mobile, and visual polish all shipped. What remains is content expansion, replayability, and stretch features.
 
-A browser-based Pokémon-style RPG built with **Phaser 3 + TypeScript + Vite**. The player explores a top-down overworld, captures and trains Pokémon in turn-based battles, interacts with NPCs, and progresses through an original storyline set in the **Aurum Region**. The entire game runs client-side as a static web app.
-
-> Full storyline bible: [docs/storyline.md](storyline.md) | Architecture: [docs/architecture.md](architecture.md) | Testing: [docs/TestingArchitecture.md](TestingArchitecture.md)
-
----
-
-## Storyline — The Aurum Region
-
-A coastal island chain where ancient ruins dot the landscape and **Aether** flows through underground ley lines. The player arrives in **Littoral Town** and is recruited by Professor Willow to document the region's Pokémon. Meanwhile, **The Synthesis Collective** is siphoning Aether to artificially enhance Pokémon, creating powerful but unstable **Synthetics**. The player's quest to find their missing Pokémon Ranger father intertwines with the region-wide crisis.
-
-**Key Characters:** Kael Ashford (primary rival, 6 encounters), Marina Oleander (secondary rival/researcher), Rook (ex-Collective drifter), Director Aldric Maren (Collective founder, secret Champion), Dr. Vex Corbin (3 boss fights), Zara Lux (potential defector).
-
-**Story Arcs:** Act 1 Awakening (Badges 1–2) → Act 2 Investigation (Badges 3–5) → Act 3 Confrontation (Badges 6–8, Abyssal Spire) → Act 4 Resolution (Elite Four, Champion Aldric) → Post-Game (Shattered Isles, Father's Trail, Legendaries).
+> References: [storyline.md](storyline.md) · [architecture.md](architecture.md) · [TestingArchitecture.md](TestingArchitecture.md) · [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-## Completed Work
+## Current State
 
-### Phase 1: UI Overhaul & Foundation
-NinePatchPanel, MenuController, DialogueScene (speaker names, SFX, choices), InventoryScene (5 categories, USE/TOSS), Battle UI (type indicators, PP coloring, damage popups), PartyScene (context menu, SWITCH, fainted indicators), SettingsScene.
+| Metric | Value |
+|--------|-------|
+| Build | Clean (zero TS errors) |
+| Tests | 1,084 unit/integration + 18 E2E (Playwright) |
+| Open bugs | 0 |
+| Bundle | ~1.8 MB total (phaser 1.2 MB, battle 170 KB, index 393 KB) |
+| Pokémon | 153 species · 217 moves · 79 maps · 50 achievements |
+| Phases shipped | 20 development phases + 8 polish sprints |
 
-### Phase 2: Battle System Expansion
-AbilityHandler (20+ abilities), HeldItemHandler (Leftovers/Life Orb/Focus Sash/berries/Choice items), WeatherManager (Sun/Rain/Sandstorm/Hail), multi-condition evolution (level/item/friendship/move-known), Protect/Detect, two-turn moves (Fly/Dig/Solar Beam), weather-setting moves.
+The game is feature-complete: full 4-act storyline, 8 gyms, Elite Four, post-game,
+deep battle system (singles/doubles/tag/synthesis/weather/abilities/items),
+mobile-first UX, PWA, follower Pokémon, town map, minimap, scheduled NPCs,
+async error boundaries, typed `EventManager`, decomposed `GameManager`/`BattleUIScene`,
+Phaser tilemap rendering, texture atlas pipeline, dynamic music transitions,
+weather-per-map, and a complete cutscene system.
 
-### Phase 3: Side Content
-Fishing system (3 rod tiers, per-route fishing tables), day/night cycle (GameClock, 4 time periods, camera tint), shiny Pokémon (1/4096 chance, sparkle effect), Pokédex Scene (151-species browser, seen/caught). Crystal Cavern dungeon (20×30, 7-species encounter table, 3 hiker trainers). Rival Kael (6 encounters Lv 5→65) + Marina (2 encounters). Synthesis Collective grunts. QuestManager + 12 quest definitions. Quest NPCs across towns. Story NPCs (Rook, Synthesis sensors).
+The remaining roadmap is **content expansion**, **replayability**, and **stretch goals**.
+Visual map polish and a few medium-effort battle/UX items round out the medium-term work.
 
-### Phase 4: Economy & PC Storage
-ShopScene (Buy/Sell, per-town inventory, quantity selector), PCScene (12×30 boxes, party↔box transfers), money system, auto-deposit on full party, trainer battle rewards, SaveManager persistence.
-
-### Phase 4.5: Art Assets & Tileset Expansion
-42 new tile types (IDs 68–109) across 10 biomes: Coastal, Volcanic, Mine, Industrial, Forest, Electric, Ghost/Ruin, Dragon, Synthesis HQ, League. Battle background system.
-
-### Phase 5: Act 2 Maps & Story
-Route 3 (Tide Pool Path), Coral Harbor (Gym 2 Water), Route 4 (Basalt Ridge), Ember Mines (Dr. Vex boss #1), Ironvale City (Gym 3 Steel), Route 5 (Canopy Trail), Verdantia Village (Gym 4 Grass), Voltara City (Gym 5 Electric). 15 interior maps. Encounter tables for all routes. Synthesis grunt encounters, story NPCs.
-
-### Phase 6: Difficulty & Replayability
-Classic, Hard, and Nuzlocke modes. Enhanced AIController with STAB/status awareness. Difficulty selection on New Game.
-
-### Phase 7: Mobile & Accessibility
-TouchControls (virtual D-pad + A/B), responsive scaling, accessibility settings (text size, colorblind, reduced motion), PWA (manifest.json, service worker, offline support).
-
-### Phase 8: Act 3+ World Expansion
-Route 6, Wraithmoor Town (Gym 6 Ghost), Route 7 (Vex boss #2, Rook identity reveal), Scalecrest Citadel (Gym 7 Dragon), Cinderfall Town (Gym 8 Fire), Victory Road (3 Ace Trainers), Pokémon League (Elite Four + Champion). 9 interior maps. Encounter tables for Route 6/7/Victory Road. Route 8 (Stormbreak Pass, 20×30). Aether Sanctum (post-game, 20×25). Crystal Cavern Depths (post-game, 20×30).
-
-### Phase 9: Story & Quest Wiring
-Rival encounters placed on correct maps. 12 quests with full step automation. QuestJournalScene (Active/Complete tabs) + QuestTrackerScene HUD overlay. Generic house interiors (8×8 template, 10 per-city). Quest interaction NPCs. Tag-battle system (Ironvale Kael/player vs 2 grunts). Show-Pokémon and wild-encounter interaction types. Berry fixes.
-
-### Phase 10: First Impressions & New Game Experience
-IntroScene with Professor Willow presentation, typewriter text, character naming with keyboard input, confirmation slide. Running Shoes from Mom. Gender selection with sprite previews.
-
-### Phase 11: Battle Animation & Visual Effects
-MoveAnimationPlayer (6 animation styles, 18 type-based particle palettes, 16 specific move overrides). Screen flash and screen shake effects.
-
-### Phase 12: Overworld Atmosphere & World Feel
-WeatherRenderer (6 weather types via particle emitters). NPC Behavior system (stationary, look-around, wander, pace). EmoteBubble system (6 types). LightingSystem (darkness overlay, radial gradient lights). Animated tiles (water shimmer, grass pulse, lava cycling). AmbientSFX system. Terrain footstep SFX.
-
-### Phase 13: Player Movement & Exploration
-Bicycle (B key toggle, 3× speed), running encounter modifier (1.5×). OverworldAbilities (Cut, Surf, Strength, Flash, Rock Smash — wired). Surfing state. Ledge system (one-way jumps, parabolic hop). Strength boulder-pushing. Flash integration for dark caves.
-
-### Phase 15: Sound & Music
-CryGenerator (151 procedural Web Audio cries). 13 new BGM keys + 14 SFX keys. Context-sensitive music per town. AudioManager enhancements (fanfare, low-HP beep, pause/resume).
-
-### Phase 16: Advanced Battle Features (Partial)
-Synthesis Mode (19 eligible Pokémon, +100 BST boosts, UI with SYNTH button and cyan aura). Double Battle Manager (2v2, 4 active slots, spread targeting, tag battle). Move Tutor & TM System (50 TMs, 5 tutors, `canLearnMove()`, Heart Scale).
-
-### Phase 17: Cutscene & Story Presentation
-CutsceneEngine (16 action types, data-driven). 18 cutscenes authored (game-intro, rival-kael-lab, ember-mines-discovery, willow-kidnapping, rook-reveal, zara-defection, willow-rescue, champion-reveal, morwen-prophecy, solara-confession, ashborne-warning, aldric-spire-offer, post-champion-victory, fathers-journal-discovery, father-reunion + more). Flashback system (sepia overlay). Map-entry and NPC-triggered cutscene wiring. Smart-skip for already-played cutscenes.
-
-### Phase 18: Pokémon Personality & Bond
-Friendship system (battle/walk/heal adjustments, battle effects at ≥220). Nickname system (NicknameScene, Name Rater NPC). Nature flavor texts. Affection dialogue. Heart meter. EXP bonus at high friendship. Crit boost at ≥220.
-
-### Phase 19: World Enrichment & Side Activities
-Berry Growing System (BerryGarden, BERRY_SOIL tile). TrainerCardScene. Hidden Items System (16 items, Itemfinder key item). Voltorb Flip mini-game.
-
-### Phase 20: Achievement & Completion Tracking
-AchievementManager (50 achievements, 5 categories). AchievementToast. AchievementScene. GameStats (12 tracked). Hall of Fame data structure. Achievement triggers wired.
-
-### Storyline Implementation
-- **Pokémon League**: 6 rooms (Lobby, 4 E4 chambers, Champion Chamber). All E4 complete (Nerida, Theron, Lysandra, Ashborne). Champion Aldric. Hall of Fame flag.
-- **Abyssal Spire**: 5-floor Collective HQ dungeon. Rook partner (F1), Dr. Vex boss #3 (F2), Zara confrontation (F3), Willow rescue (F4), Aldric escape (F5). 8 new trainers.
-- **Shattered Isles**: 3 post-game maps (Shore, Ruins, Temple). Rook postgame battle (Lv 70–74). Father's Trail journal fragments. Solatheon encounter.
-- **Verdantia Lab**: 15×18 mini-dungeon. 3 grunt trainers. 3 lore terminals. Encounter table.
-- **NPC Population**: All 10 cities populated (Mom healer, Old Man Edgar, Museum Curator, Blacksmith Apprentice, Veteran Knox, etc.).
-- **Encounter Tables**: All new areas covered.
-- **Flag Chain**: Data-driven `victoryFlag`/`badgeReward` system. 21 trainers with flags. Full main and post-game flag chains verified.
-- **Cutscenes wired**: Map-entry and NPC-triggered cutscenes connected. `requireFlag` on warps (Verdantia Lab, Coral Harbor ferry). Father's Trail auto-trigger post-champion.
-- **Legendaries**: Solatheon (#152, Psychic/Fairy, BST 650) and Noctharion (#153, Ghost/Dark, BST 650) with proper data and encounters.
-- **Moves**: Fairy (6), Dark (+6), Ghost (+6) type moves. Legendary learnsets.
-
-### Code Architecture
-Scenes decomposed into subdirectories (boot/, title/, overworld/, battle/, menu/, pokemon/, minigame/). Battle system reorganized (core/, calculation/, effects/, execution/). Systems organized (audio/, engine/, overworld/, rendering/). UI organized (controls/, widgets/). Data split into per-type files (moves/, pokemon/, trainers/, maps/). Tests organized into domain subdirectories.
+> Detailed history of completed work lives in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
-## Remaining Work
+## Tier A — Content Expansion
 
-### Map Visual Redesigns (from map-improvements audit)
+*New things to do, fight, and find. Each item leverages the existing data-driven systems.*
 
-Six cities share a copy-paste template layout and lack biome-specific tiles despite having 115+ tile types available. Routes 6 and 7 are visually barren.
+### A.1 Battle Tower
 
-#### Priority 1 — City Uniqueness Redesigns
+Endless streak mode unlocked from the Pokémon League lobby.
 
-| City | Current Rating | Issue | Target Biome |
-|------|:---:|-------|--------------|
-| **Ironvale City** | ⭐ | Template grid, no industrial/forge theming | `METAL_FLOOR`, `PIPE`, `GEAR`, `CONDUIT`, `CLIFF_FACE` |
-| **Voltara City** | ⭐ | Template grid, no tech/electric theming | `CONDUIT`, `ELECTRIC_PANEL`, `WIRE_FLOOR`, `METAL_FLOOR` |
-| **Wraithmoor Town** | ⭐ | Template grid, no ghost/ruin theming | `CRACKED_FLOOR`, `RUIN_WALL`, `RUIN_PILLAR`, `GRAVE_MARKER`, `MIST` |
-| **Scalecrest Citadel** | ⭐ | Template grid, no fortress/dragon theming | `FORTRESS_WALL`, `DRAGON_SCALE_FLOOR`, `DRAGON_STATUE`, `CLIFF_FACE` |
-| **Cinderfall Town** | ⭐ | Template grid, no volcanic/fire theming | `ASH_GROUND`, `EMBER_VENT`, `HOT_SPRING`, `LAVA_ROCK`, `MAGMA_CRACK` |
-| **Coral Harbor** | ⭐⭐ | Partial coastal tiles, template building arrangement | `DOCK_PLANK`, `WET_SAND`, `TIDE_POOL`, `PALM_TREE`, `CORAL_BLOCK` |
+- 7-battle streaks with Battle Points (BP) rewards.
+- Tiers: Normal (Lv 50 cap), Super (Lv 100), Rental (pre-built teams).
+- Every 7th battle is a Tower Tycoon boss with unique team and dialogue.
+- BP shop: Choice Specs, Assault Vest, Life Orb, rare berries, ability capsules.
+- New scene `BattleTowerScene` in `frontend/src/scenes/battle/`. Data-driven via a `TowerConfig` interface mirroring `TrainerData`.
 
-Each city needs: unique building arrangement (no grid pattern), biome-appropriate tile usage, organic path layouts, signature visual features (forge, conduits, graveyard, fortress gate, hot springs, harbor docks).
+### A.2 Side-Quest Expansion (8 new quests, 20 total)
 
-#### Priority 2 — Route Visual Polish
+| # | Quest | Location | Type | Reward |
+|---|-------|----------|------|--------|
+| 13 | Aether Anomalies | Regional (6 spots) | Exploration | Aether Charm (×2 shiny rate) |
+| 14 | The Photographer | Routes 1–8 | Collection | Camera key item + Photo Album scene |
+| 15 | Voltorb Tournament | Voltara City | Minigame | Coin Case + Game Corner access |
+| 16 | The Fossil Collector | Pewter Museum → Caves | Fetch | Fossil revival → 2 fossil Pokémon |
+| 17 | Rook's Redemption | Post-game, Shattered Isles | Story | Rook joins as optional partner |
+| 18 | Gym Leader Gauntlet | Post-game, League | Battle | All 8 leaders sequentially → Gold Trainer Card |
+| 19 | Marina's Expedition | Post-game, 3 rare habitats | Exploration | 3 new encounter zones |
+| 20 | The Synthesis Cure | Post-game, Verdantia Lab | Story | Cure item for any Synthetic Pokémon |
 
-| Route | Current Rating | Issue | Target Feel |
-|-------|:---:|-------|-------------|
-| **Route 6** | ⭐ | Generic flat grass | Transition from tech (Voltara) to ruins (Wraithmoor): `CONDUIT` remnants → `DARK_GRASS`, `AUTUMN_TREE` → `CRACKED_FLOOR`, `RUIN_PILLAR`, `MIST` |
-| **Route 7** | ⭐ | Generic flat grass | Mountain pass: `CLIFF_FACE`, `ROCK`, `BOULDER`, `CAVE_FLOOR`, `FORTRESS_WALL` remnants |
-| Route 4 (Basalt Ridge) | ⭐⭐⭐ | Decent but could use more volcanic tiles | Add `LAVA_ROCK`, `MAGMA_CRACK`, `VOLCANIC_WALL` |
-| Route 5 (Canopy Trail) | ⭐⭐⭐⭐ | Good but missing jungle tiles | Add `VINE`, `MOSS_STONE`, `GIANT_ROOT`, `BERRY_TREE` |
-| Victory Road | ⭐⭐⭐ | Functional but small (20×25) | Expand to 25×35, add `AETHER_CRYSTAL`, `BOULDER` puzzles, more Ace Trainers |
+### A.3 Fossil Pokémon (#154–155)
 
-#### Priority 3 — Dungeon & Interior Polish
+| ID | Name | Type | Fossil | Found |
+|----|------|------|--------|-------|
+| 154 | Lithoclaw | Rock/Water | Claw Fossil | Crystal Cavern Depths |
+| 155 | Aerolith | Rock/Flying | Wing Fossil | Ember Mines |
 
-- **Ember Mines**: Add `CONTAINMENT_POD`, `TERMINAL`, `AETHER_CONDUIT`, `SYNTHESIS_FLOOR`/`WALL` tiles for the lab section
-- **Pokémon League**: Expand from compact 10×10 into proper multi-room layout with unique theming per E4 chamber (already has 6 map files, but visual quality can improve)
+Revival at Pewter Museum for 5,000 money.
 
-### Remaining Feature Work
+### A.4 Move Pool Expansion (~30 new moves)
 
-#### Gameplay — High Priority
+Fill gaps in underrepresented types so every type has at least 8 moves covering physical/special/status.
 
-| Feature | Description | Status |
-|---------|-------------|--------|
-| **Fly fast-travel UI** | Map selection scene from visited towns, badge-gated | **Done** |
-| **Cycling sprite/animation** | Distinct visual for bicycle mode | Not started |
-| **Boss trainer Synthesis** | Vex and Aldric use Synthesis Mode in their battles | **Done** |
-| **Partner AI in doubles** | Smart move selection for NPC allies (Rook, Kael) in tag battles | **Done** |
-| **Trainer rematches** | All 8 Gym Leaders (Lv 60+), Elite Four (Lv 70+), Kael Champion challenger (Lv 60–65) | **Done** |
-| **~10 remaining cutscenes** | Full narrative coverage for all story beats | Partial |
+| Type | Current | Target | Examples |
+|------|--------:|-------:|----------|
+| Bug | 4 | 8 | Lunge, First Impression, U-Turn, Pollen Puff |
+| Rock | 4 | 8 | Power Gem, Head Smash, Stealth Rock, Accelerock |
+| Electric | 5 | 8 | Volt Switch, Wild Charge, Electroweb |
+| Ice | 6 | 9 | Freeze-Dry, Icicle Crash, Aurora Veil |
+| Ghost | 7 | 10 | Phantom Force, Spirit Shackle, Poltergeist |
+| Steel | 7 | 9 | Bullet Punch, Heavy Slam |
 
-#### Gameplay — Medium Priority
+### A.5 Berry & Held-Item Expansion
 
-| Feature | Description | Status |
-|---------|-------------|--------|
-| **Overworld visual polish** | Window light shafts in interiors, neon glow in Voltara, Aether crystal pulse animation | Not started |
-| **Statistics sub-menu** | Detailed stat viewer scene (GameStats already tracked) | **Done** |
-| **Hall of Fame on title screen** | View past champion completions from title menu | **Done** |
-| **Wire remaining achievement triggers** | All gym badges, champion, sweep-trainer, underdog-win, etc. | Partial |
-| **Town Map scene** | Show visited cities/routes with current objective marker | Not started |
-| **Double battle UI polish** | Partner HP display, partner action indication, clearer messaging | Not started |
-
-#### Content — Post-Game & Side Activities
-
-| Feature | Description | Priority |
-|---------|-------------|----------|
-| **Battle Frontier / Battle Tower** | Endless streak mode, rental Pokémon, battle points, leaderboard | Medium |
-| **Bug-catching contest** | Timed encounter with scoring | Low |
-| **Photo Mode** | Pause → free camera → screenshot | Low |
-| **Secret base** | Crystal Cavern customizable area | Low |
-| **Safari Zone** | Special catch-only zone with different mechanics | Low |
-| **Breeding & Egg hatching** | Pokémon nursery system | Low |
-| **Follower Pokémon** | Lead Pokémon follows player in overworld | Low |
-
-#### UI & Visual — Phase 14 (Custom Art)
-
-| Feature | Description | Priority |
-|---------|-------------|----------|
-| **Custom pixel font** | BMFont format, Pokémon-style, replaces Phaser built-in text | Medium |
-| **UI sprite sheet** | Nine-patch art, type icons, status icons, gender icons, badge artwork, cursor sprites | Medium |
-| **HUD improvements** | Mini-map, party quick-view (6 Pokéballs), clock display, quest tracker polish | Low |
-
-#### Technical — Infrastructure
-
-| Feature | Description | Priority |
-|---------|-------------|----------|
-| **Performance optimization** | Texture atlases, object pooling | Medium |
-| **Enhanced testing** | Visual regression tests, expanded E2E coverage | Medium |
-| **Localization (i18n)** | Multi-language support | Low |
-| **Mod support** | Custom JSON content loading | Low |
-| **Randomizer mode** | Seed-based shuffle of encounters/teams/starters | Low |
-
-#### Multiplayer (Stretch Goals)
-
-| Feature | Description | Priority |
-|---------|-------------|----------|
-| **WebRTC battles** | Peer-to-peer real-time battles | Low |
-| **Trading system** | Pokémon trading between players | Low |
-| **Leaderboards** | Online high scores | Low |
+- 15 holdable berries (Sitrus, Lum, Chesto, Rawst, Aspear, Leppa, Oran, Persim, Pecha, Cheri, Figy, Wiki, Mago, Aguav, Iapapa).
+- Berry trees on routes that regrow with `GameClock` time.
+- 10 competitive held items: Choice Specs, Assault Vest, Rocky Helmet, Eviolite, Black Sludge, Weakness Policy, Light Clay, Heat Rock, Damp Rock, Smooth Rock.
 
 ---
 
-## Development Principles
+## Tier B — Replayability
 
-- **Data-driven**: Pokémon, moves, items, trainers defined as data objects, not code.
+*Multiply the existing content rather than adding more of it.*
+
+### B.1 Randomizer Mode
+
+Seed-based shuffle layered over the data files at game start. Wraps `pokemon/`, `trainers/`, `encounter-tables.ts`, `tm-data.ts`, and `shop-data.ts`.
+
+```typescript
+interface RandomizerConfig {
+  seed: string;
+  shuffleWild: boolean;
+  shuffleTrainers: boolean;
+  shuffleStarters: boolean;
+  shuffleTMs: boolean;
+  shuffleShops: boolean;
+  levelScaling: 'match' | 'progressive' | 'random';
+}
+```
+
+### B.2 New Game+
+
+- Carry one Pokémon from the previous run.
+- All trainers scaled +5 levels.
+- Gym Leaders use competitive teams with held items, EVs, and coverage moves.
+- New post-Champion dialogue.
+- Exclusive NG+ encounter: **Noctharion** at the end of Victory Road.
+
+### B.3 Speed-Run Timer
+
+- In-game timer overlay with splits at each gym, act transition, and champion defeat.
+- Personal-best tracking in `GameStats`.
+- Settings toggle. Splits exportable as JSON.
+
+### B.4 Challenge Run Presets
+
+Extends the existing Classic/Hard/Nuzlocke difficulty system.
+
+| Mode | Rules |
+|------|-------|
+| Monotype | Only Pokémon of one chosen type |
+| Solo Run | Only your starter, no party members |
+| No Items | Items disabled outside Pokémon Centers |
+| Minimal Catches | Beat the game with ≤6 total Pokémon |
+| Randomizer Nuzlocke | Randomizer + Nuzlocke combined |
+
+Each is a checkbox on the New Game screen. Track per-mode completion in achievements.
+
+---
+
+## Tier C — Visual & UX Polish
+
+*Map-quality and visual polish items still open.*
+
+### C.1 Map Visual Redesigns
+
+Use `npm run map:gen`, `npm run map:compose`, `npm run map:validate`, and `npm run map:preview`. See [.github/instructions/map-generation.instructions.md](../.github/instructions/map-generation.instructions.md) for the toolchain.
+
+#### City uniqueness (6 cities still using template layouts)
+
+| City | Target biome tiles | Signature feature |
+|------|---------------------|--------------------|
+| Ironvale City | `METAL_FLOOR`, `PIPE`, `GEAR`, `CONDUIT`, `CLIFF_FACE` | Central forge with smoke |
+| Voltara City | `CONDUIT`, `ELECTRIC_PANEL`, `WIRE_FLOOR`, `METAL_FLOOR` | Neon-lit tech plaza |
+| Wraithmoor Town | `CRACKED_FLOOR`, `RUIN_WALL`, `RUIN_PILLAR`, `GRAVE_MARKER`, `MIST` | Ruined cathedral, graveyard |
+| Scalecrest Citadel | `FORTRESS_WALL`, `DRAGON_SCALE_FLOOR`, `DRAGON_STATUE`, `CLIFF_FACE` | Fortress with courtyard |
+| Cinderfall Town | `ASH_GROUND`, `EMBER_VENT`, `HOT_SPRING`, `LAVA_ROCK`, `MAGMA_CRACK` | Hot-spring caldera plaza |
+| Coral Harbor | `DOCK_PLANK`, `WET_SAND`, `TIDE_POOL`, `PALM_TREE`, `CORAL_BLOCK` | Boardwalk + lighthouse |
+
+Each city needs an organic (non-grid) building arrangement and at least one visible setpiece on entry.
+
+#### Route polish
+
+- **Route 6** (Voltara → Wraithmoor): tech-to-ruins gradient — `CONDUIT` remnants → `DARK_GRASS`, `AUTUMN_TREE` → `CRACKED_FLOOR`, `RUIN_PILLAR`, `MIST`.
+- **Route 7** (Wraithmoor → Scalecrest): mountain pass — `CLIFF_FACE` walls, switchback paths, `BOULDER` obstacles, fog.
+- **Route 4** (Basalt Ridge): more volcanic detail — `LAVA_ROCK`, `MAGMA_CRACK`, `VOLCANIC_WALL`.
+- **Route 5** (Canopy Trail): jungle density — `VINE`, `MOSS_STONE`, `GIANT_ROOT`, `BERRY_TREE`.
+
+#### Dungeon and interior polish
+
+- **Ember Mines** — add `CONTAINMENT_POD`, `TERMINAL`, `AETHER_CONDUIT`, `SYNTHESIS_FLOOR`/`WALL` to the lab section.
+- **Pokémon League** — expand the compact 10×10 chambers into proper multi-room layouts with unique per-E4 theming.
+- **Pewter Museum** — expand with fossil exhibits, interactive displays, and quest items.
+- **Viridian Gym** — currently NPC-blocked. Once flag-gated warp removal lands, switch to `requireFlag: 'gym8_unlocked'` warp.
+
+### C.2 Battle UI Sprite Frames
+
+Replace remaining rectangle-based battle UI elements with sprite-frame versions: HP/EXP bar containers, info panels, Pokémon platforms, move-grid backgrounds with type-colored frames.
+
+### C.3 Overworld Visual Polish
+
+- Window light shafts in interiors.
+- Voltara neon glow.
+- Aether crystal pulse animation.
+- Quest-tracker HUD polish (icon, fade transitions).
+
+### C.4 Custom Pixel Font and UI Atlas
+
+- BMFont-format pixel font replacing Phaser's built-in text.
+- Consolidated UI atlas (badge artwork, cursor sprites, gender icons).
+
+### C.5 Cutscene Coverage
+
+Author the remaining narrative beats so every major story moment has a cutscene (currently 18 shipped; about 10 outstanding moments).
+
+### C.6 Achievement Trigger Coverage
+
+Wire remaining triggers: every gym badge unlock, sweep-trainer, underdog-win, type-mastery milestones.
+
+### C.7 Region Overview Map
+
+Auto-generate a region map image from the warp graph — useful for the Town Map and for marketing screenshots.
+
+---
+
+## Tier D — Stretch Features
+
+*High-effort items considered separately.*
+
+### D.1 Multiplayer (WebRTC)
+
+- Peer-to-peer 1v1 link battles.
+- Lobby system with shareable room codes.
+- Team preview, lead selection, JSON-serialized turn protocol.
+- Spectator mode (read-only third client).
+
+### D.2 Trading System
+
+- Same room-code pairing as battles.
+- Offer/confirm/trade flow with preview.
+- Trade evolutions trigger on receive.
+- Stretch: GTS-style async trading via lightweight backend.
+
+### D.3 Safari Zone
+
+- No battling — bait/rocks alter catch and flee rates.
+- 30 Safari Balls per entry, 500-step limit.
+- 5–8 exclusive species.
+- Daily rotating Pokémon tied to `GameClock`.
+
+### D.4 Breeding & Egg Hatching
+
+- Pokémon Nursery in Verdantia Village.
+- Egg groups based on species compatibility.
+- Egg-move inheritance.
+- Steps-to-hatch counter, accelerated by Bicycle.
+
+### D.5 Photo Mode
+
+- Pause → free camera with zoom and filters.
+- Save as PNG to device.
+- Photo Album scene in the menu.
+
+### D.6 Save System Cloud Sync
+
+- Export/import save as JSON file (zero-backend).
+- Optional: tiny backend (Cloudflare Worker + KV) for cloud saves.
+- Save versioning with migration functions.
+
+### D.7 Localization (i18n) and Mod Support
+
+- Multi-language support via a string registry.
+- Custom JSON content loading for community mods.
+
+---
+
+## Working Principles
+
+- **Data-driven**: Pokémon, moves, items, trainers, maps stay as plain data objects.
 - **Scene isolation**: Scenes communicate via `EventManager` and `GameManager` only.
-- **Build small, test often**: Each task has a concrete deliverable.
-- **Typed everything**: Interfaces and enums for all game data structures.
-- **Test after changes**: `npm run test` for logic, `npm run test:e2e` for UI/scene changes.
+- **Barrel imports**: Import from directory `index.ts`, not individual module files.
+- **Test before commit**: `npm run build` and `npm run test` are mandatory.
+- **Update [CHANGELOG.md](CHANGELOG.md)** with date-grouped entries (Added/Changed/Fixed/Removed) for every code change.
+- **Keep `CONTEXT.md` and `AGENTS.md` current** when adding, removing, or renaming files.
