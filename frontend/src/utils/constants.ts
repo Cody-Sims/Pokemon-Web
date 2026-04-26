@@ -38,9 +38,28 @@ export function computeGameDimensions(): { width: number; height: number } {
   // client size is the safe-area-aware viewport that the canvas actually
   // renders into. Fall back to `window.innerWidth/innerHeight` for tests
   // where document.body may not yet be styled.
+  // Use the larger of body.client* and visualViewport / innerWidth so that
+  // stale post-rotation body dimensions on iOS Safari don't lock us into
+  // the previous orientation. visualViewport is the most reliable source
+  // for the actual on-screen viewport.
   const body = typeof document !== 'undefined' ? document.body : null;
-  const vw = body?.clientWidth || window.innerWidth;
-  const vh = body?.clientHeight || window.innerHeight;
+  const bodyW = body?.clientWidth ?? 0;
+  const bodyH = body?.clientHeight ?? 0;
+  const vvW = window.visualViewport?.width ?? 0;
+  const vvH = window.visualViewport?.height ?? 0;
+  const winW = window.innerWidth;
+  const winH = window.innerHeight;
+  // Pick the source whose orientation matches the current window — body
+  // can lag during rotation and report the prior orientation's dims.
+  const winPortrait = winH > winW;
+  const sources = [
+    { w: vvW, h: vvH, ok: vvW > 0 && vvH > 0 && (vvH > vvW) === winPortrait },
+    { w: bodyW, h: bodyH, ok: bodyW > 0 && bodyH > 0 && (bodyH > bodyW) === winPortrait },
+    { w: winW, h: winH, ok: true },
+  ];
+  const chosen = sources.find(s => s.ok) ?? sources[sources.length - 1];
+  const vw = chosen.w;
+  const vh = chosen.h;
   const isPortrait = vh > vw;
 
   if (isPortrait) {

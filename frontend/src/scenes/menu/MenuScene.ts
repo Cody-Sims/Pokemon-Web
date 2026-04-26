@@ -44,7 +44,11 @@ export class MenuScene extends Phaser.Scene {
     const panelW = dims.panelW;
     const panelH = dims.panelH;
     const rowH = dims.rowH;
-    const panelX = layout.w - panelW / 2 - 20;
+    // Position the panel inset from the right edge. In landscape mobile
+    // the DOM touch controls overlay the right ~120 px of the canvas, so
+    // tuck the menu further inward there to keep every label visible.
+    const rightInset = MenuScene.computeRightInset(layout.w, layout.h);
+    const panelX = layout.w - panelW / 2 - rightInset;
     const panelY = layout.cy;
     this.menuPanel = new NinePatchPanel(this, panelX, panelY, panelW, panelH, {
       fillColor: COLORS.bgPanel,
@@ -64,7 +68,9 @@ export class MenuScene extends Phaser.Scene {
     const menuFontSize = mobileFontSize(dims.fontPx);
     const startY = panelY - panelH / 2 + 24;
     this.menuItems = this.menuLabels.map((label, i) => {
-      const item = this.add.text(panelX + 10, startY + i * rowH, label, {
+      // Center text on the panel center (no +10 offset) so longer labels
+      // like HALL OF FAME and POKEDEX stay inside the panel borders.
+      const item = this.add.text(panelX, startY + i * rowH, label, {
         ...FONTS.menuItem, fontSize: menuFontSize,
         fontStyle: 'bold',
         stroke: '#000000', strokeThickness: 4,
@@ -104,7 +110,8 @@ export class MenuScene extends Phaser.Scene {
       const rH = d.rowH;
       const pW = d.panelW;
       const pH = d.panelH;
-      const pX = l.w - pW / 2 - 20;
+      const inset = MenuScene.computeRightInset(l.w, l.h);
+      const pX = l.w - pW / 2 - inset;
       const pY = l.cy;
       this.overlay.setPosition(l.cx, l.cy).setSize(l.w, l.h);
       this.menuPanel.destroy();
@@ -116,7 +123,7 @@ export class MenuScene extends Phaser.Scene {
       const sY = pY - pH / 2 + 24;
       const fSize = mobileFontSize(d.fontPx);
       this.menuItems.forEach((item, i) => {
-        item.setPosition(pX + 10, sY + i * rH);
+        item.setPosition(pX, sY + i * rH);
         item.setFontSize(fSize);
       });
       this.cursorIcon.setFontSize(fSize);
@@ -163,9 +170,26 @@ export class MenuScene extends Phaser.Scene {
     }
 
     // Cap the panel width to the viewport so the side menu never spills
-    // past the screen on narrow portrait phones.
-    const panelW = Math.min(baseW, viewW - 32);
+    // past the screen on narrow portrait phones. The minimum (160 px) is
+    // wide enough to fit HALL OF FAME with a comfortable horizontal pad.
+    const minW = 180;
+    const rightInset = MenuScene.computeRightInset(viewW, viewH);
+    const maxW = viewW - 32 - rightInset;
+    const panelW = Math.max(minW, Math.min(baseW, maxW));
     return { panelW, panelH, rowH, fontPx };
+  }
+
+  /**
+   * In landscape mobile the DOM touch controls overlay roughly the right
+   * 120 px of the canvas (joystick + A/B side panels), so the menu panel
+   * needs to sit further inside than the regular 20 px desktop margin to
+   * keep every label visible. Portrait + desktop keep the legacy inset.
+   */
+  private static computeRightInset(viewW: number, viewH: number): number {
+    const isLandscape = viewW > viewH;
+    const isMobileTouch = TouchControls.isTouchDevice();
+    if (isMobileTouch && isLandscape) return 140; // clear the side controls
+    return 20;
   }
 
   /** Poll touch B / hamburger button to close menu on mobile. */

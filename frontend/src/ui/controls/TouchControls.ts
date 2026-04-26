@@ -675,22 +675,17 @@ export class TouchControls {
   }
 
   private layoutMenuButton(): void {
-    const { width, height } = this.scene.cameras.main;
-    // Top-right, but pushed down past the QuestTracker HUD strip (~54px tall + margin)
-    // so the icon is visible/tappable on portrait phones where the tracker would
-    // otherwise occlude it. In landscape phone DOM mode the in-canvas button is
-    // hidden anyway, so this position only applies to in-canvas overlay mode.
-    const isPortrait = height > width;
+    const { width } = this.scene.cameras.main;
     // Add safe-area insets so the button stays clear of iOS notches in
     // landscape and the home indicator/status bar in portrait PWA mode.
     const insets = getGameSafeAreaInsets(this.scene.cameras.main);
-    // Portrait: hug the top-right corner just below the safe-area inset
-    // (8 px below it). The minimap now lives in the top-left so we no
-    // longer need to push past the QuestTracker strip — this makes the
-    // hamburger button reachable without a thumb stretch on tall phones.
-    const baseY = isPortrait ? this.menuBtnSize / 2 + 8 : this.menuBtnSize / 2 + 12;
+    // Pin the menu button hard against the top-right corner (just inside
+    // the safe-area inset) so it sits above all other HUD chrome and is
+    // easy to thumb on tall phones. Works the same way in portrait and
+    // landscape — DOM-mode landscape hides the in-canvas button entirely.
+    const baseY = this.menuBtnSize / 2 + 4;
     const yOffset = baseY + insets.top;
-    const xOffset = this.menuBtnSize / 2 + 12 + insets.right;
+    const xOffset = this.menuBtnSize / 2 + 8 + insets.right;
     this.menuBtn.setPosition(width - xOffset, yOffset);
   }
 

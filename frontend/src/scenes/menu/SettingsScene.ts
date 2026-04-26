@@ -124,8 +124,11 @@ export class SettingsScene extends Phaser.Scene {
     // Settings rows — compact layout in portrait so labels never overlap
     // the value/arrow column on narrow screens.
     const startY = portrait ? 78 : 100;
-    // Reserve room for the back button + hint at the bottom of the panel.
-    const bottomReserve = portrait ? 64 : 90;
+    // Reserve room for the back button + hint at the bottom of the panel,
+    // PLUS extra clearance on mobile portrait so the bottom DOM touch
+    // controls (~140 px) never overlap the bottom row of arrows.
+    const portraitMobileReserve = portrait && isMobile ? 150 : 0;
+    const bottomReserve = (portrait ? 64 : 90) + portraitMobileReserve;
     const allItemCount = SETTING_DEFS.length + 1; // +1 for fullscreen
     const availH = layout.h - startY - bottomReserve;
     const idealRowH = portrait ? 30 : 40;
@@ -201,8 +204,13 @@ export class SettingsScene extends Phaser.Scene {
     this.layoutLayer!.add([fsLabel, fsLeftArrow, fsValue, fsRightArrow, fsHitArea]);
     this.settingTexts.push({ label: fsLabel, value: fsValue, leftArrow: fsLeftArrow, rightArrow: fsRightArrow });
 
-    // Back button (visible for touch users, always works)
-    const backY = layout.h - (portrait ? 44 : 70);
+    // Back button (visible for touch users, always works) — sit clear of
+    // the OS home indicator + DOM touch controls so it's reachable on
+    // mobile portrait/landscape phones.
+    const portraitMobile = portrait && isMobile;
+    const landscapeMobile = !portrait && isMobile;
+    const bottomSafeReserve = portraitMobile ? 90 : landscapeMobile ? 24 : 16;
+    const backY = layout.h - bottomSafeReserve - 22;
     const backBtn = this.add.text(layout.cx, backY, '[ Back ]', {
       ...FONTS.body, fontSize: mobileFontSize(portrait ? 16 : 20), color: COLORS.textHighlight,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -212,23 +220,24 @@ export class SettingsScene extends Phaser.Scene {
 
     // Save Export / Import buttons (plan.md D.6) — flank the Back button.
     const sideFont = mobileFontSize(portrait ? 12 : 14);
-    const exportBtn = this.add.text(layout.cx - (portrait ? 90 : 140), backY, '[ Export ]', {
+    const sideOffset = Math.min(portrait ? 90 : 140, layout.w / 2 - 56);
+    const exportBtn = this.add.text(layout.cx - sideOffset, backY, '[ Export ]', {
       ...FONTS.body, fontSize: sideFont, color: COLORS.textGray,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     exportBtn.on('pointerdown', () => this.exportSave());
     exportBtn.on('pointerover', () => exportBtn.setColor(COLORS.textHighlight));
     exportBtn.on('pointerout', () => exportBtn.setColor(COLORS.textGray));
 
-    const importBtn = this.add.text(layout.cx + (portrait ? 90 : 140), backY, '[ Import ]', {
+    const importBtn = this.add.text(layout.cx + sideOffset, backY, '[ Import ]', {
       ...FONTS.body, fontSize: sideFont, color: COLORS.textGray,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     importBtn.on('pointerdown', () => this.importSave());
     importBtn.on('pointerover', () => importBtn.setColor(COLORS.textHighlight));
     importBtn.on('pointerout', () => importBtn.setColor(COLORS.textGray));
 
-    // Close hint
+    // Close hint — keep above the bottom OS reserve so it isn't clipped.
     const hintTxt = isMobile ? 'Tap ◀ ▶ to change  •  Tap [ Back ] to return' : 'ESC to go back   ◀ ▶ to change values';
-    const hint = this.add.text(layout.cx, layout.h - (portrait ? 22 : 40), hintTxt, {
+    const hint = this.add.text(layout.cx, layout.h - bottomSafeReserve, hintTxt, {
       ...FONTS.caption,
       fontSize: mobileFontSize(portrait ? 10 : 12),
     }).setOrigin(0.5);

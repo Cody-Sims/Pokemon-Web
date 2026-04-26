@@ -168,13 +168,24 @@ export class MinimapScene extends Phaser.Scene {
       return { x: margin + insets.left, y: topGap + insets.top };
     }
 
-    // Landscape / desktop: keep the legacy bottom-right placement, but
-    // clear the action buttons on landscape phones.
-    const landscapeMobileClear = 130; // legacy mobile landscape gap
-    const bottomGap = mobile ? landscapeMobileClear : margin;
+    // Landscape mobile: pin to the top-left below the location HUD strip
+    // so the minimap clears both the joystick (left side) and the action
+    // buttons + hamburger (right side). Desktop landscape keeps the
+    // legacy bottom-right corner where there's no DOM overlay.
+    if (mobile) {
+      // Mobile landscape DOM controls take up ~120 px on each side, so
+      // the safe content rectangle is the middle band. Sit the minimap
+      // just below the location HUD strip in that middle band.
+      return {
+        x: 130 + margin + insets.left,
+        y: 32 + insets.top,
+      };
+    }
+
+    // Desktop landscape: bottom-right corner.
     return {
       x: w - totalSize - margin - insets.right,
-      y: h - totalSize - bottomGap - insets.bottom,
+      y: h - totalSize - margin - insets.bottom,
     };
   }
 

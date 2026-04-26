@@ -124,13 +124,31 @@ function handleViewportResize(): void {
   if (resizeTimer) clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
     resetSafeAreaCache();
+    // Force a body reflow before reading dimensions so iOS Safari uses
+    // the post-rotation client size (it sometimes caches the pre-rotation
+    // values until the next layout pass). Toggle a harmless transform on
+    // the body to nudge the layout engine.
+    if (typeof document !== 'undefined' && document.body) {
+      // Reading offsetHeight forces synchronous reflow, which makes
+      // body.clientWidth/Height match the actual viewport on rotation.
+      void document.body.offsetHeight;
+    }
     const { width, height } = computeGameDimensions();
     const current = game.scale.gameSize;
     if (current.width !== width || current.height !== height) {
       game.scale.resize(width, height);
     }
+    // Always call refresh — even when dims are unchanged, the canvas DOM
+    // rect can shift after the address bar collapses, and refresh() syncs
+    // the input coordinates and active scenes' camera viewports.
     game.scale.refresh();
-  }, 120);
+    // Manually emit a resize event on the scale manager so scenes that
+    // registered `layoutOn(...)` re-run their layout pass even when the
+    // logical game dimensions didn't change but the viewport rect did.
+    try {
+      game.scale.emit('resize', game.scale.gameSize, game.scale.baseSize);
+    } catch { /* defensive — older Phaser versions */ }
+  }, 80);
 }
 function scheduleOrientationResize(): void {
   // iOS Safari reports stale viewport dimensions immediately after rotation.

@@ -338,7 +338,12 @@ export class OverworldScene extends Phaser.Scene {
       // Push the camera down a bit so the player sits in the upper-middle
       // of the viewport in mobile portrait — leaves more room for the
       // pier/water tiles below the player to render above the touch UI.
-      this.cameras.main.setFollowOffset(0, isTouch && isPortrait ? -90 : 0);
+      // Use roughly 25% of the viewport height so the bottom 60% of the
+      // canvas remains for showing what's below the player.
+      const followOffsetY = isTouch && isPortrait
+        ? -Math.round(layout.h * 0.18)
+        : 0;
+      this.cameras.main.setFollowOffset(0, followOffsetY);
       // Use a very small deadzone (1 tile each axis) so the camera follows
       // the player aggressively. The previous 20%-of-viewport deadzone
       // (often 160-200px on mobile portrait) was larger than the available
@@ -359,6 +364,15 @@ export class OverworldScene extends Phaser.Scene {
     this.events.on('resume', () => {
       this.inputManager.getTouchControls()?.drain();
       this.resumeCooldown = 2;
+      // Show the touch controls again — they were hidden when this scene
+      // paused to launch the menu (or when an overlay scene took control).
+      this.inputManager.getTouchControls()?.setVisible(true);
+    });
+    // Hide the touch controls (joystick + A/B + hamburger) while the scene
+    // is paused so they don't sit on top of the pause menu / dialogue /
+    // sub-menu UI.
+    this.events.on('pause', () => {
+      this.inputManager.getTouchControls()?.setVisible(false);
     });
 
     // ── Audio: play map BGM ──
