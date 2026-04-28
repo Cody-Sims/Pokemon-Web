@@ -250,4 +250,172 @@ export const questData: Record<string, QuestDefinition> = {
     ],
     rewardMoney: 0,
   },
+
+  // ───── A.2 expansion: 8 new quests (#13–#20) ─────
+
+  // 13 — Regional exploration. Six anomaly sites scattered across Aurum.
+  'aether-anomalies': {
+    id: 'aether-anomalies',
+    name: 'Aether Anomalies',
+    description: 'Survey six Aether anomaly sites across the Aurum Region.',
+    startFlag: 'quest_aetherAnomalies_started',
+    completeFlag: 'quest_aetherAnomalies_complete',
+    steps: [
+      { description: 'Survey the Littoral Pier anomaly', completionFlag: 'quest_aetherAnomalies_a1', triggerFlag: 'aether-anomaly-littoral' },
+      { description: 'Survey the Viridian Forest anomaly', completionFlag: 'quest_aetherAnomalies_a2', triggerFlag: 'aether-anomaly-viridian-forest' },
+      { description: 'Survey the Crystal Cavern anomaly', completionFlag: 'quest_aetherAnomalies_a3', triggerFlag: 'aether-anomaly-crystal-cavern' },
+      { description: 'Survey the Wraithmoor ruin anomaly', completionFlag: 'quest_aetherAnomalies_a4', triggerFlag: 'aether-anomaly-wraithmoor' },
+      { description: 'Survey the Cinderfall caldera anomaly', completionFlag: 'quest_aetherAnomalies_a5', triggerFlag: 'aether-anomaly-cinderfall' },
+      { description: 'Survey the Shattered Isles anomaly', completionFlag: 'quest_aetherAnomalies_a6', triggerFlag: 'aether-anomaly-shattered-isles' },
+      { description: 'Report findings to the Aether Surveyor in Voltara', completionFlag: 'quest_aetherAnomalies_complete', triggerFlag: 'aether-anomaly-reported' },
+    ],
+    rewards: [
+      { itemId: 'aether-charm', quantity: 1 },
+    ],
+    rewardMoney: 3000,
+  },
+
+  // 14 — Photographer routes 1–8.
+  'photographer': {
+    id: 'photographer',
+    name: 'The Photographer',
+    description: 'Help a roaming photographer capture Pokémon across all eight routes.',
+    startFlag: 'quest_photographer_started',
+    completeFlag: 'quest_photographer_complete',
+    steps: [
+      { description: 'Receive the Camera in Littoral Town', completionFlag: 'quest_photographer_camera', triggerFlag: 'photographer-camera-received' },
+      { description: 'Photograph a Route 1 Pokémon', completionFlag: 'quest_photographer_r1', triggerFlag: 'photo-route-1' },
+      { description: 'Photograph a Route 3 Pokémon', completionFlag: 'quest_photographer_r3', triggerFlag: 'photo-route-3' },
+      { description: 'Photograph a Route 5 Pokémon', completionFlag: 'quest_photographer_r5', triggerFlag: 'photo-route-5' },
+      { description: 'Photograph a Route 7 Pokémon', completionFlag: 'quest_photographer_r7', triggerFlag: 'photo-route-7' },
+      { description: 'Return the album to the photographer', completionFlag: 'quest_photographer_complete', triggerFlag: 'photographer-album-returned' },
+    ],
+    rewards: [
+      { itemId: 'camera', quantity: 1 },
+    ],
+    rewardMoney: 1200,
+  },
+
+  // 15 — Voltorb Tournament minigame in Voltara City.
+  'voltorb-tournament': {
+    id: 'voltorb-tournament',
+    name: 'Voltorb Tournament',
+    description: 'Win the Voltorb Flip tournament hosted at the Voltara Game Corner.',
+    startFlag: 'quest_voltorbTournament_started',
+    completeFlag: 'quest_voltorbTournament_complete',
+    steps: [
+      { description: 'Sign up at the Game Corner counter', completionFlag: 'quest_voltorbTournament_signup', triggerFlag: 'voltorb-tournament-signup' },
+      { description: 'Win Round 1 (Bronze bracket)', completionFlag: 'quest_voltorbTournament_r1', triggerFlag: 'voltorb-tournament-bronze' },
+      { description: 'Win Round 2 (Silver bracket)', completionFlag: 'quest_voltorbTournament_r2', triggerFlag: 'voltorb-tournament-silver' },
+      { description: 'Win the Gold final', completionFlag: 'quest_voltorbTournament_complete', triggerFlag: 'voltorb-tournament-gold' },
+    ],
+    rewards: [
+      { itemId: 'coin-case', quantity: 1 },
+    ],
+    rewardMoney: 2000,
+  },
+
+  // 16 — Fossil Collector. Cross-references the new fossil Pokémon (A.3).
+  'fossil-collector': {
+    id: 'fossil-collector',
+    name: 'The Fossil Collector',
+    description: 'Help the Pewter Museum recover and revive both Aurum fossils.',
+    startFlag: 'quest_fossilCollector_started',
+    completeFlag: 'quest_fossilCollector_complete',
+    steps: [
+      { description: 'Recover the Claw Fossil from Crystal Cavern Depths', completionFlag: 'quest_fossilCollector_claw', triggerFlag: 'crystalDepthsClawFossil' },
+      { description: 'Recover the Wing Fossil from Ember Mines', completionFlag: 'quest_fossilCollector_wing', triggerFlag: 'emberMinesWingFossil' },
+      { description: 'Revive Lithoclaw at the Pewter Museum', completionFlag: 'quest_fossilCollector_lithoclaw', triggerFlag: 'lithoclaw-revived' },
+      { description: 'Revive Aerolith at the Pewter Museum', completionFlag: 'quest_fossilCollector_aerolith', triggerFlag: 'aerolith-revived' },
+      { description: 'Report back to the Museum Curator', completionFlag: 'quest_fossilCollector_complete', triggerFlag: 'fossil-collector-reported' },
+    ],
+    rewards: [
+      { itemId: 'rare-candy', quantity: 2 },
+      { itemId: 'heart-scale', quantity: 3 },
+    ],
+    rewardMoney: 5000,
+  },
+
+  // 17 — Post-game story. Rook joins as optional partner.
+  'rooks-redemption': {
+    id: 'rooks-redemption',
+    name: "Rook's Redemption",
+    description: 'Track Rook through the Shattered Isles and offer him a chance at redemption.',
+    startFlag: 'quest_rooksRedemption_started',
+    completeFlag: 'quest_rooksRedemption_complete',
+    steps: [
+      { description: 'Find Rook on Shattered Isles - West Beach', completionFlag: 'quest_rooksRedemption_west', triggerFlag: 'rook-west-beach-met' },
+      { description: 'Beat Rook in a battle of conviction', completionFlag: 'quest_rooksRedemption_battle', triggerFlag: 'rook-redemption-battle-won' },
+      { description: 'Walk Rook back to the Verdantia Lab', completionFlag: 'quest_rooksRedemption_walk', triggerFlag: 'rook-walked-to-lab' },
+      { description: 'Speak with Rook one final time', completionFlag: 'quest_rooksRedemption_complete', triggerFlag: 'rook-joined-as-partner' },
+    ],
+    rewards: [
+      { itemId: 'rare-candy', quantity: 3 },
+    ],
+    rewardMoney: 10000,
+  },
+
+  // 18 — Post-game gym gauntlet at the Pokémon League.
+  'gym-leader-gauntlet': {
+    id: 'gym-leader-gauntlet',
+    name: 'Gym Leader Gauntlet',
+    description: 'Defeat all eight Gym Leaders back-to-back in the League lobby.',
+    startFlag: 'quest_gauntlet_started',
+    completeFlag: 'quest_gauntlet_complete',
+    steps: [
+      { description: 'Defeat Brock', completionFlag: 'quest_gauntlet_brock', triggerFlag: 'gauntlet-brock' },
+      { description: 'Defeat Blitz', completionFlag: 'quest_gauntlet_blitz', triggerFlag: 'gauntlet-blitz' },
+      { description: 'Defeat Ferris', completionFlag: 'quest_gauntlet_ferris', triggerFlag: 'gauntlet-ferris' },
+      { description: 'Defeat Coral', completionFlag: 'quest_gauntlet_coral', triggerFlag: 'gauntlet-coral' },
+      { description: 'Defeat Ivy', completionFlag: 'quest_gauntlet_ivy', triggerFlag: 'gauntlet-ivy' },
+      { description: 'Defeat Morwen', completionFlag: 'quest_gauntlet_morwen', triggerFlag: 'gauntlet-morwen' },
+      { description: 'Defeat Drake', completionFlag: 'quest_gauntlet_drake', triggerFlag: 'gauntlet-drake' },
+      { description: 'Defeat Solara', completionFlag: 'quest_gauntlet_complete', triggerFlag: 'gauntlet-solara' },
+    ],
+    rewards: [
+      { itemId: 'gold-trainer-card', quantity: 1 },
+    ],
+    rewardMoney: 25000,
+  },
+
+  // 19 — Marina's expedition unlocks 3 rare-encounter zones.
+  'marinas-expedition': {
+    id: 'marinas-expedition',
+    name: "Marina's Expedition",
+    description: 'Join Marina on a post-game expedition to three rare habitats.',
+    startFlag: 'quest_marinaExpedition_started',
+    completeFlag: 'quest_marinaExpedition_complete',
+    steps: [
+      { description: 'Receive the Expedition Pass from Marina', completionFlag: 'quest_marinaExpedition_pass', triggerFlag: 'expedition-pass-received' },
+      { description: 'Survey the Tideglass Caverns', completionFlag: 'quest_marinaExpedition_tideglass', triggerFlag: 'tideglass-surveyed' },
+      { description: 'Survey the Glacial Hollow', completionFlag: 'quest_marinaExpedition_glacial', triggerFlag: 'glacial-hollow-surveyed' },
+      { description: 'Survey the Bramble Heath', completionFlag: 'quest_marinaExpedition_bramble', triggerFlag: 'bramble-heath-surveyed' },
+      { description: 'Compare notes with Marina back at port', completionFlag: 'quest_marinaExpedition_complete', triggerFlag: 'marina-expedition-debrief' },
+    ],
+    rewards: [
+      { itemId: 'expedition-pass', quantity: 1 },
+      { itemId: 'max-revive', quantity: 3 },
+    ],
+    rewardMoney: 8000,
+  },
+
+  // 20 — Post-game synthesis cure for Synthetic Pokémon.
+  'synthesis-cure': {
+    id: 'synthesis-cure',
+    name: 'The Synthesis Cure',
+    description: 'Help Verdantia Lab synthesize a cure for Synthetic Pokémon.',
+    startFlag: 'quest_synthCure_started',
+    completeFlag: 'quest_synthCure_complete',
+    steps: [
+      { description: 'Collect 3 Aether Crystal samples', completionFlag: 'quest_synthCure_samples', triggerFlag: 'synthesis-cure-samples' },
+      { description: 'Defeat the rogue Synthetic Mewtwo specimen', completionFlag: 'quest_synthCure_specimen', triggerFlag: 'synthesis-cure-specimen' },
+      { description: 'Return to the Verdantia Lab', completionFlag: 'quest_synthCure_lab', triggerFlag: 'synthesis-cure-returned' },
+      { description: 'Witness the cure synthesis', completionFlag: 'quest_synthCure_complete', triggerFlag: 'synthesis-cure-prepared' },
+    ],
+    rewards: [
+      { itemId: 'synthesis-cure', quantity: 3 },
+      { itemId: 'rare-candy', quantity: 2 },
+    ],
+    rewardMoney: 12000,
+  },
 };

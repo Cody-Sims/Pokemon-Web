@@ -6,6 +6,24 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-26]
 
+### Added — Side-quest expansion (#13–#20, A.2)
+
+- Eight new quest definitions in [quest-data.ts](frontend/src/data/quest-data.ts), bringing the total to **20**:
+  - **Aether Anomalies** — survey six anomaly sites across the region; rewards Aether Charm.
+  - **The Photographer** — capture Pokémon on routes 1, 3, 5, 7; rewards the Camera key item.
+  - **Voltorb Tournament** — three brackets (Bronze/Silver/Gold) at Voltara Game Corner; rewards Coin Case.
+  - **The Fossil Collector** — cross-references the new Lithoclaw / Aerolith fossils (A.3); the recovery steps are gated by the same `crystalDepthsClawFossil` / `emberMinesWingFossil` flags the item-balls already set, so the quest can self-advance the moment the fossils are picked up.
+  - **Rook's Redemption** — post-game Shattered Isles arc; Rook joins as optional partner.
+  - **Gym Leader Gauntlet** — defeat all 8 leaders back-to-back; rewards Gold Trainer Card.
+  - **Marina's Expedition** — three rare habitats (Tideglass Caverns, Glacial Hollow, Bramble Heath); rewards Expedition Pass + 3 Max Revives.
+  - **The Synthesis Cure** — Verdantia Lab post-game; rewards 3 Synthesis Cures.
+- Six new key/medicine items in [item-data.ts](frontend/src/data/item-data.ts) backing the new rewards: `aether-charm`, `camera`, `coin-case`, `gold-trainer-card`, `synthesis-cure`, `expedition-pass`.
+- Verified by [tests/unit/data/quest-expansion.test.ts](tests/unit/data/quest-expansion.test.ts) (6 cases covering registration, structural integrity, reward item resolution, total count, and the A.3 cross-reference).
+
+---
+
+## [2026-04-26]
+
 ### Added — Speed-run personal-best tracking + JSON export (B.3)
 
 - **Lifetime PB store**: New [SpeedrunRecords](frontend/src/systems/engine/SpeedrunRecords.ts) helper persists per-split bests in a separate `pokemon-web-speedrun-pbs` localStorage key, so the lifetime "Champion" time survives a New Game.

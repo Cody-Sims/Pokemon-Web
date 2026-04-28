@@ -342,6 +342,38 @@ export const itemData: Record<string, ItemData> = {
     effect: { type: 'key' },
   },
 
+  // ─── Side-quest reward key items (A.2) ───
+  'aether-charm': {
+    id: 'aether-charm', name: 'Aether Charm', category: 'key',
+    description: 'A charm humming with Aether energy. Doubles the chance of finding shiny Pokémon.',
+    effect: { type: 'key' },
+  },
+  'camera': {
+    id: 'camera', name: 'Camera', category: 'key',
+    description: 'A simple camera. Take pictures of Pokémon and add them to your Photo Album.',
+    effect: { type: 'key' },
+  },
+  'coin-case': {
+    id: 'coin-case', name: 'Coin Case', category: 'key',
+    description: 'Holds Game Corner coins. Required to enter the Voltara Game Corner.',
+    effect: { type: 'key' },
+  },
+  'gold-trainer-card': {
+    id: 'gold-trainer-card', name: 'Gold Trainer Card', category: 'key',
+    description: 'Awarded for defeating all eight Gym Leaders in a single gauntlet. Wear it with pride.',
+    effect: { type: 'key' },
+  },
+  'synthesis-cure': {
+    id: 'synthesis-cure', name: 'Synthesis Cure', category: 'medicine',
+    description: 'A serum that calms a Synthetic Pokémon\u2019s unstable Aether energy. Single-use.',
+    effect: { type: 'heal-status', status: 'all' },
+  },
+  'expedition-pass': {
+    id: 'expedition-pass', name: 'Expedition Pass', category: 'key',
+    description: "Marina's pass to three rare habitats: the Tideglass Caverns, Glacial Hollow, and Bramble Heath.",
+    effect: { type: 'key' },
+  },
+
   // ─── Synthesis ───
   'synthesis-bracelet': {
     id: 'synthesis-bracelet', name: 'Synthesis Bracelet', category: 'key',

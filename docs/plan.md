@@ -60,6 +60,8 @@ Endless streak mode unlocked from the Pokémon League lobby.
 | 19 | Marina's Expedition | Post-game, 3 rare habitats | Exploration | 3 new encounter zones |
 | 20 | The Synthesis Cure | Post-game, Verdantia Lab | Story | Cure item for any Synthetic Pokémon |
 
+> **Status (2026-04-26)**: Done. Eight new quest definitions added in [quest-data.ts](../frontend/src/data/quest-data.ts) (total now 20). Backing reward items (Aether Charm, Camera, Coin Case, Gold Trainer Card, Synthesis Cure, Expedition Pass) registered in [item-data.ts](../frontend/src/data/item-data.ts). The Fossil Collector quest reuses the A.3 item-ball flags (`crystalDepthsClawFossil`/`emberMinesWingFossil`) so its first two steps self-advance the moment the fossils are picked up. Verified by `tests/unit/data/quest-expansion.test.ts`. NPC dialogue / minigame scenes / encounter zones still need authoring per quest, but the data layer and reward chain are complete.
+
 ### A.3 Fossil Pokémon (#154–155)
 
 | ID | Name | Type | Fossil | Found |
