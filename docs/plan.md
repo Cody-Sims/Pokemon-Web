@@ -177,7 +177,7 @@ Each city needs an organic (non-grid) building arrangement and at least one visi
 
 #### Route polish
 
-- **Route 6** (Voltara → Wraithmoor): tech-to-ruins gradient — `CONDUIT` remnants → `DARK_GRASS`, `AUTUMN_TREE` → `CRACKED_FLOOR`, `RUIN_PILLAR`, `MIST`.
+- **Route 6** (Voltara → Wraithmoor): tech-to-ruins gradient — `CONDUIT` remnants → `DARK_GRASS`, `AUTUMN_TREE` → `CRACKED_FLOOR`, `RUIN_PILLAR`, `MIST`. **Done (2026-04-26)** — explicit four-band gradient (Voltara tech → nature reclaim → ruined moor → Wraithmoor approach) plus a midpoint sign warning travelers when Aether infrastructure ends. Validates with the same baseline warnings as before.
 - **Route 7** (Wraithmoor → Scalecrest): mountain pass — `CLIFF_FACE` walls, switchback paths, `BOULDER` obstacles, fog.
 - **Route 4** (Basalt Ridge): more volcanic detail — `LAVA_ROCK`, `MAGMA_CRACK`, `VOLCANIC_WALL`.
 - **Route 5** (Canopy Trail): jungle density — `VINE`, `MOSS_STONE`, `GIANT_ROOT`, `BERRY_TREE`.

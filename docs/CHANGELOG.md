@@ -6,6 +6,20 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-26]
 
+### Changed — Route 6 tech-to-ruins gradient (C.1)
+
+- **Route 6** (Voltara → Wraithmoor) rebuilt with an explicit four-band gradient instead of a uniform mix:
+  - **Rows 0–6** Voltara tech remnants — `PIPE` shrines, `GEAR`, `ELECTRIC_PANEL`, `WIRE_FLOOR`, `CONDUIT`.
+  - **Rows 7–14** transition — broken `METAL_FLOOR` slabs reclaimed by `DARK_GRASS` and `AUTUMN_TREE`, with the last `WIRE_FLOOR` fragments dwindling out.
+  - **Rows 15–22** ruined moor — `CRACKED_FLOOR` breaks through the path, `RUIN_PILLAR` and `MIST` creep in along the verges.
+  - **Rows 23–29** Wraithmoor approach — `RUIN_WALL` fragments, `GRAVE_MARKER` cluster on the east, `MIST` blanketing the south.
+- New mid-route lore sign at the transition point: "WARNING — Aether infrastructure ends here. Beyond this point, Voltara has no service contract." Reinforces the gradient narratively.
+- Validates with the same baseline warning level as before (intentional walkable border tiles where the path enters/exits).
+
+---
+
+## [2026-04-26]
+
 ### Added — Side-quest expansion (#13–#20, A.2)
 
 - Eight new quest definitions in [quest-data.ts](frontend/src/data/quest-data.ts), bringing the total to **20**:
