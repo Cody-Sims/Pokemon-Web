@@ -1,40 +1,44 @@
 import { MapDefinition, parseMap } from '../shared';
 
-// Route 4 — Basalt Ridge
-// Volcanic terrain connecting Coral Harbor to Ember Mines / Ironvale
-// Features: lava rock, volcanic walls, ash ground, magma cracks
-const W = 20;
-const pad = (s: string) => s.length < W ? s.slice(0, -1) + '.'.repeat(W - s.length) + s.slice(-1) : s.slice(0, W);
+// Route 4 — Basalt Ridge.
+// Volcanic terrain connecting Coral Harbor to Ember Mines / Ironvale.
+// C.1 polish (2026-04-26): replaced generic cliff borders with explicit
+// volcanic geology — VOLCANIC_WALL (Þ) flanks, MAGMA_CRACK (µ) seams,
+// LAVA_ROCK (Ø) outcrops, and ASH_GROUND (≪) patches around the cave mouth.
+// Tile legend:
+//   Ø = LAVA_ROCK     « = ASH_GROUND     µ = MAGMA_CRACK    Þ = VOLCANIC_WALL
+//   ^ = CLIFF_FACE    , = CAVE_FLOOR     ; = CAVE_WALL
 const route4Ground = parseMap([
+  // 01234567890123456789
   'TTTTTTT.PP.TTTTTTTTT', // 0  north exit
-  'T..~.....PP........T', // 1  rock
-  'T..GGG...PP...4GG..T', // 2  dark grass mixed in
-  'T..GGG...PP...G4G..T', // 3
-  'T..Ø.....PP....Ø...T', // 4  lava rock patches
-  'T....PPPPPPPPPP....T', // 5
-  '^..Ø.PP........^^..T', // 6  cliff border + lava rock
-  '^....PP......^^^^..T', // 7  cliff border
-  '^....PP.....^^^^^..T', // 8  cliff border
-  '^..«.PP..,,,,,,^^..T', // 9  ash ground + cliff border
-  '^....PP..,,,,,,,^..T', // 10 cliff border
-  '^....PPPP,,,,,,,,..T', // 11 cliff border
-  'T........,;,,,,,,..T', // 12 cave walls
-  'T..^^....,;;,,,,,..T', // 13
-  'T..^^^...,;,,,,,,..T', // 14
-  'T..^^....,,,,,;,,..T', // 15
-  'T........,,,,,;;,..T', // 16
-  '^....PPPP,,,,,,,,..T', // 17
-  '^....PP..,,,,,,,^..T', // 18
-  '^..«.PP..,,,,,,^^..T', // 19 ash ground + cliff border
-  '^....PP.....^^^^^..T', // 20 cliff border
-  '^....PP......^^^^..T', // 21 cliff border
-  '^..Ø.PP........^^..T', // 22 cliff border + lava rock
+  'T..~.....PP.....«..T', // 1  ash patch near sign
+  'T..GGG..«PP«..4GG..T', // 2  dark grass + ash beside the path
+  'T..GGG.Ø.PP.Ø.G4G..T', // 3  lava-rock outcrops
+  'T.µØ«....PP....«Øµ.T', // 4  paired lava-rock + magma-crack edges
+  'T....PPPPPPPPPP....T', // 5  road junction
+  'Þ..Ø.PP....«...ÞÞ..T', // 6  volcanic walls flanking the cliff
+  'Þ.µ..PP.Ø....ÞÞÞÞ..T', // 7
+  'Þ....PP..«..ÞÞÞÞÞ..T', // 8
+  'Þ.«ØµPP..,,,,,,ÞÞ..T', // 9  ash + magma seam alongside cave entry
+  'Þ....PP..,,,,,,,Þ..T', // 10
+  'Þ..«.PPPP,,,,,,,,..T', // 11
+  'T....«...,;,,,,,,..T', // 12 cave warp at (17,12)
+  'T..ÞÞ.«..,;;,,,,,..T', // 13
+  'T..ÞÞÞ.µ.,;,,,,,,..T', // 14
+  'T..ÞÞ.«..,,,,,;,,..T', // 15
+  'T....«...,,,,,;;,..T', // 16
+  'Þ....PPPP,,,,,,,,..T', // 17
+  'Þ.µ..PP..,,,,,,,Þ..T', // 18
+  'Þ.«ØµPP..,,,,,,ÞÞ..T', // 19
+  'Þ....PP..«..ÞÞÞÞÞ..T', // 20
+  'Þ.µ..PP.Ø....ÞÞÞÞ..T', // 21
+  'Þ..Ø.PP....«...ÞÞ..T', // 22
   'T....PPPPPPPPPP....T', // 23
-  'T..Ø.....PP....Ø...T', // 24 lava rock
-  'T..4GG...PP...44G..T', // 25 dark grass
-  'T..G4G...PP...GGG..T', // 26 dark grass mixed
-  'T..~.....PP.....~..T', // 27 rocks
-  'T........PP........T', // 28
+  'T.µØ«....PP....«Øµ.T', // 24 mirror of row 4
+  'T..4GG.Ø.PP.Ø.44G..T', // 25
+  'T..G4G..«PP«..GGG..T', // 26
+  'T..~.....PP.....~..T', // 27
+  'T...«....PP....«...T', // 28
   'TTTTTTT.PP.TTTTTTTTT', // 29 south exit
 ]);
 

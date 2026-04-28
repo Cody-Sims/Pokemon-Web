@@ -6,6 +6,20 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-26]
 
+### Changed — Route 4 volcanic detail (C.1)
+
+- **Route 4** (Basalt Ridge) rebuilt with explicit volcanic geology:
+  - `VOLCANIC_WALL` (Þ) replaces generic `CLIFF_FACE` along the central ridge.
+  - `MAGMA_CRACK` (µ) seams traced alongside the path at multiple elevations.
+  - Paired `LAVA_ROCK` (Ø) outcrops bookend the route entrances/exits.
+  - `ASH_GROUND` (≪) patches blanket the cave-mouth approach.
+- Removed dead `pad/W` length-padding helper at the top of the file (unused since the map switched to fixed 20-char rows).
+- All NPC, trainer, sign, and warp positions preserved; map validates with the same baseline warnings as before.
+
+---
+
+## [2026-04-26]
+
 ### Changed — Route 6 tech-to-ruins gradient (C.1)
 
 - **Route 6** (Voltara → Wraithmoor) rebuilt with an explicit four-band gradient instead of a uniform mix:
