@@ -6,6 +6,20 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-29]
 
+### Added — BP Shop (A.1 follow-up)
+
+- New [BPShopScene](frontend/src/scenes/battle/BPShopScene.ts) launched from the Battle Tower lobby (button or `B` key). Spends Battle Points (not Pokédollars) on competitive gear; no sell tab — purchases are one-way.
+- Catalog defined in [bp-shop-data.ts](frontend/src/data/bp-shop-data.ts) covers the four categories called out in the plan:
+  - **Held** — Choice Specs/Band, Life Orb, Assault Vest, Focus Sash, Rocky Helmet, Eviolite, Leftovers, Black Sludge, Weakness Policy (32–48 BP).
+  - **Utility** — Light Clay, Heat/Damp/Smooth/Icy Rocks (16 BP each).
+  - **Berry** — Sitrus, Lum, Persim (8 BP each).
+  - **Consumable** — Rare Candy (24 BP).
+- Verified by [tests/unit/data/bp-shop.test.ts](tests/unit/data/bp-shop.test.ts) (6 cases for catalog integrity + purchase semantics).
+
+---
+
+## [2026-04-29]
+
 ### Added — Battle Tower (A.1)
 
 - **Endless streak gauntlet** unlocked from the Pokémon League lobby. New `Tower Attendant` NPC at (2, 4) opens [BattleTowerScene](frontend/src/scenes/battle/BattleTowerScene.ts) via the new `interactionType: 'battle-tower'`.

@@ -21,6 +21,7 @@ arrays conforming to interfaces defined in `interfaces.ts`.
 | `synthesis-data.ts` | Synthesis Mode configuration |
 | `trainer-data.ts` | Legacy trainer data (see also `trainers/`) |
 | `battle-tower-data.ts` | A.1 Battle Tower tier configs + trainer rosters (Normal / Super / Rental) |
+| `bp-shop-data.ts` | A.1 BP Shop catalog (BP-priced competitive items). |
 
 ## Subdirectories
 

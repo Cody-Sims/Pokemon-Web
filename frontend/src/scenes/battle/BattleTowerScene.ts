@@ -152,6 +152,18 @@ export class BattleTowerScene extends Phaser.Scene {
     closeBtn.on('pointerdown', () => this.close());
     layer.add(closeBtn);
 
+    // BP Shop button (top-right of footer row).
+    const bpShopBtn = this.add.text(layout.w - 30, layout.h - 28, '[ BP SHOP ]', {
+      ...FONTS.caption, color: '#ffd86b', fontStyle: 'bold',
+    }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
+    bpShopBtn.on('pointerdown', () => {
+      AudioManager.getInstance().playSFX(SFX.CONFIRM);
+      this.scene.start('BPShopScene', { exitScene: 'BattleTowerScene' });
+    });
+    bpShopBtn.on('pointerover', () => bpShopBtn.setColor('#ffffff'));
+    bpShopBtn.on('pointerout', () => bpShopBtn.setColor('#ffd86b'));
+    layer.add(bpShopBtn);
+
     // Display any pending status message (e.g. streak result on resume).
     if (this.statusMsg) {
       this.statusMsg.setPosition(layout.cx, 92);
@@ -163,6 +175,10 @@ export class BattleTowerScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-N', () => this.beginStreak('normal'));
     this.input.keyboard!.on('keydown-S', () => {
       if (battleTowerData.super.trainers.length > 0) this.beginStreak('super');
+    });
+    this.input.keyboard!.on('keydown-B', () => {
+      AudioManager.getInstance().playSFX(SFX.CONFIRM);
+      this.scene.start('BPShopScene', { exitScene: 'BattleTowerScene' });
     });
   }
 
