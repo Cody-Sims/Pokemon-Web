@@ -47,6 +47,8 @@ Endless streak mode unlocked from the Pokémon League lobby.
 - BP shop: Choice Specs, Assault Vest, Life Orb, rare berries, ability capsules.
 - New scene `BattleTowerScene` in `frontend/src/scenes/battle/`. Data-driven via a `TowerConfig` interface mirroring `TrainerData`.
 
+> **Status (2026-04-29)**: Done (Normal + Super tiers + lobby + streak loop). Tower Attendant NPC in the Pokémon League lobby opens [BattleTowerScene](../frontend/src/scenes/battle/BattleTowerScene.ts) via the new `'battle-tower'` interactionType. Streak data lives in [battle-tower-data.ts](../frontend/src/data/battle-tower-data.ts) and the pure resume state machine in [BattleTowerStreak.ts](../frontend/src/systems/engine/BattleTowerStreak.ts). BP currency, best-streak per tier, and lifetime clear counters all persist via PlayerStateManager. Verified by `tests/unit/battle/battle-tower.test.ts` (15 cases). **Pending**: Rental tier roster, BP shop UI, level-cap enforcement on the player party.
+
 ### A.2 Side-Quest Expansion (8 new quests, 20 total)
 
 | # | Quest | Location | Type | Reward |

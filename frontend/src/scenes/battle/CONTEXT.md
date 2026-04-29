@@ -9,6 +9,7 @@ Turn-based combat UI and orchestration. Delegates core battle logic to
 |---|---|---|
 | `BattleScene.ts` | `BattleScene` | Main battle scene: Pokémon sprites, HP/EXP bars, backgrounds. |
 | `BattleUIScene.ts` | `BattleUIScene` | Overlay scene: action menu, move menu, message log. Runs parallel to BattleScene. |
+| `BattleTowerScene.ts` | `BattleTowerScene` | A.1 Battle Tower lobby + streak driver. Launches a chain of trainer battles, awards BP, tracks best streak per tier. |
 | `BattleTurnRunner.ts` | `BattleTurnRunner` | Turn execution pipeline: priority, speed, move resolution. |
 | `BattleMessageQueue.ts` | `BattleMessageQueue` | Queues and displays battle messages sequentially. |
 | `BattleDamageNumbers.ts` | `BattleDamageNumbers` | Floating damage number animations. |

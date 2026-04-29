@@ -5,6 +5,7 @@ import { TitleScene } from '@scenes/title/TitleScene';
 import { OverworldScene } from '@scenes/overworld/OverworldScene';
 import { BattleScene } from '@scenes/battle/BattleScene';
 import { BattleUIScene } from '@scenes/battle/BattleUIScene';
+import { BattleTowerScene } from '@scenes/battle/BattleTowerScene';
 import { DialogueScene } from '@scenes/overworld/DialogueScene';
 import { MenuScene } from '@scenes/menu/MenuScene';
 import { InventoryScene } from '@scenes/menu/InventoryScene';
@@ -58,6 +59,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     OverworldScene,
     BattleScene,
     BattleUIScene,
+    BattleTowerScene,
     DialogueScene,
     MenuScene,
     InventoryScene,

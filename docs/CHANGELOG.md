@@ -4,6 +4,22 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-29]
+
+### Added — Battle Tower (A.1)
+
+- **Endless streak gauntlet** unlocked from the Pokémon League lobby. New `Tower Attendant` NPC at (2, 4) opens [BattleTowerScene](frontend/src/scenes/battle/BattleTowerScene.ts) via the new `interactionType: 'battle-tower'`.
+- **Three tiers** in [battle-tower-data.ts](frontend/src/data/battle-tower-data.ts):
+  - **Normal** — Lv 50 cap, 7 trainers + Tower Tycoon Cadenza (3 BP / 10 BP, 28 BP full clear).
+  - **Super** — Lv 100 cap, 7 trainers + Tower Tycoon Maestro (5 BP / 15 BP, 45 BP full clear).
+  - **Rental** — locked stub (roster TBA).
+- **Streak loop**: party heals at start, then NO between-battle heals. Win → accumulate BP, advance. Wipeout → end streak, pay out accumulated BP. Full clear → award per-win BP for the last battle + tycoon bonus, increment lifetime clears.
+- **State**: pure resume state machine in [BattleTowerStreak.ts](frontend/src/systems/engine/BattleTowerStreak.ts) — extracted from the scene so it's unit-testable without Phaser.
+- **Persistent**: `PlayerStateManager` now persists `battlePoints`, `towerBestStreak: Record<tier, streak>`, and `towerClears: Record<tier, count>`. Exposed on `GameManager` as `addBattlePoints`, `spendBattlePoints`, `recordTowerStreak`, `getTowerBestStreak`, `recordTowerClear`, `getTowerClears`.
+- Verified by [tests/unit/battle/battle-tower.test.ts](tests/unit/battle/battle-tower.test.ts) (15 cases covering data integrity, BP economy, streak transitions, and full-clear math).
+
+---
+
 ## [2026-04-26]
 
 ### Changed — Route 4 volcanic detail (C.1)

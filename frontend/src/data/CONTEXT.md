@@ -20,6 +20,7 @@ arrays conforming to interfaces defined in `interfaces.ts`.
 | `difficulty.ts` | Difficulty level definitions |
 | `synthesis-data.ts` | Synthesis Mode configuration |
 | `trainer-data.ts` | Legacy trainer data (see also `trainers/`) |
+| `battle-tower-data.ts` | A.1 Battle Tower tier configs + trainer rosters (Normal / Super / Rental) |
 
 ## Subdirectories
 

@@ -36,6 +36,12 @@ export class PlayerStateManager {
   private berryPlots: Record<string, unknown[]> = {};
   /** Berry-tree harvest log: tree-id → game-clock minutes when last harvested. */
   private berryHarvests: Record<string, number> = {};
+  /** A.1 Battle Tower — Battle-Point currency earned from streak victories. */
+  private battlePoints = 0;
+  /** Best streak per tier (0 if never cleared a battle in that tier). */
+  private towerBestStreak: Record<string, number> = {};
+  /** Lifetime full clears per tier. */
+  private towerClears: Record<string, number> = {};
   private gameClockMinutes = 0;
   private speedrunSplits: SpeedrunSplit[] = [];
   private settings: Record<string, string | number | boolean> = {
@@ -79,6 +85,9 @@ export class PlayerStateManager {
     this.monotypeLock = null;
     this.berryPlots = {};
     this.berryHarvests = {};
+    this.battlePoints = 0;
+    this.towerBestStreak = {};
+    this.towerClears = {};
     this.gameClockMinutes = 0;
     this.speedrunSplits = [];
   }
@@ -181,6 +190,39 @@ export class PlayerStateManager {
   /** Read-only view of all recorded berry harvests. */
   getBerryHarvests(): Record<string, number> { return this.berryHarvests; }
 
+  // ── Battle Tower (A.1) ─────────────────────────────
+
+  /** Battle-Point currency earned from Battle Tower streaks. */
+  getBattlePoints(): number { return this.battlePoints; }
+  /** Add `amount` BP. Negative or non-finite values are ignored. */
+  addBattlePoints(amount: number): void {
+    if (!Number.isFinite(amount) || amount <= 0) return;
+    this.battlePoints += Math.floor(amount);
+  }
+  /** Spend BP. Returns false (no-op) if insufficient. */
+  spendBattlePoints(amount: number): boolean {
+    if (!Number.isFinite(amount) || amount <= 0) return false;
+    const cost = Math.floor(amount);
+    if (this.battlePoints < cost) return false;
+    this.battlePoints -= cost;
+    return true;
+  }
+  /** Best streak (in battles) achieved on the given Battle Tower tier. */
+  getTowerBestStreak(tier: string): number { return this.towerBestStreak[tier] ?? 0; }
+  /** If `streak` is greater than the recorded best for `tier`, update it. */
+  recordTowerStreak(tier: string, streak: number): void {
+    if (!Number.isFinite(streak) || streak < 0) return;
+    if ((this.towerBestStreak[tier] ?? 0) < streak) {
+      this.towerBestStreak[tier] = Math.floor(streak);
+    }
+  }
+  /** Number of full Battle Tower clears the player has completed for the given tier. */
+  getTowerClears(tier: string): number { return this.towerClears[tier] ?? 0; }
+  /** Increment the full-clear counter for `tier`. */
+  recordTowerClear(tier: string): void {
+    this.towerClears[tier] = (this.towerClears[tier] ?? 0) + 1;
+  }
+
   // ── Game Clock ─────────────────────────────────────────
 
   getGameClockMinutes(): number { return this.gameClockMinutes; }
@@ -222,6 +264,9 @@ export class PlayerStateManager {
       settings: this.settings,
       berryPlots: this.berryPlots,
       berryHarvests: this.berryHarvests,
+      battlePoints: this.battlePoints,
+      towerBestStreak: this.towerBestStreak,
+      towerClears: this.towerClears,
       gameClockMinutes: this.gameClockMinutes,
       speedrunSplits: this.speedrunSplits,
     };
@@ -242,6 +287,9 @@ export class PlayerStateManager {
     settings?: Record<string, string | number | boolean>;
     berryPlots?: Record<string, unknown[]>;
     berryHarvests?: Record<string, number>;
+    battlePoints?: number;
+    towerBestStreak?: Record<string, number>;
+    towerClears?: Record<string, number>;
     gameClockMinutes?: number;
     speedrunSplits?: SpeedrunSplit[];
   }): void {
@@ -259,6 +307,9 @@ export class PlayerStateManager {
     if (data.settings) this.settings = { ...this.settings, ...data.settings };
     if (data.berryPlots) this.berryPlots = data.berryPlots;
     if (data.berryHarvests) this.berryHarvests = data.berryHarvests;
+    if (typeof data.battlePoints === 'number') this.battlePoints = data.battlePoints;
+    if (data.towerBestStreak) this.towerBestStreak = data.towerBestStreak;
+    if (data.towerClears) this.towerClears = data.towerClears;
     if (data.gameClockMinutes != null) this.gameClockMinutes = data.gameClockMinutes;
     if (data.speedrunSplits) this.speedrunSplits = data.speedrunSplits;
   }

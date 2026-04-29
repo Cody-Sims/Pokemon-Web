@@ -301,6 +301,19 @@ export function tryInteract(ctx: InteractionContext): void {
         }
       }
 
+      // ── Battle Tower handler (A.1) ──
+      // Launches the Battle Tower lobby; on close it returns the player here.
+      if (spawnDef?.interactionType === 'battle-tower') {
+        sm.pause();
+        sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+        sm.get('DialogueScene').events.once('shutdown', () => {
+          // Stop the dialogue + overworld so the lobby owns the canvas.
+          sm.stop('DialogueScene');
+          sm.start('BattleTowerScene', { exitScene: 'OverworldScene' });
+        });
+        return;
+      }
+
       // ── Fossil-revival handler (Pewter Museum) ──
       if (spawnDef?.interactionType === 'fossil-revival') {
         const fossilTable: { itemId: string; speciesId: number; name: string }[] = [

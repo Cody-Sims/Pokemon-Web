@@ -32,6 +32,17 @@ export const pokemonLeague: MapDefinition = {
     { id: 'tutor-league', name: 'Move Tutor', tileX: 8, tileY: 9, textureKey: 'npc-male-3', facing: 'left',
       dialogue: ['League Tutor: Only the strongest moves are taught here.', 'League Tutor: Are you ready to pay the price?'],
       interactionType: 'move-tutor', interactionData: 'tutor-league' },
+    // ─── A.1 Battle Tower Attendant ───
+    // Unlocks the Battle Tower lobby. Visible from the moment the player
+    // enters the league hall — the tower itself is a side activity, but
+    // becomes meaningful after Hall of Fame.
+    { id: 'tower-attendant', name: 'Tower Attendant', tileX: 2, tileY: 4, textureKey: 'npc-female-1', facing: 'down',
+      dialogue: [
+        'Tower Attendant: Looking for an endless challenge?',
+        'Tower Attendant: The Battle Tower runs streaks of 7 trainers.',
+        'Tower Attendant: Win, and you earn Battle Points to spend later.',
+      ],
+      interactionType: 'battle-tower' },
   ],
   trainers: [],
   objects: [],

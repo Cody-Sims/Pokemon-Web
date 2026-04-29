@@ -167,6 +167,23 @@ export class GameManager {
   /** Read-only view of all recorded berry harvests. */
   getBerryHarvests(): Record<string, number> { return this._player.getBerryHarvests(); }
 
+  // ── Battle Tower (A.1) ──────────────────────────────────
+
+  /** Battle-Point currency earned from Battle Tower streaks. */
+  getBattlePoints(): number { return this._player.getBattlePoints(); }
+  /** Add BP from a Battle Tower victory. */
+  addBattlePoints(amount: number): void { this._player.addBattlePoints(amount); }
+  /** Spend BP at the BP shop. Returns false on insufficient balance. */
+  spendBattlePoints(amount: number): boolean { return this._player.spendBattlePoints(amount); }
+  /** Best streak (in battles) the player has achieved on the given tier. */
+  getTowerBestStreak(tier: string): number { return this._player.getTowerBestStreak(tier); }
+  /** Update the best-streak record if `streak` exceeds the current best. */
+  recordTowerStreak(tier: string, streak: number): void { this._player.recordTowerStreak(tier, streak); }
+  /** Lifetime full-clear count for the given tier. */
+  getTowerClears(tier: string): number { return this._player.getTowerClears(tier); }
+  /** Increment the full-clear counter for `tier`. */
+  recordTowerClear(tier: string): void { this._player.recordTowerClear(tier); }
+
   getGameClockMinutes(): number { return this._player.getGameClockMinutes(); }
   setGameClockMinutes(minutes: number): void { this._player.setGameClockMinutes(minutes); }
 
