@@ -6,6 +6,21 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-30]
 
+### Fixed — Cross-cutting bug fixes (HIGH-18, MED-17, LOW-2, LOW-12)
+
+- **HIGH-18: Seeded PRNG for all gameplay random calls** — Created `seedRng()` and
+  `seededRandom()` in `math-helpers.ts` (Mulberry32). Replaced all 15 `Math.random()`
+  calls in `AIController`, `DamageCalculator`, `CatchCalculator`, `BattleManager`,
+  `EncounterSystem`, `BattleTurnRunner`, `BattleActionMenu`, and `MoveExecutor` with
+  seeded variants. Updated `randomInt`, `randomFloat`, `weightedRandom` to use the
+  seeded PRNG internally. Tests now call `seedRng()` for determinism.
+- **MED-17: parseMap Unicode documentation** — Added comment confirming `[...row]`
+  correctly handles multi-byte Unicode characters (Ø, µ, Þ etc.).
+- **LOW-2: Outrage multi-turn lock** — Added `multi-turn-lock` effect to Outrage in
+  `dragon.ts`, matching Thrash and Petal Dance format.
+- **LOW-12: Unknown tile character warning** — `parseMap` now logs `console.warn` for
+  unknown tile characters instead of silently defaulting to GRASS.
+
 ### Changed
 
 - Completed full-codebase bug review cycle (96 findings, 5 critical, 22 high).

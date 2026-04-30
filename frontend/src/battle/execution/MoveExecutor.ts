@@ -7,7 +7,7 @@ import { StatusEffectHandler, EffectResult } from '../effects/StatusEffectHandle
 import { AbilityHandler } from '../effects/AbilityHandler';
 import { HeldItemHandler } from '../effects/HeldItemHandler';
 import { WeatherManager } from '../effects/WeatherManager';
-import { randomInt } from '@utils/math-helpers';
+import { randomInt, seededRandom } from '@utils/math-helpers';
 import { PokemonType } from '@utils/type-helpers';
 
 export interface MoveExecutionResult {
@@ -103,11 +103,6 @@ export class MoveExecutor {
       };
     }
 
-    // Reset protect success rate when using any non-protect move
-    if (statusHandler && move.effect?.type !== 'protect') {
-      statusHandler.resetProtectRate(attacker);
-    }
-
     // ── Protect / Detect move itself ──
     if (move.effect?.type === 'protect' && statusHandler) {
       const moveInstance = attacker.moves.find(m => m.moveId === moveId);
@@ -162,15 +157,18 @@ export class MoveExecutor {
       };
     }
 
-    // Deduct PP before accuracy check (PP is spent on attempt, not on hit)
-    // Skip if this is the attack turn of a two-turn move (PP already deducted on charge)
-    const moveInstance = attacker.moves.find(m => m.moveId === moveId);
-    if (moveInstance && !skipPPDeduction) {
-      if (moveInstance.currentPp > 0) {
-        moveInstance.currentPp--;
-      } else if (moveId !== 'struggle') {
-        // AUDIT-032: Block execution of moves with 0 PP (except Struggle)
-        return miss();
+    // HIGH-6: Struggle bypasses PP deduction and moveInstance lookup entirely
+    if (moveId !== 'struggle') {
+      // Deduct PP before accuracy check (PP is spent on attempt, not on hit)
+      // HIGH-5: Skip if this is a two-turn move's attack turn (PP deducted on charge)
+      const moveInstance = attacker.moves.find(m => m.moveId === moveId);
+      if (moveInstance && !skipPPDeduction && move.effect?.type !== 'two-turn') {
+        if (moveInstance.currentPp > 0) {
+          moveInstance.currentPp--;
+        } else {
+          // AUDIT-032: Block execution of moves with 0 PP
+          return miss();
+        }
       }
     }
 
@@ -187,6 +185,11 @@ export class MoveExecutor {
         };
       }
       return miss();
+    }
+
+    // MED-3: Reset protect success rate only after accuracy check succeeds
+    if (statusHandler && move.effect?.type !== 'protect') {
+      statusHandler.resetProtectRate(attacker);
     }
 
     // BUG-027: Dream Eater requires target to be asleep
@@ -310,6 +313,16 @@ export class MoveExecutor {
         multiHitMessages.push(...threshHit.messages);
       }
 
+      // HIGH-7: Apply drain healing after multi-hit total damage
+      let drainHealedHp: number | undefined;
+      if (move.effect && totalDamage > 0 && attacker.currentHp > 0 && statusHandler) {
+        const drainResult = statusHandler.applyMoveEffect(attacker, defender, move, totalDamage);
+        multiHitMessages.push(...drainResult.messages);
+        if (drainResult.healedHp && attacker.currentHp > 0) {
+          drainHealedHp = drainResult.healedHp;
+        }
+      }
+
       // Attacker hooks (Life Orb) once after all hits
       const attackLandedMulti = totalDamage > 0 ? HeldItemHandler.onAttackLanded(attacker, totalDamage) : { messages: [], recoilDamage: 0 };
       const atkThresh = HeldItemHandler.checkHPThreshold(attacker);
@@ -328,6 +341,7 @@ export class MoveExecutor {
           `Hit ${hits} time(s)!`,
         ],
         totalHits: hits,
+        healedHp: drainHealedHp,
         recoilDamage: attackLandedMulti.recoilDamage,
       };
     }
@@ -344,11 +358,8 @@ export class MoveExecutor {
     const itemAfterDmg = HeldItemHandler.onAfterDamage(defender, attacker, damage.damage, hpBeforeHit);
 
     // ── AUDIT-011: Attacker item hooks (Life Orb recoil) ──
-    const attackLanded = damage.damage > 0 ? HeldItemHandler.onAttackLanded(attacker, damage.damage) : { messages: [], recoilDamage: 0 };
-
-    // ── AUDIT-011: HP threshold checks (Sitrus Berry, Oran Berry) ──
-    const defenderThreshold = HeldItemHandler.checkHPThreshold(defender);
-    const attackerThreshold = HeldItemHandler.checkHPThreshold(attacker);
+    // MED-4: Only trigger Life Orb recoil when actual HP damage was dealt (not substitute)
+    const attackLanded = (damage.damage > 0 && damage.effectiveness > 0) ? HeldItemHandler.onAttackLanded(attacker, damage.damage) : { messages: [], recoilDamage: 0 };
 
     // ── Apply secondary effects via StatusEffectHandler ──
     // Only apply secondary effects if the move wasn't type-immune
@@ -363,6 +374,15 @@ export class MoveExecutor {
       }
     }
 
+    // MED-5: Don't apply drain healing to a fainted attacker
+    if (effectResult.healedHp && attacker.currentHp <= 0) {
+      effectResult.healedHp = 0;
+    }
+
+    // HIGH-8: Check HP thresholds AFTER all recoil/effect damage is applied
+    const defenderThreshold = HeldItemHandler.checkHPThreshold(defender);
+    const attackerThreshold = HeldItemHandler.checkHPThreshold(attacker);
+
     return {
       damage,
       moveHit: true,
@@ -375,9 +395,9 @@ export class MoveExecutor {
         ...abilityAfterDmg.messages,
         ...itemAfterDmg.messages,
         ...attackLanded.messages,
+        ...effectResult.messages,
         ...defenderThreshold.messages,
         ...attackerThreshold.messages,
-        ...effectResult.messages,
       ],
       healedHp: effectResult.healedHp,
       recoilDamage: (effectResult.recoilDamage ?? 0) + attackLanded.recoilDamage,
@@ -387,7 +407,7 @@ export class MoveExecutor {
 
   /** Roll 2-5 hits for multi-hit moves (standard distribution). */
   private static rollMultiHit(): number {
-    const roll = Math.random();
+    const roll = seededRandom();
     if (roll < 0.375) return 2;
     if (roll < 0.75) return 3;
     if (roll < 0.875) return 4;

@@ -2,9 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MoveExecutor } from '../../../frontend/src/battle/execution/MoveExecutor';
 import { StatusEffectHandler } from '../../../frontend/src/battle/effects/StatusEffectHandler';
 import { PokemonInstance } from '../../../frontend/src/data/interfaces';
+import * as mathHelpers from '../../../frontend/src/utils/math-helpers';
 
 beforeEach(() => {
-  vi.spyOn(Math, 'random').mockReturnValue(0.5);
+  mathHelpers.seedRng(12345);
 });
 
 const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
@@ -45,7 +46,7 @@ describe('MoveExecutor', () => {
     });
 
     it('should handle missed moves', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.99); // High roll → miss on low accuracy
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.99); // High roll → miss on low accuracy
       const attacker = makePokemon();
       const defender = makePokemon({ dataId: 1 });
       // Use fissure (30 accuracy) → should miss with random=0.99

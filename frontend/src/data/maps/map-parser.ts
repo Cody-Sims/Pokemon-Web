@@ -119,6 +119,14 @@ const CHAR_TO_TILE: Record<string, number> = {
   'Ý': Tile.CHAMPION_THRONE,
 };
 
+// Note: [...row] correctly handles multi-byte Unicode characters (Ø, µ, Þ etc.)
+// Each visible character becomes one array entry regardless of byte length.
 export function parseMap(rows: string[]): number[][] {
-  return rows.map(row => [...row].map(ch => CHAR_TO_TILE[ch] ?? Tile.GRASS));
+  return rows.map((row, y) => [...row].map((ch, x) => {
+    const tile = CHAR_TO_TILE[ch];
+    if (tile === undefined) {
+      console.warn(`parseMap: unknown tile character '${ch}' at row ${y}, col ${x} — defaulting to GRASS`);
+    }
+    return tile ?? Tile.GRASS;
+  }));
 }

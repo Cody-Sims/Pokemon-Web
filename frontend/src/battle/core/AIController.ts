@@ -3,6 +3,7 @@ import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { getCombinedEffectiveness } from '@data/type-chart';
 import { PokemonType } from '@utils/type-helpers';
+import { randomInt } from '@utils/math-helpers';
 import { GameManager } from '@managers/GameManager';
 
 /** Enemy move selection logic. */
@@ -14,7 +15,7 @@ export class AIController {
 
     if (!isTrainer) {
       // Wild: mostly random
-      return availableMoves[Math.floor(Math.random() * availableMoves.length)].moveId;
+      return availableMoves[randomInt(0, availableMoves.length - 1)].moveId;
     }
 
     const gm = GameManager.getInstance();
@@ -36,7 +37,7 @@ export class AIController {
   ): string {
     const opponentData = pokemonData[opponent.dataId];
     if (!opponentData) {
-      return availableMoves[Math.floor(Math.random() * availableMoves.length)].moveId;
+      return availableMoves[randomInt(0, availableMoves.length - 1)].moveId;
     }
 
     let bestMove = availableMoves[0].moveId;
@@ -51,6 +52,7 @@ export class AIController {
         opponentData.types as [PokemonType] | [PokemonType, PokemonType]
       );
       const score = move.power * effectiveness;
+      if (isNaN(score)) continue;
       if (score > bestScore) {
         bestScore = score;
         bestMove = m.moveId;
@@ -69,7 +71,7 @@ export class AIController {
     const opponentData = pokemonData[opponent.dataId];
     const selfData = pokemonData[pokemon.dataId];
     if (!opponentData || !selfData) {
-      return availableMoves[Math.floor(Math.random() * availableMoves.length)].moveId;
+      return availableMoves[randomInt(0, availableMoves.length - 1)].moveId;
     }
 
     const opponentHpPct = opponent.currentHp / opponent.stats.hp;
@@ -103,6 +105,8 @@ export class AIController {
           score = 5; // Low priority if opponent already has status or is weakened
         }
       }
+
+      if (isNaN(score)) continue;
 
       if (score > bestScore) {
         bestScore = score;

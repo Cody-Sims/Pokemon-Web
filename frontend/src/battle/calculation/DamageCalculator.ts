@@ -4,7 +4,7 @@ import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { getCombinedEffectiveness } from '@data/type-chart';
 import { STAB_MULTIPLIER, CRIT_CHANCE, CRIT_MULTIPLIER, RANDOM_MIN, RANDOM_MAX } from '@utils/constants';
-import { randomFloat } from '@utils/math-helpers';
+import { randomFloat, seededRandom } from '@utils/math-helpers';
 import { PokemonType } from '@utils/type-helpers';
 import type { StatusEffectHandler } from '../effects/StatusEffectHandler';import { AbilityHandler } from '../effects/AbilityHandler';
 import { HeldItemHandler } from '../effects/HeldItemHandler';
@@ -90,7 +90,7 @@ export class DamageCalculator {
     damage *= effectiveness;
 
     // Critical hit
-    const isCritical = Math.random() < CRIT_CHANCE;
+    const isCritical = seededRandom() < CRIT_CHANCE;
     if (isCritical) {
       damage *= CRIT_MULTIPLIER;
     }
@@ -140,6 +140,6 @@ export class DamageCalculator {
       effectiveAccuracy = Math.floor(effectiveAccuracy * stageMultiplier);
     }
 
-    return Math.random() * 100 < effectiveAccuracy;
+    return seededRandom() * 100 < effectiveAccuracy;
   }
 }

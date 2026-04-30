@@ -2,9 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DamageCalculator } from '../../../frontend/src/battle/calculation/DamageCalculator';
 import { StatusEffectHandler } from '../../../frontend/src/battle/effects/StatusEffectHandler';
 import { PokemonInstance, MoveData } from '../../../frontend/src/data/interfaces';
+import * as mathHelpers from '../../../frontend/src/utils/math-helpers';
 
 beforeEach(() => {
-  vi.spyOn(Math, 'random').mockReturnValue(0.5);
+  mathHelpers.seedRng(12345);
 });
 
 const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
@@ -19,7 +20,7 @@ const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => (
 describe('DamageCalculator — Extended Scenarios', () => {
   describe('damage formula verification', () => {
     it('should match expected formula: ((2*L/5+2)*P*A/D)/50+2 * mods', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      mathHelpers.seedRng(42);
       const attacker = makePokemon({ level: 20, stats: { hp: 100, attack: 50, defense: 40, spAttack: 80, spDefense: 45, speed: 55 } });
       const defender = makePokemon({ dataId: 19, stats: { hp: 100, attack: 50, defense: 50, spAttack: 40, spDefense: 50, speed: 55 } }); // Rattata (normal)
       // Ember: fire, special, power 40, Charmander is fire → STAB
@@ -77,12 +78,14 @@ describe('DamageCalculator — Extended Scenarios', () => {
       handler.initPokemon(burnedAttacker);
       handler.initPokemon(defender);
 
+      mathHelpers.seedRng(42);
       const burnedResult = DamageCalculator.calculate(burnedAttacker, defender, {
         id: 'ember', name: 'Ember', type: 'fire', category: 'special', power: 40, accuracy: 100, pp: 25,
       }, handler);
 
       const normalAttacker = makePokemon();
       handler.initPokemon(normalAttacker);
+      mathHelpers.seedRng(42);
       const normalResult = DamageCalculator.calculate(normalAttacker, defender, {
         id: 'ember', name: 'Ember', type: 'fire', category: 'special', power: 40, accuracy: 100, pp: 25,
       }, handler);
@@ -135,13 +138,13 @@ describe('DamageCalculator — Extended Scenarios', () => {
   describe('accuracy edge cases', () => {
     it('should always hit 100 accuracy with any random value < 1', () => {
       for (let i = 0; i < 10; i++) {
-        vi.spyOn(Math, 'random').mockReturnValue(i * 0.09);
+        vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(i * 0.09);
         expect(DamageCalculator.doesMoveHit({ id: 'x', name: 'X', type: 'normal', category: 'physical', power: 40, accuracy: 100, pp: 10 })).toBe(true);
       }
     });
 
     it('30% accuracy move should miss most of the time with random > 0.3', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.5);
       expect(DamageCalculator.doesMoveHit({ id: 'x', name: 'X', type: 'normal', category: 'physical', power: null, accuracy: 30, pp: 5 })).toBe(false);
     });
   });

@@ -2,9 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DamageCalculator } from '../../../frontend/src/battle/calculation/DamageCalculator';
 import { PokemonInstance, MoveData } from '../../../frontend/src/data/interfaces';
 import { StatusEffectHandler } from '../../../frontend/src/battle/effects/StatusEffectHandler';
+import * as mathHelpers from '../../../frontend/src/utils/math-helpers';
 
 beforeEach(() => {
-  vi.spyOn(Math, 'random').mockReturnValue(0.5);
+  mathHelpers.seedRng(12345);
 });
 
 const makeAttacker = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
@@ -79,15 +80,15 @@ describe('DamageCalculator', () => {
       expect(result.damage).toBeGreaterThanOrEqual(1);
     });
 
-    it('should detect critical hits based on Math.random', () => {
-      // CRIT_CHANCE = 0.0625, mock random < 0.0625 → crit
-      vi.spyOn(Math, 'random').mockReturnValue(0.01);
+    it('should detect critical hits based on seededRandom', () => {
+      // CRIT_CHANCE = 0.0625, mock seededRandom < 0.0625 → crit
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.01);
       const result = DamageCalculator.calculate(makeAttacker(), makeDefender(), ember);
       expect(result.isCritical).toBe(true);
     });
 
     it('should not crit when random is above crit chance', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.5);
       const result = DamageCalculator.calculate(makeAttacker(), makeDefender(), ember);
       expect(result.isCritical).toBe(false);
     });
@@ -115,12 +116,12 @@ describe('DamageCalculator', () => {
 
   describe('doesMoveHit', () => {
     it('should hit with 100% accuracy when random is < 1', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.5);
       expect(DamageCalculator.doesMoveHit(ember)).toBe(true);
     });
 
     it('should miss low accuracy moves when random is high', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.99);
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.99);
       const lowAccuracy: MoveData = { id: 'fissure', name: 'Fissure', type: 'ground', category: 'physical', power: null, accuracy: 30, pp: 5 };
       expect(DamageCalculator.doesMoveHit(lowAccuracy)).toBe(false);
     });

@@ -1,5 +1,6 @@
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
+import { seededRandom } from '@utils/math-helpers';
 
 export interface CatchResult {
   caught: boolean;
@@ -43,7 +44,7 @@ export class CatchCalculator {
 
     let shakes = 0;
     for (let i = 0; i < 4; i++) {
-      if (Math.random() < shakeProbability) {
+      if (seededRandom() < shakeProbability) {
         shakes++;
       } else {
         break;

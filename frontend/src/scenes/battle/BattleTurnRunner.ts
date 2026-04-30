@@ -1,5 +1,6 @@
 import { moveData } from '@data/moves';
 import { AIController } from '@battle/core/AIController';
+import { randomInt, seededRandom } from '@utils/math-helpers';
 import type { PokemonInstance } from '@data/interfaces';
 import type { StatusEffectHandler } from '@battle/effects/StatusEffectHandler';
 
@@ -10,7 +11,7 @@ export function pickEnemyMove(enemy: PokemonInstance, opponent?: PokemonInstance
   }
   const avail = enemy.moves.filter(m => m.currentPp > 0);
   if (avail.length === 0) return 'struggle';
-  return avail[Math.floor(Math.random() * avail.length)].moveId;
+  return avail[randomInt(0, avail.length - 1)].moveId;
 }
 
 export interface TurnOrder {
@@ -36,7 +37,7 @@ export function calculateTurnOrder(
   const enemyPriority = enemyMove?.priority ?? 0;
 
   const playerFirst = playerPriority > enemyPriority
-    || (playerPriority === enemyPriority && (playerSpeed > enemySpeed || (playerSpeed === enemySpeed && Math.random() < 0.5)));
+    || (playerPriority === enemyPriority && (playerSpeed > enemySpeed || (playerSpeed === enemySpeed && seededRandom() < 0.5)));
 
   return playerFirst
     ? [

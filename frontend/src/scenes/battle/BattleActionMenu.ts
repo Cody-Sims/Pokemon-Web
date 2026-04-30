@@ -4,6 +4,7 @@ import { moveData } from '@data/moves';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { AchievementManager } from '@managers/AchievementManager';
+import { seededRandom } from '@utils/math-helpers';
 import { SFX } from '@utils/audio-keys';
 import { COLORS } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
@@ -77,13 +78,13 @@ export class BattleActionMenu {
         const rawFlee = Math.floor(
           playerSpeed * 128 / Math.max(1, enemySpeed) + 30 * this.fleeAttempts,
         );
-        if (playerSpeed >= enemySpeed || rawFlee >= 256 || Math.random() * 256 < rawFlee) {
+        if (playerSpeed >= enemySpeed || rawFlee >= 256 || seededRandom() * 256 < rawFlee) {
           AudioManager.getInstance().playSFX(SFX.RUN_SUCCESS);
           this.scene.msg('Got away safely!');
           this.scene.time.delayedCall(800, () => this.scene.endBattle());
         } else {
-          this.scene.msg('Can\'t escape!');
           this.scene.state = 'animating';
+          this.scene.msg('Can\'t escape!');
           this.scene.time.delayedCall(800, () => {
             this.scene.executeEnemyOnlyTurn();
           });

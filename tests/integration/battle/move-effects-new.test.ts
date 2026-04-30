@@ -3,9 +3,10 @@ import { MoveExecutor } from '../../../frontend/src/battle/execution/MoveExecuto
 import { StatusEffectHandler } from '../../../frontend/src/battle/effects/StatusEffectHandler';
 import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 import { moveData } from '../../../frontend/src/data/moves';
+import * as mathHelpers from '../../../frontend/src/utils/math-helpers';
 
 beforeEach(() => {
-  vi.spyOn(Math, 'random').mockReturnValue(0.5);
+  mathHelpers.seedRng(12345);
 });
 
 const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
@@ -66,6 +67,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     });
 
     it('play-rough should deal physical damage', () => {
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.5);
       const attacker = makePokemon({ moves: [{ moveId: 'play-rough', currentPp: 10 }] });
       const defender = makePokemon({ dataId: 1 });
       const result = MoveExecutor.execute(attacker, defender, 'play-rough');
@@ -74,6 +76,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     });
 
     it('play-rough should lower enemy attack at 10% chance', () => {
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.05);
       vi.spyOn(Math, 'random').mockReturnValue(0.05); // Below 10%
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'play-rough', currentPp: 10 }] });
@@ -302,6 +305,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     });
 
     it('will-o-wisp should inflict burn at 100% chance', () => {
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.5);
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'will-o-wisp', currentPp: 15 }] });
       const defender = makePokemon({ dataId: 1 });

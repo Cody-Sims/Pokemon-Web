@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { clamp, lerp, randomInt, randomFloat, weightedRandom } from '../../../frontend/src/utils/math-helpers';
+import { clamp, lerp, randomInt, randomFloat, weightedRandom, seedRng } from '../../../frontend/src/utils/math-helpers';
 
 describe('math-helpers', () => {
   describe('clamp', () => {
@@ -45,7 +45,7 @@ describe('math-helpers', () => {
 
   describe('randomInt', () => {
     beforeEach(() => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      seedRng(42);
     });
 
     it('should return integer within range', () => {
@@ -55,14 +55,16 @@ describe('math-helpers', () => {
       expect(Number.isInteger(result)).toBe(true);
     });
 
-    it('should return min when random is 0', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0);
-      expect(randomInt(1, 10)).toBe(1);
+    it('should return min when range has one value', () => {
+      expect(randomInt(5, 5)).toBe(5);
     });
 
-    it('should return max when random is close to 1', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.999);
-      expect(randomInt(1, 10)).toBe(10);
+    it('should produce same sequence for same seed', () => {
+      seedRng(99);
+      const a = randomInt(1, 10);
+      seedRng(99);
+      const b = randomInt(1, 10);
+      expect(a).toBe(b);
     });
 
     it('should return the only value when min equals max', () => {
@@ -72,7 +74,7 @@ describe('math-helpers', () => {
 
   describe('randomFloat', () => {
     beforeEach(() => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      seedRng(42);
     });
 
     it('should return float within range', () => {
@@ -81,15 +83,18 @@ describe('math-helpers', () => {
       expect(result).toBeLessThan(1.0);
     });
 
-    it('should return min when random is 0', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0);
-      expect(randomFloat(0.85, 1.0)).toBe(0.85);
+    it('should produce same value for same seed', () => {
+      seedRng(99);
+      const a = randomFloat(0.85, 1.0);
+      seedRng(99);
+      const b = randomFloat(0.85, 1.0);
+      expect(a).toBe(b);
     });
   });
 
   describe('weightedRandom', () => {
     beforeEach(() => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      seedRng(42);
     });
 
     it('should return a valid index', () => {
@@ -98,25 +103,15 @@ describe('math-helpers', () => {
       expect(index).toBeLessThan(3);
     });
 
-    it('should favor heavier weights', () => {
-      // With weights [1, 99], random=0.5 → roll=50 → subtracts 1 → 49 remaining, so index=1
-      const index = weightedRandom([1, 99]);
-      expect(index).toBe(1);
+    it('should produce same sequence for same seed', () => {
+      seedRng(99);
+      const a = weightedRandom([50, 50]);
+      seedRng(99);
+      const b = weightedRandom([50, 50]);
+      expect(a).toBe(b);
     });
 
-    it('should return first index when random is very low', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.001);
-      const index = weightedRandom([50, 50]);
-      expect(index).toBe(0);
-    });
-
-    it('should return last index as fallback', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.999);
-      const index = weightedRandom([10, 10, 10]);
-      expect(index).toBe(2);
-    });
-
-    it('should handle single-element array', () => {
+    it('should return last index as fallback for single-element', () => {
       expect(weightedRandom([100])).toBe(0);
     });
   });

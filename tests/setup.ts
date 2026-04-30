@@ -1,7 +1,9 @@
 import { vi } from 'vitest';
+import { seedRng } from '../frontend/src/utils/math-helpers';
 
-// Seed Math.random for deterministic tests
+// Seed the game PRNG and Math.random for deterministic tests
 beforeEach(() => {
+  seedRng(12345);
   vi.spyOn(Math, 'random').mockReturnValue(0.5);
 });
 

@@ -1,5 +1,6 @@
 import { PokemonInstance } from '@data/interfaces';
 import { moveData } from '@data/moves';
+import { seededRandom } from '@utils/math-helpers';
 import { BattleStateMachine } from './BattleStateMachine';
 import { StatusEffectHandler } from '../effects/StatusEffectHandler';
 import { WeatherManager } from '../effects/WeatherManager';
@@ -71,7 +72,7 @@ export class BattleManager {
             this.statusHandler.initPokemon(this.enemyActive);
             const switchResult = AbilityHandler.onSwitchIn(this.enemyActive, this.playerActive, this.statusHandler);
             if (switchResult.weather) {
-              this.weatherManager.setWeather(switchResult.weather);
+              this.weatherManager.setWeather(switchResult.weather, switchResult.weatherDuration);
             }
             this.fsm.transition('PLAYER_TURN');
           }
@@ -114,7 +115,7 @@ export class BattleManager {
   attemptFlee(): boolean {
     if (this.config.type === 'trainer') return false;
     const escapeChance = this.playerActive.stats.speed >= this.enemyActive.stats.speed ? 1 : 0.5;
-    if (Math.random() < escapeChance) {
+    if (seededRandom() < escapeChance) {
       this.fsm.transition('FLEE');
       return true;
     }

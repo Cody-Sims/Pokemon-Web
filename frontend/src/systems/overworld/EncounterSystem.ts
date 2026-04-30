@@ -1,6 +1,6 @@
 import { encounterTables, fishingTables, RodTier } from '@data/encounter-tables';
 import { BASE_ENCOUNTER_RATE, SHINY_CHANCE, FISHING_ENCOUNTER_RATE } from '@utils/constants';
-import { weightedRandom, randomInt } from '@utils/math-helpers';
+import { weightedRandom, randomInt, seededRandom } from '@utils/math-helpers';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
@@ -10,7 +10,7 @@ import { ExperienceCalculator, getNatureMultiplier } from '@battle/calculation/E
 export class EncounterSystem {
   private stepCount = 0;
   private repelSteps = 0;
-  private rng: () => number = Math.random;
+  private rng: () => number = seededRandom;
 
   /** Inject a seeded PRNG for deterministic encounters (e.g. replays). */
   setRng(rng: () => number): void {
@@ -67,7 +67,7 @@ export class EncounterSystem {
       'calm', 'gentle', 'sassy', 'careful', 'quirky',
     ];
 
-    const nature = NATURES[Math.floor(Math.random() * NATURES.length)];
+    const nature = NATURES[randomInt(0, NATURES.length - 1)];
 
     // Calculate stats using the same formula as ExperienceCalculator.recalculateStats
     // so wild encounters and level-up stats are consistent.
@@ -101,13 +101,13 @@ export class EncounterSystem {
       status: null,
       exp: ExperienceCalculator.expForLevel(level),
       friendship: 70,
-      isShiny: Math.random() < SHINY_CHANCE,
+      isShiny: seededRandom() < SHINY_CHANCE,
     };
   }
 
   /** Attempt a fishing encounter. Returns a wild Pokémon if successful, else null. */
   static fishEncounter(mapKey: string, rod: RodTier): PokemonInstance | null {
-    if (Math.random() > FISHING_ENCOUNTER_RATE) return null;
+    if (seededRandom() > FISHING_ENCOUNTER_RATE) return null;
 
     const mapTables = fishingTables[mapKey];
     if (!mapTables) return null;

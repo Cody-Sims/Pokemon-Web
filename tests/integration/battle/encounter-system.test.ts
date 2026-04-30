@@ -3,9 +3,10 @@ import { EncounterSystem } from '../../../frontend/src/systems/overworld/Encount
 import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 import { pokemonData } from '../../../frontend/src/data/pokemon';
 import { encounterTables } from '../../../frontend/src/data/encounter-tables';
+import { seedRng } from '../../../frontend/src/utils/math-helpers';
 
 beforeEach(() => {
-  vi.spyOn(Math, 'random').mockReturnValue(0.01); // Always trigger encounters
+  seedRng(12345);
 });
 
 describe('EncounterSystem', () => {
@@ -17,22 +18,22 @@ describe('EncounterSystem', () => {
     });
 
     it('should trigger encounter when random is below encounter rate', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.01); // < 0.1 encounter rate
       const es = new EncounterSystem();
+      es.setRng(() => 0.01); // < 0.1 encounter rate
       const result = es.checkEncounter('route-1');
       expect(result).not.toBeNull();
     });
 
     it('should not trigger encounter when random is above encounter rate', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.99); // > 0.1 encounter rate
       const es = new EncounterSystem();
+      es.setRng(() => 0.99); // > 0.1 encounter rate
       const result = es.checkEncounter('route-1');
       expect(result).toBeNull();
     });
 
     it('should return a valid pokemon from the route table', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.01);
       const es = new EncounterSystem();
+      es.setRng(() => 0.01);
       const pokemon = es.checkEncounter('route-1');
 
       expect(pokemon).not.toBeNull();
@@ -41,8 +42,8 @@ describe('EncounterSystem', () => {
     });
 
     it('encountered pokemon should have correct level range', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.01);
       const es = new EncounterSystem();
+      es.setRng(() => 0.01);
       const pokemon = es.checkEncounter('route-1');
       expect(pokemon).not.toBeNull();
 
@@ -53,8 +54,8 @@ describe('EncounterSystem', () => {
     });
 
     it('should suppress encounters during repel', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.01); // Would normally trigger
       const es = new EncounterSystem();
+      es.setRng(() => 0.01); // Would normally trigger
       es.useRepel(5);
 
       for (let i = 0; i < 5; i++) {
@@ -68,7 +69,7 @@ describe('EncounterSystem', () => {
 
   describe('createWildPokemon', () => {
     it('should create valid PokemonInstance', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      seedRng(42);
       const pokemon = EncounterSystem.createWildPokemon(4, 10);
 
       expect(pokemon.dataId).toBe(4);
@@ -80,7 +81,7 @@ describe('EncounterSystem', () => {
     });
 
     it('should generate IVs between 0 and 31', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      seedRng(42);
       const pokemon = EncounterSystem.createWildPokemon(4, 10);
 
       for (const stat of Object.values(pokemon.ivs)) {
