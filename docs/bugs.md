@@ -900,8 +900,8 @@ treat each audit cycle's IDs as scoped to that cycle's CHANGELOG entry.
 Full-codebase bug audit across 52 shards (battle, overworld, managers,
 UI, cross-cutting sweeps, edge-case matrix). Baseline: commit
 f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
-(not already tracked above). 84 unique findings total; 5 critical,
-22 high, 38 medium, 19 low.
+(not already tracked above). 96 unique findings total; 5 critical,
+22 high, 50 medium, 19 low.
 
 ### CRIT-1: Pokéballs can be thrown at fainted Pokémon
 
@@ -1109,6 +1109,563 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Files:** [frontend/src/managers/PlayerStateManager.ts](frontend/src/managers/PlayerStateManager.ts#L114-L118).
 - **Symptom:** `addItem()` always succeeds. Items accumulate
   without limit; item-ball pickups never fail.
+- **Status:** Open.
+
+### MED-1: Sleep counter not reset on switch
+
+- **Files:** [frontend/src/battle/effects/StatusEffectHandler.ts](frontend/src/battle/effects/StatusEffectHandler.ts#L147-L159).
+- **Symptom:** Sleep counter decrements each turn via `pokemon.statusTurns--`,
+  but `clearPokemon()` deletes the volatile state without resetting
+  `statusTurns`. On switch-in `initPokemon()` never re-initializes it.
+- **Status:** Open.
+
+### MED-2: Weather duration bonus not applied from abilities
+
+- **Files:** [frontend/src/battle/effects/AbilityHandler.ts](frontend/src/battle/effects/AbilityHandler.ts#L40-L55),
+  [frontend/src/battle/effects/HeldItemHandler.ts](frontend/src/battle/effects/HeldItemHandler.ts#L274-L287),
+  [frontend/src/battle/effects/WeatherManager.ts](frontend/src/battle/effects/WeatherManager.ts).
+- **Symptom:** When an ability like Drizzle triggers weather on switch-in,
+  `onSwitchIn()` returns the weather type but not the duration. The caller
+  must separately fetch held-item bonuses (Heat Rock, Damp Rock, etc.)
+  and pass `5 + bonus` as duration. The interface doesn't enforce this,
+  so weather always lasts exactly 5 turns regardless of held item.
+- **Status:** Open.
+
+### MED-3: Protect rate reset before move validation
+
+- **Files:** [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L106-L109).
+- **Symptom:** `statusHandler.resetProtectRate(attacker)` is called for all
+  non-protect moves before the accuracy check. If the move misses, the
+  protect rate is still reset, breaking the consecutive-protect penalty.
+- **Status:** Open.
+
+### MED-4: Life Orb recoil triggers on Substitute (0 damage)
+
+- **Files:** [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L337-L386).
+- **Symptom:** Life Orb recoil triggers on `damage.damage > 0`. If the
+  defender has a Substitute and the move hits the Substitute for 0 actual
+  HP damage but `damage.damage > 0`, Life Orb recoil still applies.
+- **Status:** Open.
+
+### MED-5: Drain healing applied to fainted attacker
+
+- **Files:** [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L337-L386).
+- **Symptom:** If the attacker faints from contact-ability recoil during
+  move execution, drain healing is still applied because there is no
+  `attacker.currentHp > 0` check before the drain logic.
+- **Status:** Open.
+
+### MED-6: NaN score propagation in AI scoring
+
+- **Files:** [frontend/src/battle/core/AIController.ts](frontend/src/battle/core/AIController.ts#L53).
+- **Symptom:** If `getCombinedEffectiveness()` returns `undefined` or `NaN`,
+  the score calculation produces `NaN`. `NaN > bestScore` is always false,
+  so the AI silently falls back to the first available move instead of
+  making a meaningful choice.
+- **Status:** Open.
+
+### MED-7: Faint mid-execute when both faint same hit (double battle)
+
+- **Files:** [frontend/src/battle/core/DoubleBattleManager.ts](frontend/src/battle/core/DoubleBattleManager.ts#L225-L227).
+- **Symptom:** In the move execution loop, if Pokémon A faints Pokémon B
+  and A also faints from recoil on the same hit, the faint detection
+  during move execution (not before turn order) can lead to incorrect
+  turn-order violations.
+- **Status:** Open.
+
+### MED-8: Listener leak in BattleCatchHandler nickname prompt
+
+- **Files:** [frontend/src/scenes/battle/BattleCatchHandler.ts](frontend/src/scenes/battle/BattleCatchHandler.ts#L306-L333).
+- **Symptom:** If the scene shuts down while NicknameScene is open, the
+  `shutdown` event fires and calls `cleanup()`, but the NicknameScene's
+  events are still bound. When NicknameScene later completes, its
+  `onComplete()` callback fires against the destroyed parent scene.
+- **Status:** Open.
+
+### MED-9: Encounter check after warp without return guard
+
+- **Files:** [frontend/src/scenes/overworld/OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts#L745).
+- **Symptom:** After `doWarp()` is called, execution may continue past the
+  warp check to the encounter check code. A `return` statement at L746
+  exists but the pattern is fragile — wild encounters could fire on a warp
+  tile in the old scene before restart.
+- **Status:** Open.
+
+### MED-10: Multiple fishing DialogueScene launches without guard
+
+- **Files:** [frontend/src/scenes/overworld/OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts#L956-L969).
+- **Symptom:** `tryFishing()` launches a DialogueScene without checking if
+  one is already active. Rapid confirm presses can queue multiple
+  DialogueScene launches.
+- **Status:** Open.
+
+### MED-11: indicatorTween leak in DialogueScene choices
+
+- **Files:** [frontend/src/scenes/overworld/DialogueScene.ts](frontend/src/scenes/overworld/DialogueScene.ts#L191-L198).
+- **Symptom:** `indicatorTween` is created with infinite repeat but is never
+  stopped when choices are shown. `cleanupChoices()` doesn't stop the tween,
+  causing a resource leak.
+- **Status:** Open.
+
+### MED-12: mobileTapMenu listeners not cleaned on external shutdown
+
+- **Files:** [frontend/src/scenes/overworld/DialogueScene.ts](frontend/src/scenes/overworld/DialogueScene.ts#L412-L417).
+- **Symptom:** `mobileTapMenu` is only cleaned up in `cleanupChoices()`. If the
+  scene shuts down externally, `shutdown()` doesn't call `cleanupChoices()`,
+  leaving the MobileTapMenu and its event listeners dangling.
+- **Status:** Open.
+
+### MED-13: layoutOn callback not cleaned in DialogueScene
+
+- **Files:** [frontend/src/scenes/overworld/DialogueScene.ts](frontend/src/scenes/overworld/DialogueScene.ts#L224-L267).
+- **Symptom:** `layoutOn(this, ...)` registers a window resize listener that is
+  never explicitly removed when the scene shuts down. If the scene is paused
+  and resumed, the callback can fire multiple times.
+- **Status:** Open.
+
+### MED-14: Trainer walks through NPCs during approach
+
+- **Files:** [frontend/src/entities/Trainer.ts](frontend/src/entities/Trainer.ts#L80-L133).
+- **Symptom:** `walkToward()` tweens the trainer in a straight line toward the
+  player without per-step collision checks. If another NPC blocks the path,
+  the trainer sprite visually overlaps it.
+- **Status:** Open.
+
+### MED-15: Trainer LoS through transparent tiles
+
+- **Files:** [frontend/src/entities/Trainer.ts](frontend/src/entities/Trainer.ts#L36-L77).
+- **Symptom:** `isInLineOfSight()` checks only `SOLID_TILES` along the line.
+  Tall grass, dark grass, and non-solid objects do not block LoS.
+  May be intentional (matches some mainline Pokémon games).
+- **Status:** Open — design decision needed.
+
+### MED-16: Boulder redraw skipped on tween cancel
+
+- **Files:** [frontend/src/scenes/overworld/OverworldFieldAbilities.ts](frontend/src/scenes/overworld/OverworldFieldAbilities.ts#L108-L128).
+- **Symptom:** `pushBoulder()` updates map data immediately but redraws tiles
+  in the tween's `onComplete`. If the scene is destroyed or the tween is
+  cancelled, tile sprites show the old state while map data reflects the
+  new state.
+- **Status:** Open.
+
+### MED-17: ParseMap Unicode chars may misalign grid
+
+- **Files:** [frontend/src/data/maps/map-parser.ts](frontend/src/data/maps/map-parser.ts#L122-L124).
+- **Symptom:** `parseMap()` uses `[...row].map()` to spread string into
+  characters. Multi-byte Unicode tile characters (e.g., `Ø`, `µ`, `Þ`)
+  should be handled correctly by the spread operator, but edge cases with
+  combining marks or surrogate pairs could cause misalignment.
+- **Status:** Open.
+
+### MED-18: GridMovement mapWidth defaults to Infinity
+
+- **Files:** [frontend/src/systems/overworld/GridMovement.ts](frontend/src/systems/overworld/GridMovement.ts#L79-L82).
+- **Symptom:** `mapWidth` defaults to `Infinity`. If `setMapBounds()` is not
+  called, the boundary check is always false and the player can walk off
+  the edge of the map into undefined territory.
+- **Status:** Open.
+
+### MED-19: CutsceneEngine save not blocked
+
+- **Files:** [frontend/src/systems/engine/CutsceneEngine.ts](frontend/src/systems/engine/CutsceneEngine.ts#L67-L85).
+- **Symptom:** No mechanism prevents save/load during cutscene playback.
+  Player can save mid-dialogue or mid-fade, creating save states with
+  partial cutscene progress.
+- **Status:** Open.
+
+### MED-20: FollowerPokemon tween on destroyed scene
+
+- **Files:** [frontend/src/entities/FollowerPokemon.ts](frontend/src/entities/FollowerPokemon.ts#L34-L59).
+- **Symptom:** `moveTo()` calls `this.scene.tweens.add()` but `this.scene`
+  could be destroyed between the method call and the tween callback. If
+  the scene destroys mid-tween, the callback accesses a destroyed context.
+- **Status:** Open.
+
+### MED-21: Save during battle has no runtime guard
+
+- **Files:** [frontend/src/managers/SaveManager.ts](frontend/src/managers/SaveManager.ts).
+- **Symptom:** BattleScene doesn't expose a menu, so the player can't
+  normally open save during battle. However, `SaveManager.save()` has no
+  check for battle-active state — if the menu were ever accessible, save
+  would capture mid-battle state.
+- **Status:** Open.
+
+### MED-22: Save during cutscene not blocked
+
+- **Files:** [frontend/src/scenes/menu/MenuScene.ts](frontend/src/scenes/menu/MenuScene.ts),
+  [frontend/src/systems/engine/CutsceneEngine.ts](frontend/src/systems/engine/CutsceneEngine.ts).
+- **Symptom:** OverworldScene blocks most input during cutscenes, but
+  does not prevent the menu from being opened. MenuScene has no check for
+  `CutsceneEngine.isRunning()`.
+- **Status:** Open.
+
+### MED-23: AudioManager BGM duplicated on fade-out + playBGM
+
+- **Files:** [frontend/src/managers/AudioManager.ts](frontend/src/managers/AudioManager.ts).
+- **Symptom:** If `playBGM()` is called while a previous BGM is fading out,
+  a new BGM instance starts overlapping the old one.
+- **Status:** Open.
+
+### MED-24: Mute state not persisted / restored on reload
+
+- **Files:** [frontend/src/managers/AudioManager.ts](frontend/src/managers/AudioManager.ts#L436-L444).
+- **Symptom:** `muted` flag initializes as `false` unconditionally. Volume
+  slider and mute toggle desync after page reload.
+- **Status:** Open.
+
+### MED-25: Save quota error silent to user
+
+- **Files:** [frontend/src/managers/SaveManager.ts](frontend/src/managers/SaveManager.ts#L31-L35).
+- **Symptom:** `localStorage.setItem` is wrapped in try/catch, but the catch
+  only calls `console.error()`. Player sees no UI feedback and may think
+  save succeeded.
+- **Status:** Open.
+
+### MED-26: InventoryScene keyboard handler leaks on reopen
+
+- **Files:** [frontend/src/scenes/menu/InventoryScene.ts](frontend/src/scenes/menu/InventoryScene.ts#L509-L522).
+- **Symptom:** `openTargetPicker` registers keyboard handlers scoped to the
+  function. If the player closes the picker and re-opens it, new handlers
+  are created but old ones are never removed.
+- **Status:** Open.
+
+### MED-27: TouchControls resize listener not removed on destroy
+
+- **Files:** [frontend/src/ui/controls/TouchControls.ts](frontend/src/ui/controls/TouchControls.ts#L730-L741).
+- **Symptom:** `destroy()` removes canvas event listeners but never removes
+  the `resize` event listener registered earlier. This listener persists
+  and references the destroyed scene.
+- **Status:** Open.
+
+### MED-28: VirtualJoystick duplicate event listeners
+
+- **Files:** [frontend/src/ui/controls/VirtualJoystick.ts](frontend/src/ui/controls/VirtualJoystick.ts#L225-L242).
+- **Symptom:** Event listeners are added directly to the canvas, then the
+  same handlers are stored in `boundHandlers`. If VirtualJoystick is created
+  multiple times without proper cleanup, handlers accumulate.
+- **Status:** Open.
+
+### MED-29: MenuController keyboard handlers leak on scene restart
+
+- **Files:** [frontend/src/ui/controls/MenuController.ts](frontend/src/ui/controls/MenuController.ts#L180-L194).
+- **Symptom:** `destroy()` removes keyboard listeners, but if a scene
+  restarts before `destroy()` is called, both old and new handler sets
+  remain attached.
+- **Status:** Open.
+
+### MED-30: ScrollContainer decay timer leak on scene shutdown
+
+- **Files:** [frontend/src/ui/widgets/ScrollContainer.ts](frontend/src/ui/widgets/ScrollContainer.ts#L126-L129).
+- **Symptom:** `destroy()` calls `this.decayTimer?.destroy()`, but if the
+  scene is stopped before `destroy()` is called, the timer continues and
+  references the destroyed zone.
+- **Status:** Open.
+
+### MED-31: PokedexScene cry timer leak
+
+- **Files:** [frontend/src/scenes/menu/PokedexScene.ts](frontend/src/scenes/menu/PokedexScene.ts#L268-L275).
+- **Symptom:** In `showDetail()`, a `cryTimer` is created but if the player
+  navigates away before it fires, or if the scene is stopped, the timer
+  is not cleaned up in a shutdown handler.
+- **Status:** Open.
+
+### MED-32: TouchControls updateDOMLayout re-entrancy
+
+- **Files:** [frontend/src/ui/controls/TouchControls.ts](frontend/src/ui/controls/TouchControls.ts#L323-L360).
+- **Symptom:** `updateDOMLayout()` sets `updatingLayout = true` and returns
+  early on re-entry. If a resize event fires during layout (e.g., during
+  tweens), the blocked call leaves the UI in an inconsistent state.
+- **Status:** Open.
+
+### MED-33: Save schema boxNames mismatch
+
+- **Files:** [frontend/src/managers/SaveManager.ts](frontend/src/managers/SaveManager.ts#L51).
+- **Symptom:** `PartyManager.serialize()` writes `boxNames` to the save
+  payload, but `boxNames` is not defined in the `SaveData` interface.
+  The field is written but has no type-safe read path.
+- **Status:** Open.
+
+### MED-34: PreloadScene non-null assertions on optional fields
+
+- **Files:** [frontend/src/scenes/boot/PreloadScene.ts](frontend/src/scenes/boot/PreloadScene.ts#L106-L118).
+- **Symptom:** Non-null assertions (`!`) on optional `asset.path`,
+  `asset.texture`, `asset.atlas`, `asset.frameWidth`, `asset.frameHeight`.
+  If any are undefined at runtime, calls crash.
+- **Status:** Open.
+
+### MED-35: TilemapBuilder layer creation assertions
+
+- **Files:** [frontend/src/systems/rendering/TilemapBuilder.ts](frontend/src/systems/rendering/TilemapBuilder.ts#L79-L90).
+- **Symptom:** Non-null assertions on `addTilesetImage()` and three
+  `createBlankLayer()` calls. If layer creation fails, code crashes
+  instead of handling gracefully.
+- **Status:** Open.
+
+### MED-36: TransitionManager double-transition race
+
+- **Files:** [frontend/src/managers/TransitionManager.ts](frontend/src/managers/TransitionManager.ts).
+- **Symptom:** Rapid scene changes can trigger two overlapping fade
+  transitions. No guard prevents a second `fadeTransition()` call while
+  one is in progress.
+- **Status:** Open.
+
+### MED-37: EventManager listeners not auto-cleared between sessions
+
+- **Files:** [frontend/src/managers/EventManager.ts](frontend/src/managers/EventManager.ts#L18-L19).
+- **Symptom:** `listeners` and `taggedListeners` Maps carry state across
+  sessions. `clear()` exists but must be called manually; it's not invoked
+  automatically during `GameManager.reset()`.
+- **Status:** Open.
+
+### MED-38: Spread move damage reduction applied after faint check (double battle)
+
+- **Files:** [frontend/src/battle/core/DoubleBattleManager.ts](frontend/src/battle/core/DoubleBattleManager.ts#L268-L276).
+- **Symptom:** Spread-move 75% damage reduction is applied AFTER the move
+  executes and damage is dealt. If the defender fainted from the full damage
+  before reduction, the logic momentarily creates an incorrect state.
+- **Status:** Open.
+
+### MED-39: Haze stat reset scope incorrect
+
+- **Files:** [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L360-L363).
+- **Symptom:** `statusHandler.resetAllStages()` is called unconditionally
+  on Haze, potentially resetting stats for all Pokémon rather than
+  correctly scoping to the appropriate sides.
+- **Status:** Open.
+
+### MED-40: GameManager.addItem allows negative quantities
+
+- **Files:** [frontend/src/managers/GameManager.ts](frontend/src/managers/GameManager.ts).
+- **Symptom:** `addItem()` does not validate that the quantity is positive.
+  Passing a negative value decrements the item count directly.
+- **Status:** Open.
+
+### MED-41: GameManager.party returned by reference
+
+- **Files:** [frontend/src/managers/GameManager.ts](frontend/src/managers/GameManager.ts).
+- **Symptom:** `getParty()` returns the internal party array by reference.
+  External code can mutate the array (push, splice, reorder) without going
+  through the manager's API.
+- **Status:** Open.
+
+### MED-42: SaveManager import overwrites without validation
+
+- **Files:** [frontend/src/managers/SaveManager.ts](frontend/src/managers/SaveManager.ts).
+- **Symptom:** `importSave()` writes imported data to localStorage without
+  validating the schema against `SaveData`. Corrupt or malicious imports
+  can break the save slot.
+- **Status:** Open.
+
+### MED-43: SaveManager migration drops unknown fields
+
+- **Files:** [frontend/src/managers/SaveManager.ts](frontend/src/managers/SaveManager.ts).
+- **Symptom:** Version migration silently drops fields not recognized by the
+  current schema. Downgrading or forward-compatible saves lose data.
+- **Status:** Open.
+
+### MED-44: PartyManager swapPartyMembers no bounds check
+
+- **Files:** [frontend/src/managers/PartyManager.ts](frontend/src/managers/PartyManager.ts).
+- **Symptom:** `swapPartyMembers()` does not validate that both indices are
+  within `[0, party.length)`. Out-of-bounds indices cause undefined writes.
+- **Status:** Open.
+
+### MED-45: QuestManager flag set order dependent
+
+- **Files:** [frontend/src/managers/QuestManager.ts](frontend/src/managers/QuestManager.ts).
+- **Symptom:** Quest completion checks depend on flag-set order. If two
+  flags are set in the wrong order within the same frame, completion
+  detection can be missed.
+- **Status:** Open.
+
+### MED-46: AchievementManager toast fires even if already unlocked
+
+- **Files:** [frontend/src/managers/AchievementManager.ts](frontend/src/managers/AchievementManager.ts).
+- **Symptom:** `unlock()` returns `false` for already-unlocked achievements,
+  but callers may still trigger the toast notification without checking the
+  return value.
+- **Status:** Open.
+
+### MED-47: AudioManager BGM duplicated if playBGM during fade-out
+
+- **Files:** [frontend/src/managers/AudioManager.ts](frontend/src/managers/AudioManager.ts).
+- **Symptom:** Calling `playBGM()` while a previous track is mid-fade creates
+  overlapping audio. The old track continues fading while the new one starts.
+- **Status:** Open.
+
+### MED-48: Achievements type mismatch in save (unknown vs string[])
+
+- **Files:** [frontend/src/managers/SaveManager.ts](frontend/src/managers/SaveManager.ts#L29),
+  [frontend/src/data/interfaces.ts](frontend/src/data/interfaces.ts).
+- **Symptom:** `SaveData.achievements` is typed as `unknown`, but
+  `SaveManager.load()` casts it as `string[]` without validation.
+- **Status:** Open.
+
+### MED-49: ProgressManager / AchievementManager Set serialization relies on explicit conversion
+
+- **Files:** [frontend/src/managers/ProgressManager.ts](frontend/src/managers/ProgressManager.ts),
+  [frontend/src/managers/AchievementManager.ts](frontend/src/managers/AchievementManager.ts).
+- **Symptom:** Pokedex `seen`/`caught` and `unlocked` use `Set` objects.
+  These are properly converted in `serialize()` but would fail if any
+  code path passes them directly to `JSON.stringify`.
+- **Status:** Open.
+
+### MED-50: Floating-point comparisons in encounter/catch/damage (5 sites)
+
+- **Files:** EncounterSystem, CatchCalculator, DamageCalculator, BattleTurnRunner.
+- **Symptom:** Direct `Math.random()` comparisons with float thresholds
+  (encounter rate, fishing rate, shake probability, accuracy, speed tie).
+  Subject to floating-point precision edge cases.
+- **Status:** Open.
+
+### LOW-1: Recoil KO announcement order reversed
+
+- **Files:** [frontend/src/scenes/battle/BattleUIScene.ts](frontend/src/scenes/battle/BattleUIScene.ts#L532-L580).
+- **Symptom:** When both Pokémon faint on the same hit (recoil KO),
+  the defender's faint message appears before the attacker's.
+  Functionally correct but cosmetically reversed.
+- **Status:** Open.
+
+### LOW-2: Outrage not implemented as multi-turn move
+
+- **Files:** [frontend/src/data/moves/dragon.ts](frontend/src/data/moves/dragon.ts).
+- **Symptom:** Outrage is defined as a simple 120-power attack with no
+  multi-turn locking effect. The edge case of interruption by faint
+  cannot manifest. Missing feature, not a bug in existing code.
+- **Status:** Open — implement multi-turn lock if desired.
+
+### LOW-3: Freeze thaw probability + fire-move thaw ordering
+
+- **Files:** [frontend/src/battle/effects/StatusEffectHandler.ts](frontend/src/battle/effects/StatusEffectHandler.ts#L228-L235).
+- **Symptom:** `checkThaw()` (fire-move 100% thaw) and `checkTurnStart()`
+  (20% random thaw) are called separately. If called out of order, a fire
+  move could lose its guaranteed thaw to the RNG check firing first.
+  Ordering depends on caller.
+- **Status:** Open.
+
+### LOW-4: Ability / item suppress not distinguished
+
+- **Files:** [frontend/src/battle/effects/AbilityHandler.ts](frontend/src/battle/effects/AbilityHandler.ts#L12-L16),
+  [frontend/src/battle/effects/HeldItemHandler.ts](frontend/src/battle/effects/HeldItemHandler.ts#L12-L15).
+- **Symptom:** No concept of "suppressed" abilities or items (e.g.,
+  Neutralizing Gas, Gastro Acid). Missing feature.
+- **Status:** Open — implement if suppress mechanics are added.
+
+### LOW-5: Graphics destroy leak in ball throw animation
+
+- **Files:** [frontend/src/scenes/battle/BattleCatchHandler.ts](frontend/src/scenes/battle/BattleCatchHandler.ts#L78-L92).
+- **Symptom:** `ballGfx` and `ballHighlight` are created but only destroyed
+  in the tween's `onComplete`. If the scene shuts down mid-tween, the
+  graphics objects leak.
+- **Status:** Open.
+
+### LOW-6: Faint animation not awaited before next turn
+
+- **Files:** [frontend/src/scenes/battle/BattleUIScene.ts](frontend/src/scenes/battle/BattleUIScene.ts#L546-L559).
+- **Symptom:** `faintSprite()` triggers an 800ms tween that is not awaited.
+  The faint animation and the next-turn message may overlap.
+- **Status:** Open.
+
+### LOW-7: BAG throw timing vs intro tween visual mismatch
+
+- **Files:** [frontend/src/scenes/battle/BattleCatchHandler.ts](frontend/src/scenes/battle/BattleCatchHandler.ts#L62-L69).
+- **Symptom:** If the player opens BAG and throws a ball before the
+  enemy's intro slide-in tween completes, `killTweensOf` stops the
+  sprite mid-animation. The throw target uses the interrupted position.
+- **Status:** Open.
+
+### LOW-8: BattleBagHandler ballUsed flag race condition
+
+- **Files:** [frontend/src/scenes/battle/BattleBagHandler.ts](frontend/src/scenes/battle/BattleBagHandler.ts#L25-L43).
+- **Symptom:** `ballUsed` flag set in a listener could race with the
+  shutdown listener if both fire in the same frame.
+- **Status:** Open.
+
+### LOW-9: Page advance during typewriter text reveal
+
+- **Files:** [frontend/src/scenes/overworld/DialogueScene.ts](frontend/src/scenes/overworld/DialogueScene.ts#L357-L373).
+- **Symptom:** Pressing advance while characters are being revealed can
+  make text appear to skip or stutter — the advance indicator appears
+  before the previous page's typewriter completes.
+- **Status:** Open.
+
+### LOW-10: DialogueScene shutdown binding in create()
+
+- **Files:** [frontend/src/scenes/overworld/DialogueScene.ts](frontend/src/scenes/overworld/DialogueScene.ts#L269-L271).
+- **Symptom:** Shutdown handler registered with `events.once('shutdown', ...)`
+  in `create()`. If `create()` runs multiple times without shutdown between,
+  duplicate bindings accumulate.
+- **Status:** Open.
+
+### LOW-11: Trainer mapGround null-check race condition
+
+- **Files:** [frontend/src/entities/Trainer.ts](frontend/src/entities/Trainer.ts#L60-L74).
+- **Symptom:** LoS check uses OR logic: if `mapGround` is null and
+  `npcOccupiedTiles` is null, collision validation is skipped entirely.
+  Unlikely in normal flow (mapGround is assigned immediately after spawn).
+- **Status:** Open.
+
+### LOW-12: ParseMap defaults unknown chars to GRASS silently
+
+- **Files:** [frontend/src/data/maps/map-parser.ts](frontend/src/data/maps/map-parser.ts#L122-L124).
+- **Symptom:** `CHAR_TO_TILE[ch] ?? Tile.GRASS` defaults to GRASS for
+  unknown characters. Typos in map grids silently create walkable passages
+  through intended walls.
+- **Status:** Open.
+
+### LOW-13: TilemapBuilder no bounds validation
+
+- **Files:** [frontend/src/systems/rendering/TilemapBuilder.ts](frontend/src/systems/rendering/TilemapBuilder.ts#L103-L159).
+- **Symptom:** `buildTilemap()` never validates that `ground.length === mapH`
+  or `ground[y].length === mapW`. Truncated map data creates sparse layers.
+- **Status:** Open.
+
+### LOW-14: CutsceneEngine parallel actions party mutation race
+
+- **Files:** [frontend/src/systems/engine/CutsceneEngine.ts](frontend/src/systems/engine/CutsceneEngine.ts#L255-L257).
+- **Symptom:** `execParallel()` awaits `Promise.all()`. If one action sets
+  a flag that triggers a battle while other parallel actions are running,
+  party state becomes inconsistent.
+- **Status:** Open.
+
+### LOW-15: FollowerPokemon tween leak
+
+- **Files:** [frontend/src/entities/FollowerPokemon.ts](frontend/src/entities/FollowerPokemon.ts#L34-L59).
+- **Symptom:** `moveTo()` creates tweens without storing references. If
+  `hideFollower()` is called mid-tween, the tween continues running
+  on a hidden sprite.
+- **Status:** Open.
+
+### LOW-16: EmoteBubble target destroyed mid-tween
+
+- **Files:** [frontend/src/systems/rendering/EmoteBubble.ts](frontend/src/systems/rendering/EmoteBubble.ts#L24-L76).
+- **Symptom:** Emote text is positioned at `target.x/y` but no check
+  validates that the target sprite still exists. If destroyed between
+  `show()` and tween completion, the text orphans.
+- **Status:** Open.
+
+### LOW-17: LightingSystem renderTexture race on resize
+
+- **Files:** [frontend/src/systems/rendering/LightingSystem.ts](frontend/src/systems/rendering/LightingSystem.ts#L71-L83).
+- **Symptom:** Resize handler destroys and recreates `this.rt`. If other
+  code accesses `this.rt` during the frame between destroy and reassignment,
+  it crashes.
+- **Status:** Open.
+
+### LOW-18: NPC walk anim facing race
+
+- **Files:** [frontend/src/entities/NPC.ts](frontend/src/entities/NPC.ts#L50-L77).
+- **Symptom:** `playWalkAnim()` captures `this.facing` in a closure. If
+  `faceDirection()` is called mid-animation, frames are stamped from
+  the new direction but the index continues from the old sequence.
+- **Status:** Open.
+
+### LOW-19: ConfirmBox active flag race condition
+
+- **Files:** [frontend/src/ui/widgets/ConfirmBox.ts](frontend/src/ui/widgets/ConfirmBox.ts#L56-L86).
+- **Symptom:** The `active` flag is set to `false` before calling
+  `onResult()`. If `onResult()` synchronously interacts with ConfirmBox,
+  the flag blocks it.
 - **Status:** Open.
 
 ---

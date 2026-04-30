@@ -1,10 +1,12 @@
 # Sprites Improvement Plan
 
 > **Status (2026-04-29):** P0, P1, P2, and P3 berry-tree variants are
-> implemented and shipped. Remaining work: author bespoke art for `npc-rook`
-> and `npc-zara` (currently aliased to existing atlases) and roll out the
-> new `door` sprite to building warp tiles. See the **Implementation Status**
-> section below.
+> implemented and shipped — every sprite below now ships as a real PNG
+> under [frontend/public/assets/sprites/objects/](../frontend/public/assets/sprites/objects)
+> or [frontend/public/assets/sprites/npcs/](../frontend/public/assets/sprites/npcs).
+> The runtime `Phaser.Graphics.generateTexture` block has been removed.
+> Remaining work: roll out the new `door` sprite to building warp tiles
+> (design decision needed). See **Implementation Status** below.
 
 > Audit of overworld sprite usage across all 66 maps. Identifies missing assets,
 > wrong-texture fallbacks, and unique characters currently rendered with generic
@@ -206,21 +208,21 @@ the 2026-04-29 sprite-improvement entries.
 
 | Tier | Item | Status | Notes |
 |------|------|--------|-------|
-| P0 | `npc-rook` broken texture | ✅ Aliased | Loads `npc-male-5` atlas under the `npc-rook` key in [PreloadScene.preload](../frontend/src/scenes/boot/PreloadScene.ts). Bespoke art still pending. |
-| P0 | `npc-zara` broken texture | ✅ Aliased | Loads `npc-female-2` atlas under the `npc-zara` key in [PreloadScene.preload](../frontend/src/scenes/boot/PreloadScene.ts). Bespoke art still pending. |
+| P0 | `npc-rook` broken texture | ✅ Shipped | Bespoke 64×51 atlas (forest-green scout) authored via [temp/create_rook_zara_sprites.py](../temp/create_rook_zara_sprites.py) and saved to [npcs/story/npc-rook.png](../frontend/public/assets/sprites/npcs/story/npc-rook.png). |
+| P0 | `npc-zara` broken texture | ✅ Shipped | Bespoke 64×51 atlas (deep-purple admin) saved to [npcs/villains/npc-zara.png](../frontend/public/assets/sprites/npcs/villains/npc-zara.png). |
 | P1 | Gym leaders Coral / Drake / Ivy / Morwen / Solara | ✅ Shipped | Now use their `npc-gym-*` atlases in [coral-gym](../frontend/src/data/maps/interiors/coral-gym.ts), [scalecrest-gym](../frontend/src/data/maps/interiors/scalecrest-gym.ts), [verdantia-gym](../frontend/src/data/maps/interiors/verdantia-gym.ts), [wraithmoor-gym](../frontend/src/data/maps/interiors/wraithmoor-gym.ts), [cinderfall-gym](../frontend/src/data/maps/interiors/cinderfall-gym.ts), and the [cinderfall-town](../frontend/src/data/maps/cities/cinderfall-town.ts) story spawn. |
 | P1 | Elite Four + Champion | ✅ Shipped | Nerida, Theron, Lysandra, Ashborne, Aldric in [pokemon-league.ts](../frontend/src/data/maps/interiors/pokemon-league.ts) now use their `npc-e4-*` / `npc-champion-aldric` atlases. |
 | P1 | `generic-trainer` placeholders | ✅ Shipped | Zero references remain in [frontend/src/data/maps/**](../frontend/src/data/maps); replaced with role-appropriate NPCs (Viridian gym blocker, two PokéCenter chatterers) or converted to objects (3 PCs + Abyssal Spire console + 4 Shattered Isles ruins clues). |
-| P2 | `pc-terminal` for all storage PCs | ✅ Shipped | All 8 PC objects (5 PokéCenters + Viridian / Pewter Centers + Oak's Lab + Abyssal Spire F3 console) render the dedicated CRT sprite. |
-| P2 | `vent` for Victory Road | ✅ Shipped | All 5 vents in [victory-road.ts](../frontend/src/data/maps/dungeons/victory-road.ts) use the rocky-cone-with-steam sprite. |
-| P2 | `conduit-broken` for Voltara repairs | ✅ Shipped | All 3 conduits in [voltara-city.ts](../frontend/src/data/maps/cities/voltara-city.ts) use the sparking-box sprite. (Companion `conduit-fixed` sprite is generated for future before/after support.) |
-| P2 | `fossil-claw` | ✅ Shipped | The Claw Fossil pickup in [crystal-cavern-depths.ts](../frontend/src/data/maps/dungeons/crystal-cavern-depths.ts) uses the dedicated sprite. Other in-cave items remain `item-ball` since they ARE items (Revives, Escape Ropes). |
-| P2 | `aether-rune` | ✅ Shipped | The hum-ing rune object in [aether-sanctum.ts](../frontend/src/data/maps/dungeons/aether-sanctum.ts) uses the dedicated sprite. |
-| P2 | `ruins-pedestal` | ✅ Shipped | All 5 journal-clue objects in [shattered-isles-ruins.ts](../frontend/src/data/maps/dungeons/shattered-isles-ruins.ts) use the stone-pillar sprite. |
-| P2 | `memory-fragment` | ✅ Shipped | All 3 wraithmoor memory pickups in [wraithmoor-town.ts](../frontend/src/data/maps/cities/wraithmoor-town.ts) use the glowing-fragment sprite (added beyond the original plan). |
-| P2 | `crystal-cluster` | ⏳ Sprite ready, unused | Sprite is generated in [PreloadScene](../frontend/src/scenes/boot/PreloadScene.ts) but the Crystal Cavern items it would replace are real Revive / Escape Rope pickups (legitimate `item-ball`). Available for future decorative crystal placements. |
-| P3 | Berry-tree color variants | ✅ Shipped | `berry-tree-oran` (blue), `berry-tree-pecha` (pink), `berry-tree-sitrus` (yellow) replace the procedural red-berry default on Routes 1, 5, 8. |
-| P3 | Door sprite | ⏳ Sprite ready, unused | The `door` texture is generated in [PreloadScene](../frontend/src/scenes/boot/PreloadScene.ts) but no map currently uses `objectType: 'door'`. Rolling it out to every PokéCenter / Pokémart / Gym / House warp tile is a follow-up pass — non-blocking collision behaviour for objects on warp tiles needs verification first. |
+| P2 | `pc-terminal` for all storage PCs | ✅ Shipped | All 8 PC objects render the dedicated CRT sprite from [objects/pc-terminal.png](../frontend/public/assets/sprites/objects/pc-terminal.png). |
+| P2 | `vent` for Victory Road | ✅ Shipped | All 5 vents in [victory-road.ts](../frontend/src/data/maps/dungeons/victory-road.ts) use [objects/vent.png](../frontend/public/assets/sprites/objects/vent.png). |
+| P2 | `conduit-broken` for Voltara repairs | ✅ Shipped | All 3 conduits use [objects/conduit-broken.png](../frontend/public/assets/sprites/objects/conduit-broken.png); a `conduit-fixed.png` is shipped for future use. |
+| P2 | `fossil-claw` | ✅ Shipped | Claw Fossil pickup uses [objects/fossil-claw.png](../frontend/public/assets/sprites/objects/fossil-claw.png). Other in-cave items remain `item-ball` since they ARE items. |
+| P2 | `aether-rune` | ✅ Shipped | Sanctum rune object uses [objects/aether-rune.png](../frontend/public/assets/sprites/objects/aether-rune.png). |
+| P2 | `ruins-pedestal` | ✅ Shipped | All 5 journal-clue pedestals in the Shattered Isles Ruins use [objects/ruins-pedestal.png](../frontend/public/assets/sprites/objects/ruins-pedestal.png). |
+| P2 | `memory-fragment` | ✅ Shipped | All 3 wraithmoor pickups use [objects/memory-fragment.png](../frontend/public/assets/sprites/objects/memory-fragment.png). |
+| P2 | `crystal-cluster` | ⏳ Sprite ready, unused | [objects/crystal-cluster.png](../frontend/public/assets/sprites/objects/crystal-cluster.png) ships, but the Crystal Cavern items it would replace are real Revive / Escape Rope pickups (legitimate `item-ball`). Available for future decorative crystal placements. |
+| P3 | Berry-tree color variants | ✅ Shipped | [objects/berry-tree-oran.png](../frontend/public/assets/sprites/objects/berry-tree-oran.png) (blue), `-pecha` (pink), `-sitrus` (yellow) replace the procedural red-berry default on Routes 1, 5, 8. |
+| P3 | Door sprite | ⏳ Sprite ready, unused | [objects/door.png](../frontend/public/assets/sprites/objects/door.png) ships but no map currently uses `objectType: 'door'`. Rolling it out to every PokeCenter / Pokemart / Gym / House warp tile is a follow-up pass — non-blocking collision behaviour for objects on warp tiles needs verification first. |
 | P3 | Unused atlases (`npc-male-4`, `npc-female-5/6/8/9`, story `npc-blitz`) | ⏳ Deferred | No regressions to fix here; they're available when new NPCs are authored. Optional future polish. |
 
 ### Verification

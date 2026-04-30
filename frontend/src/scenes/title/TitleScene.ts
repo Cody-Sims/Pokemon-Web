@@ -195,9 +195,15 @@ export class TitleScene extends Phaser.Scene {
         this.showDifficultySelect();
         break;
       case 'Continue': {
-        const saveData = SaveManager.getInstance().load();
-        if (saveData) {
-          this.scene.start('OverworldScene', { saveData });
+        // Route through loadAndApply() so the flat save format from
+        // gm.serialize() is deserialized correctly AND achievements
+        // are restored. Passing the raw save into OverworldScene.init
+        // used to crash in loadFromSave (expects nested player.party
+        // shape that has not been written since the v1→v2 migration).
+        // The `resume: true` flag tells OverworldScene to spawn the
+        // player at the saved position instead of the map default.
+        if (SaveManager.getInstance().loadAndApply()) {
+          this.scene.start('OverworldScene', { resume: true });
         }
         break;
       }

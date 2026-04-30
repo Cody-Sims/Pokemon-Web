@@ -18,7 +18,7 @@ import { encounterTables } from '@data/encounter-tables';
 import { GameClock, TimePeriod } from '@systems/engine/GameClock';
 import { WeatherRenderer } from '@systems/rendering/WeatherRenderer';
 import { TransitionManager } from '@managers/TransitionManager';
-import { PokemonInstance, SaveData } from '@data/interfaces';
+import { PokemonInstance } from '@data/interfaces';
 import { trainerData } from '@data/trainer-data';
 import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
@@ -112,12 +112,15 @@ export class OverworldScene extends Phaser.Scene {
     super({ key: 'OverworldScene' });
   }
 
-  init(data?: { mapKey?: string; spawnId?: string; saveData?: SaveData; flyTo?: string }): void {
-    // Restore from save data if provided
-    if (data?.saveData) {
-      const gm = GameManager.getInstance();
-      gm.loadFromSave(data.saveData);
-      this.mapKey = gm.getCurrentMap();
+  init(data?: { mapKey?: string; spawnId?: string; flyTo?: string; resume?: boolean }): void {
+    // NOTE: Continue from save is handled by SaveManager.loadAndApply()
+    // before this scene starts (see TitleScene). The previous saveData
+    // branch routed through GameManager.loadFromSave which expected a
+    // legacy nested shape that has not been written since v1→v2 — it
+    // crashed every Continue. Resume now reads the already-applied
+    // current map from the GameManager singleton below.
+    if (data?.resume) {
+      this.mapKey = GameManager.getInstance().getCurrentMap();
       this.spawnId = '__resume';
     } else if (data?.flyTo) {
       this.mapKey = data.flyTo;

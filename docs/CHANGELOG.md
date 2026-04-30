@@ -8,7 +8,7 @@ All notable changes to the Pokemon Web project.
 
 ### Changed
 
-- Completed full-codebase bug review cycle (84 findings, 5 critical, 22 high).
+- Completed full-codebase bug review cycle (96 findings, 5 critical, 22 high).
 
 ### Fixed — Bug audit pass, round 5 (deep logic)
 
