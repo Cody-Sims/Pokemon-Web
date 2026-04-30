@@ -41,7 +41,7 @@ export const pewterPokecenter: MapDefinition = {
       name: 'Townsperson',
       tileX: 9,
       tileY: 5,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-3',
       facing: 'left',
       behavior: { type: 'look-around' },
       dialogue: [
@@ -49,13 +49,15 @@ export const pewterPokecenter: MapDefinition = {
         'Make sure your Pokémon are healed before going!',
       ],
     },
+  ],
+  trainers: [],
+  objects: [
     {
       id: 'pewter-pc',
       tileX: 11,
       tileY: 2,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      behavior: { type: 'look-around' },
+      textureKey: 'pc-terminal',
+      objectType: 'pc',
       dialogue: [
         'Someone\'s PC is booted up.',
         'Access the Pokémon Storage System?',
@@ -63,8 +65,6 @@ export const pewterPokecenter: MapDefinition = {
       interactionType: 'pc',
     },
   ],
-  trainers: [],
-  objects: [],
   warps: [
     { tileX: 6, tileY: 7, targetMap: 'pewter-city', targetSpawnId: 'from-pokecenter' },
   ],

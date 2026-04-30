@@ -89,7 +89,7 @@ export const pokemonLeagueNerida: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'elite-nerida', name: 'Nerida', trainerId: 'elite-nerida', tileX: 5, tileY: 3,
-      textureKey: 'npc-female-7', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-e4-nerida', facing: 'down', lineOfSight: 5 },
   ],
   objects: [],
   warps: [
@@ -132,7 +132,7 @@ export const pokemonLeagueTheron: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'elite-theron', name: 'Theron', trainerId: 'elite-theron', tileX: 5, tileY: 3,
-      textureKey: 'npc-clerk', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-e4-theron', facing: 'down', lineOfSight: 5 },
   ],
   objects: [],
   warps: [
@@ -175,7 +175,7 @@ export const pokemonLeagueLysandra: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'elite-lysandra', name: 'Lysandra', trainerId: 'elite-lysandra', tileX: 5, tileY: 3,
-      textureKey: 'npc-female-3', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-e4-lysandra', facing: 'down', lineOfSight: 5 },
   ],
   objects: [],
   warps: [
@@ -218,7 +218,7 @@ export const pokemonLeagueAshborne: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'elite-ashborne', name: 'Ashborne', trainerId: 'elite-ashborne', tileX: 5, tileY: 3,
-      textureKey: 'npc-male-5', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-e4-ashborne', facing: 'down', lineOfSight: 5 },
   ],
   objects: [],
   warps: [
@@ -265,7 +265,7 @@ export const pokemonLeagueChampion: MapDefinition = {
   npcs: [],
   trainers: [
     { id: 'champion-aldric', name: 'Aldric', trainerId: 'champion-aldric', tileX: 6, tileY: 4,
-      textureKey: 'npc-male-5', facing: 'down', lineOfSight: 5 },
+      textureKey: 'npc-champion-aldric', facing: 'down', lineOfSight: 5 },
   ],
   objects: [],
   warps: [

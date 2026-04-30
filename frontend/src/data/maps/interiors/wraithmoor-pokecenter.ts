@@ -27,7 +27,7 @@ export const wraithmoorPokecenter: MapDefinition = {
   trainers: [],
   objects: [
     {
-    id: 'wraithmoor-pc', tileX: 9, tileY: 2, textureKey: 'item-ball', objectType: 'pc', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc' }
+    id: 'wraithmoor-pc', tileX: 9, tileY: 2, textureKey: 'pc-terminal', objectType: 'pc', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc' }
   ],
   warps: [
     { tileX: 4, tileY: 7, targetMap: 'wraithmoor-town', targetSpawnId: 'from-pokecenter' },

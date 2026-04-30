@@ -96,19 +96,6 @@ export const palletOakLab: MapDefinition = {
       ],
     },
     {
-      id: 'lab-pc',
-      tileX: 11,
-      tileY: 10,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      behavior: { type: 'look-around' },
-      dialogue: [
-        "Oak's Lab PC is booted up.",
-        'Access the Pokémon Storage System?',
-      ],
-      interactionType: 'pc',
-    },
-    {
       id: 'lab-kael-intro',
       name: 'Kael',
       tileX: 8,
@@ -133,7 +120,20 @@ export const palletOakLab: MapDefinition = {
       condition: 'receivedStarter',
     },
   ],
-  objects: [],
+  objects: [
+    {
+      id: 'lab-pc',
+      tileX: 11,
+      tileY: 10,
+      textureKey: 'pc-terminal',
+      objectType: 'pc',
+      dialogue: [
+        "Oak's Lab PC is booted up.",
+        'Access the Pokémon Storage System?',
+      ],
+      interactionType: 'pc',
+    },
+  ],
   warps: [
     { tileX: 5, tileY: 11, targetMap: 'pallet-town', targetSpawnId: 'from-oak-lab' },
     { tileX: 6, tileY: 11, targetMap: 'pallet-town', targetSpawnId: 'from-oak-lab' },

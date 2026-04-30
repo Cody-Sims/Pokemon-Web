@@ -56,19 +56,6 @@ export const abyssalSpireF3: MapDefinition = {
         ],
       }],
     },
-    {
-      id: 'keycard-hint',
-      tileX: 5,
-      tileY: 10,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      behavior: { type: 'look-around' },
-      dialogue: [
-        'A security console...',
-        '"Level 5 clearance required for upper floors."',
-        '"Authorized personnel: Director Aldric, Admin Zara Lux."',
-      ],
-    },
   ],
   trainers: [
     {
@@ -82,7 +69,20 @@ export const abyssalSpireF3: MapDefinition = {
       lineOfSight: 4,
     },
   ],
-  objects: [],
+  objects: [
+    {
+      id: 'keycard-hint',
+      tileX: 5,
+      tileY: 10,
+      textureKey: 'pc-terminal',
+      objectType: 'pc',
+      dialogue: [
+        'A security console...',
+        '"Level 5 clearance required for upper floors."',
+        '"Authorized personnel: Director Aldric, Admin Zara Lux."',
+      ],
+    },
+  ],
   warps: [
     // South entrance → F2
     { tileX: 9, tileY: 17, targetMap: 'abyssal-spire-f2', targetSpawnId: 'default' },

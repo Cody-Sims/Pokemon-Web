@@ -55,7 +55,10 @@ describe('Berry trees (A.5)', () => {
       const obj = map.objects.find(o => o.id === treeId);
       expect(obj, `expected berry tree ${treeId} on map`).toBeDefined();
       expect(obj!.interactionType).toBe('berry-tree');
-      expect(obj!.textureKey).toBe('berry-tree');
+      // textureKey is per-berry-color (berry-tree-oran / -pecha / -sitrus) so
+      // each variety renders distinctly. The legacy 'berry-tree' key is also
+      // valid; accept either.
+      expect(obj!.textureKey).toMatch(/^berry-tree(-\w+)?$/);
       const data = obj!.interactionData ?? '';
       const [parsedId, regrowth] = data.split(':');
       expect(parsedId).toBe(berryId);

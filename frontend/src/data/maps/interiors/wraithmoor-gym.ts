@@ -52,7 +52,7 @@ export const wraithmoorGym: MapDefinition = {
     },
   ],
   trainers: [
-    { id: 'wraithmoor-gym-leader', name: 'Morwen', trainerId: 'gym-morwen', tileX: 6, tileY: 2, textureKey: 'npc-female-2', facing: 'down', lineOfSight: 6 },
+    { id: 'wraithmoor-gym-leader', name: 'Morwen', trainerId: 'gym-morwen', tileX: 6, tileY: 2, textureKey: 'npc-gym-morwen', facing: 'down', lineOfSight: 6 },
     { id: 'wraithmoor-trainer-1', name: 'Medium', trainerId: 'medium-wraithmoor-1', tileX: 3, tileY: 4, textureKey: 'npc-psychic', facing: 'right', lineOfSight: 3 },
     { id: 'wraithmoor-trainer-2', name: 'Medium', trainerId: 'medium-wraithmoor-2', tileX: 9, tileY: 9, textureKey: 'npc-psychic', facing: 'left', lineOfSight: 3 },
   ],

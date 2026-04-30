@@ -159,7 +159,7 @@ export const route5: MapDefinition = {
       id: 'route5-berry-tree-pecha',
       tileX: 17,
       tileY: 13,
-      textureKey: 'berry-tree', objectType: 'item-ball',
+      textureKey: 'berry-tree-pecha', objectType: 'item-ball',
       dialogue: ['A canopy berry tree, half-hidden by leaves.'],
       interactionType: 'berry-tree',
       interactionData: 'pecha-berry:300' }

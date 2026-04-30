@@ -20,7 +20,7 @@ export const verdantiaGym: MapDefinition = {
     { id: 'verdantia-gym-picnicker', name: 'Picnicker', trainerId: 'picnicker-1', tileX: 3, tileY: 6,
       textureKey: 'npc-female-2', facing: 'right', lineOfSight: 3 },
     { id: 'verdantia-gym-leader', name: 'Ivy', trainerId: 'gym-ivy', tileX: 4, tileY: 2,
-      textureKey: 'npc-female-1', facing: 'down', lineOfSight: 6 },
+      textureKey: 'npc-gym-ivy', facing: 'down', lineOfSight: 6 },
   ],
   objects: [],
   warps: [

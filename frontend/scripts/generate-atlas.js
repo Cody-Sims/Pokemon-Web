@@ -115,9 +115,35 @@ function buildIntro() {
 /** @param {string} subfolder — relative to assets/sprites/npcs/ */
 function buildNpcCategory(subfolder) {
   const dir = join(ASSETS, 'sprites', 'npcs', subfolder);
+  let assets = scanAtlases(dir, `assets/sprites/npcs/${subfolder}`);
+  // sign-post and item-ball were migrated to assets/sprites/objects/ as
+  // plain 16×16 images — they don't need 12-frame walk atlases. Filter
+  // out any leftover atlas pairs in npcs/trainers/ so the new images win.
+  if (subfolder === 'trainers') {
+    const movedToObjects = new Set(['sign-post', 'item-ball']);
+    assets = assets.filter(a => !movedToObjects.has(a.key));
+  }
   return {
     loadType: 'atlas',
-    assets: scanAtlases(dir, `assets/sprites/npcs/${subfolder}`),
+    assets,
+  };
+}
+
+/**
+ * Static map objects (PCs, signs, vents, doors, fossils, berries, etc.).
+ * These are plain 16×16 images — no atlas, no walk frames — because
+ * `InteractableObject` is a static `Phaser.Sprite` with no animation.
+ * Source: `frontend/public/assets/sprites/objects/`.
+ */
+function buildObjects() {
+  const dir = join(ASSETS, 'sprites', 'objects');
+  const files = listFiles(dir, '.png');
+  return {
+    loadType: 'image',
+    assets: files.map(f => ({
+      key: keyFromFile(f),
+      path: `assets/sprites/objects/${f}`,
+    })),
   };
 }
 
@@ -163,6 +189,7 @@ const manifest = {
     'npc-gym-leaders':  buildNpcCategory('gym-leaders'),
     'npc-elite-four':   buildNpcCategory('elite-four'),
     'npc-villains':     buildNpcCategory('villains'),
+    'objects':          buildObjects(),
     'ui':               buildUI(),
     'bgm':              buildAudio('bgm'),
     'sfx':              buildAudio('sfx'),

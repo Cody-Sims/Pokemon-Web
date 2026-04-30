@@ -27,7 +27,7 @@ export const scalecrestPokecenter: MapDefinition = {
   trainers: [],
   objects: [
     {
-    id: 'scalecrest-pc', tileX: 11, tileY: 2, textureKey: 'item-ball', objectType: 'pc', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc' }
+    id: 'scalecrest-pc', tileX: 11, tileY: 2, textureKey: 'pc-terminal', objectType: 'pc', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc' }
   ],
   warps: [
     { tileX: 6, tileY: 7, targetMap: 'scalecrest-citadel', targetSpawnId: 'from-pokecenter' },

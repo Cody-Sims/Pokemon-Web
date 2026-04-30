@@ -28,7 +28,7 @@ export const verdantiaPokecenter: MapDefinition = {
   trainers: [],
   objects: [
     {
-    id: 'verdantia-pc', tileX: 9, tileY: 2, textureKey: 'item-ball', objectType: 'pc', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc' }
+    id: 'verdantia-pc', tileX: 9, tileY: 2, textureKey: 'pc-terminal', objectType: 'pc', dialogue: ['Someone\'s PC is booted up.', 'Access the Pokémon Storage System?'], interactionType: 'pc' }
   ],
   warps: [
     { tileX: 4, tileY: 7, targetMap: 'verdantia-village', targetSpawnId: 'from-pokecenter' },

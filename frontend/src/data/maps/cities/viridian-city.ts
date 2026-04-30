@@ -59,7 +59,7 @@ export const viridianCity: MapDefinition = {
       name: 'Townsperson',
       tileX: 10,
       tileY: 18,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-3',
       facing: 'up',
       requireFlag: '!badge_7',
       dialogue: ['The Viridian Gym is closed right now.', 'The leader is away on business.'],

@@ -40,7 +40,7 @@ export const cinderfallTown: MapDefinition = {
       dialogue: ['Solara is our Gym Leader. She was once Aldric\'s student.',
         'Her Fire Pokémon burn with incredible passion!',
         'Water, Ground, and Rock moves are your best bet.'] },
-    { id: 'cinderfall-solara-story', name: 'Solara', tileX: 10, tileY: 12, textureKey: 'npc-female-4', facing: 'down',
+    { id: 'cinderfall-solara-story', name: 'Solara', tileX: 10, tileY: 12, textureKey: 'npc-gym-solara', facing: 'down',
       dialogue: ['Solara: You\'ve come far, challenger.',
         'Solara: I know what awaits you at the League.',
         'Solara: Aldric was my teacher once. The greatest trainer I ever knew.',

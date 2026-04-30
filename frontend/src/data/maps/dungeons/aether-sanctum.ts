@@ -53,7 +53,7 @@ export const aetherSanctum: MapDefinition = {
       condition: '!rival-6' },
   ],
   objects: [
-    { id: 'sanctum-sign', tileX: 10, tileY: 23, textureKey: 'item-ball', objectType: 'item-ball',
+    { id: 'sanctum-sign', tileX: 10, tileY: 23, textureKey: 'aether-rune', objectType: 'item-ball',
       dialogue: ['The air hums with raw Aether energy...', 'Ancient runes glow along the walls.'] }
   ],
   warps: [

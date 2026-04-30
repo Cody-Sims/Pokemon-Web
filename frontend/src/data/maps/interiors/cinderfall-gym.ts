@@ -52,7 +52,7 @@ export const cinderfallGym: MapDefinition = {
     },
   ],
   trainers: [
-    { id: 'cinderfall-gym-leader', name: 'Solara', trainerId: 'gym-solara', tileX: 6, tileY: 2, textureKey: 'npc-female-4', facing: 'down', lineOfSight: 6 },
+    { id: 'cinderfall-gym-leader', name: 'Solara', trainerId: 'gym-solara', tileX: 6, tileY: 2, textureKey: 'npc-gym-solara', facing: 'down', lineOfSight: 6 },
     { id: 'cinderfall-trainer-1', name: 'Kindler', trainerId: 'kindler-cinderfall-1', tileX: 3, tileY: 5, textureKey: 'npc-hiker', facing: 'right', lineOfSight: 3 },
     { id: 'cinderfall-trainer-2', name: 'Kindler', trainerId: 'kindler-cinderfall-2', tileX: 9, tileY: 8, textureKey: 'npc-ace-trainer-f', facing: 'left', lineOfSight: 3 },
   ],

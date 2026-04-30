@@ -28,6 +28,9 @@ export class NPC extends Phaser.GameObjects.Sprite {
 
   /** Turn to face a direction (e.g., face the player during dialogue). */
   faceDirection(dir: Direction): void {
+    // Cancel any in-flight walk-anim timer so it cannot overwrite the new
+    // facing frame on its next tick (B5 — Prof. Willow stuck facing down).
+    this.stopWalkAnim();
     this.facing = dir;
     this.setDirectionFrame(dir);
   }

@@ -70,13 +70,13 @@ export const wraithmoorTown: MapDefinition = {
   objects: [
     { id: 'wraithmoor-sign', tileX: 10, tileY: 1, textureKey: 'sign-post', objectType: 'sign',
       dialogue: ['WRAITHMOOR TOWN', '"Where Spirits Linger"'] },
-    { id: 'wraithmoor-memory-1', tileX: 11, tileY: 11, textureKey: 'item-ball', objectType: 'item-ball',
+    { id: 'wraithmoor-memory-1', tileX: 11, tileY: 11, textureKey: 'memory-fragment', objectType: 'item-ball',
       dialogue: ['A faint glow emanates from the graveyard stones...', 'You found a memory fragment! It pulses with ghostly light.'],
       requireFlag: '!memory-1-found', setsFlag: 'memory-1-found' },
-    { id: 'wraithmoor-memory-2', tileX: 4, tileY: 13, textureKey: 'item-ball', objectType: 'item-ball',
+    { id: 'wraithmoor-memory-2', tileX: 4, tileY: 13, textureKey: 'memory-fragment', objectType: 'item-ball',
       dialogue: ['An old book on the library shelf glows faintly...', 'You found a memory fragment! Words shimmer on the page.'],
       requireFlag: '!memory-2-found', setsFlag: 'memory-2-found' },
-    { id: 'wraithmoor-memory-3', tileX: 16, tileY: 18, textureKey: 'item-ball', objectType: 'item-ball',
+    { id: 'wraithmoor-memory-3', tileX: 16, tileY: 18, textureKey: 'memory-fragment', objectType: 'item-ball',
       dialogue: ['The ruined shrine hums with spectral energy...', 'You found a memory fragment! A ghostly figure smiles.'],
       requireFlag: '!memory-3-found', setsFlag: 'memory-3-found' }
   ],

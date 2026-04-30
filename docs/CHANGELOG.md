@@ -78,9 +78,14 @@ Verified by `npm run build` (clean) and `npm run test` (2,148 tests pass).
 
 ### Added — Sprite improvement pass (per [docs/sprites-improvement-plan.md](sprites-improvement-plan.md))
 
-Authored procedural 16×16 object sprites in
-[`PreloadScene.create`](../frontend/src/scenes/boot/PreloadScene.ts) so map
-objects no longer fall back to the generic Poké Ball icon:
+Authored real 16×16 PNG sprites for static map objects under the new
+[frontend/public/assets/sprites/objects/](../frontend/public/assets/sprites/objects)
+folder so map objects no longer fall back to the generic Poké Ball icon.
+Replaced the runtime `Phaser.Graphics.generateTexture` block in
+[PreloadScene.create](../frontend/src/scenes/boot/PreloadScene.ts) with a
+plain `image` loader — every static object now ships as a sub-256-byte
+PNG and is registered through `asset-manifest.json`'s new `objects`
+category:
 
 - **`pc-terminal`** — replaces `item-ball` for every PC storage system in
   PokéCenters (Verdantia, Ironvale, Voltara, Wraithmoor, Scalecrest), the
@@ -120,11 +125,29 @@ were already loaded but unused in the map data:
 
 ### Fixed — Broken texture references
 
-[`PreloadScene.preload`](../frontend/src/scenes/boot/PreloadScene.ts) now
-loads aliases for **`npc-rook`** and **`npc-zara`** (mapped to existing
-NPC atlases). These two story characters appear in seven map spawn entries
-across the Abyssal Spire, Shattered Isles Shore, Route 7, and Aether Sanctum
-but had no dedicated art, causing missing-texture squares at runtime.
+Authored bespoke 64×51 atlases for the **`npc-rook`** (forest-green scout)
+and **`npc-zara`** (Synthesis admin, deep purple) story characters via
+hue-shifting from existing source atlases (see
+[temp/create_rook_zara_sprites.py](../temp/create_rook_zara_sprites.py)).
+These two appear in seven map spawn entries across the Abyssal Spire,
+Shattered Isles Shore, Route 7, and Aether Sanctum but had no dedicated
+art, previously causing missing-texture squares at runtime.
+
+### Changed — Asset layout
+
+- New [frontend/public/assets/sprites/objects/](../frontend/public/assets/sprites/objects)
+  folder for all static interactable objects (PCs, signs, item balls,
+  berry trees, vents, conduits, fossils, runes, pedestals, doors, memory
+  fragments, crystal clusters). They load as plain `image` assets — no
+  walk-frame atlases.
+- `sign-post` and `item-ball` were migrated from
+  `npcs/trainers/` (where they shipped as 192×17 atlases with 12 unused
+  walk frames) to `sprites/objects/` as plain 16×16 PNGs. The manifest
+  generator skips the legacy keys in `npcs/trainers/` so the new images
+  win.
+- Manifest generator [generate-atlas.js](../frontend/scripts/generate-atlas.js)
+  gained a new `buildObjects()` builder that scans the objects folder and
+  emits an `objects` category. Total tracked assets rose from 565 to 581.
 
 ### Changed — Tests
 

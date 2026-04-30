@@ -56,7 +56,7 @@ export const coralGym: MapDefinition = {
       trainerId: 'gym-coral',
       tileX: 4,
       tileY: 2,
-      textureKey: 'npc-swimmer',
+      textureKey: 'npc-gym-coral',
       facing: 'down',
       lineOfSight: 6,
     },

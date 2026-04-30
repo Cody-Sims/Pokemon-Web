@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-29T13:54:54.927Z",
+  "generated": "2026-04-30T04:17:57.256Z",
   "categories": {
     "pokemon-icons": {
       "loadType": "image",
@@ -2026,6 +2026,11 @@
           "atlas": "assets/sprites/npcs/story/npc-oak.json"
         },
         {
+          "key": "npc-rook",
+          "texture": "assets/sprites/npcs/story/npc-rook.png",
+          "atlas": "assets/sprites/npcs/story/npc-rook.json"
+        },
+        {
           "key": "rival",
           "texture": "assets/sprites/npcs/story/rival.png",
           "atlas": "assets/sprites/npcs/story/rival.json"
@@ -2039,11 +2044,6 @@
           "key": "generic-trainer",
           "texture": "assets/sprites/npcs/trainers/generic-trainer.png",
           "atlas": "assets/sprites/npcs/trainers/generic-trainer.json"
-        },
-        {
-          "key": "item-ball",
-          "texture": "assets/sprites/npcs/trainers/item-ball.png",
-          "atlas": "assets/sprites/npcs/trainers/item-ball.json"
         },
         {
           "key": "npc-ace-trainer",
@@ -2064,11 +2064,6 @@
           "key": "npc-psychic",
           "texture": "assets/sprites/npcs/trainers/npc-psychic.png",
           "atlas": "assets/sprites/npcs/trainers/npc-psychic.json"
-        },
-        {
-          "key": "sign-post",
-          "texture": "assets/sprites/npcs/trainers/sign-post.png",
-          "atlas": "assets/sprites/npcs/trainers/sign-post.json"
         }
       ]
     },
@@ -2169,6 +2164,80 @@
           "key": "npc-vex",
           "texture": "assets/sprites/npcs/villains/npc-vex.png",
           "atlas": "assets/sprites/npcs/villains/npc-vex.json"
+        },
+        {
+          "key": "npc-zara",
+          "texture": "assets/sprites/npcs/villains/npc-zara.png",
+          "atlas": "assets/sprites/npcs/villains/npc-zara.json"
+        }
+      ]
+    },
+    "objects": {
+      "loadType": "image",
+      "assets": [
+        {
+          "key": "aether-rune",
+          "path": "assets/sprites/objects/aether-rune.png"
+        },
+        {
+          "key": "berry-tree-oran",
+          "path": "assets/sprites/objects/berry-tree-oran.png"
+        },
+        {
+          "key": "berry-tree-pecha",
+          "path": "assets/sprites/objects/berry-tree-pecha.png"
+        },
+        {
+          "key": "berry-tree-sitrus",
+          "path": "assets/sprites/objects/berry-tree-sitrus.png"
+        },
+        {
+          "key": "berry-tree",
+          "path": "assets/sprites/objects/berry-tree.png"
+        },
+        {
+          "key": "conduit-broken",
+          "path": "assets/sprites/objects/conduit-broken.png"
+        },
+        {
+          "key": "conduit-fixed",
+          "path": "assets/sprites/objects/conduit-fixed.png"
+        },
+        {
+          "key": "crystal-cluster",
+          "path": "assets/sprites/objects/crystal-cluster.png"
+        },
+        {
+          "key": "door",
+          "path": "assets/sprites/objects/door.png"
+        },
+        {
+          "key": "fossil-claw",
+          "path": "assets/sprites/objects/fossil-claw.png"
+        },
+        {
+          "key": "item-ball",
+          "path": "assets/sprites/objects/item-ball.png"
+        },
+        {
+          "key": "memory-fragment",
+          "path": "assets/sprites/objects/memory-fragment.png"
+        },
+        {
+          "key": "pc-terminal",
+          "path": "assets/sprites/objects/pc-terminal.png"
+        },
+        {
+          "key": "ruins-pedestal",
+          "path": "assets/sprites/objects/ruins-pedestal.png"
+        },
+        {
+          "key": "sign-post",
+          "path": "assets/sprites/objects/sign-post.png"
+        },
+        {
+          "key": "vent",
+          "path": "assets/sprites/objects/vent.png"
         }
       ]
     },

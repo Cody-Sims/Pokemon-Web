@@ -41,7 +41,7 @@ export const viridianPokecenter: MapDefinition = {
       name: 'Townsperson',
       tileX: 3,
       tileY: 5,
-      textureKey: 'generic-trainer',
+      textureKey: 'npc-male-2',
       facing: 'right',
       behavior: { type: 'look-around' },
       dialogue: [
@@ -49,13 +49,15 @@ export const viridianPokecenter: MapDefinition = {
         'You can heal your Pokémon here anytime.',
       ],
     },
+  ],
+  trainers: [],
+  objects: [
     {
       id: 'viridian-pc',
       tileX: 11,
       tileY: 2,
-      textureKey: 'generic-trainer',
-      facing: 'down',
-      behavior: { type: 'look-around' },
+      textureKey: 'pc-terminal',
+      objectType: 'pc',
       dialogue: [
         'Someone\'s PC is booted up.',
         'Access the Pokémon Storage System?',
@@ -63,8 +65,6 @@ export const viridianPokecenter: MapDefinition = {
       interactionType: 'pc',
     },
   ],
-  trainers: [],
-  objects: [],
   warps: [
     { tileX: 6, tileY: 7, targetMap: 'viridian-city', targetSpawnId: 'from-pokecenter' },
   ],

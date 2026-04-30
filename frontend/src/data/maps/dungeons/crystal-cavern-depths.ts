@@ -71,7 +71,7 @@ export const crystalCavernDepths: MapDefinition = {
       interactionType: 'wild-encounter',
       interactionData: '153' },
     // ─── Fossil: Claw Fossil → Lithoclaw at Pewter Museum ───
-    { id: 'depths-claw-fossil', tileX: 6, tileY: 18, textureKey: 'item-ball', objectType: 'item-ball',
+    { id: 'depths-claw-fossil', tileX: 6, tileY: 18, textureKey: 'fossil-claw', objectType: 'item-ball',
       dialogue: [
         'A curved claw juts from the cavern wall...',
         'You found a Claw Fossil!',

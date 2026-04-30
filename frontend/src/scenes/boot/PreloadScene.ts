@@ -170,13 +170,14 @@ export class PreloadScene extends Phaser.Scene {
       this.load.atlas(key, `${npcBase}/Females/${key}.png`, `${npcBase}/Females/${key}.json`);
     }
 
-    // Story characters (story/)
-    for (const key of ['rival', 'npc-oak', 'npc-mom', 'npc-marina', 'npc-blitz']) {
+    // Story characters (story/) — includes npc-rook (forest-green scout)
+    for (const key of ['rival', 'npc-oak', 'npc-mom', 'npc-marina', 'npc-blitz', 'npc-rook']) {
       this.load.atlas(key, `${npcBase}/story/${key}.png`, `${npcBase}/story/${key}.json`);
     }
 
-    // Trainer classes & objects (trainers/)
-    for (const key of ['generic-trainer', 'sign-post', 'item-ball', 'npc-ace-trainer', 'npc-ace-trainer-f', 'npc-bug-catcher', 'npc-psychic']) {
+    // Trainer classes (trainers/) — sign-post and item-ball were migrated
+    // to assets/sprites/objects/ as plain images.
+    for (const key of ['generic-trainer', 'npc-ace-trainer', 'npc-ace-trainer-f', 'npc-bug-catcher', 'npc-psychic']) {
       this.load.atlas(key, `${npcBase}/trainers/${key}.png`, `${npcBase}/trainers/${key}.json`);
     }
 
@@ -190,9 +191,25 @@ export class PreloadScene extends Phaser.Scene {
       this.load.atlas(key, `${npcBase}/elite-four/${key}.png`, `${npcBase}/elite-four/${key}.json`);
     }
 
-    // Villains (villains/)
-    for (const key of ['npc-grunt', 'npc-admin-vex', 'npc-vex']) {
+    // Villains (villains/) — includes npc-zara (purple admin)
+    for (const key of ['npc-grunt', 'npc-admin-vex', 'npc-vex', 'npc-zara']) {
       this.load.atlas(key, `${npcBase}/villains/${key}.png`, `${npcBase}/villains/${key}.json`);
+    }
+
+    // ── Static map objects (assets/sprites/objects/) ──
+    // Plain 16×16 images for non-NPC interactables: PCs, signs, item balls,
+    // berry trees, vents, conduits, fossils, runes, pedestals, doors,
+    // memory fragments, crystal clusters. No atlas, no animation.
+    const objectsBase = 'assets/sprites/objects';
+    for (const key of [
+      'sign-post', 'item-ball',
+      'pc-terminal', 'door',
+      'berry-tree', 'berry-tree-oran', 'berry-tree-pecha', 'berry-tree-sitrus',
+      'vent', 'conduit-broken', 'conduit-fixed',
+      'crystal-cluster', 'fossil-claw',
+      'aether-rune', 'ruins-pedestal', 'memory-fragment',
+    ]) {
+      this.load.image(key, `${objectsBase}/${key}.png`);
     }
 
     // UI badge spritesheets
@@ -217,29 +234,8 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Generate procedural berry-tree texture (small bush + red berries) so
-    // berry-tree map objects (A.5) render with their own distinct sprite
-    // rather than reusing the item-ball icon. See OverworldInteraction's
-    // berry-tree handler for the harvest logic.
-    if (!this.textures.exists('berry-tree')) {
-      const g = this.add.graphics();
-      // Soft brown trunk
-      g.fillStyle(0x6b3a1f, 1);
-      g.fillRect(7, 11, 2, 4);
-      // Foliage
-      g.fillStyle(0x2c8a3a, 1);
-      g.fillCircle(8, 7, 6);
-      g.fillStyle(0x37a046, 1);
-      g.fillCircle(6, 6, 3);
-      g.fillCircle(10, 5, 3);
-      // Berries
-      g.fillStyle(0xd23045, 1);
-      g.fillCircle(5, 8, 1.4);
-      g.fillCircle(11, 8, 1.4);
-      g.fillCircle(8, 4, 1.4);
-      g.generateTexture('berry-tree', 16, 16);
-      g.destroy();
-    }
+    // All static object sprites now ship as plain 16×16 PNGs under
+    // assets/sprites/objects/ — no runtime procedural generation needed.
 
     // Initialize cry generator with audio context
     const audio = AudioManager.getInstance();

@@ -52,7 +52,7 @@ export const scalecrestGym: MapDefinition = {
     },
   ],
   trainers: [
-    { id: 'scalecrest-gym-leader', name: 'Drake', trainerId: 'gym-drake', tileX: 6, tileY: 2, textureKey: 'npc-clerk', facing: 'down', lineOfSight: 6 },
+    { id: 'scalecrest-gym-leader', name: 'Drake', trainerId: 'gym-drake', tileX: 6, tileY: 2, textureKey: 'npc-gym-drake', facing: 'down', lineOfSight: 6 },
     { id: 'scalecrest-trainer-1', name: 'Ace Trainer', trainerId: 'ace-scalecrest-1', tileX: 3, tileY: 5, textureKey: 'npc-ace-trainer', facing: 'right', lineOfSight: 3 },
     { id: 'scalecrest-trainer-2', name: 'Ace Trainer', trainerId: 'ace-scalecrest-2', tileX: 9, tileY: 9, textureKey: 'npc-ace-trainer-f', facing: 'left', lineOfSight: 3 },
   ],
