@@ -74,10 +74,10 @@ export class BattleActionMenu {
         this.fleeAttempts++;
         const playerSpeed = this.scene.statusHandler.getEffectiveStat(b.playerPokemon, 'speed');
         const enemySpeed = this.scene.statusHandler.getEffectiveStat(b.enemyPokemon, 'speed');
-        const fleeChance = Math.floor(
-          (playerSpeed * 128 / Math.max(1, enemySpeed) + 30 * this.fleeAttempts) % 256,
+        const rawFlee = Math.floor(
+          playerSpeed * 128 / Math.max(1, enemySpeed) + 30 * this.fleeAttempts,
         );
-        if (playerSpeed >= enemySpeed || Math.random() * 256 < fleeChance) {
+        if (playerSpeed >= enemySpeed || rawFlee >= 256 || Math.random() * 256 < rawFlee) {
           AudioManager.getInstance().playSFX(SFX.RUN_SUCCESS);
           this.scene.msg('Got away safely!');
           this.scene.time.delayedCall(800, () => this.scene.endBattle());

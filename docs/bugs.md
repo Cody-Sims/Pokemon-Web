@@ -113,6 +113,66 @@ Most bugs from this cycle were fixed in the 2026-04-29 changelog entry
 
 ---
 
+## 2026-04-29 audit cycle — round 5 (deep logic)
+
+Fresh top-to-bottom code review of the battle scene layer, battle
+subsystem (calculators, effects, executor), overworld, and inventory.
+Most bugs from this cycle were fixed in the 2026-04-30 changelog entry
+"Bug audit pass, round 5". Remaining open items:
+
+### Contact abilities trigger on all physical moves
+
+- **Files:** [frontend/src/battle/effects/AbilityHandler.ts](frontend/src/battle/effects/AbilityHandler.ts#L79-L80).
+- **Symptom:** Static, Flame Body, Poison Point, Rough Skin, and Iron
+  Barbs activate on any `move.category === 'physical'`. Non-contact
+  physical moves like Earthquake and Rock Slide incorrectly trigger.
+  In the games, only moves that make contact trigger these abilities.
+- **Status:** Open — add a `contact` flag to `MoveData`; check
+  `move.contact === true` instead of `move.category === 'physical'`.
+
+### Repel steps discarded on map transition and battle return
+
+- **Files:** [frontend/src/scenes/overworld/OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts#L237), [frontend/src/systems/overworld/EncounterSystem.ts](frontend/src/systems/overworld/EncounterSystem.ts#L13).
+- **Symptom:** `create()` constructs a new `EncounterSystem()` every
+  time the scene starts (warps, battle returns, fly). The new instance
+  has `repelSteps = 0`, discarding any remaining repel steps. A player
+  who uses a Repel and enters a building or finishes a battle
+  immediately loses the repel effect.
+- **Status:** Open — persist `repelSteps` on `GameManager` and
+  restore in `create()`.
+
+### DoubleBattleManager: Protect persists across turns
+
+- **Files:** [frontend/src/battle/core/DoubleBattleManager.ts](frontend/src/battle/core/DoubleBattleManager.ts#L280-L300).
+- **Symptom:** `clearProtectAll()` is never called at the end of
+  `executeTurn`. A Pokémon that uses Protect stays protected
+  indefinitely — blocking attacks on all subsequent turns.
+- **Status:** Open — add `this.statusHandler.clearProtectAll()` at
+  the end of `executeTurn`.
+
+### DoubleBattleManager: Switch-in abilities don't trigger
+
+- **Files:** [frontend/src/battle/core/DoubleBattleManager.ts](frontend/src/battle/core/DoubleBattleManager.ts#L449-L465).
+- **Symptom:** After `statusHandler.initPokemon(newPokemon)`,
+  `AbilityHandler.onSwitchIn` is never called. Intimidate won't lower
+  Attack, Drizzle/Drought won't set weather when switching in during
+  doubles.
+- **Status:** Open — call `AbilityHandler.onSwitchIn` after
+  `initPokemon`.
+
+### DoubleBattleManager: End-of-turn ability and item effects missing
+
+- **Files:** [frontend/src/battle/core/DoubleBattleManager.ts](frontend/src/battle/core/DoubleBattleManager.ts#L285-L298).
+- **Symptom:** The end-of-turn loop calls `statusHandler.applyEndOfTurn`
+  and `weatherManager.applyEndOfTurn`, but never calls
+  `AbilityHandler.onEndOfTurn` or `HeldItemHandler.onEndOfTurn`. Speed
+  Boost never boosts speed, Leftovers never heals, Black Sludge never
+  triggers in double battles.
+- **Status:** Open — add `AbilityHandler.onEndOfTurn` and
+  `HeldItemHandler.onEndOfTurn` calls in the loop.
+
+---
+
 ## 2026-05-02 audit cycle — round 4 (UI / mobile)
 
 This pass focuses on the UI layer and mobile-specific paths: touch
@@ -489,15 +549,341 @@ helpers, and per-scene close affordances.
 
 ---
 
+## 2026-05-02 audit cycle — round 5 (save / load / battle state)
+
+User-reported regressions plus the related code paths discovered while
+auditing them. Save-state issues are listed first because they are
+**blocking continued playtesting** — Continue from the title screen
+crashes immediately on the live build (`battle-Q0rEFkIH.js` →
+`loadFromSave`).
+
+### TitleScene "Continue" crashes — `loadFromSave` expects a save shape that no longer exists 🚨
+
+- **Files:** [SaveManager.ts](frontend/src/managers/SaveManager.ts#L20-L36),
+  [GameManager.ts](frontend/src/managers/GameManager.ts#L221-L296),
+  [OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts#L115-L121),
+  [TitleScene.ts](frontend/src/scenes/title/TitleScene.ts#L197-L201),
+  [interfaces.ts](frontend/src/data/interfaces.ts#L96-L120).
+- **Symptom:** `TypeError: undefined is not an object (evaluating
+  'e.player.party')` thrown from `loadFromSave` whenever a player taps
+  Continue on the title screen. Game is unrecoverable from save —
+  every session starts from scratch.
+- **Root Cause:** Two completely incompatible save formats coexist:
+  - `SaveManager.save()` writes a **flat** object built from
+    `gm.serialize()` (top-level `playerName`, `party`, `bag`, `money`,
+    `flags`, `trainersDefeated`, …).
+  - `GameManager.loadFromSave(save)` expects the **legacy nested**
+    shape (`save.player.name`, `save.player.party`, `save.player.bag`,
+    `save.player.position`, `save.player.badges`, `save.player.pokedex`,
+    …) and immediately destructures `save.player.party` → crash.
+  - `SaveManager.load()` lies about the type (`return parsed as
+    SaveData`) so TypeScript happily passes the flat object as if it
+    were nested.
+  - `SaveData` (in `interfaces.ts`) still describes the nested shape,
+    so every consumer that trusts the type signature is broken.
+  - `loadAndApply()` (used by the import-JSON path) calls
+    `gm.deserialize` instead and works correctly — masking the bug
+    until someone actually pressed Continue.
+- **Status:** Open — minimum fix is to replace the
+  `gm.loadFromSave(data.saveData)` call in `OverworldScene.init` with
+  `gm.deserialize(data.saveData as ReturnType<typeof gm.serialize>)`
+  plus the achievements restore that `loadAndApply` does (or have
+  TitleScene call `loadAndApply()` and pass nothing to
+  `OverworldScene`). Longer-term, **delete `loadFromSave`** entirely
+  along with the stale nested `SaveData` interface — they are pure
+  technical debt and a footgun.
+
+### `SaveManager.load()` returns the wrong type
+
+- **Files:** [SaveManager.ts](frontend/src/managers/SaveManager.ts#L38-L57).
+- **Symptom:** `load()` declares `: SaveData | null` and casts the
+  parsed JSON `as SaveData`, but the actual on-disk shape is the flat
+  output of `gm.serialize()` (no `player` wrapper). Any caller that
+  reads typed fields like `data.player.name` will hit `undefined`.
+- **Status:** Open — change the signature to
+  `ReturnType<GameManager['serialize']> & { version: number;
+  timestamp: number; achievements?: string[] } | null` (or introduce a
+  `SerializedSave` type) and fix the now-stale `SaveData` interface.
+
+### `SaveData` interface is the legacy nested shape
+
+- **Files:** [interfaces.ts](frontend/src/data/interfaces.ts#L96-L120).
+- **Symptom:** Documentation drift — the canonical "save format"
+  declared in `interfaces.ts` describes a structure that has not been
+  written to disk since the v1→v2 migration. New contributors will
+  read this and write more `data.player.party`-style code that
+  silently breaks at runtime.
+- **Status:** Open — replace with `type SaveData =
+  ReturnType<GameManager['serialize']> & { version: number; timestamp:
+  number; achievements?: string[] }` so the type tracks reality.
+
+### `OverworldScene.init` skips achievement restore
+
+- **Files:** [OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts#L115-L125),
+  [SaveManager.ts](frontend/src/managers/SaveManager.ts#L60-L72).
+- **Symptom:** Even when the save-load path is fixed, the title-screen
+  Continue branch calls `gm.loadFromSave(data.saveData)` directly and
+  never restores `AchievementManager`. `loadAndApply()` does (`if
+  (data.achievements …) AchievementManager.getInstance().deserialize`),
+  so achievements silently roll back to whatever was unlocked in the
+  current process.
+- **Status:** Open — route Continue through `loadAndApply()` instead of
+  passing `saveData` into the scene, or replicate the achievement
+  restore step in `OverworldScene.init`.
+
+### `SaveManager.save()` swallows `JSON.stringify` errors silently (still open from round 3, escalated)
+
+- **Files:** [SaveManager.ts](frontend/src/managers/SaveManager.ts#L20-L36).
+- **Symptom:** `try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }`
+  catches *only* DOMException quota errors but `JSON.stringify` itself
+  can throw on circular references — the round-5 audit found that
+  `PlayerStateManager.berryPlots` accepts arbitrary `unknown[]` values
+  that could contain Phaser game objects with cyclic parent refs.
+  Result: silent save loss with a single `console.error`.
+- **Status:** Open — add a structural pre-check (e.g. `JSON.stringify`
+  in a separate try and surface a user-facing toast on failure), or
+  prune Phaser objects from save payloads at the manager layer.
+
+### `loadAndApply()` casts away type errors
+
+- **Files:** [SaveManager.ts](frontend/src/managers/SaveManager.ts#L60-L72).
+- **Symptom:** `gm.deserialize(data as unknown as ReturnType<typeof
+  gm.serialize>)` bypasses TypeScript entirely. Any future field that
+  `serialize()` adds but old saves lack will silently `undefined` its
+  way through `deserialize` (most managers guard with `if (data.x)`,
+  so the field is just dropped). No telemetry, no warning, no
+  migration step.
+- **Status:** Open — add a `migrate(parsed)` step in `load()` that
+  back-fills new fields with defaults and bumps `version`, and remove
+  the `as unknown as` cast.
+
+### Battle HP bar shows 100% on entry even when active Pokémon is wounded 🚨
+
+- **Files:** [BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts#L268-L275),
+  [BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts#L406-L420).
+- **Symptom:** User-reported: *"I joined the battle with 2/20 HP and
+  yet my health bar was full."* The numeric `playerHpText` is correct
+  (e.g. `2/20`) but the green bar visually fills the entire frame
+  until the player's first action is taken. Triggers every encounter
+  whose lead Pokémon is below max HP (post-poison overworld walk,
+  resumed save, etc.).
+- **Root Cause:** [BattleScene.ts#L271](frontend/src/scenes/battle/BattleScene.ts#L271)
+  creates `playerHpBar` (and `enemyHpBar`) at full width:
+  `add.rectangle(x, y, playerHpBarW, 10, 0x4caf50)`. `updateHpBars()`
+  is *never* called inside `BattleScene.create()` — the first call
+  happens after a turn is taken (move animation, end-of-turn ticks,
+  or a faint check). Until then, the bar is a literal full-width
+  rectangle.
+- **Status:** Open — call `this.updateHpBars()` once after the
+  slide-in tween chain (or set the initial `displayWidth =
+  playerHpBarW * (currentHp / stats.hp)` and pick the colour at
+  creation time). Same fix needed for `enemyHpBar` for wounded boss
+  rematches and double-battle partner bars
+  ([BattleScene.ts#L426-L444](frontend/src/scenes/battle/BattleScene.ts#L426-L444)).
+
+### `BattleScene.create` selects an alive lead but does not refresh status icon either
+
+- **Files:** [BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts#L137-L138),
+  [BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts#L274-L275).
+- **Symptom:** Sister bug to the HP-bar issue — `playerStatusImg` is
+  added with `setVisible(false)` and is only refreshed by
+  `updateStatusIndicators()` (called from `updateHpBars()`). A
+  Pokémon entering battle already poisoned/burned therefore shows no
+  status icon during the entire intro sequence and through the first
+  turn.
+- **Status:** Open — same fix (initial `updateHpBars()` call) covers
+  this since `updateHpBars` ends with `this.updateStatusIndicators()`.
+
+### EXP bar is also created at full width before the level percentage is applied — wait, it isn't
+
+- **Files:** [BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts#L277-L281).
+- **Symptom:** Audited as part of the HP-bar fix to confirm scope;
+  the EXP bar is created with `playerHpBarW * expPct` width, so it is
+  correct from frame 0. Documenting the negative result so future
+  audits do not chase it.
+- **Status:** Not a bug — listed for traceability.
+
+### `handleFaintedSwitch` "shutdown" fallback can wedge the battle if PartyScene races
+
+- **Files:** [BattleSwitchHandler.ts](frontend/src/scenes/battle/BattleSwitchHandler.ts#L139-L177).
+- **Symptom:** User-reported: *"I have fainted but yet the battle
+  hasn't ended."* When the active Pokémon faints with no other alive
+  party members, `handleFaintedSwitch` correctly schedules
+  `endBattle()` after 2 s. But when an alive party member exists and
+  PartyScene closes via `shutdown` *before* the `pokemon-selected`
+  event fires (race observed on slow mobile devices, or when the user
+  taps the close-zone overlay), `chosenIndex` stays at `-1`, the code
+  falls back to `party.find(p => p.currentHp > 0)` — and if the user
+  rapidly used a Revive that finished after the check, `newActive` is
+  `undefined` because the new alive member's `currentHp` was set in
+  another tick. The handler then `return`s without re-enabling input.
+  The scene stays in `state = 'message'`, no actions are shown, and
+  the battle is permanently frozen.
+- **Status:** Open — at minimum, when `newActive` is undefined the
+  handler must call `this.scene.endBattle()` (the player has no
+  Pokémon left and the whole-party guard above missed a transition),
+  and `PartyScene` should always emit `pokemon-selected` before
+  `shutdown` in `forcedSwitch` mode.
+
+### `BattleSwitchHandler.openPartyMenu` (voluntary switch) still skips `initPokemon` order vs. round 3 — but worse with HP bar bug
+
+- **Files:** [BattleSwitchHandler.ts](frontend/src/scenes/battle/BattleSwitchHandler.ts#L19-L70).
+- **Symptom:** Round 3 noted that the voluntary path skips
+  `AbilityHandler.onSwitchIn` setup ordering. Re-reading the code now,
+  this *is* fired (line 56), but `b.updateHpBars()` is called
+  **before** `clearPokemon`/`initPokemon` change the active reference.
+  Combined with the round-5 HP-bar bug above, switching into a
+  damaged party member during a voluntary switch shows a full bar
+  that snaps to the correct value only after the next damage tick.
+- **Status:** Open — move `b.updateHpBars()` to *after* the
+  `initPokemon` calls and the ability hooks fire, so the bar reflects
+  the post-switch state (and fix the missing initial call from the
+  HP-bar bug above).
+
+### `BattleScene` resume-from-save path does not exist
+
+- **Files:** [BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts#L120-L160),
+  [SaveManager.ts](frontend/src/managers/SaveManager.ts#L20-L36).
+- **Symptom:** Stack trace from the user shows
+  `loadFromSave (battle-Q0rEFkIH.js:1:93605) → init
+  (index-DtueDsYM.js:1:220437) → bootScene` — `loadFromSave` is
+  bundled into the **battle** chunk because `OverworldScene` (which
+  imports `BattleScene`) re-exports a transitive dependency, not
+  because the battle scene itself resumes from save. The save format
+  has **no field** for "battle in progress" — if the user hard-quits
+  mid-battle, the next session resumes them on the overworld at the
+  saved position with the post-encounter party state. Document or
+  guard accordingly.
+- **Status:** Open (design / docs) — either persist a battle resume
+  payload or display a "Battle was interrupted" toast and roll back
+  to last overworld save on detection.
+
+### `gm.reset()` in `loadAndApply` does not reset `AchievementManager`
+
+- **Files:** [SaveManager.ts](frontend/src/managers/SaveManager.ts#L60-L72).
+- **Symptom:** `loadAndApply` calls `gm.reset()` to clear stale state,
+  then conditionally restores achievements only when
+  `data.achievements` is an array. If a v1 save is loaded that has no
+  `achievements` field, the **previous session's** unlocked
+  achievements survive into the new run.
+- **Status:** Open — add `AchievementManager.getInstance().reset()`
+  before the conditional `deserialize`, and add a `reset()` method to
+  `AchievementManager` if it does not already exist.
+
+### `SaveManager.importJson` minimum-shape check uses the broken nested key list — wait, it doesn't
+
+- **Files:** [SaveManager.ts](frontend/src/managers/SaveManager.ts#L100-L132).
+- **Symptom:** Audit of `importJson` confirms the required-field list
+  is `['playerName', 'party', 'badges', 'flags']` — the **flat**
+  shape. Imports therefore validate against the real on-disk format.
+  Documenting the negative result so future contributors do not "fix"
+  this back to `'player.name'`.
+- **Status:** Not a bug — listed for traceability.
+
+### Save round-trip drops `boxNames`, `gameClockMinutes`, `currentMap` for legacy v1 imports
+
+- **Files:** [SaveManager.ts](frontend/src/managers/SaveManager.ts#L38-L57),
+  [PartyManager](frontend/src/managers/PartyManager.ts).
+- **Symptom:** v1 → v2 migration in `load()` sets
+  `parsed.boxNames = undefined` instead of providing default labels;
+  `PartyManager.deserialize` then leaves `boxNames` empty and the PC
+  shows "Box 1"…"Box 8" placeholders forever.
+- **Status:** Open — supply default box names in the migration.
+
+### `currentMap` is not validated on load
+
+- **Files:** [PlayerStateManager.ts](frontend/src/managers/PlayerStateManager.ts#L296-L303),
+  [OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts#L115-L125).
+- **Symptom:** A save written on a map that has since been removed
+  (e.g. a beta-only test map) loads fine but `OverworldScene.init`
+  asks for `gm.getCurrentMap()` and the tilemap loader hits an
+  unhandled `undefined` map descriptor a few frames later.
+- **Status:** Open — validate `currentMap` against the registered map
+  list in `loadAndApply` and fall back to a known-safe spawn (Pallet
+  Town / starting map) with a one-line player-visible toast.
+
+### `PokemonInstance` array references after load do not survive structural change
+
+- **Files:** [interfaces.ts](frontend/src/data/interfaces.ts#L60-L95),
+  [PartyManager.ts](frontend/src/managers/PartyManager.ts).
+- **Symptom:** `PartyManager.deserialize` assigns `this.party =
+  data.party` directly — the runtime party is the JSON-parsed object
+  graph, and any instance method or `Map`/`Set` field will not be
+  reconstructed. Currently the data classes are plain interfaces so
+  this works, but the audit logged this as a future-risk item before
+  someone adds class-based state to `PokemonInstance`.
+- **Status:** Open (preventative) — wrap deserialized instances in
+  `Object.assign(new PokemonInstance(), data)` or equivalent factory.
+
+### `gameStats` typed as `Record<string, number>` but cast through `as GameStats`
+
+- **Files:** [GameManager.ts](frontend/src/managers/GameManager.ts#L296-L298),
+  [StatsManager.ts](frontend/src/managers/StatsManager.ts).
+- **Symptom:** `loadFromSave` (and by association any future caller
+  that uses the legacy method) does
+  `this._stats.deserialize({ gameStats: save.gameStats as GameStats |
+  undefined })`. Because `Record<string, number>` is structurally
+  compatible with most fields of `GameStats`, missing keys silently
+  default to `undefined` and any later `incrementStat('stepCount', 1)`
+  evaluates to `NaN`.
+- **Status:** Open — `StatsManager.deserialize` should clone the
+  default `GameStats` and merge known keys instead of accepting the
+  raw record.
+
+### Battle "joined with 2/20 HP" might be the result of recoil/poison faint going undetected
+
+- **Files:** [BattleUIScene.ts](frontend/src/scenes/battle/BattleUIScene.ts#L600-L660),
+  [HeldItemHandler.ts](frontend/src/battle/effects/HeldItemHandler.ts#L48-L53).
+- **Symptom:** The `runEndOfTurnStep` loop calls
+  `b.updateHpBars()` only when `allMessages.length > 0`. If a status
+  effect *changes HP* (Black Sludge healing a Poison-type, Heal Bell,
+  Hex damage rolled to 0 due to Magic Bounce) but produces an empty
+  message array, the bar drifts out of sync with `currentHp`.
+  Combined with the missing initial `updateHpBars()` call this can
+  cascade across multiple turns.
+- **Status:** Open — call `b.updateHpBars()` unconditionally after
+  `collectEndOfTurnEffects` runs, regardless of message count.
+
+### `runEndOfTurnStep` `idx` recursion can stack-overflow on long status chains
+
+- **Files:** [BattleUIScene.ts](frontend/src/scenes/battle/BattleUIScene.ts#L600-L630).
+- **Symptom:** When several Pokémon have empty-message status ticks
+  (no HP change, no flavour text), the function recurses synchronously
+  via `this.runEndOfTurnStep(pokemonToCheck, idx + 1)` without going
+  through `time.delayedCall`. With 4 Pokémon in a double battle and
+  multiple silent ticks per turn, the call stack grows linearly per
+  turn. Real games never reach the limit but contributor tests with
+  scripted long chains will.
+- **Status:** Open (preventative) — wrap the no-message branch in
+  `this.time.delayedCall(0, …)` to break the synchronous recursion.
+
+### `applyMoveResult` faint sequence does not clear `state` before `endBattle`
+
+- **Files:** [BattleUIScene.ts](frontend/src/scenes/battle/BattleUIScene.ts#L515-L575).
+- **Symptom:** When the defender faints from a recoil-only attack,
+  the handler chains `faintSprite → msg → handleFaintedSwitch` but
+  leaves `this.state = 'animating'`. If the user taps the action
+  buttons during the 1500 ms delay, `BattleActionMenu` rejects the
+  input because state is wrong; if they tap *after*
+  `handleFaintedSwitch` opens PartyScene, the click hits the now-
+  invisible action menu underneath because `hideActions()` was never
+  called.
+- **Status:** Open — set `this.state = 'message'` and call
+  `this.hideActions()` inside the faint branch before the
+  `delayedCall`.
+
+---
+
 ## Resolved
 
 The following audit passes are fully documented in
 [docs/CHANGELOG.md](docs/CHANGELOG.md). Open the changelog for per-bug
 file/line references:
 
-| Audit | CHANGELOG entry | Scope |
-|-------|-----------------|-------|
-| 2026-04-29 | "Bug audit pass, round 3" | Round-3: duplicate ability/item hooks, voluntary switch-in abilities, Rare Candy stats, Max Revive heal, potions reviving fainted, PC deposit message, Poison Heal undo + toxic counter, ability immunity messages, wild encounter stats, AI null-accuracy, trainer LoS NPCs, dead BattleManager.selectMove |
+| Audit      | CHANGELOG entry                                         | Scope                                                                                                                                                                                                                                                                            |
+|------------|---------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-04-30 | "Bug audit pass, round 5"                               | Round-5: enemy AI never invoked, flee formula wrap, type-immune 1 dmg, secondary effects on immune, Struggle auto-use, Full Restore revive, two-turn PP double-deduct, multi-hit weather+hooks, bad-poison catch rate, catch failure status bypass, Trace overwrite, Guts burn, weather refresh |
+| 2026-04-29 | "Bug audit pass, round 3"                               | Round-3: duplicate ability/item hooks, voluntary switch-in abilities, Rare Candy stats, Max Revive heal, potions reviving fainted, PC deposit message, Poison Heal undo + toxic counter, ability immunity messages, wild encounter stats, AI null-accuracy, trainer LoS NPCs, dead BattleManager.selectMove |
 | 2026-04-29 | "Playthrough bug audit pass, round 2 (medium / polish)" | Round-2 polish: synthesis aura tracking, Intro portrait stack, catch slot anchor, NPC tile dirty flag, QUIT/EXIT rename, title decorations, immune popup contrast, EmoteBubble depth, banner fallback, NIT-001/002/003 |
 | 2026-04-29 | "Playthrough bug audit pass (BUG-001 through BUG-044)" | Round-1: switched-in invisibility, forced-switch softlock, mobile move menu, double-battle proportional layout, Pallet → Littoral Town displayName, Summary/Pokedex portrait clipping, Lighting RT leak, catch-ball origin + highlight, follower depth/scale, level-up message split, dialogue speaker clamp, Intro safe-area + DOM-input cleanup |
 | 2026-04-29 | "Mobile UI bug sweep (B1–B7)" | Mobile triage: Challenge Modes BEGIN clip, ConfirmBox depth, HUD-on-title leak, interior warp blocker, NPC face-on-interact, Party slot collision, Party screen mobile exit |

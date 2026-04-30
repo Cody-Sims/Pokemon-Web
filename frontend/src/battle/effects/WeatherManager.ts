@@ -14,7 +14,8 @@ export class WeatherManager {
   setWeather(condition: WeatherCondition, duration = 5): string[] {
     const messages: string[] = [];
     if (this.weather === condition) {
-      // Already active — no change
+      // Already active — refresh the duration timer
+      this.turnsRemaining = duration;
       return messages;
     }
 

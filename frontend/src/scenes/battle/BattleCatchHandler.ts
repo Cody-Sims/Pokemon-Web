@@ -237,6 +237,36 @@ function onCatchFailure(ctx: CatchContext): void {
   ctx.msg(msg);
 
   ctx.scene.time.delayedCall(1200, () => {
+    // Check if the enemy can act (sleep, freeze, paralysis can prevent attacking)
+    const enemy = b.enemyPokemon;
+    if (enemy.status === 'sleep') {
+      const turns = enemy.statusTurns ?? 0;
+      if (turns > 0) {
+        enemy.statusTurns = turns - 1;
+        ctx.msg(`${enemyData?.name ?? '???'} is fast asleep!`);
+        ctx.setState('actions');
+        return;
+      } else {
+        enemy.status = null;
+        enemy.statusTurns = undefined;
+      }
+    }
+    if (enemy.status === 'freeze') {
+      if (Math.random() >= 0.2) {
+        ctx.msg(`${enemyData?.name ?? '???'} is frozen solid!`);
+        ctx.setState('actions');
+        return;
+      } else {
+        enemy.status = null;
+        enemy.statusTurns = undefined;
+      }
+    }
+    if (enemy.status === 'paralysis' && Math.random() < 0.25) {
+      ctx.msg(`${enemyData?.name ?? '???'} is paralyzed! It can't move!`);
+      ctx.setState('actions');
+      return;
+    }
+
     const enemyMoveId = ctx.pickEnemyMove(b.enemyPokemon);
     const enemyMove = moveData[enemyMoveId];
     const enemyName = enemyData?.name ?? '???';

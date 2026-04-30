@@ -235,7 +235,10 @@ export class BattleUIScene extends Phaser.Scene {
   openMoveMenu(): void { this.moveMenu.openMoveMenu(); }
   closeMoveMenu(): void { this.moveMenu.closeMoveMenu(); }
 
-  pickEnemyMove(enemy: PokemonInstance): string { return pickEnemy(enemy); }
+  pickEnemyMove(enemy: PokemonInstance): string {
+    const b = this.battle();
+    return pickEnemy(enemy, b.playerPokemon, b.isTrainerBattle);
+  }
 
   // ─── Input routing ───
 

@@ -56,6 +56,13 @@ export class AbilityHandler {
       case 'trace': {
         const oppAbility = AbilityHandler.getAbility(opponent);
         if (oppAbility) {
+          // Save original ability in volatile state for restoration after battle
+          const state = statusHandler?.getState(pokemon);
+          if (state) {
+            state.tracedAbility = oppAbility;
+            state.originalAbility = pokemon.ability;
+          }
+          // Set on instance so getAbility() returns the traced ability everywhere
           pokemon.ability = oppAbility;
           messages.push(`${name} traced ${opponent.nickname ?? pokemonData[opponent.dataId]?.name}'s ${oppAbility}!`);
         }
@@ -77,8 +84,16 @@ export class AbilityHandler {
     const atkName = attacker.nickname ?? pokemonData[attacker.dataId]?.name ?? '???';
     const messages: string[] = [];
 
-    // Contact-triggered abilities (only for physical moves)
-    if (move.category === 'physical' && damage > 0) {
+    // Contact-triggered abilities (only for physical contact moves)
+    // TODO: Add a `contact` flag to MoveData for full accuracy. For now,
+    // exclude known non-contact physical moves by effect type.
+    const isContact = move.category === 'physical'
+      && move.id !== 'earthquake' && move.id !== 'rock-slide'
+      && move.id !== 'bulldoze' && move.id !== 'rock-throw'
+      && move.id !== 'bone-club' && move.id !== 'bone-rush'
+      && move.id !== 'bonemerang' && move.id !== 'magnitude'
+      && move.effect?.type !== 'multi-hit'; // multi-hit hooks are handled separately
+    if (isContact && damage > 0) {
       switch (defAbility) {
         case 'static':
           if (!attacker.status && Math.random() < 0.3) {

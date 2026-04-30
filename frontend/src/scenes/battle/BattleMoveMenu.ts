@@ -263,6 +263,17 @@ export class BattleMoveMenu {
 
   selectMove(): void {
     const b = this.scene.battle();
+
+    // Auto-use Struggle when all moves are at 0 PP
+    const allDepleted = b.playerPokemon.moves.every(m => m.currentPp <= 0);
+    if (allDepleted) {
+      this.closeMoveMenu();
+      this.scene.state = 'animating';
+      this.scene.hideActions();
+      this.scene.executeTurn('struggle');
+      return;
+    }
+
     const mi = b.playerPokemon.moves[this.moveCursor];
     if (!mi || mi.currentPp <= 0) return;
     const md = moveData[mi.moveId];

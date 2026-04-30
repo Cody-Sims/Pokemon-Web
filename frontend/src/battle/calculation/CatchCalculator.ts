@@ -26,7 +26,7 @@ export class CatchCalculator {
     let statusBonus = 1;
     if (pokemon.status === 'sleep' || pokemon.status === 'freeze') {
       statusBonus = 2;
-    } else if (pokemon.status === 'paralysis' || pokemon.status === 'burn' || pokemon.status === 'poison') {
+    } else if (pokemon.status === 'paralysis' || pokemon.status === 'burn' || pokemon.status === 'poison' || pokemon.status === 'bad-poison') {
       statusBonus = 1.5;
     }
 

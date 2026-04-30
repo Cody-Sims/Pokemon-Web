@@ -253,6 +253,14 @@ export class BattleScene extends Phaser.Scene {
     new BarFrame(this, enemyTextLeft, -55, enemyHpBarW, 10, { accentColor: 0xff5544 });
     this.enemyStatusImg = this.add.image(enemyTextRight - 30, -80, 'status-badges', 0).setScale(2).setVisible(false);
 
+    // Initialize enemy HP bar to actual fill (round-5 bug: bars were
+    // created at full width and never refreshed before the first turn).
+    {
+      const enemyPct = Math.max(0, this.enemyPokemon.currentHp / Math.max(1, this.enemyPokemon.stats.hp));
+      this.enemyHpBar.displayWidth = enemyHpBarW * enemyPct;
+      this.enemyHpBar.fillColor = enemyPct > 0.5 ? 0x4caf50 : enemyPct > 0.2 ? 0xffeb3b : 0xf44336;
+    }
+
     // ── Player info box (bottom-right) — starts below screen ──
     const playerInfoPanel = new NinePatchPanel(this, playerInfoX, h + 60, infoPanelW, 70, {
       fillColor: COLORS.bgCard,
@@ -272,6 +280,15 @@ export class BattleScene extends Phaser.Scene {
     new BarFrame(this, playerTextLeft, h + 70, playerHpBarW, 10, { accentColor: 0x44d068 });
     this.playerHpText = this.add.text(playerTextRight, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: mobileFontSize(12), color: '#ffffff' }).setOrigin(1, 0);
     this.playerStatusImg = this.add.image(playerTextLeft, h + 85, 'status-badges', 0).setScale(2).setVisible(false);
+
+    // Initialize player HP bar to actual fill (round-5 bug: a wounded
+    // lead Pokemon entering battle showed a full green bar until the
+    // first updateHpBars() call after turn 1).
+    {
+      const playerPct = Math.max(0, this.playerPokemon.currentHp / Math.max(1, this.playerPokemon.stats.hp));
+      this.playerHpBar.displayWidth = playerHpBarW * playerPct;
+      this.playerHpBar.fillColor = playerPct > 0.5 ? 0x4caf50 : playerPct > 0.2 ? 0xffeb3b : 0xf44336;
+    }
 
     // ── EXP bar (below player HP) ──
     this.expBarBg = this.add.rectangle(playerTextLeft, h + 82, playerHpBarW, 4, 0x222233).setOrigin(0, 0.5);

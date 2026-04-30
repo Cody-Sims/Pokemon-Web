@@ -49,6 +49,9 @@ export class MoveExecutor {
 
     if (!move) return miss();
 
+    // Track whether PP was already deducted during a two-turn charge
+    let skipPPDeduction = false;
+
     // ── Two-turn move: charge turn ──
     if (move.effect?.type === 'two-turn' && statusHandler) {
       const charging = statusHandler.getChargingMove(attacker);
@@ -81,6 +84,7 @@ export class MoveExecutor {
       }
       // Attack turn — clear charging and proceed with normal execution
       statusHandler.clearCharging(attacker);
+      skipPPDeduction = true;
     }
 
     // ── Protect / Detect: check if defender is protected ──
@@ -159,8 +163,9 @@ export class MoveExecutor {
     }
 
     // Deduct PP before accuracy check (PP is spent on attempt, not on hit)
+    // Skip if this is the attack turn of a two-turn move (PP already deducted on charge)
     const moveInstance = attacker.moves.find(m => m.moveId === moveId);
-    if (moveInstance) {
+    if (moveInstance && !skipPPDeduction) {
       if (moveInstance.currentPp > 0) {
         moveInstance.currentPp--;
       } else if (moveId !== 'struggle') {
@@ -284,14 +289,30 @@ export class MoveExecutor {
       const hits = move.effect.hits ?? MoveExecutor.rollMultiHit();
       let totalDamage = 0;
       let lastResult: DamageResult = { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false };
+      const multiHitMessages: string[] = [];
 
       for (let i = 0; i < hits; i++) {
         if (defender.currentHp <= 0) break;
-        const dmgResult = DamageCalculator.calculate(attacker, defender, move, statusHandler);
+        const hpBefore = defender.currentHp;
+        const dmgResult = DamageCalculator.calculate(attacker, defender, move, statusHandler, weatherManager);
         defender.currentHp = Math.max(0, defender.currentHp - dmgResult.damage);
         totalDamage += dmgResult.damage;
         lastResult = dmgResult;
+
+        // Post-damage hooks per hit
+        if (dmgResult.damage > 0) {
+          const abilityHit = AbilityHandler.onAfterDamage(attacker, defender, move, dmgResult.damage);
+          multiHitMessages.push(...abilityHit.messages);
+          const itemHit = HeldItemHandler.onAfterDamage(defender, attacker, dmgResult.damage, hpBefore);
+          multiHitMessages.push(...itemHit.messages);
+        }
+        const threshHit = HeldItemHandler.checkHPThreshold(defender);
+        multiHitMessages.push(...threshHit.messages);
       }
+
+      // Attacker hooks (Life Orb) once after all hits
+      const attackLandedMulti = totalDamage > 0 ? HeldItemHandler.onAttackLanded(attacker, totalDamage) : { messages: [], recoilDamage: 0 };
+      const atkThresh = HeldItemHandler.checkHPThreshold(attacker);
 
       return {
         damage: { ...lastResult, damage: totalDamage },
@@ -299,8 +320,15 @@ export class MoveExecutor {
         moveName: move.name,
         attackerName,
         defenderName,
-        effectMessages: [...thawMessages, `Hit ${hits} time(s)!`],
+        effectMessages: [
+          ...thawMessages,
+          ...multiHitMessages,
+          ...attackLandedMulti.messages,
+          ...atkThresh.messages,
+          `Hit ${hits} time(s)!`,
+        ],
         totalHits: hits,
+        recoilDamage: attackLandedMulti.recoilDamage,
       };
     }
 
@@ -323,8 +351,9 @@ export class MoveExecutor {
     const attackerThreshold = HeldItemHandler.checkHPThreshold(attacker);
 
     // ── Apply secondary effects via StatusEffectHandler ──
+    // Only apply secondary effects if the move wasn't type-immune
     let effectResult: EffectResult = { messages: [] };
-    if (statusHandler && move.effect) {
+    if (statusHandler && move.effect && damage.effectiveness > 0) {
       effectResult = statusHandler.applyMoveEffect(attacker, defender, move, damage.damage);
 
       // Haze resets all stat stages

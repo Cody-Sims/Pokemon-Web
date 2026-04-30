@@ -4,6 +4,58 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-30]
+
+### Fixed — Bug audit pass, round 5 (deep logic)
+
+Deep code review of battle scenes, calculation layer, effects, executor,
+inventory, and overworld. All fixes verified by build + 2148 Vitest tests.
+
+- **Enemy AI never invoked** — [`BattleUIScene.pickEnemyMove`](../frontend/src/scenes/battle/BattleUIScene.ts)
+  now passes `playerPokemon` and `isTrainerBattle` to
+  `BattleTurnRunner.pickEnemyMove`, so `AIController.selectMove` is used
+  for all trainer battles instead of random move selection.
+- **Type-immune moves dealt 1 HP** —
+  [`DamageCalculator`](../frontend/src/battle/calculation/DamageCalculator.ts)
+  now returns 0 damage when `effectiveness === 0`.
+- **Secondary effects applied on immune hits** —
+  [`MoveExecutor`](../frontend/src/battle/execution/MoveExecutor.ts) now
+  guards `applyMoveEffect` on `damage.effectiveness > 0`.
+- **Flee formula wrapped via % 256** —
+  [`BattleActionMenu`](../frontend/src/scenes/battle/BattleActionMenu.ts)
+  removed the modulo; values ≥ 256 now auto-succeed.
+- **No Struggle when all moves at 0 PP** —
+  [`BattleMoveMenu`](../frontend/src/scenes/battle/BattleMoveMenu.ts) detects
+  all moves depleted and auto-executes `struggle`.
+- **Full Restore revived fainted Pokémon** —
+  [`InventoryScene`](../frontend/src/scenes/menu/InventoryScene.ts) full-restore
+  branch now rejects fainted targets.
+- **Two-turn moves deducted PP twice** —
+  [`MoveExecutor`](../frontend/src/battle/execution/MoveExecutor.ts) uses
+  a `skipPPDeduction` flag to prevent the attack turn from re-deducting PP.
+- **Multi-hit moves skipped weather modifier** — multi-hit loop now passes
+  `weatherManager` to `DamageCalculator.calculate`.
+- **Multi-hit moves skipped post-damage hooks** — Focus Sash, Rocky Helmet,
+  Sitrus Berry, and contact abilities now fire per hit in multi-hit loop.
+- **Bad Poison got no catch rate bonus** —
+  [`CatchCalculator`](../frontend/src/battle/calculation/CatchCalculator.ts)
+  now treats `bad-poison` as 1.5× like regular poison.
+- **Catch failure bypassed status checks** —
+  [`BattleCatchHandler`](../frontend/src/scenes/battle/BattleCatchHandler.ts)
+  now checks sleep, freeze, and full-paralysis before the enemy retaliates.
+- **Trace permanently overwrote ability** —
+  [`AbilityHandler`](../frontend/src/battle/effects/AbilityHandler.ts) now
+  saves the original ability in `BattlePokemonState.originalAbility` and
+  restores it when the Pokémon is cleared from battle.
+- **Guts didn't negate burn Attack halving** —
+  [`StatusEffectHandler.getEffectiveStat`](../frontend/src/battle/effects/StatusEffectHandler.ts)
+  now skips the burn halving when the Pokémon has the `guts` ability.
+- **Weather re-use didn't refresh duration** —
+  [`WeatherManager.setWeather`](../frontend/src/battle/effects/WeatherManager.ts)
+  now refreshes `turnsRemaining` even when the same weather is already active.
+
+---
+
 ## [2026-04-29]
 
 ### Fixed — Bug audit pass, round 3

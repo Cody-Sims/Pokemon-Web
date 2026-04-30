@@ -34,6 +34,8 @@ interface BattlePokemonState {
   trapTurns: number;
   protectSuccessRate: number;  // Halves each consecutive use (1.0, 0.5, 0.25...)
   twoTurnCharging: string | null;  // Move ID being charged (Fly, Dig, Solar Beam)
+  tracedAbility?: string;  // Ability copied by Trace (volatile, not persisted)
+  originalAbility?: string;  // Original ability before Trace (for restoration)
 }
 
 // ── Stage multipliers ──────────────────────────────────────────
@@ -84,6 +86,12 @@ export class StatusEffectHandler {
 
   /** Tear down everything. */
   cleanup(): void {
+    // Restore original abilities for any Trace'd pokemon before clearing state
+    for (const [pokemon, state] of this.states) {
+      if (state.originalAbility !== undefined) {
+        pokemon.ability = state.originalAbility;
+      }
+    }
     this.states.clear();
   }
 
@@ -104,9 +112,13 @@ export class StatusEffectHandler {
     const stage = this.getState(pokemon).statStages[stat];
     let value = Math.floor(base * STAGE_MULTIPLIERS[stage]);
 
-    // Burn halves physical attack
+    // Burn halves physical attack (unless ability is Guts)
     if (stat === 'attack' && pokemon.status === 'burn') {
-      value = Math.floor(value * 0.5);
+      const state = this.getState(pokemon);
+      const ability = state.tracedAbility ?? pokemon.ability;
+      if (ability !== 'guts') {
+        value = Math.floor(value * 0.5);
+      }
     }
     // Paralysis quarters speed
     if (stat === 'speed' && pokemon.status === 'paralysis') {

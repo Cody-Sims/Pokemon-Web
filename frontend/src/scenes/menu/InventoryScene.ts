@@ -585,7 +585,9 @@ export class InventoryScene extends Phaser.Scene {
     } else if (eff.type === 'full-restore') {
       // AUDIT-013: Full Restore heals HP and cures status
       const pName = target.nickname ?? pokemonData[target.dataId]?.name ?? '???';
-      if (target.currentHp >= target.stats.hp && !target.status) {
+      if (target.currentHp <= 0) {
+        message = "It won't have any effect.";
+      } else if (target.currentHp >= target.stats.hp && !target.status) {
         message = `${pName} is already at full HP!`;
       } else {
         target.currentHp = target.stats.hp;

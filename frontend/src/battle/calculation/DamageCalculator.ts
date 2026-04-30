@@ -110,7 +110,7 @@ export class DamageCalculator {
     damage *= HeldItemHandler.modifyDamage(attacker, defender, move);
 
     return {
-      damage: Math.max(1, Math.floor(damage)),
+      damage: effectiveness === 0 ? 0 : Math.max(1, Math.floor(damage)),
       effectiveness,
       isCritical,
       isSTAB,
