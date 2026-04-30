@@ -895,6 +895,224 @@ treat each audit cycle's IDs as scoped to that cycle's CHANGELOG entry.
 
 ---
 
+## 2026-04-30 audit cycle — full-codebase deep review
+
+Full-codebase bug audit across 52 shards (battle, overworld, managers,
+UI, cross-cutting sweeps, edge-case matrix). Baseline: commit
+f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
+(not already tracked above). 84 unique findings total; 5 critical,
+22 high, 38 medium, 19 low.
+
+### CRIT-1: Pokéballs can be thrown at fainted Pokémon
+
+- **Files:** [frontend/src/scenes/battle/BattleCatchHandler.ts](frontend/src/scenes/battle/BattleCatchHandler.ts#L33-L94).
+- **Symptom:** `handlePokeBallUse()` checks for trainer battles and
+  challenge mode but never validates `enemyPokemon.currentHp > 0`.
+  A ball can be thrown at a 0-HP target and the catch sequence runs.
+- **Status:** Open — add `if (enemy.currentHp <= 0)` guard returning
+  "It won't have any effect!" before shake logic.
+
+### CRIT-2: Save during scene transition not blocked
+
+- **Files:** [frontend/src/managers/SaveManager.ts](frontend/src/managers/SaveManager.ts),
+  [frontend/src/scenes/overworld/OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts).
+- **Symptom:** No guard prevents save while `transitioning === true`.
+  Player can open menu during fade-transition and save, capturing
+  mid-warp state that may not restore cleanly.
+- **Status:** Open — SaveManager.save() should check a global
+  transitioning flag or OverworldScene should block menu during warp.
+
+### CRIT-3: Bad-poison (Toxic) damage has no cap
+
+- **Files:** [frontend/src/battle/effects/StatusEffectHandler.ts](frontend/src/battle/effects/StatusEffectHandler.ts#L517-L525).
+- **Symptom:** Toxic counter increments unbounded:
+  `damage = (hp * counter) / 16`. After 16 turns the damage exceeds
+  max HP per tick. Should cap counter at 15.
+- **Status:** Open — add `Math.min(counter, 15)` in applyEndOfTurn.
+
+### CRIT-4: Status effects bypass Substitute
+
+- **Files:** [frontend/src/battle/effects/StatusEffectHandler.ts](frontend/src/battle/effects/StatusEffectHandler.ts#L307-L331).
+- **Symptom:** `applyMoveEffect()` applies status directly to the
+  target without checking `volatileStatuses.has('substitute')`.
+  Status moves like Thunder Wave hit through Substitute.
+- **Status:** Open — add substitute guard before status application.
+
+### CRIT-5: Battle FSM accepts transitions to unregistered states
+
+- **Files:** [frontend/src/battle/core/BattleStateMachine.ts](frontend/src/battle/core/BattleStateMachine.ts#L22-L29).
+- **Symptom:** `transition()` doesn't validate that the target state
+  is registered. FSM enters a dead state; `update()` silently does
+  nothing. Can softlock the battle.
+- **Status:** Open — validate state exists, throw or log on unknown.
+
+### HIGH-1: Bad-poison counter not reset on switch
+
+- **Files:** [frontend/src/battle/effects/StatusEffectHandler.ts](frontend/src/battle/effects/StatusEffectHandler.ts#L518-L525).
+- **Symptom:** When a badly-poisoned Pokémon switches out and back in,
+  `statusTurns` persists from its old value. Damage resumes at the
+  accumulated counter instead of resetting to 1.
+- **Status:** Open.
+
+### HIGH-2: Trace ability not restored on re-switch-in
+
+- **Files:** [frontend/src/battle/effects/AbilityHandler.ts](frontend/src/battle/effects/AbilityHandler.ts#L56-L70).
+- **Symptom:** `onSwitchIn()` stores `originalAbility` in volatile
+  state, but `clearPokemon()` deletes the state without restoring
+  `pokemon.ability`. On re-entry the traced ability persists.
+- **Status:** Open.
+
+### HIGH-3: Intimidate / onSwitchIn can trigger twice
+
+- **Files:** [frontend/src/battle/effects/AbilityHandler.ts](frontend/src/battle/effects/AbilityHandler.ts#L18-L74).
+- **Symptom:** No idempotent guard on `onSwitchIn()`. If the caller
+  invokes it twice per switch, Intimidate cuts Attack twice.
+- **Status:** Open.
+
+### HIGH-4: Choice item move lock not enforced
+
+- **Files:** [frontend/src/battle/effects/HeldItemHandler.ts](frontend/src/battle/effects/HeldItemHandler.ts#L289-L316).
+- **Symptom:** Choice Band/Specs/Scarf apply damage multipliers but
+  don't track or enforce the one-move lock.
+- **Status:** Open.
+
+### HIGH-5: Two-turn move PP double-deduction risk
+
+- **Files:** [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L56-L88).
+- **Symptom:** If `statusHandler` is null on the attack turn of a
+  two-turn move, `skipPPDeduction` stays false and PP is deducted
+  twice (once on charge, once on attack).
+- **Status:** Open.
+
+### HIGH-6: Struggle execution bypassed
+
+- **Files:** [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L167-L175).
+- **Symptom:** Struggle is not in the movepool. `moveInstance` is
+  undefined, and the check at L171 returns miss() — Struggle
+  never executes.
+- **Status:** Open.
+
+### HIGH-7: Drain HP not applied after multi-hit moves
+
+- **Files:** [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L314-L332).
+- **Symptom:** For multi-hit moves the drain effect path is never
+  called. Drain Punch as a multi-hit move would deal damage but
+  not heal.
+- **Status:** Open.
+
+### HIGH-8: HP threshold items checked before recoil applied
+
+- **Files:** [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L349-L351).
+- **Symptom:** `checkHPThreshold()` (Sitrus Berry etc.) fires before
+  the caller applies recoil. Berry could trigger too early.
+- **Status:** Open.
+
+### HIGH-9: PartnerAI targets dead enemy slot
+
+- **Files:** [frontend/src/battle/core/PartnerAI.ts](frontend/src/battle/core/PartnerAI.ts#L31-L33).
+- **Symptom:** When both enemies fainted, `bestTarget` defaults to
+  slot 2 and the AI returns a move targeting a dead slot.
+- **Status:** Open.
+
+### HIGH-10: Rapid double-input during battle animations
+
+- **Files:** [frontend/src/scenes/battle/BattleUIScene.ts](frontend/src/scenes/battle/BattleUIScene.ts#L161-L167).
+- **Symptom:** Two rapid A presses before state changes to
+  'animating' can queue and the second fires after state returns
+  to 'actions'.
+- **Status:** Open.
+
+### HIGH-11: Battle input listeners active when scene paused
+
+- **Files:** [frontend/src/scenes/battle/BattleUIScene.ts](frontend/src/scenes/battle/BattleUIScene.ts#L161-L167).
+- **Symptom:** Keyboard listeners registered in `create()` persist
+  when the scene is paused (e.g., PartyScene overlay). Keys fire
+  into both scenes.
+- **Status:** Open.
+
+### HIGH-12: Re-enter PLAYER_TURN after failed run
+
+- **Files:** [frontend/src/scenes/battle/BattleActionMenu.ts](frontend/src/scenes/battle/BattleActionMenu.ts#L73-L90).
+- **Symptom:** After a failed run attempt, the state returns to
+  'actions' and the player can immediately select RUN again before
+  the enemy-only turn completes.
+- **Status:** Open.
+
+### HIGH-13: Grid-snap drift after tween cancel
+
+- **Files:** [frontend/src/systems/overworld/GridMovement.ts](frontend/src/systems/overworld/GridMovement.ts#L89-L143).
+- **Symptom:** If a movement tween is cancelled externally,
+  `onComplete` never fires, leaving `tileX/tileY` stale while the
+  sprite is mid-tile.
+- **Status:** Open.
+
+### HIGH-14: CutsceneEngine doesn't block player input
+
+- **Files:** [frontend/src/systems/engine/CutsceneEngine.ts](frontend/src/systems/engine/CutsceneEngine.ts#L67-L85).
+- **Symptom:** `play()` runs cutscene actions but never disables
+  overworld input. Player can walk or interact during cutscenes.
+- **Status:** Open.
+
+### HIGH-15: WeatherRenderer texture memory leak on resize
+
+- **Files:** [frontend/src/systems/rendering/WeatherRenderer.ts](frontend/src/systems/rendering/WeatherRenderer.ts#L40-L51).
+- **Symptom:** Rapid resize events create textures faster than they
+  are destroyed. `textureKeys` array not cleared before recreating.
+- **Status:** Open.
+
+### HIGH-16: LightingSystem resize handler never unregistered
+
+- **Files:** [frontend/src/systems/rendering/LightingSystem.ts](frontend/src/systems/rendering/LightingSystem.ts#L56-L88).
+- **Symptom:** Resize handler outlives the scene. On scene re-entry,
+  old handler runs alongside new one.
+- **Status:** Open.
+
+### HIGH-17: GlowEmitterSystem not cleaned on scene shutdown
+
+- **Files:** [frontend/src/systems/rendering/GlowEmitterSystem.ts](frontend/src/systems/rendering/GlowEmitterSystem.ts#L45-L186).
+- **Symptom:** `destroy()` not called automatically on scene shutdown.
+  Re-entering scene creates duplicate emitters.
+- **Status:** Open.
+
+### HIGH-18: All Math.random calls unseeded (14 gameplay sites)
+
+- **Files:** AIController, DamageCalculator, CatchCalculator,
+  BattleManager, EncounterSystem, BattleTurnRunner, math-helpers.
+- **Symptom:** Every gameplay-affecting RNG call uses raw
+  `Math.random()`. Tests seed it via `beforeEach` but the production
+  code is non-deterministic for replays.
+- **Status:** Open — wrap all calls through a seeded RNG utility.
+
+### HIGH-19: Warp into NPC-occupied tile
+
+- **Files:** [frontend/src/scenes/overworld/OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts#L243-L269).
+- **Symptom:** NPC spawn happens after player is placed. If an NPC
+  spawns at the player's warp destination, they overlap.
+- **Status:** Open.
+
+### HIGH-20: No visibility change handling — battle advances while tab hidden
+
+- **Files:** [frontend/src/scenes/battle/BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts).
+- **Symptom:** No `visibilitychange` listener. Phaser continues
+  updating when tab is hidden; battle FSM can advance turns.
+- **Status:** Open.
+
+### HIGH-21: Mute state not persisted / restored on reload
+
+- **Files:** [frontend/src/managers/AudioManager.ts](frontend/src/managers/AudioManager.ts#L436-L444).
+- **Symptom:** `muted` flag initializes as `false`. Volume slider
+  and mute toggle desync after page reload.
+- **Status:** Open.
+
+### HIGH-22: No inventory capacity limits
+
+- **Files:** [frontend/src/managers/PlayerStateManager.ts](frontend/src/managers/PlayerStateManager.ts#L114-L118).
+- **Symptom:** `addItem()` always succeeds. Items accumulate
+  without limit; item-ball pickups never fail.
+- **Status:** Open.
+
+---
+
 ## How to use this file
 
 - Add a new entry above the **Resolved** section when an issue is found

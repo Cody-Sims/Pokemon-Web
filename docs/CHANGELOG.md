@@ -6,6 +6,10 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-30]
 
+### Changed
+
+- Completed full-codebase bug review cycle (84 findings, 5 critical, 22 high).
+
 ### Fixed — Bug audit pass, round 5 (deep logic)
 
 Deep code review of battle scenes, calculation layer, effects, executor,
