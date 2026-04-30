@@ -139,11 +139,21 @@ export const MOBILE_SCALE = isMobile() ? 1.35 : 1.0;
 
 /** Get a font size string scaled for mobile and user text-scale preference. Input: base px number. */
 export function mobileFontSize(basePx: number): string {
+  return `${mobileFontPx(basePx)}px`;
+}
+
+/**
+ * Numeric variant of `mobileFontSize` for APIs that want a pixel size as a
+ * `number` (e.g., `add.bitmapText`). Avoids the `parseInt(mobileFontSize(N))`
+ * dance and keeps a single source of truth for the scale calculation
+ * (NIT-003).
+ */
+export function mobileFontPx(basePx: number): number {
   let scale = 1.0;
   try {
     scale = getTextScale();
   } catch { /* fallback to 1.0 */ }
-  return `${Math.round(basePx * MOBILE_SCALE * scale)}px`;
+  return Math.round(basePx * MOBILE_SCALE * scale);
 }
 
 /** Minimum interactive hit area for touch targets (px). */

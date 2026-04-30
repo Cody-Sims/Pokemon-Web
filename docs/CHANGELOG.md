@@ -6,6 +6,138 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-29]
 
+### Fixed — Playthrough bug audit pass, round 2 (medium / polish)
+
+Follow-up sweep on the IDs left open after the first
+"Playthrough bug audit pass" entry. References in
+[bugs.md](../bugs.md):
+
+- **BUG-035** — [`BattleScene.showSynthesisAura`](../frontend/src/scenes/battle/BattleScene.ts)
+  / `showEnemySynthesisAura` now parent the aura to the sprite by re-
+  positioning it each frame inside `update()` so the cyan / pink ring
+  follows the Pokémon through faint, switch, and bob tweens instead of
+  being orphaned at the activation coordinate.
+- **BUG-042** — [`IntroScene.buildAppearanceUI`](../frontend/src/scenes/title/IntroScene.ts)
+  stacks the Boy / Girl options vertically on portrait viewports
+  (preview boxes 96 px apart) instead of squeezing two 80×80 boxes into
+  a 320 px row, and pulls the DONE / hint anchors clear of the iOS
+  safe-area.
+- **BUG-045** — [`BattleCatchHandler`](../frontend/src/scenes/battle/BattleCatchHandler.ts)
+  captures `enemySprite.x/y` once at throw time so the ball sails toward
+  the Pokémon's slot anchor; subsequent shakes use the captured
+  coordinate so they don't visibly drift if the sprite is still mid-
+  intro tween.
+- **BUG-046** — [`OverworldScene.update`](../frontend/src/scenes/overworld/OverworldScene.ts)
+  marks the NPC tile-occupancy set dirty only when an NPC behavior
+  actually moves it; `rebuildNpcOccupiedTiles()` runs once on entry and
+  whenever the dirty flag is set, eliminating per-frame Set / string
+  churn on busy maps.
+- **BUG-060** — [`MenuScene`](../frontend/src/scenes/menu/MenuScene.ts)
+  renames the duplicate "QUIT" / "EXIT" pair to "RETURN TO TITLE" /
+  "RESUME" and routes "RETURN TO TITLE" through `ConfirmBox` so a misclick
+  no longer drops unsaved progress.
+- **BUG-061** — [`TitleScene`](../frontend/src/scenes/title/TitleScene.ts)
+  draws the floating decorations with `Phaser.GameObjects.Graphics`
+  shapes (circles, diamonds, triangles) instead of system-font glyphs,
+  so Windows builds without `◆ ● ▲` in the fallback stack no longer
+  render tofu boxes.
+- **BUG-063** — [`BattleUIScene.applyMoveResult`](../frontend/src/scenes/battle/BattleUIScene.ts)
+  re-reads the live `defender.nickname` for the friendship-survival
+  message, so post-catch nickname changes are honored.
+- **BUG-064** — [`BattleDamageNumbers`](../frontend/src/scenes/battle/BattleDamageNumbers.ts)
+  brightens the immune-hit popup color and skips the `-0` popup when no
+  damage is dealt; the message bar already prints "No effect!".
+- **BUG-065** — [`EmoteBubble`](../frontend/src/systems/rendering/EmoteBubble.ts)
+  pins the bubble to depth 90 (above the lighting darkness layer at
+  85), so emotes shown in dark caves no longer look dimmed.
+- **BUG-066** — [`OverworldScene.create`](../frontend/src/scenes/overworld/OverworldScene.ts)
+  shows the slide-in area name banner using the same derived label that
+  the HUD uses when `displayName` is missing, so first-time entry into
+  Pallet / Littoral Town now confirms the location visually.
+- **BUG-068** — `TitleScene` decorative band collapses the five-rect
+  fuzzy stack into a single 2-px rule, sharper and lighter weight.
+- **NIT-001** — Removed the stale "Player slot 0: x=200, y=350" comment
+  in [`BattleScene.setupDoubleBattle`](../frontend/src/scenes/battle/BattleScene.ts)
+  (the BUG-004 rewrite already removed those magic numbers).
+- **NIT-002** — [`BattleActionMenu`](../frontend/src/scenes/battle/BattleActionMenu.ts)
+  + [`BattleUIScene`](../frontend/src/scenes/battle/BattleUIScene.ts)
+  drop the leftover `Rectangle` that sat at depth 0 underneath the
+  action-menu `NinePatchPanel`. Saves a draw call and removes a
+  refactor leftover.
+- **NIT-003** — Added [`mobileFontPx`](../frontend/src/ui/theme.ts) — a
+  numeric variant of `mobileFontSize` for APIs that want a `number`
+  (e.g., `add.bitmapText`). [`OverworldScene`](../frontend/src/scenes/overworld/OverworldScene.ts)
+  uses it instead of the brittle `parseInt(mobileFontSize(N), 10) || N`
+  fallback.
+
+Verified by `npm run build` (clean) and `npm run test` (2,148 tests pass).
+
+---
+
+## [2026-04-29]
+
+### Added — Sprite improvement pass (per [docs/sprites-improvement-plan.md](sprites-improvement-plan.md))
+
+Authored procedural 16×16 object sprites in
+[`PreloadScene.create`](../frontend/src/scenes/boot/PreloadScene.ts) so map
+objects no longer fall back to the generic Poké Ball icon:
+
+- **`pc-terminal`** — replaces `item-ball` for every PC storage system in
+  PokéCenters (Verdantia, Ironvale, Voltara, Wraithmoor, Scalecrest), the
+  three pre-existing PC NPCs (Viridian Center, Pewter Center, Oak's Lab —
+  converted from `npcs` array to `objects` with `objectType: 'pc'`), and the
+  Abyssal Spire F3 security console (also converted to an object).
+- **`vent`** — Victory Road's five volcanic-vent recordings now show a rocky
+  cone with rising steam.
+- **`conduit-broken`** — Voltara City's three power-conduit repair quest
+  spots render as sparking electric boxes. (`conduit-fixed` is generated for
+  future use when a repaired conduit needs its own art.)
+- **`crystal-cluster`**, **`fossil-claw`**, **`aether-rune`**,
+  **`ruins-pedestal`** — distinct sprites for the Crystal Cavern, Crystal
+  Cavern Depths Claw Fossil pickup, Aether Sanctum rune object, and the
+  Shattered Isles Ruins clue-1 pedestal. Other in-world item pickups remain
+  as `item-ball` since they are real items.
+- **`berry-tree-oran`** (blue), **`berry-tree-pecha`** (pink),
+  **`berry-tree-sitrus`** (yellow) — per-berry color variants for the three
+  berry trees on Routes 1, 5, and 8. The legacy `berry-tree` key is preserved
+  for backward compatibility.
+
+### Changed — Sprite assignments for named characters
+
+Swapped placeholder textures for unique characters whose dedicated atlases
+were already loaded but unused in the map data:
+
+- **Gym leaders** — Coral (`coral-gym`), Drake (`scalecrest-gym`),
+  Ivy (`verdantia-gym`), Morwen (`wraithmoor-gym`), Solara (`cinderfall-gym`
+  + `cinderfall-town` story spawn) now use their `npc-gym-*` sprites instead
+  of generic NPC textures.
+- **Elite Four & Champion** — Nerida, Theron, Lysandra, Ashborne, and
+  Champion Aldric in [`pokemon-league.ts`](../frontend/src/data/maps/interiors/pokemon-league.ts)
+  now use their `npc-e4-*` / `npc-champion-aldric` atlases.
+- **Generic-trainer placeholders** — Replaced with role-appropriate sprites
+  for the Viridian gym blocker, Viridian PokéCenter chatter, and Pewter
+  PokéCenter chatter.
+
+### Fixed — Broken texture references
+
+[`PreloadScene.preload`](../frontend/src/scenes/boot/PreloadScene.ts) now
+loads aliases for **`npc-rook`** and **`npc-zara`** (mapped to existing
+NPC atlases). These two story characters appear in seven map spawn entries
+across the Abyssal Spire, Shattered Isles Shore, Route 7, and Aether Sanctum
+but had no dedicated art, causing missing-texture squares at runtime.
+
+### Changed — Tests
+
+Loosened the `textureKey` assertion in
+[`tests/unit/data/berry-trees.test.ts`](../tests/unit/data/berry-trees.test.ts)
+from exact-match `'berry-tree'` to the `/^berry-tree(-\w+)?$/` family so the
+new per-berry variants pass without losing the regression guard against
+unrelated sprite keys.
+
+---
+
+## [2026-04-29]
+
 ### Fixed — Playthrough bug audit pass (BUG-001 through BUG-044)
 
 Comprehensive sweep across battle, overworld, menu, and intro flows. Each

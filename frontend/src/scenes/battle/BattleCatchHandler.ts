@@ -59,6 +59,15 @@ export function handlePokeBallUse(ctx: CatchContext, ballItemId: string): void {
   ctx.msg(`You threw a ${ballData?.name ?? 'Poké Ball'}!`);
   audio.playSFX(SFX.BALL_THROW);
 
+  // BUG-045: The enemy sprite may still be mid-tween (slide-in or flash)
+  // when the player opens BAG → Pokéball. Kill any in-flight tweens so the
+  // sprite is at its final slot position, then snapshot that position so
+  // the throw target + every shake position is stable.
+  ctx.scene.tweens.killTweensOf(b.enemySprite);
+  b.enemySprite.setAlpha(1);
+  const enemyAnchorX = b.enemySprite.x;
+  const enemyAnchorY = b.enemySprite.y;
+
   // BUG-021: Throw originates from the player back-sprite, not a hard-coded
   // (200, 400) which on portrait mobile sat above the actual Pokémon.
   // BUG-020: Capture the highlight dot so it can be destroyed alongside
@@ -71,34 +80,45 @@ export function handlePokeBallUse(ctx: CatchContext, ballItemId: string): void {
 
   ctx.scene.tweens.add({
     targets: [ballGfx, ballHighlight],
-    x: b.enemySprite.x,
-    y: b.enemySprite.y,
+    x: enemyAnchorX,
+    y: enemyAnchorY,
     duration: 500,
     ease: 'Sine.easeIn',
     onComplete: () => {
       ballGfx.destroy();
       ballHighlight.destroy();
       b.enemySprite.setAlpha(0);
-      runShakeSequence(ctx, result.shakes, result.caught, 0);
+      runShakeSequence(ctx, result.shakes, result.caught, 0, enemyAnchorX, enemyAnchorY);
     },
   });
 }
 
-function runShakeSequence(ctx: CatchContext, totalShakes: number, caught: boolean, currentShake: number): void {
+function runShakeSequence(
+  ctx: CatchContext,
+  totalShakes: number,
+  caught: boolean,
+  currentShake: number,
+  // BUG-069: Pin ball coordinates to the captured slot anchor so every
+  // shake renders in the same place even if the enemy sprite is later
+  // tweened. Previous code re-read enemySprite.x/y per-shake and the icon
+  // jumped between shakes when the sprite was mid-fade.
+  ballX: number = 0,
+  ballY: number = 0,
+): void {
   const b = ctx.battle();
   const audio = AudioManager.getInstance();
 
   if (currentShake < totalShakes) {
-    const ballX = b.enemySprite.x;
-    const ballY = b.enemySprite.y + 20;
-    const shakeGfx = ctx.scene.add.circle(ballX, ballY, 10, 0xff3333).setDepth(100);
-    const shakeHighlight = ctx.scene.add.circle(ballX - 2, ballY - 2, 4, 0xffffff).setDepth(101);
+    const shakeX = ballX || b.enemySprite.x;
+    const shakeY = (ballY || b.enemySprite.y) + 20;
+    const shakeGfx = ctx.scene.add.circle(shakeX, shakeY, 10, 0xff3333).setDepth(100);
+    const shakeHighlight = ctx.scene.add.circle(shakeX - 2, shakeY - 2, 4, 0xffffff).setDepth(101);
 
     ctx.scene.time.delayedCall(400, () => {
       audio.playSFX(SFX.BALL_SHAKE);
       ctx.scene.tweens.add({
         targets: [shakeGfx, shakeHighlight],
-        x: ballX + 8,
+        x: shakeX + 8,
         duration: 100,
         yoyo: true,
         repeat: 1,
@@ -106,7 +126,7 @@ function runShakeSequence(ctx: CatchContext, totalShakes: number, caught: boolea
           shakeGfx.destroy();
           shakeHighlight.destroy();
           ctx.scene.time.delayedCall(300, () => {
-            runShakeSequence(ctx, totalShakes, caught, currentShake + 1);
+            runShakeSequence(ctx, totalShakes, caught, currentShake + 1, ballX, ballY);
           });
         },
       });

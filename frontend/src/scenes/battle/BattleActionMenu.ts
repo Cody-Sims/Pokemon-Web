@@ -6,6 +6,7 @@ import { GameManager } from '@managers/GameManager';
 import { AchievementManager } from '@managers/AchievementManager';
 import { SFX } from '@utils/audio-keys';
 import { COLORS } from '@ui/theme';
+import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { SYNTHESIS_ITEM } from '@data/synthesis-data';
 import { PartnerAI } from '@battle/core/PartnerAI';
 import type { BattleUIScene } from './BattleUIScene';
@@ -19,7 +20,9 @@ export class BattleActionMenu {
 
   actionTexts: Phaser.GameObjects.Text[] = [];
   cursor = 0;
-  actionMenuBg!: Phaser.GameObjects.Rectangle;
+  // NIT-002: Single bordered panel instead of a hidden Rectangle stacked
+  // beneath an identical NinePatchPanel.
+  actionMenuBg!: NinePatchPanel;
   synthText?: Phaser.GameObjects.Text;
   partnerActionText?: Phaser.GameObjects.Text;
   fleeAttempts = 0;

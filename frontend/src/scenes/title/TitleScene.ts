@@ -31,14 +31,29 @@ export class TitleScene extends Phaser.Scene {
     this.add.rectangle(width / 2, height / 2, width, height, COLORS.bgDark);
 
     // ── Floating silhouettes ──
-    const silhouettes = ['◆', '●', '▲', '◆', '●'];
-    silhouettes.forEach((char) => {
+    // BUG-061: The previous decorative glyphs '◆', '●', '▲' were rendered
+    // with the system font and fell back to "tofu" boxes on Windows builds
+    // missing those code points. Use procedural shapes (graphics.fillCircle
+    // + fillTriangle) so the decoration is glyph-free.
+    const silhouetteShapes: Array<'diamond' | 'circle' | 'triangle'> = [
+      'diamond', 'circle', 'triangle', 'diamond', 'circle',
+    ];
+    silhouetteShapes.forEach((shape) => {
       const sx = Phaser.Math.Between(50, width - 50);
       const sy = Phaser.Math.Between(height * 0.1, height * 0.9);
-      const sil = this.add.text(sx, sy, char, {
-        fontSize: `${Phaser.Math.Between(20, 40)}px`,
-        color: '#ffffff',
-      }).setOrigin(0.5).setAlpha(0.06);
+      const size = Phaser.Math.Between(20, 40);
+      const sil = this.add.graphics().setAlpha(0.06);
+      sil.fillStyle(0xffffff, 1);
+      const half = size / 2;
+      if (shape === 'circle') {
+        sil.fillCircle(0, 0, half);
+      } else if (shape === 'diamond') {
+        sil.fillTriangle(0, -half, half, 0, 0, half);
+        sil.fillTriangle(0, -half, -half, 0, 0, half);
+      } else {
+        sil.fillTriangle(0, -half, half, half, -half, half);
+      }
+      sil.setPosition(sx, sy);
 
       this.tweens.add({
         targets: sil,
@@ -51,10 +66,9 @@ export class TitleScene extends Phaser.Scene {
       });
     });
 
-    // Decorative lines
-    for (let i = 0; i < 5; i++) {
-      this.add.rectangle(width / 2, height * 0.15 + i * 4, width * 0.6, 2, COLORS.border, 0.3);
-    }
+    // Decorative band — single soft rule (BUG-068: the previous five 2-px
+    // rectangles offset by 4 px stacked into a 10-px-tall fuzzy smudge).
+    this.add.rectangle(width / 2, height * 0.18, width * 0.6, 2, COLORS.borderHighlight, 0.45);
 
     // Title
     this.add.text(width / 2, height * 0.28, 'POKEMON', {
@@ -419,23 +433,26 @@ export class TitleScene extends Phaser.Scene {
 
       overlay.setPosition(width / 2, height / 2).setSize(width, height);
 
-      title.setPosition(width / 2, height * (isPortrait ? 0.14 : 0.16));
+      title.setPosition(width / 2, height * (isPortrait ? 0.12 : 0.16));
 
-      hint.setPosition(width / 2, height * (isPortrait ? 0.22 : 0.24));
+      hint.setPosition(width / 2, height * (isPortrait ? 0.20 : 0.24));
       hint.setStyle({ wordWrap: { width: wrapW } });
 
       // Items: stack vertically, but in landscape pull them tighter so
       // the description + begin button stay visible without overlap.
-      const itemTop = height * (isPortrait ? 0.34 : 0.36);
-      const itemSpacing = isPortrait ? Math.min(44, (height * 0.36) / modes.length) : 36;
+      const itemTop = height * (isPortrait ? 0.32 : 0.36);
+      const itemSpacing = isPortrait ? Math.min(40, (height * 0.32) / modes.length) : 36;
       items.forEach((item, i) => {
         item.setPosition(width / 2, itemTop + i * itemSpacing);
       });
 
-      desc.setPosition(width / 2, height * (isPortrait ? 0.78 : 0.80));
+      // Description sits above the BEGIN button; both are pulled in from the
+      // bottom edge so the button is never clipped by the device safe-area
+      // (B1).
+      desc.setPosition(width / 2, height * (isPortrait ? 0.72 : 0.80));
       desc.setStyle({ wordWrap: { width: wrapW } });
 
-      beginBtn.setPosition(width / 2, height * (isPortrait ? 0.90 : 0.92));
+      beginBtn.setPosition(width / 2, height * (isPortrait ? 0.84 : 0.90));
 
       updateUI();
     };

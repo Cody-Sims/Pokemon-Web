@@ -65,6 +65,8 @@ export class BattleScene extends Phaser.Scene {
 
   // Synthesis aura
   private synthesisAura?: Phaser.GameObjects.Ellipse;
+  /** Enemy-side synthesis aura tracked so update() can keep it parented to the sprite (BUG-035). */
+  private enemySynthesisAura?: Phaser.GameObjects.Ellipse;
 
   // BUG-001: Base transform of the player sprite captured at create() time so
   // the switch handler can restore visibility after faintSprite() shrinks it.
@@ -592,11 +594,12 @@ export class BattleScene extends Phaser.Scene {
 
   /** Show a synthesis aura around the enemy sprite for boss battles. */
   showEnemySynthesisAura(): void {
+    if (this.enemySynthesisAura) return;
     const sprite = this.enemySprite;
-    const aura = this.add.ellipse(sprite.x, sprite.y + 5, 80, 50, 0xff00dd, 0.3)
+    this.enemySynthesisAura = this.add.ellipse(sprite.x, sprite.y + 5, 80, 50, 0xff00dd, 0.3)
       .setDepth(sprite.depth - 1);
     this.tweens.add({
-      targets: aura,
+      targets: this.enemySynthesisAura,
       alpha: 0.6,
       duration: 800,
       yoyo: true,
@@ -610,6 +613,24 @@ export class BattleScene extends Phaser.Scene {
     if (this.synthesisAura) {
       this.synthesisAura.destroy();
       this.synthesisAura = undefined;
+    }
+    if (this.enemySynthesisAura) {
+      this.enemySynthesisAura.destroy();
+      this.enemySynthesisAura = undefined;
+    }
+  }
+
+  /**
+   * BUG-035: Keep synthesis auras parented to their sprites every frame so
+   * faint / switch / slide-in tweens don't leave the aura hovering at the
+   * old slot. Phaser scenes call update() automatically.
+   */
+  update(): void {
+    if (this.synthesisAura && this.playerSprite) {
+      this.synthesisAura.setPosition(this.playerSprite.x, this.playerSprite.y + 5);
+    }
+    if (this.enemySynthesisAura && this.enemySprite) {
+      this.enemySynthesisAura.setPosition(this.enemySprite.x, this.enemySprite.y + 5);
     }
   }
 

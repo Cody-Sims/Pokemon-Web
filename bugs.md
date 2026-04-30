@@ -256,7 +256,7 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
 - **Fix:** Show two lines (`HP/ATK/DEF` then `SpA/SpD/SPD`) or use a small
   table widget like SummaryScene STATS does.
 
-### BUG-035 🟨 Synthesis aura is created on the **already-tweened** sprite y
+### BUG-035 🟨 Synthesis aura is created on the **already-tweened** sprite y  — ✅ Fixed
 - **Where:** [BattleScene.showSynthesisAura](frontend/src/scenes/battle/BattleScene.ts#L530-L540).
 - **What happens:** The aura captures `playerSprite.y` once at creation. The
   player sprite is in slide-in tween at this point during boss intro
@@ -317,7 +317,7 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
   name (e.g., gym leader full-body portraits, trainer-card sprites) render
   blank or default to frame 0 — usually the wrong pose.
 
-### BUG-042 🟨 IntroScene appearance options collide on narrow portrait
+### BUG-042 🟨 IntroScene appearance options collide on narrow portrait  — ✅ Fixed
 - **Where:** [IntroScene.buildAppearanceUI](frontend/src/scenes/title/IntroScene.ts#L425-L450).
 - **What happens:** Boy preview at `width*0.3`, girl at `width*0.7`, each is
   an 80×80 box. On a 320-px portrait viewport the centers are at 96 / 224 —
@@ -346,7 +346,7 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
   "tap DONE" but cannot reach DONE without rotating the device.
 - **Fix:** Reserve the same ~150 px bottom-pad SettingsScene already uses.
 
-### BUG-045 🟨 Catch handler uses `b.enemySprite.x, y` after enemy emerges from ball
+### BUG-045 🟨 Catch handler uses `b.enemySprite.x, y` after enemy emerges from ball  — ✅ Fixed
 - **Where:** [BattleCatchHandler.handlePokeBallUse](frontend/src/scenes/battle/BattleCatchHandler.ts#L66-L74).
 - **What happens:** The throw tween targets the *current* enemy sprite x/y,
   but the enemy is mid-bob from `flashSprite` and from the slide-in tween.
@@ -355,7 +355,7 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
   intro animations finish), the ball flies to wherever the enemy *was*, then
   the enemy fades out somewhere else.
 
-### BUG-046 🟨 `OverworldScene.update()` rebuilds the NPC tile lookup every frame
+### BUG-046 🟨 `OverworldScene.update()` rebuilds the NPC tile lookup every frame  — ✅ Fixed
 - **Where:** [OverworldScene.update](frontend/src/scenes/overworld/OverworldScene.ts#L1023-L1028)
   → [rebuildNpcOccupiedTiles](frontend/src/scenes/overworld/OverworldScene.ts#L1216-L1228).
 - **What happens:** Even when no NPC moved, this clears + rebuilds the set
@@ -376,7 +376,7 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
 
 ## 🟩 Polish / Visual
 
-### BUG-060 🟩 Two redundant menu items "QUIT" and "EXIT" sit adjacent
+### BUG-060 🟩 Two redundant menu items "QUIT" and "EXIT" sit adjacent  — ✅ Fixed
 - **Where:** [MenuScene.create](frontend/src/scenes/menu/MenuScene.ts#L29-L34).
 - **What happens:** QUIT goes back to the title screen (loses unsaved
   progress); EXIT just closes the pause menu and resumes the overworld.
@@ -385,7 +385,7 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
 - **Fix:** Rename QUIT → `RETURN TO TITLE` (or place it behind a confirm
   modal — the code already has `ConfirmBox`) and label EXIT → `RESUME`.
 
-### BUG-061 🟩 Title screen "floating silhouettes" use mojibake characters
+### BUG-061 🟩 Title screen "floating silhouettes" use mojibake characters  — ✅ Fixed
 - **Where:** [TitleScene.create](frontend/src/scenes/title/TitleScene.ts#L33-L51).
 - **What happens:** The decorative characters `'◆', '●', '▲'` are rendered
   with the system font at 20–40 px and varying alpha. On Windows builds
@@ -402,7 +402,7 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
   cycle at higher speed. Reported in IMPROVEMENT_PLAN.md, included here so
   a player playing today sees no feedback.
 
-### BUG-063 🟩 `pickup` of a faint friendship message uses the wrong name
+### BUG-063 🟩 `pickup` of a faint friendship message uses the wrong name  — ✅ Fixed (uses live nickname)
 - **Where:** [BattleUIScene.applyMoveResult](frontend/src/scenes/battle/BattleUIScene.ts#L536-L546)
   — "held on so you wouldn't feel sad!" branch.
 - **What happens:** The message uses `defender.nickname ?? pokemonData[defender.dataId]?.name`,
@@ -410,7 +410,7 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
   has nicknamed the partner Pokémon mid-battle (e.g., post-catch). Cosmetic
   drift only.
 
-### BUG-064 🟩 Damage popup color for "no effect" (immune) is dark gray on dark bg
+### BUG-064 🟩 Damage popup color for "no effect" (immune) is dark gray on dark bg  — ✅ Fixed
 - **Where:** [BattleDamageNumbers.showDamagePopup](frontend/src/scenes/battle/BattleDamageNumbers.ts#L11-L15).
 - **What happens:** `effectiveness === 0 → color = '#666666'` against a
   message panel of `#0a0a18` and a battle bg often dark — barely visible.
@@ -418,14 +418,14 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
 - **Fix:** Use `#cccccc` or skip the damage popup when damage is 0 (the
   "No effect!" message in the bar already conveys it).
 
-### BUG-065 🟩 EmoteBubble depth tied to NPC depth via constant offset, can sit behind world tiles
+### BUG-065 🟩 EmoteBubble depth tied to NPC depth via constant offset, can sit behind world tiles  — ✅ Fixed
 - **Where:** Implied by `EmoteBubble.show` callsites in OverworldScene; the
   bubble depth is derived from NPC depth which is `1 + y/mapH * 0.9`, so it
   caps at 1.9, while LightingSystem darkness sits at depth 85 — emote
   bubbles in a dark cave will be **dimmed by the darkness overlay** because
   they render below it.
 
-### BUG-066 🟩 Banner slide-in displays even if `displayName` is missing
+### BUG-066 🟩 Banner slide-in displays even if `displayName` is missing  — ✅ Fixed (uses derived name fallback)
 - **Where:** [OverworldScene.create](frontend/src/scenes/overworld/OverworldScene.ts#L508-L545).
 - **What happens:** Guarded by `if (this.mapDef.displayName)`. Pallet Town
   (BUG-014) has no displayName → no banner ever fires there. Combined with
@@ -441,7 +441,7 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
   inconsistent with item collection. (Possibly intentional; flagged here in
   case the design is "step on item-ball to collect" elsewhere.)
 
-### BUG-068 🟩 Title decorative gradient "lines" loop is i<5 with offset 4 — mostly invisible
+### BUG-068 🟩 Title decorative gradient "lines" loop is i<5 with offset 4 — mostly invisible  — ✅ Fixed
 - **Where:** [TitleScene.create](frontend/src/scenes/title/TitleScene.ts#L54-L56).
 - **What happens:** Five 2-px-tall rectangles stacked 4 px apart with alpha
   0.3 → a 10-px-tall fuzzy band. Clearly intended to be a decorative ribbon
@@ -459,13 +459,13 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
 
 ## 🎨 Pure visual nitpicks
 
-### NIT-001 🎨 BattleScene comments still reference legacy hard-coded coords
+### NIT-001 🎨 BattleScene comments still reference legacy hard-coded coords  — ✅ Fixed (BUG-004 rewrite removed them)
 - **Where:** [BattleScene.setupDoubleBattle](frontend/src/scenes/battle/BattleScene.ts#L575-L577).
   Comment says `// Player slot 0: x=200, y=350`. The whole block (BUG-004)
   is the actual issue, but the stale comment hints at how the magic numbers
   arrived.
 
-### NIT-002 🎨 Battle action menu uses a *Rectangle* and a *NinePatchPanel* on the same coords
+### NIT-002 🎨 Battle action menu uses a *Rectangle* and a *NinePatchPanel* on the same coords  — ✅ Fixed
 - **Where:** [BattleUIScene.create](frontend/src/scenes/battle/BattleUIScene.ts#L116-L121).
 - **What:** `this.actionMenu.actionMenuBg = this.add.rectangle(...)` is added,
   then immediately a `NinePatchPanel` is drawn on top of the same rect with
@@ -473,7 +473,7 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
   occupies a draw call and lives the entire scene — likely a leftover from
   a refactor.
 
-### NIT-003 🎨 `mobileFontSize(...)` returns `"NNpx"` strings but `add.bitmapText` wants a number
+### NIT-003 🎨 `mobileFontSize(...)` returns `"NNpx"` strings but `add.bitmapText` wants a number  — ✅ Fixed (added `mobileFontPx` numeric helper)
 - **Where:** [OverworldScene.create](frontend/src/scenes/overworld/OverworldScene.ts#L426-L432).
 - **What:** The fix `parseInt(mobileFontSize(14), 10) || 14` works but
   signals a typing inconsistency — a single helper that returns a `number`
@@ -492,18 +492,28 @@ Legend: 🟥 Critical · 🟧 High · 🟨 Medium · 🟩 Low / Polish · 🎨 P
 
 ---
 
-## Suggested priority for fixes
+## Status & remaining backlog
 
-1. BUG-001 (invisible Pokémon after switch) — highest gameplay impact.
-2. BUG-002 (forced switch ignores choice) — softlock-adjacent.
-3. BUG-003 (mobile move menu under controls) — blocks battles on phones.
-4. BUG-014 (Pallet/Littoral Town name) — single-line fix, first thing players see.
-5. BUG-015, BUG-017, BUG-018 (portrait clipping in Summary/Pokedex/Party) —
-   the menus that are opened most often.
-6. BUG-019 (lighting RT leak) — accumulates the longer the player plays.
-7. BUG-020/BUG-021 (catch sequence orphan + wrong origin) — visible every time
-   the player throws a ball.
-8. Remaining mediums + polish.
+**Resolved (35):** BUG-001 / 002 / 003 / 004 / 010 / 011 / 012 / 013 / 014
+/ 015 / 016 / 017 / 018 / 019 / 020 / 021 / 030 / 031 / 032 / 033 / 034 /
+035 / 036 / 037 / 038 / 039 / 040 / 041 / 042 / 043 / 044 / 045 / 046 /
+047 / 060 / 061 / 063 / 064 / 065 / 066 / 068, plus NIT-001 / 002 / 003 /
+004 / 005. See the 2026-04-29 entries in [docs/CHANGELOG.md](docs/CHANGELOG.md)
+for the per-bug fix references.
+
+**Open (deferred):**
+
+- BUG-062 — Cycling has no sprite swap. Tracked in
+  [IMPROVEMENT_PLAN.md](docs/IMPROVEMENT_PLAN.md) Tier 4.4 (needs new
+  sprite art). Not a regression, kept on the polish backlog.
+- BUG-067 — `npcOccupiedTiles` blocks walking onto item-balls / signs.
+  Resolution depends on a design decision (step-on collection vs.
+  adjacent-interact). Left as-is until that call is made.
+- BUG-069 — Catch shake position briefly drifts when enemy sprite is
+  mid-tween. Cosmetic-only and only visible during contrived timing;
+  deferred behind the resolved BUG-020/021 + BUG-045 work which already
+  hides the orphan-pixel and wrong-origin issues that made the drift
+  obvious.
 
 ---
 

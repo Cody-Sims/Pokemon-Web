@@ -432,24 +432,38 @@ export class IntroScene extends Phaser.Scene {
       fontSize: mobileFontSize(22),
     }).setOrigin(0.5);
 
-    // Boy option
-    const boyX = width * 0.3;
-    const girlX = width * 0.7;
-    const optionY = height * 0.42;
+    // Boy/Girl options.
+    // BUG-042: On narrow portrait viewports the side-by-side 80×80 boxes
+    // sat 96 px apart and visibly collided with their selection strokes.
+    // Stack them vertically on portrait so each option has full breathing
+    // room; landscape keeps the two-column layout.
+    // BUG-044: Reserve a 150 px bottom safe-area on portrait mobile so DONE
+    // / SKIP / hint clear the iOS home indicator + DOM touch controls.
+    const portraitApp = height > width;
+    const safeBottomApp = isMobile() && portraitApp ? 150 : 0;
+    const boyX = portraitApp ? width / 2 : width * 0.3;
+    const girlX = portraitApp ? width / 2 : width * 0.7;
+    const verticalSpan = Math.max(160, height - safeBottomApp - height * 0.20 - 100);
+    const boyY = portraitApp
+      ? height * 0.20 + verticalSpan * 0.20
+      : height * 0.42;
+    const girlY = portraitApp
+      ? height * 0.20 + verticalSpan * 0.62
+      : height * 0.42;
 
     // Character preview backgrounds
-    const boyPreviewBg = this.add.rectangle(boyX, optionY, 80, 80, 0x333366).setStrokeStyle(3, 0xffcc00);
-    const girlPreviewBg = this.add.rectangle(girlX, optionY, 80, 80, 0x333366).setStrokeStyle(3, 0x666688);
+    const boyPreviewBg = this.add.rectangle(boyX, boyY, 80, 80, 0x333366).setStrokeStyle(3, 0xffcc00);
+    const girlPreviewBg = this.add.rectangle(girlX, girlY, 80, 80, 0x333366).setStrokeStyle(3, 0x666688);
 
     // Actual player sprite previews
-    const boySprite = this.add.image(boyX, optionY, 'player-walk', 'walk-down-0').setScale(4);
-    const girlSprite = this.add.image(girlX, optionY, 'player-walk-female', 'walk-down-0').setScale(4);
+    const boySprite = this.add.image(boyX, boyY, 'player-walk', 'walk-down-0').setScale(4);
+    const girlSprite = this.add.image(girlX, girlY, 'player-walk-female', 'walk-down-0').setScale(4);
 
-    const boyText = this.add.text(boyX, optionY + 60, 'Boy', {
+    const boyText = this.add.text(boyX, boyY + 60, 'Boy', {
       ...FONTS.menuItem, fontSize: mobileFontSize(18),
       color: COLORS.textHighlight,
     }).setOrigin(0.5);
-    const girlText = this.add.text(girlX, optionY + 60, 'Girl', {
+    const girlText = this.add.text(girlX, girlY + 60, 'Girl', {
       ...FONTS.menuItem, fontSize: mobileFontSize(18),
       color: COLORS.textGray,
     }).setOrigin(0.5);
@@ -475,8 +489,10 @@ export class IntroScene extends Phaser.Scene {
     girlPreviewBg.on('pointerdown', () => { this.selectedAppearance = 1; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
     girlSprite.on('pointerdown', () => { this.selectedAppearance = 1; updateSelection(); AudioManager.getInstance().playSFX(SFX.CURSOR); });
 
-    // DONE button
-    const doneBtn = this.add.text(width / 2, height * 0.78, '[ DONE ]', {
+    // DONE button — anchored from the bottom so it stays clear of touch controls.
+    const doneY = portraitApp ? height - safeBottomApp - 60 : height * 0.78;
+    const hintY = portraitApp ? height - safeBottomApp - 22 : height * 0.88;
+    const doneBtn = this.add.text(width / 2, doneY, '[ DONE ]', {
       ...FONTS.menuItem, fontSize: mobileFontSize(18),
       color: COLORS.textHighlight,
       padding: { x: 16, y: 8 },
@@ -494,11 +510,23 @@ export class IntroScene extends Phaser.Scene {
       updateSelection();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
+    this.input.keyboard!.on('keydown-UP', () => {
+      this.selectedAppearance = 0;
+      updateSelection();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
+    });
+    this.input.keyboard!.on('keydown-DOWN', () => {
+      this.selectedAppearance = 1;
+      updateSelection();
+      AudioManager.getInstance().playSFX(SFX.CURSOR);
+    });
     this.input.keyboard!.on('keydown-ENTER', () => this.confirmAppearance());
 
-    // Hint
-    const appearanceHint = isMobile() ? 'Tap to select, then DONE' : 'Use ← → and Enter';
-    this.add.text(width / 2, height * 0.88, appearanceHint, {
+    // Hint — picks a different cue depending on the layout direction.
+    const appearanceHint = isMobile()
+      ? 'Tap to select, then DONE'
+      : portraitApp ? 'Use ↑ ↓ and Enter' : 'Use ← → and Enter';
+    this.add.text(width / 2, hintY, appearanceHint, {
       ...FONTS.caption, color: COLORS.textDim,
     }).setOrigin(0.5);
   }

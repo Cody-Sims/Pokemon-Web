@@ -108,10 +108,9 @@ export class BattleUIScene extends Phaser.Scene {
     });
     this.messageHandler.messageText = this.add.text(30, messageTextY, 'What will you do?', { ...FONTS.body, fontSize: mobileFontSize(16) });
 
-    // Nine-patch action menu
-    this.actionMenu.actionMenuBg = this.add.rectangle(cx, menuY, w - 20, menuH, 0x1a1a2e, 0.95);
-    this.actionMenu.actionMenuBg.setStrokeStyle(2, COLORS.borderLight);
-    new NinePatchPanel(this, cx, menuY, w - 20, menuH, {
+    // Nine-patch action menu (NIT-002: was a hidden Rectangle stacked
+    // beneath an identical NinePatchPanel — collapsed to one widget).
+    this.actionMenu.actionMenuBg = new NinePatchPanel(this, cx, menuY, w - 20, menuH, {
       fillColor: COLORS.bgPanel, fillAlpha: 0.95, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 6,
     });
 
@@ -179,7 +178,15 @@ export class BattleUIScene extends Phaser.Scene {
       const msgY = mY - mH / 2 - 20;
       this.messageHandler.weatherText?.setPosition(cx, 12);
       this.messageHandler.messageText.setPosition(30, msgY - 12);
-      this.actionMenu.actionMenuBg.setPosition(cx, mY).setSize(w - 20, mH);
+      // NIT-002: NinePatchPanel doesn't expose a setSize, so destroy and
+      // re-create on resize. Visibility state is restored via showActions /
+      // hideActions after the relayout finishes.
+      const wasVisible = this.actionMenu.actionMenuBg?.getGraphics().visible !== false;
+      this.actionMenu.actionMenuBg?.destroy();
+      this.actionMenu.actionMenuBg = new NinePatchPanel(this, cx, mY, w - 20, mH, {
+        fillColor: COLORS.bgPanel, fillAlpha: 0.95, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 6,
+      });
+      this.actionMenu.actionMenuBg.setVisible(wasVisible);
       const rowH = Math.round(35 * MOBILE_SCALE);
       this.actionMenu.actionTexts.forEach((t, i) => {
         if (cpt) {
@@ -370,7 +377,8 @@ export class BattleUIScene extends Phaser.Scene {
         b.updateHpBars();
         if (!turnStart.canAct) {
           if (attacker.currentHp <= 0) {
-            const atkName = pokemonData[attacker.dataId]?.name ?? '???';
+            // BUG-063: prefer the live nickname when announcing a faint.
+            const atkName = attacker.nickname ?? pokemonData[attacker.dataId]?.name ?? '???';
             this.time.delayedCall(600, () => {
               b.faintSprite(isPlayer ? b.playerSprite : b.enemySprite);
               this.msg(`${atkName} fainted!`);
@@ -544,7 +552,7 @@ export class BattleUIScene extends Phaser.Scene {
               this.time.delayedCall(1200, () => this.runTurnStep(order, idx + 1));
               return;
             }
-            const defName = pokemonData[defender.dataId]?.name ?? '???';
+            const defName = defender.nickname ?? pokemonData[defender.dataId]?.name ?? '???';
             if (!isPlayer) this.applyFaintFriendshipLoss(defender);
             this.time.delayedCall(800, () => {
               AudioManager.getInstance().playSFX(SFX.FAINT);
@@ -564,7 +572,7 @@ export class BattleUIScene extends Phaser.Scene {
 
           // Check attacker faint from recoil / self-destruct
           if (attacker.currentHp <= 0) {
-            const atkName = pokemonData[attacker.dataId]?.name ?? '???';
+            const atkName = attacker.nickname ?? pokemonData[attacker.dataId]?.name ?? '???';
             if (isPlayer) this.applyFaintFriendshipLoss(attacker);
             this.time.delayedCall(800, () => {
               AudioManager.getInstance().playSFX(SFX.FAINT);

@@ -25,12 +25,16 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Build menu labels dynamically
+    // Build menu labels dynamically.
+    // BUG-060: "QUIT" used to sit adjacent to "EXIT" and both verbs read as
+    // "close this screen" — a mis-tap discarded unsaved progress. The
+    // close-the-pause-menu action is now "RESUME" and the return-to-title
+    // action is "TITLE SCREEN" (still gated behind a ConfirmBox).
     this.menuLabels = ['POKEDEX', 'POKEMON', 'BAG', 'QUESTS', 'TOWN MAP', 'STATS', 'HALL OF FAME'];
     if (OverworldAbilities.canUse('fly')) {
       this.menuLabels.push('FLY');
     }
-    this.menuLabels.push('SAVE', 'OPTIONS', 'QUIT', 'EXIT');
+    this.menuLabels.push('SAVE', 'OPTIONS', 'TITLE SCREEN', 'RESUME');
 
     const layout = ui(this);
 
@@ -278,9 +282,11 @@ export class MenuScene extends Phaser.Scene {
         });
         break;
       case 'QUIT':
+      case 'TITLE SCREEN':
         this.confirmQuit();
         break;
       case 'EXIT':
+      case 'RESUME':
         this.closeMenu();
         break;
     }
@@ -325,8 +331,16 @@ export class MenuScene extends Phaser.Scene {
       'Quit to title?',
       (confirmed) => {
         if (confirmed) {
+          // Stop overworld and every HUD overlay scene that OverworldScene
+          // launches as siblings, so the title screen is not left with a
+          // lingering minimap / quest tracker / party quick-view (B3).
           this.scene.stop();
           this.scene.stop('OverworldScene');
+          for (const hud of ['MinimapScene', 'QuestTrackerScene', 'PartyQuickViewScene']) {
+            if (this.scene.isActive(hud) || this.scene.isSleeping(hud)) {
+              this.scene.stop(hud);
+            }
+          }
           this.scene.start('TitleScene');
         }
       },

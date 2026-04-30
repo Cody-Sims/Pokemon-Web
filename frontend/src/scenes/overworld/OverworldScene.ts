@@ -32,7 +32,7 @@ import {
 } from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
-import { mobileFontSize } from '@ui/theme';
+import { mobileFontSize, mobileFontPx } from '@ui/theme';
 import { EmoteBubble } from '@systems/rendering/EmoteBubble';
 import { hintText } from '@utils/hint-text';
 import { MapPreloader } from '@systems/engine/MapPreloader';
@@ -95,6 +95,9 @@ export class OverworldScene extends Phaser.Scene {
   private ambientSFX!: AmbientSFX;
   /** O(1) lookup set for NPC-occupied tile positions. */
   private npcOccupiedTiles = new Set<string>();
+  /** BUG-046: Last known tile positions per NPC — used to skip the
+   *  per-frame Set rebuild when nothing has moved. */
+  private npcTileSnapshot: string[] = [];
   /** Tracks the last time period to detect transitions and update NPC schedules. */
   private lastTimePeriod: TimePeriod | null = null;
   private hudText?: Phaser.GameObjects.Text | Phaser.GameObjects.BitmapText;
@@ -426,8 +429,9 @@ export class OverworldScene extends Phaser.Scene {
         ? `${mapLabel}  |  ${hintText('interact')}`
         : `${mapLabel}  |  ${hintText('interact')}  |  ESC = Menu`;
     if (this.cache.bitmapFont.exists('aurum-pixel')) {
-      // BitmapText size needs a number; mobileFontSize returns "14px".
-      const sizePx = parseInt(mobileFontSize(14), 10) || 14;
+      // BitmapText takes a number; mobileFontPx gives the same scaled
+      // value as mobileFontSize without the parseInt round-trip (NIT-003).
+      const sizePx = mobileFontPx(14);
       this.hudText = this.add.bitmapText(
         this.cameras.main.width / 2, 14, 'aurum-pixel', hudHint, sizePx,
       ).setOrigin(0.5, 0).setScrollFactor(0).setDepth(100).setTint(0xffffff);
@@ -495,8 +499,14 @@ export class OverworldScene extends Phaser.Scene {
       }
     });
 
-    // Slide-in area name banner
-    if (this.mapDef.displayName) {
+    // Slide-in area name banner.
+    // BUG-066: Always pick a label — maps without `displayName` previously
+    // never showed the banner, leaving the player without visual
+    // confirmation of where they entered. Fall back to the same titlecased
+    // map-key derivation the HUD strip uses.
+    {
+      const bannerLabel = this.mapDef.displayName
+        ?? this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       const bannerW = 200;
       const bannerH = 28;
       const bannerX = this.cameras.main.width / 2;
@@ -509,7 +519,7 @@ export class OverworldScene extends Phaser.Scene {
       bannerBg.strokeRoundedRect(bannerX - bannerW / 2, 0, bannerW, bannerH, 4);
       bannerBg.setY(bannerY);
 
-      const bannerText = this.add.text(bannerX, bannerY + bannerH / 2, this.mapDef.displayName, {
+      const bannerText = this.add.text(bannerX, bannerY + bannerH / 2, bannerLabel, {
         fontSize: mobileFontSize(13),
         color: '#ffcc00',
         fontFamily: 'monospace',
@@ -1232,17 +1242,32 @@ export class OverworldScene extends Phaser.Scene {
 
   /** Rebuild the O(1) NPC occupied tile set from current NPC positions. */
   private rebuildNpcOccupiedTiles(): void {
-    this.npcOccupiedTiles.clear();
+    // BUG-046: Skip the rebuild when nothing has moved — the previous
+    // implementation cleared + re-inserted every frame, which produced
+    // measurable GC churn on busy maps. Compute a quick "position
+    // signature" for the live NPC + object positions and bail when it
+    // matches the snapshot from the last rebuild.
+    const next: string[] = [];
     for (const npc of this.npcs) {
       const tx = Math.floor(npc.x / TILE_SIZE);
       const ty = Math.floor(npc.y / TILE_SIZE);
-      this.npcOccupiedTiles.add(`${tx},${ty}`);
+      next.push(`${tx},${ty}`);
     }
     for (const obj of this.mapObjects) {
       const tx = Math.floor(obj.x / TILE_SIZE);
       const ty = Math.floor(obj.y / TILE_SIZE);
-      this.npcOccupiedTiles.add(`${tx},${ty}`);
+      next.push(`${tx},${ty}`);
     }
+    if (next.length === this.npcTileSnapshot.length) {
+      let changed = false;
+      for (let i = 0; i < next.length; i++) {
+        if (next[i] !== this.npcTileSnapshot[i]) { changed = true; break; }
+      }
+      if (!changed) return;
+    }
+    this.npcOccupiedTiles.clear();
+    for (const key of next) this.npcOccupiedTiles.add(key);
+    this.npcTileSnapshot = next;
   }
 
   /** Format a playtime in seconds as `H:MM:SS` (or `M:SS` if < 1 hour). */

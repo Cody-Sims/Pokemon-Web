@@ -36,7 +36,11 @@ export class EmoteBubble {
       color: style.color,
     });
     text.setOrigin(0.5, 1);
-    text.setDepth(10);
+    // BUG-065: LightingSystem darkness sits at depth 85 and the legacy
+    // depth=10 left emote bubbles dimmed (or invisible) inside dark caves.
+    // Push the bubble above the darkness overlay so trainer "!" and quest
+    // emotes always read clearly.
+    text.setDepth(95);
 
     if (isReducedMotion()) {
       text.setScale(1);
