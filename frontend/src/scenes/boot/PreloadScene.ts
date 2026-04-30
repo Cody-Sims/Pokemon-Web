@@ -103,19 +103,27 @@ export class PreloadScene extends Phaser.Scene {
 
         switch (type) {
           case 'image':
-            this.load.image(asset.key, asset.path!);
+            if (asset.path) {
+              this.load.image(asset.key, asset.path);
+            }
             break;
           case 'atlas':
-            this.load.atlas(asset.key, asset.texture!, asset.atlas!);
+            if (asset.texture && asset.atlas) {
+              this.load.atlas(asset.key, asset.texture, asset.atlas);
+            }
             break;
           case 'spritesheet':
-            this.load.spritesheet(asset.key, asset.path!, {
-              frameWidth: asset.frameWidth!,
-              frameHeight: asset.frameHeight!,
-            });
+            if (asset.path && asset.frameWidth && asset.frameHeight) {
+              this.load.spritesheet(asset.key, asset.path, {
+                frameWidth: asset.frameWidth,
+                frameHeight: asset.frameHeight,
+              });
+            }
             break;
           case 'audio':
-            this.load.audio(asset.key, asset.path!);
+            if (asset.path) {
+              this.load.audio(asset.key, asset.path);
+            }
             break;
         }
       }

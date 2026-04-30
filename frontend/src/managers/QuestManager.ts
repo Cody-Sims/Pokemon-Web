@@ -141,13 +141,10 @@ export class QuestManager {
       const step = quest.steps[stepIdx];
       if (step.triggerFlag && step.triggerFlag === flag) {
         this.completeStep(quest.id, stepIdx);
-
-        if (this.getCurrentStep(quest.id) >= quest.steps.length) {
-          this.completeQuest(quest.id);
-          EventManager.getInstance().emit('quest-completed', quest.id);
-        }
       }
     }
+    // MED-45: Re-check all active quests for cascading flag completions
+    this.checkAllQuestProgress();
   }
 
   /** Check all active quests for event-triggered step completions. */
@@ -159,11 +156,34 @@ export class QuestManager {
       const step = quest.steps[stepIdx];
       if (step.triggerEvent && step.triggerEvent === eventKey) {
         this.completeStep(quest.id, stepIdx);
+      }
+    }
+    // MED-45: Re-check all active quests for cascading flag completions
+    this.checkAllQuestProgress();
+  }
 
-        if (this.getCurrentStep(quest.id) >= quest.steps.length) {
-          this.completeQuest(quest.id);
-          EventManager.getInstance().emit('quest-completed', quest.id);
+  /**
+   * MED-45: After any trigger, re-check ALL active quests to advance
+   * steps whose triggerFlags are already set (handles out-of-order flag sets).
+   */
+  private checkAllQuestProgress(): void {
+    const gm = GameManager.getInstance();
+    for (const quest of this.getActiveQuests()) {
+      let stepIdx = this.getCurrentStep(quest.id);
+      let advanced = false;
+      while (stepIdx < quest.steps.length) {
+        const step = quest.steps[stepIdx];
+        if (step.triggerFlag && gm.getFlag(step.triggerFlag)) {
+          this.completeStep(quest.id, stepIdx);
+          stepIdx = this.getCurrentStep(quest.id);
+          advanced = true;
+        } else {
+          break;
         }
+      }
+      if (advanced && stepIdx >= quest.steps.length) {
+        this.completeQuest(quest.id);
+        EventManager.getInstance().emit('quest-completed', quest.id);
       }
     }
   }

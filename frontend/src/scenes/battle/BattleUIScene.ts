@@ -22,7 +22,7 @@ import { SYNTHESIS_ELIGIBLE } from '@data/synthesis-data';
 import { trainerData } from '@data/trainers';
 import { pickEnemyMove as pickEnemy, calculateTurnOrder } from './BattleTurnRunner';
 import { collectEndOfTurnEffects } from './BattleEndOfTurn';
-import { resetBallThrowCount } from './BattleCatchHandler';
+import { resetBallThrowCount, cleanupBallGraphics } from './BattleCatchHandler';
 import { runVictorySequence as doVictory, type VictoryContext } from './BattleVictorySequence';
 import { BattleMessageHandler } from './BattleMessageHandler';
 import { BattleActionMenu } from './BattleActionMenu';
@@ -52,6 +52,7 @@ export class BattleUIScene extends Phaser.Scene {
   switchHandler!: BattleSwitchHandler;
 
   private bossSynthesisTriggered = false;
+  private inputLocked = false;
 
   /** Per-battle counter: damaging player moves used (used for status-master achievement). */
   playerDamagingMovesUsed = 0;
@@ -166,6 +167,10 @@ export class BattleUIScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-SPACE', () => this.confirm());
     this.input.keyboard!.on('keydown-ESC', () => this.cancel());
 
+    // HIGH-11: Disable keyboard when scene is paused, re-enable on resume
+    this.events.on('pause', () => { if (this.input.keyboard) this.input.keyboard.enabled = false; });
+    this.events.on('resume', () => { if (this.input.keyboard) { this.input.keyboard.enabled = true; this.input.keyboard.resetKeys(); } });
+
     // Re-layout on resize / orientation change
     layoutOn(this, () => {
       const { w, h, cx } = ui(this);
@@ -278,7 +283,10 @@ export class BattleUIScene extends Phaser.Scene {
   }
 
   private confirm(): void {
-    if (this.state === 'animating') return;
+    if (this.state === 'animating' || this.inputLocked) return;
+    // HIGH-10: Debounce rapid double-input during animations
+    this.inputLocked = true;
+    this.time.delayedCall(100, () => { this.inputLocked = false; });
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
     if (this.state === 'target-select') { this.moveMenu.confirmTarget(); return; }
     if (this.state === 'message') { this.state = 'actions'; this.showActions(); this.msg('What will you do?'); return; }
@@ -384,7 +392,8 @@ export class BattleUIScene extends Phaser.Scene {
             this.time.delayedCall(600, () => {
               b.faintSprite(isPlayer ? b.playerSprite : b.enemySprite);
               this.msg(`${atkName} fainted!`);
-              this.time.delayedCall(1500, () => {
+              // LOW-6: Wait for faint animation (800ms) to complete
+              this.time.delayedCall(1800, () => {
                 if (isPlayer) {
                   this.switchHandler.handleFaintedSwitch();
                 } else {
@@ -529,6 +538,39 @@ export class BattleUIScene extends Phaser.Scene {
             });
           }
 
+          // LOW-1: Check attacker faint from recoil / self-destruct first
+          if (attacker.currentHp <= 0) {
+            const atkName = attacker.nickname ?? pokemonData[attacker.dataId]?.name ?? '???';
+            if (isPlayer) this.applyFaintFriendshipLoss(attacker);
+            this.time.delayedCall(800, () => {
+              AudioManager.getInstance().playSFX(SFX.FAINT);
+              AudioManager.getInstance().playCry(attacker.dataId);
+              b.faintSprite(isPlayer ? b.playerSprite : b.enemySprite);
+              this.msg(`${atkName} fainted!`);
+              // LOW-6: Wait for faint animation (800ms) to complete
+              this.time.delayedCall(1800, () => {
+                // Both KO: attacker died from recoil after killing defender
+                if (defender.currentHp <= 0) {
+                  const defName = defender.nickname ?? pokemonData[defender.dataId]?.name ?? '???';
+                  if (!isPlayer) this.applyFaintFriendshipLoss(defender);
+                  AudioManager.getInstance().playSFX(SFX.FAINT);
+                  b.faintSprite(isPlayer ? b.enemySprite : b.playerSprite);
+                  this.msg(`${defName} fainted!`);
+                  this.time.delayedCall(1800, () => {
+                    this.runVictorySequence();
+                  });
+                  return;
+                }
+                if (isPlayer) {
+                  this.switchHandler.handleFaintedSwitch();
+                } else {
+                  this.runVictorySequence();
+                }
+              });
+            });
+            return;
+          }
+
           // Check defender faint
           if (defender.currentHp <= 0) {
             // Friendship survival
@@ -548,31 +590,12 @@ export class BattleUIScene extends Phaser.Scene {
               AudioManager.getInstance().playCry(defender.dataId);
               b.faintSprite(isPlayer ? b.enemySprite : b.playerSprite);
               this.msg(`${defName} fainted!`);
-              this.time.delayedCall(1500, () => {
+              // LOW-6: Wait for faint animation (800ms) to complete
+              this.time.delayedCall(1800, () => {
                 if (defender === b.enemyPokemon) {
                   this.runVictorySequence();
                 } else {
                   this.switchHandler.handleFaintedSwitch();
-                }
-              });
-            });
-            return;
-          }
-
-          // Check attacker faint from recoil / self-destruct
-          if (attacker.currentHp <= 0) {
-            const atkName = attacker.nickname ?? pokemonData[attacker.dataId]?.name ?? '???';
-            if (isPlayer) this.applyFaintFriendshipLoss(attacker);
-            this.time.delayedCall(800, () => {
-              AudioManager.getInstance().playSFX(SFX.FAINT);
-              AudioManager.getInstance().playCry(attacker.dataId);
-              b.faintSprite(isPlayer ? b.playerSprite : b.enemySprite);
-              this.msg(`${atkName} fainted!`);
-              this.time.delayedCall(1500, () => {
-                if (isPlayer) {
-                  this.switchHandler.handleFaintedSwitch();
-                } else {
-                  this.runVictorySequence();
                 }
               });
             });
@@ -640,7 +663,7 @@ export class BattleUIScene extends Phaser.Scene {
       const defName = pokemonData[b.enemyPokemon.dataId]?.name ?? '???';
       b.faintSprite(b.enemySprite);
       this.msg(`${defName} fainted!`);
-      this.time.delayedCall(1500, () => this.runVictorySequence());
+      this.time.delayedCall(1800, () => this.runVictorySequence());
       return;
     }
     if (b.playerPokemon.currentHp <= 0) {
@@ -648,7 +671,7 @@ export class BattleUIScene extends Phaser.Scene {
       this.applyFaintFriendshipLoss(b.playerPokemon);
       b.faintSprite(b.playerSprite);
       this.msg(`${defName} fainted!`);
-      this.time.delayedCall(1500, () => {
+      this.time.delayedCall(1800, () => {
         this.switchHandler.handleFaintedSwitch();
       });
       return;
@@ -733,5 +756,6 @@ export class BattleUIScene extends Phaser.Scene {
     this.input.removeAllListeners();
     this.tweens.killAll();
     this.time.removeAllEvents();
+    cleanupBallGraphics();
   }
 }

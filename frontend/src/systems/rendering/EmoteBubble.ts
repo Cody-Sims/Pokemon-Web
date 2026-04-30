@@ -27,6 +27,9 @@ export class EmoteBubble {
     emote: EmoteType,
     duration = 1500,
   ): void {
+    // LOW-16: Guard against destroyed or inactive target
+    if (!target || !target.active) return;
+
     const style = EMOTE_STYLES[emote];
 
     const text = scene.add.text(target.x, target.y - 24, style.text, {
@@ -60,14 +63,17 @@ export class EmoteBubble {
       duration: 150,
       ease: 'Back.easeOut',
       onComplete: () => {
+        // LOW-16: Guard callbacks against destroyed target/text
+        if (!text.active) return;
         // Hold then fade out
         scene.time.delayedCall(duration - 350, () => {
+          if (!text.active) return;
           scene.tweens.add({
             targets: text,
             alpha: 0,
             duration: 200,
             onComplete: () => {
-              text.destroy();
+              if (text.active) text.destroy();
             },
           });
         });

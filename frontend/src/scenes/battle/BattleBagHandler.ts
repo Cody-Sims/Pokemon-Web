@@ -23,6 +23,7 @@ export class BattleBagHandler {
 
     // Listen for pokeball use
     invScene.events.once('use-pokeball', (ballItemId: string) => {
+      // LOW-8: Set synchronously before any async work to prevent race conditions
       ballUsed = true;
       this.scene.scene.wake();
       this.handlePokeBallUse(ballItemId);

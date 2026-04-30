@@ -9,7 +9,7 @@ export type Direction = 'up' | 'down' | 'left' | 'right';
 
 // Status conditions
 export type StatusCondition = 'burn' | 'paralysis' | 'poison' | 'bad-poison' | 'sleep' | 'freeze';
-export type VolatileStatus = 'confusion' | 'flinch' | 'leech-seed' | 'trapped' | 'protect';
+export type VolatileStatus = 'confusion' | 'flinch' | 'leech-seed' | 'trapped' | 'protect' | 'substitute';
 
 // Nature affects stats
 export type Nature =

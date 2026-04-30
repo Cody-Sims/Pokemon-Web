@@ -21,7 +21,18 @@ export class AudioManager {
   private savedBgmKey = '';
   private bgmPaused = false;
 
-  private constructor() {}
+  private constructor() {
+    // HIGH-21 / MED-24: Restore mute state from persisted settings
+    try {
+      const stored = localStorage.getItem('pokemon-web-settings');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed.muted === 'boolean') {
+          this.muted = parsed.muted;
+        }
+      }
+    } catch { /* ignore parse errors */ }
+  }
 
   static getInstance(): AudioManager {
     if (!AudioManager.instance) {
@@ -100,6 +111,8 @@ export class AudioManager {
       const oldBGM = this.currentBGM;
       this.previousBGMKey = this.currentBGMKey;
       this.currentBGMKey = key;
+      // MED-23: Kill any pending fade-out tweens to prevent duplicate BGM
+      try { this.scene!.tweens.killTweensOf(oldBGM); } catch { /* ignore */ }
       // Fade out old track while new track fades in concurrently
       this.scene!.tweens.add({
         targets: oldBGM,
@@ -435,6 +448,13 @@ export class AudioManager {
 
   setMuted(muted: boolean): void {
     this.muted = muted;
+    // HIGH-21 / MED-24: Persist mute state to settings storage
+    try {
+      const raw = localStorage.getItem('pokemon-web-settings');
+      const settings = raw ? JSON.parse(raw) : {};
+      settings.muted = muted;
+      localStorage.setItem('pokemon-web-settings', JSON.stringify(settings));
+    } catch { /* ignore storage errors */ }
     if (muted) {
       this.stopBGM();
       this.stopLowHpWarning();

@@ -125,6 +125,12 @@ export function pushBoulder(
         redrawTile(scene, mapDef, bx, by, tilemapResult);
         redrawTile(scene, mapDef, destX, destY, tilemapResult);
       },
+      // MED-16: Also redraw if tween is cancelled/stopped mid-animation
+      onStop: () => {
+        tempSprite.destroy();
+        redrawTile(scene, mapDef, bx, by, tilemapResult);
+        redrawTile(scene, mapDef, destX, destY, tilemapResult);
+      },
     });
   } else {
     // ── Legacy path: find sprite in children list ──
@@ -142,6 +148,11 @@ export function pushBoulder(
         duration: 200,
         ease: 'Linear',
         onComplete: () => {
+          redrawTile(scene, mapDef, bx, by);
+          redrawTile(scene, mapDef, destX, destY);
+        },
+        // MED-16: Also redraw if tween is cancelled/stopped mid-animation
+        onStop: () => {
           redrawTile(scene, mapDef, bx, by);
           redrawTile(scene, mapDef, destX, destY);
         },

@@ -72,6 +72,8 @@ export class ScrollContainer {
 
       this.startDecay();
     });
+
+    this.scene.events.once('shutdown', () => this.destroy());
   }
 
   private startDecay(): void {

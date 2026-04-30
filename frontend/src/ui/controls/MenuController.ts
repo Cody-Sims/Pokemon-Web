@@ -51,6 +51,7 @@ export class MenuController {
     this.disabled = config.disabled ?? false;
 
     this.bindKeys();
+    this.scene.events?.once('shutdown', () => this.destroy());
   }
 
   private bindKeys(): void {

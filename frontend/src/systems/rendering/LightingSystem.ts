@@ -31,6 +31,8 @@ export class LightingSystem {
     // Create a persistent reusable image for drawing lights (avoids per-frame alloc)
     this.lightImage = scene.make.image({ x: 0, y: 0, key: LIGHT_TEXTURE_KEY }, false);
     this.lightImage.setOrigin(0.5, 0.5);
+    // HIGH-16: Auto-cleanup on scene shutdown to prevent leaked resize listeners
+    this.scene.events.once('shutdown', () => this.destroy());
   }
 
   /** Generate a radial gradient circle texture used to erase darkness. */
@@ -72,11 +74,13 @@ export class LightingSystem {
         this.onResize = () => {
           if (this.rt && this.enabled) {
             const c = this.scene.cameras.main;
-            this.rt.destroy();
+            // LOW-17: Swap RT reference before destroying old one to avoid race
+            const oldRt = this.rt;
             this.rt = this.scene.add.renderTexture(0, 0, c.width, c.height);
             this.rt.setOrigin(0, 0);
             this.rt.setScrollFactor(0);
             this.rt.setDepth(DARKNESS_DEPTH);
+            oldRt.destroy();
           }
         };
         this.scene.scale.on('resize', this.onResize);

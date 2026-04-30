@@ -304,13 +304,15 @@ export class MenuScene extends Phaser.Scene {
 
   private saveGame(): void {
     const sm = SaveManager.getInstance();
-    sm.save();
+    const success = sm.save();
 
     const layout = ui(this);
 
-    // Show save confirmation text
-    const confirmText = this.add.text(layout.cx, layout.h - 40, 'Game Saved!', {
-      ...FONTS.heading, color: COLORS.textSuccess,
+    // MED-22 / MED-25: Show appropriate feedback for blocked or failed saves
+    const message = success ? 'Game Saved!' : "Can't save right now!";
+    const color = success ? COLORS.textSuccess : COLORS.textHighlight;
+    const confirmText = this.add.text(layout.cx, layout.h - 40, message, {
+      ...FONTS.heading, color,
     }).setOrigin(0.5).setDepth(100);
 
     this.tweens.add({

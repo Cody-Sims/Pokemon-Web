@@ -21,6 +21,8 @@ export interface SpeedrunSplit {
  * Extracted from GameManager to separate player-state concerns.
  */
 export class PlayerStateManager {
+  /** HIGH-22: Maximum quantity of a single item type. */
+  static readonly MAX_ITEM_COUNT = 999;
   private playerName = 'Red';
   private playerGender: 'boy' | 'girl' = 'boy';
   private currentMap = 'pallet-town';
@@ -111,10 +113,16 @@ export class PlayerStateManager {
   // ── Bag (inventory) ────────────────────────────────────
 
   getBag(): { itemId: string; quantity: number }[] { return this.bag; }
-  addItem(itemId: string, qty = 1): void {
+  addItem(itemId: string, qty = 1): boolean {
+    // MED-40: Reject non-positive quantities
+    if (qty <= 0) return false;
+    // HIGH-22: Enforce per-item capacity limit
+    const current = this.getItemCount(itemId);
+    if (current + qty > PlayerStateManager.MAX_ITEM_COUNT) return false;
     const entry = this.bag.find(e => e.itemId === itemId);
     if (entry) { entry.quantity += qty; }
     else { this.bag.push({ itemId, quantity: qty }); }
+    return true;
   }
   removeItem(itemId: string, qty = 1): boolean {
     const entry = this.bag.find(e => e.itemId === itemId);

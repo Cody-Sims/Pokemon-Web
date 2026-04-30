@@ -81,15 +81,16 @@ export class ConfirmBox {
   private confirm = (): void => {
     if (!this.active) return;
     this.active = false;
-    this.onResult(this.cursor === 0);
-    this.destroy();
+    const result = this.cursor === 0;
+    this.destroyHandlers();
+    this.onResult(result);
   };
 
   private cancel = (): void => {
     if (!this.active) return;
     this.active = false;
+    this.destroyHandlers();
     this.onResult(false);
-    this.destroy();
   };
 
   private updateCursor(): void {
@@ -99,16 +100,20 @@ export class ConfirmBox {
     this.noText.setColor(this.cursor === 1 ? '#ffcc00' : '#ffffff');
   }
 
-  destroy(): void {
-    this.active = false;
-    this.scene.input.keyboard!.off('keydown-UP', this.moveUp, this);
-    this.scene.input.keyboard!.off('keydown-DOWN', this.moveDown, this);
-    this.scene.input.keyboard!.off('keydown-ENTER', this.confirm, this);
-    this.scene.input.keyboard!.off('keydown-ESC', this.cancel, this);
+  private destroyHandlers(): void {
+    this.scene.input.keyboard?.off('keydown-UP', this.moveUp, this);
+    this.scene.input.keyboard?.off('keydown-DOWN', this.moveDown, this);
+    this.scene.input.keyboard?.off('keydown-ENTER', this.confirm, this);
+    this.scene.input.keyboard?.off('keydown-ESC', this.cancel, this);
     this.dim.destroy();
     this.promptText.destroy();
     this.background.destroy();
     this.yesText.destroy();
     this.noText.destroy();
+  }
+
+  destroy(): void {
+    this.active = false;
+    this.destroyHandlers();
   }
 }

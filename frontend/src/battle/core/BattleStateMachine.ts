@@ -20,6 +20,11 @@ export class BattleStateMachine {
   }
 
   transition(newState: BattleState): void {
+    if (!this.states.has(newState)) {
+      console.error(`BattleStateMachine: attempted transition to unregistered state "${newState}"`);
+      return;
+    }
+
     const current = this.states.get(this.currentState);
     current?.exit?.();
 

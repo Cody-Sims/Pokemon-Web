@@ -9,6 +9,9 @@ import { WeatherCondition } from '@utils/type-helpers';
  * Berries are consumed after use; permanent items persist.
  */
 export class HeldItemHandler {
+  /** Per-pokemon choice lock state (move locked by Choice Band/Specs/Scarf). */
+  private static choiceLocks = new Map<PokemonInstance, string>();
+
   /** Get the held item id (or null). */
   static getHeldItem(pokemon: PokemonInstance): string | null {
     return pokemon.heldItem ?? null;
@@ -22,6 +25,37 @@ export class HeldItemHandler {
   /** Check if the item is a berry (consumed on use). */
   private static isBerry(itemId: string): boolean {
     return itemId.endsWith('-berry');
+  }
+
+  private static isChoiceItem(itemId: string): boolean {
+    return itemId === 'choice-band' || itemId === 'choice-specs' || itemId === 'choice-scarf';
+  }
+
+  /**
+   * Record the move used by a Choice-item holder, locking subsequent turns
+   * to that move. Call after a Pokémon successfully uses a move.
+   */
+  static recordChoiceMove(pokemon: PokemonInstance, moveId: string): void {
+    const item = HeldItemHandler.getHeldItem(pokemon);
+    if (item && HeldItemHandler.isChoiceItem(item)) {
+      HeldItemHandler.choiceLocks.set(pokemon, moveId);
+    }
+  }
+
+  /**
+   * Returns true if the Pokémon is Choice-locked to a different move.
+   * The caller should prevent the Pokémon from selecting `moveId`.
+   */
+  static isChoiceLocked(pokemon: PokemonInstance, moveId: string): boolean {
+    const item = HeldItemHandler.getHeldItem(pokemon);
+    if (!item || !HeldItemHandler.isChoiceItem(item)) return false;
+    const locked = HeldItemHandler.choiceLocks.get(pokemon);
+    return locked !== undefined && locked !== moveId;
+  }
+
+  /** Clear the choice lock (call on switch-out or battle end). */
+  static clearChoiceLock(pokemon: PokemonInstance): void {
+    HeldItemHandler.choiceLocks.delete(pokemon);
   }
 
   /** Called at end of turn. Handles Leftovers, Black Sludge. */

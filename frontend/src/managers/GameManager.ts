@@ -5,6 +5,7 @@ import { PartyManager } from './PartyManager';
 import { ProgressManager, HallOfFameEntry } from './ProgressManager';
 import { PlayerStateManager, SpeedrunSplit } from './PlayerStateManager';
 import { StatsManager, GameStats, defaultStats } from './StatsManager';
+import { EventManager } from './EventManager';
 
 // Re-export types so existing `import { GameStats, HallOfFameEntry } from '@managers/GameManager'` still works
 export type { GameStats, HallOfFameEntry, SpeedrunSplit };
@@ -56,13 +57,15 @@ export class GameManager {
     this._progress.reset();
     this._player.reset();
     this._stats.reset();
+    // MED-37: Clear stale event listeners between sessions
+    EventManager.getInstance().reset();
   }
 
   // ══════════════════════════════════════════════════════
   //  Delegation — Party  (→ PartyManager)
   // ══════════════════════════════════════════════════════
 
-  getParty(): PokemonInstance[] { return this._party.getParty(); }
+  getParty(): PokemonInstance[] { return [...this._party.getParty()]; }
   setParty(party: PokemonInstance[]): void { this._party.setParty(party); }
   addToParty(pokemon: PokemonInstance): boolean { return this._party.addToParty(pokemon); }
   removeFromParty(index: number): PokemonInstance | null { return this._party.removeFromParty(index); }
@@ -138,7 +141,7 @@ export class GameManager {
   setPlayerPosition(pos: { x: number; y: number; direction: string }): void { this._player.setPlayerPosition(pos); }
 
   getBag(): { itemId: string; quantity: number }[] { return this._player.getBag(); }
-  addItem(itemId: string, qty = 1): void { this._player.addItem(itemId, qty); }
+  addItem(itemId: string, qty = 1): boolean { return this._player.addItem(itemId, qty); }
   removeItem(itemId: string, qty = 1): boolean { return this._player.removeItem(itemId, qty); }
   getItemCount(itemId: string): number { return this._player.getItemCount(itemId); }
 

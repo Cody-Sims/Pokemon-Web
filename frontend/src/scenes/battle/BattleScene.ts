@@ -6,6 +6,7 @@ import { BattleManager, BattleConfig } from '@battle/core/BattleManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
+import { SaveManager } from '@managers/SaveManager';
 import { BGM, SFX } from '@utils/audio-keys';
 import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
 import { COLORS, STATUS_BADGE_FRAMES, mobileFontSize } from '@ui/theme';
@@ -72,6 +73,8 @@ export class BattleScene extends Phaser.Scene {
   // the switch handler can restore visibility after faintSprite() shrinks it.
   public playerSpriteBaseScale = 4;
   public playerSpriteBaseY = 0;
+  public enemySpriteBaseX = 0;
+  public enemySpriteBaseY = 0;
 
   private initData?: Record<string, unknown>;
 
@@ -110,6 +113,8 @@ export class BattleScene extends Phaser.Scene {
   }
 
   create(): void {
+    // MED-21: Block saves during battle
+    SaveManager.blockSaves();
     const data = this.initData;
     const gm = GameManager.getInstance();
 
@@ -220,6 +225,8 @@ export class BattleScene extends Phaser.Scene {
     // after faintSprite() collapses scale/alpha (BUG-001).
     this.playerSpriteBaseScale = 4;
     this.playerSpriteBaseY = playerY - 20;
+    this.enemySpriteBaseX = enemyX;
+    this.enemySpriteBaseY = enemyY - 20;
 
     // ── Enemy info box (top-left) — starts above screen ──
     // Portrait viewports are too narrow for the legacy 300 px panel; shrink
@@ -378,6 +385,19 @@ export class BattleScene extends Phaser.Scene {
         this.setupDoubleBattle(gm2.getParty(), enemyParty);
       }
     }
+
+    // HIGH-20: Pause/resume battle when tab becomes hidden
+    const onVisChange = (): void => {
+      if (document.hidden) {
+        this.scene.pause();
+      } else {
+        this.scene.resume();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisChange);
+    this.events.once('shutdown', () => {
+      document.removeEventListener('visibilitychange', onVisChange);
+    });
 
     // Launch battle UI overlay
     this.scene.launch('BattleUIScene');
@@ -683,6 +703,8 @@ export class BattleScene extends Phaser.Scene {
     this.playerSprite.setPosition(player0.x, player0.y);
     this.playerSpriteBaseY = player0.y;
     this.enemySprite.setPosition(enemy0.x, enemy0.y).setScale(enemyScale);
+    this.enemySpriteBaseX = enemy0.x;
+    this.enemySpriteBaseY = enemy0.y;
 
     // Add second player Pokémon
     if (this.playerPokemonSlots[1]) {
@@ -797,6 +819,8 @@ export class BattleScene extends Phaser.Scene {
 
   /** AUDIT-057: Clean up tweens and event listeners on scene shutdown. */
   shutdown(): void {
+    // MED-21: Unblock saves when leaving battle
+    SaveManager.unblockSaves();
     this.tweens.killAll();
     this.time.removeAllEvents();
     // Wake the overworld HUD overlays so they reappear when we return to

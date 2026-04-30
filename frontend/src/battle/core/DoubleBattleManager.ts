@@ -248,12 +248,17 @@ export class DoubleBattleManager {
         turnMessages.push(...turnStart.messages);
         if (!turnStart.canAct) continue;
 
-        // Execute against each target; spread moves deal 75% to each
+        // Execute against each target
         for (const targetIdx of targets) {
+          // Re-check attacker is still alive before each hit (MED-7: faint mid-execute)
+          if (!attacker || attacker.currentHp <= 0) break;
+
           const refreshedActive = this.getActiveBattlers();
           const defender = refreshedActive[targetIdx];
           if (!defender || defender.currentHp <= 0) continue;
 
+          // Calculate spread move damage reduction BEFORE executing
+          const isSpread = targets.length > 1;
           const result = MoveExecutor.execute(
             attacker,
             defender,
@@ -262,16 +267,11 @@ export class DoubleBattleManager {
             this.weatherManager,
           );
 
-          // AUDIT-009: Apply spread move reduction BEFORE damage is final
-          // MoveExecutor already applied full damage, so we add back the difference
-          // But never revive a fainted Pokemon: cap restored HP at 0 minimum
-          if (targets.length > 1 && result.damage.damage > 0) {
+          // Apply 75% spread-move reduction: undo full damage then apply reduced
+          if (isSpread && result.damage.damage > 0) {
             const reduced = Math.floor(result.damage.damage * 0.75);
             const diff = result.damage.damage - reduced;
-            // Only restore over-dealt damage if defender is still alive
-            if (defender.currentHp > 0) {
-              defender.currentHp = Math.min(defender.currentHp + diff, defender.stats.hp);
-            }
+            defender.currentHp = Math.min(defender.currentHp + diff, defender.stats.hp);
             result.damage = { ...result.damage, damage: reduced };
           }
 

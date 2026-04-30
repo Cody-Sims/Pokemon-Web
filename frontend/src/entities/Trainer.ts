@@ -13,6 +13,8 @@ export class Trainer extends NPC {
   public mapGround: number[][] | null = null;
   /** NPC-occupied tile keys (\"x,y\" format), set by OverworldScene after spawning. */
   public npcOccupiedTiles: Set<string> | null = null;
+  /** Per-step collision callback for walkToward, set by OverworldScene after spawning. */
+  public collisionCheck?: (x: number, y: number) => boolean;
 
   constructor(
     scene: Phaser.Scene,
@@ -32,6 +34,8 @@ export class Trainer extends NPC {
 
   /** Check if a tile position is within this trainer's line of sight.
    *  Respects solid tiles — a wall between trainer and player blocks vision.
+   *  Note: trainers can see through tall grass (matches mainline Pokémon behavior).
+   *  Only solid tiles (walls, trees) block line of sight.
    */
   isInLineOfSight(tileX: number, tileY: number): boolean {
     if (this.defeated) return false;
@@ -56,21 +60,22 @@ export class Trainer extends NPC {
     }
     if (!inRange) return false;
 
+    // LOW-11: If collision data isn't loaded yet, can't determine LoS
+    if (!this.mapGround && !this.npcOccupiedTiles) return false;
+
     // Check for solid tiles and NPC-occupied tiles between trainer and player
-    if (this.mapGround || this.npcOccupiedTiles) {
-      const dx = Math.sign(tileX - myTileX);
-      const dy = Math.sign(tileY - myTileY);
-      let cx = myTileX + dx;
-      let cy = myTileY + dy;
-      while (cx !== tileX || cy !== tileY) {
-        if (this.mapGround) {
-          const tile = this.mapGround[cy]?.[cx];
-          if (tile !== undefined && SOLID_TILES.has(tile)) return false;
-        }
-        if (this.npcOccupiedTiles?.has(`${cx},${cy}`)) return false;
-        cx += dx;
-        cy += dy;
+    const dx = Math.sign(tileX - myTileX);
+    const dy = Math.sign(tileY - myTileY);
+    let cx = myTileX + dx;
+    let cy = myTileY + dy;
+    while (cx !== tileX || cy !== tileY) {
+      if (this.mapGround) {
+        const tile = this.mapGround[cy]?.[cx];
+        if (tile !== undefined && SOLID_TILES.has(tile)) return false;
       }
+      if (this.npcOccupiedTiles?.has(`${cx},${cy}`)) return false;
+      cx += dx;
+      cy += dy;
     }
 
     return true;
@@ -111,6 +116,17 @@ export class Trainer extends NPC {
       let completed = 0;
       const stepDuration = 200;
       const doStep = () => {
+        // MED-14: Check collision before each step to avoid walking through NPCs
+        const currentTX = Math.floor(this.x / TILE_SIZE);
+        const currentTY = Math.floor(this.y / TILE_SIZE);
+        const nextTX = currentTX + (this.facing === 'left' || this.facing === 'right' ? stepDirX : 0);
+        const nextTY = currentTY + (this.facing === 'up' || this.facing === 'down' ? stepDirY : 0);
+        if (this.collisionCheck && this.collisionCheck(nextTX, nextTY)) {
+          this.stopWalkAnim();
+          resolve();
+          return;
+        }
+
         this.playWalkAnim(stepDuration);
         this.scene.tweens.add({
           targets: this,

@@ -10,6 +10,7 @@ export class FollowerPokemon extends Phaser.GameObjects.Image {
   private gridX: number;
   private gridY: number;
   private moving = false;
+  private moveTween?: Phaser.Tweens.Tween;
 
   constructor(scene: Phaser.Scene, tileX: number, tileY: number, textureKey: string) {
     const px = tileX * TILE_SIZE + TILE_SIZE / 2;
@@ -34,12 +35,14 @@ export class FollowerPokemon extends Phaser.GameObjects.Image {
   moveTo(tileX: number, tileY: number, duration = 180): void {
     if (this.moving) return;
     if (tileX === this.gridX && tileY === this.gridY) return;
+    // MED-20: Guard against tween on destroyed/inactive scene
+    if (!this.scene || !this.scene.sys.isActive()) return;
 
     this.moving = true;
     const targetPx = tileX * TILE_SIZE + TILE_SIZE / 2;
     const targetPy = tileY * TILE_SIZE + TILE_SIZE / 2;
 
-    this.scene.tweens.add({
+    this.moveTween = this.scene.tweens.add({
       targets: this,
       x: targetPx,
       y: targetPy,
@@ -50,9 +53,12 @@ export class FollowerPokemon extends Phaser.GameObjects.Image {
         this.setDepth(this.y);
       },
       onComplete: () => {
-        this.gridX = tileX;
-        this.gridY = tileY;
-        this.setDepth(this.y);
+        // MED-20: Guard against callback firing after scene shutdown
+        if (this.scene?.sys?.isActive()) {
+          this.gridX = tileX;
+          this.gridY = tileY;
+          this.setDepth(this.y);
+        }
         this.moving = false;
       },
     });
@@ -76,4 +82,11 @@ export class FollowerPokemon extends Phaser.GameObjects.Image {
   getGridX(): number { return this.gridX; }
   getGridY(): number { return this.gridY; }
   isMoving(): boolean { return this.moving; }
+
+  /** LOW-15: Clean up tween to prevent leak on destroy. */
+  destroy(fromScene?: boolean): void {
+    this.moveTween?.destroy();
+    this.moveTween = undefined;
+    super.destroy(fromScene);
+  }
 }

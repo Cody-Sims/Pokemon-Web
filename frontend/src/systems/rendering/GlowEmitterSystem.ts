@@ -50,6 +50,8 @@ export class GlowEmitterSystem {
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.ensureGlowTexture();
+    // HIGH-17: Auto-cleanup emitters on scene shutdown
+    this.scene.events.once('shutdown', () => this.destroy());
   }
 
   private ensureGlowTexture(): void {

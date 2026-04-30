@@ -268,6 +268,20 @@ export class OverworldScene extends Phaser.Scene {
     // Build O(1) NPC position lookup
     this.rebuildNpcOccupiedTiles();
 
+    // HIGH-19: If the player spawned on an NPC-occupied tile, nudge to nearest free tile
+    const playerTileKey = `${this.player.gridMovement.getTileX()},${this.player.gridMovement.getTileY()}`;
+    if (this.npcOccupiedTiles.has(playerTileKey)) {
+      const dirs = [[0, -1], [0, 1], [-1, 0], [1, 0]] as const;
+      for (const [dx, dy] of dirs) {
+        const nx = this.player.gridMovement.getTileX() + dx;
+        const ny = this.player.gridMovement.getTileY() + dy;
+        if (!this.npcOccupiedTiles.has(`${nx},${ny}`)) {
+          this.player.gridMovement.setTilePosition(nx, ny);
+          break;
+        }
+      }
+    }
+
     // Set up collision: solid tiles + NPC positions
     this.player.gridMovement.setMapBounds(mapW, mapH);
     this.player.gridMovement.setCollisionCheck((tx, ty) => {
@@ -947,6 +961,7 @@ export class OverworldScene extends Phaser.Scene {
 
   /** Attempt to fish at the water tile the player is facing. */
   private tryFishing(): void {
+    if (this.scene.isActive('DialogueScene')) return;
     const rod = getBestRod();
     if (!rod) {
       this.scene.pause();

@@ -43,6 +43,7 @@ export class VirtualJoystick {
   private activationZone = 0.6;
   private joystickRadius: number;
   private deadZone: number;
+  private handlersAttached = false;
   private boundHandlers: { element: HTMLElement | EventTarget; event: string; handler: EventListener; options?: AddEventListenerOptions }[] = [];
 
   constructor(scene: Phaser.Scene) {
@@ -73,7 +74,10 @@ export class VirtualJoystick {
 
     this.container.add([this.base, this.thumb]);
 
-    this.bindPointerEvents();
+    if (!this.handlersAttached) {
+      this.bindPointerEvents();
+      this.handlersAttached = true;
+    }
   }
 
   private bindPointerEvents(): void {
@@ -269,6 +273,7 @@ export class VirtualJoystick {
       element.removeEventListener(event, handler);
     }
     this.boundHandlers = [];
+    this.handlersAttached = false;
     this.container.destroy(true);
   }
 }

@@ -37,15 +37,21 @@ export class WeatherRenderer {
   // Generated texture keys (for cleanup)
   private textureKeys: string[] = [];
 
+  // HIGH-15: Debounce resize to prevent rapid texture re-creation
+  private resizeTimer?: Phaser.Time.TimerEvent;
+
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     // AUDIT-053: Re-apply weather on viewport resize to cover new dimensions
     scene.scale.on('resize', () => {
       if (this.activeWeather !== 'none') {
-        const w = this.activeWeather;
-        this.cleanup();
-        this.activeWeather = 'none';
-        this.setWeather(w);
+        const currentWeather = this.activeWeather;
+        this.resizeTimer?.destroy();
+        this.resizeTimer = this.scene.time.delayedCall(100, () => {
+          this.cleanup();
+          this.activeWeather = 'none';
+          this.setWeather(currentWeather);
+        });
       }
     });
   }
@@ -80,6 +86,8 @@ export class WeatherRenderer {
 
   /** Clean up all emitters and overlays. */
   destroy(): void {
+    this.resizeTimer?.destroy();
+    this.resizeTimer = undefined;
     this.cleanup();
   }
 

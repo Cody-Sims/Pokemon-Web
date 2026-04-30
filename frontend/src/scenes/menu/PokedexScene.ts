@@ -334,6 +334,8 @@ export class PokedexScene extends Phaser.Scene {
   }
 
   shutdown(): void {
+    this.cryTimer?.destroy();
+    this.cryTimer = undefined;
     this.input.keyboard?.removeAllListeners();
   }
 }

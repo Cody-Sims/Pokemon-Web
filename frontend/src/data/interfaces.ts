@@ -112,6 +112,7 @@ export interface SaveData {
   flags: Record<string, boolean>;
   trainersDefeated: string[];
   boxes?: PokemonInstance[][];
+  boxNames?: string[];
   gameStats?: Record<string, number>;
   hallOfFame?: unknown[];
   visitedMaps?: string[];

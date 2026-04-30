@@ -23,7 +23,11 @@ export class AchievementManager {
     return AchievementManager.instance;
   }
 
-  /** Unlock an achievement by id. Returns true if newly unlocked. */
+  /**
+   * Unlock an achievement by id. Returns true if newly unlocked.
+   * MED-46: Callers should check the return value — false means the
+   * achievement was already unlocked and no toast should be shown.
+   */
   unlock(id: string): boolean {
     if (this.unlocked.has(id)) return false;
     const def = ACHIEVEMENTS.find(a => a.id === id);

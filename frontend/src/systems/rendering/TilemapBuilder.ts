@@ -63,7 +63,12 @@ export function buildTilemap(
   ground: number[][],
   mapW: number,
   mapH: number,
-): TilemapResult {
+): TilemapResult | null {
+  // LOW-13: Bounds validation
+  if (ground.length < mapH) {
+    console.warn(`TilemapBuilder: ground has ${ground.length} rows, expected ${mapH}`);
+  }
+
   const scale = TILE_SIZE / 16;
 
   // ── Create the Tilemap object ──
@@ -74,20 +79,36 @@ export function buildTilemap(
     tileHeight: 16,
   });
   const tilemap = new Phaser.Tilemaps.Tilemap(scene, tilemapData);
-  const tileset = tilemap.addTilesetImage(
-    'tileset', 'tileset', 16, 16,
-  ) as Phaser.Tilemaps.Tileset;
+
+  // MED-35: Proper null checks instead of non-null assertions
+  const tileset = tilemap.addTilesetImage('tileset', 'tileset', 16, 16);
+  if (!tileset) {
+    console.warn('TilemapBuilder: tileset creation failed');
+    return null;
+  }
 
   // ── Create blank layers ──
   const groundLayer = tilemap.createBlankLayer(
     'ground', tileset, 0, 0, mapW, mapH, 16, 16,
-  )!;
+  );
+  if (!groundLayer) {
+    console.warn('TilemapBuilder: ground layer creation failed');
+    return null;
+  }
   const decorationLayer = tilemap.createBlankLayer(
     'decoration', tileset, 0, 0, mapW, mapH, 16, 16,
-  )!;
+  );
+  if (!decorationLayer) {
+    console.warn('TilemapBuilder: decoration layer creation failed');
+    return null;
+  }
   const foregroundLayer = tilemap.createBlankLayer(
     'foreground', tileset, 0, 0, mapW, mapH, 16, 16,
-  )!;
+  );
+  if (!foregroundLayer) {
+    console.warn('TilemapBuilder: foreground layer creation failed');
+    return null;
+  }
 
   groundLayer.setScale(scale).setDepth(0);
   decorationLayer.setScale(scale).setDepth(0.5);

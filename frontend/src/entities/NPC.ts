@@ -50,7 +50,6 @@ export class NPC extends Phaser.GameObjects.Sprite {
   /** Start a walk animation cycle (frames 0→1→2→1) for the current facing direction. */
   playWalkAnim(duration: number): void {
     this.stopWalkAnim();
-    const frameDir = this.facing;
     const tex = this.scene.textures.exists(this.texture.key)
       ? this.scene.textures.get(this.texture.key)
       : null;
@@ -58,11 +57,18 @@ export class NPC extends Phaser.GameObjects.Sprite {
     const cycle = [0, 1, 2, 1];
     let idx = 0;
     const interval = duration / cycle.length;
+    const animDir = this.facing;
     this.walkAnimEvent = this.scene.time.addEvent({
       delay: interval,
       repeat: cycle.length - 1,
       callback: () => {
-        const frame = `walk-${frameDir}-${cycle[idx]}`;
+        // LOW-18: Abort if facing changed mid-animation to prevent race
+        if (this.facing !== animDir) {
+          this.walkAnimEvent?.destroy();
+          this.walkAnimEvent = undefined;
+          return;
+        }
+        const frame = `walk-${animDir}-${cycle[idx]}`;
         if (tex && tex.has(frame)) {
           this.setFrame(frame);
         }
@@ -70,7 +76,7 @@ export class NPC extends Phaser.GameObjects.Sprite {
       },
     });
     // Show first step frame immediately
-    const firstFrame = `walk-${frameDir}-${cycle[0]}`;
+    const firstFrame = `walk-${animDir}-${cycle[0]}`;
     if (tex && tex.has(firstFrame)) {
       this.setFrame(firstFrame);
     }

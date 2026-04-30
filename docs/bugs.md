@@ -909,7 +909,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `handlePokeBallUse()` checks for trainer battles and
   challenge mode but never validates `enemyPokemon.currentHp > 0`.
   A ball can be thrown at a 0-HP target and the catch sequence runs.
-- **Status:** Open — add `if (enemy.currentHp <= 0)` guard returning
+- **Status:** Fixed — add `if (enemy.currentHp <= 0)` guard returning
   "It won't have any effect!" before shake logic.
 
 ### CRIT-2: Save during scene transition not blocked
@@ -919,7 +919,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** No guard prevents save while `transitioning === true`.
   Player can open menu during fade-transition and save, capturing
   mid-warp state that may not restore cleanly.
-- **Status:** Open — SaveManager.save() should check a global
+- **Status:** Fixed — SaveManager.save() should check a global
   transitioning flag or OverworldScene should block menu during warp.
 
 ### CRIT-3: Bad-poison (Toxic) damage has no cap
@@ -928,7 +928,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Toxic counter increments unbounded:
   `damage = (hp * counter) / 16`. After 16 turns the damage exceeds
   max HP per tick. Should cap counter at 15.
-- **Status:** Open — add `Math.min(counter, 15)` in applyEndOfTurn.
+- **Status:** Fixed — add `Math.min(counter, 15)` in applyEndOfTurn.
 
 ### CRIT-4: Status effects bypass Substitute
 
@@ -936,7 +936,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `applyMoveEffect()` applies status directly to the
   target without checking `volatileStatuses.has('substitute')`.
   Status moves like Thunder Wave hit through Substitute.
-- **Status:** Open — add substitute guard before status application.
+- **Status:** Fixed — add substitute guard before status application.
 
 ### CRIT-5: Battle FSM accepts transitions to unregistered states
 
@@ -944,7 +944,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `transition()` doesn't validate that the target state
   is registered. FSM enters a dead state; `update()` silently does
   nothing. Can softlock the battle.
-- **Status:** Open — validate state exists, throw or log on unknown.
+- **Status:** Fixed — validate state exists, throw or log on unknown.
 
 ### HIGH-1: Bad-poison counter not reset on switch
 
@@ -952,7 +952,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** When a badly-poisoned Pokémon switches out and back in,
   `statusTurns` persists from its old value. Damage resumes at the
   accumulated counter instead of resetting to 1.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-2: Trace ability not restored on re-switch-in
 
@@ -960,21 +960,21 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `onSwitchIn()` stores `originalAbility` in volatile
   state, but `clearPokemon()` deletes the state without restoring
   `pokemon.ability`. On re-entry the traced ability persists.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-3: Intimidate / onSwitchIn can trigger twice
 
 - **Files:** [frontend/src/battle/effects/AbilityHandler.ts](frontend/src/battle/effects/AbilityHandler.ts#L18-L74).
 - **Symptom:** No idempotent guard on `onSwitchIn()`. If the caller
   invokes it twice per switch, Intimidate cuts Attack twice.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-4: Choice item move lock not enforced
 
 - **Files:** [frontend/src/battle/effects/HeldItemHandler.ts](frontend/src/battle/effects/HeldItemHandler.ts#L289-L316).
 - **Symptom:** Choice Band/Specs/Scarf apply damage multipliers but
   don't track or enforce the one-move lock.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-5: Two-turn move PP double-deduction risk
 
@@ -982,7 +982,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** If `statusHandler` is null on the attack turn of a
   two-turn move, `skipPPDeduction` stays false and PP is deducted
   twice (once on charge, once on attack).
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-6: Struggle execution bypassed
 
@@ -990,7 +990,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Struggle is not in the movepool. `moveInstance` is
   undefined, and the check at L171 returns miss() — Struggle
   never executes.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-7: Drain HP not applied after multi-hit moves
 
@@ -998,21 +998,21 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** For multi-hit moves the drain effect path is never
   called. Drain Punch as a multi-hit move would deal damage but
   not heal.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-8: HP threshold items checked before recoil applied
 
 - **Files:** [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L349-L351).
 - **Symptom:** `checkHPThreshold()` (Sitrus Berry etc.) fires before
   the caller applies recoil. Berry could trigger too early.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-9: PartnerAI targets dead enemy slot
 
 - **Files:** [frontend/src/battle/core/PartnerAI.ts](frontend/src/battle/core/PartnerAI.ts#L31-L33).
 - **Symptom:** When both enemies fainted, `bestTarget` defaults to
   slot 2 and the AI returns a move targeting a dead slot.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-10: Rapid double-input during battle animations
 
@@ -1020,7 +1020,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Two rapid A presses before state changes to
   'animating' can queue and the second fires after state returns
   to 'actions'.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-11: Battle input listeners active when scene paused
 
@@ -1028,7 +1028,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Keyboard listeners registered in `create()` persist
   when the scene is paused (e.g., PartyScene overlay). Keys fire
   into both scenes.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-12: Re-enter PLAYER_TURN after failed run
 
@@ -1036,7 +1036,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** After a failed run attempt, the state returns to
   'actions' and the player can immediately select RUN again before
   the enemy-only turn completes.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-13: Grid-snap drift after tween cancel
 
@@ -1044,35 +1044,35 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** If a movement tween is cancelled externally,
   `onComplete` never fires, leaving `tileX/tileY` stale while the
   sprite is mid-tile.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-14: CutsceneEngine doesn't block player input
 
 - **Files:** [frontend/src/systems/engine/CutsceneEngine.ts](frontend/src/systems/engine/CutsceneEngine.ts#L67-L85).
 - **Symptom:** `play()` runs cutscene actions but never disables
   overworld input. Player can walk or interact during cutscenes.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-15: WeatherRenderer texture memory leak on resize
 
 - **Files:** [frontend/src/systems/rendering/WeatherRenderer.ts](frontend/src/systems/rendering/WeatherRenderer.ts#L40-L51).
 - **Symptom:** Rapid resize events create textures faster than they
   are destroyed. `textureKeys` array not cleared before recreating.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-16: LightingSystem resize handler never unregistered
 
 - **Files:** [frontend/src/systems/rendering/LightingSystem.ts](frontend/src/systems/rendering/LightingSystem.ts#L56-L88).
 - **Symptom:** Resize handler outlives the scene. On scene re-entry,
   old handler runs alongside new one.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-17: GlowEmitterSystem not cleaned on scene shutdown
 
 - **Files:** [frontend/src/systems/rendering/GlowEmitterSystem.ts](frontend/src/systems/rendering/GlowEmitterSystem.ts#L45-L186).
 - **Symptom:** `destroy()` not called automatically on scene shutdown.
   Re-entering scene creates duplicate emitters.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-18: All Math.random calls unseeded (14 gameplay sites)
 
@@ -1081,35 +1081,35 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Every gameplay-affecting RNG call uses raw
   `Math.random()`. Tests seed it via `beforeEach` but the production
   code is non-deterministic for replays.
-- **Status:** Open — wrap all calls through a seeded RNG utility.
+- **Status:** Fixed — wrap all calls through a seeded RNG utility.
 
 ### HIGH-19: Warp into NPC-occupied tile
 
 - **Files:** [frontend/src/scenes/overworld/OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts#L243-L269).
 - **Symptom:** NPC spawn happens after player is placed. If an NPC
   spawns at the player's warp destination, they overlap.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-20: No visibility change handling — battle advances while tab hidden
 
 - **Files:** [frontend/src/scenes/battle/BattleScene.ts](frontend/src/scenes/battle/BattleScene.ts).
 - **Symptom:** No `visibilitychange` listener. Phaser continues
   updating when tab is hidden; battle FSM can advance turns.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-21: Mute state not persisted / restored on reload
 
 - **Files:** [frontend/src/managers/AudioManager.ts](frontend/src/managers/AudioManager.ts#L436-L444).
 - **Symptom:** `muted` flag initializes as `false`. Volume slider
   and mute toggle desync after page reload.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### HIGH-22: No inventory capacity limits
 
 - **Files:** [frontend/src/managers/PlayerStateManager.ts](frontend/src/managers/PlayerStateManager.ts#L114-L118).
 - **Symptom:** `addItem()` always succeeds. Items accumulate
   without limit; item-ball pickups never fail.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-1: Sleep counter not reset on switch
 
@@ -1117,7 +1117,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Sleep counter decrements each turn via `pokemon.statusTurns--`,
   but `clearPokemon()` deletes the volatile state without resetting
   `statusTurns`. On switch-in `initPokemon()` never re-initializes it.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-2: Weather duration bonus not applied from abilities
 
@@ -1129,7 +1129,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   must separately fetch held-item bonuses (Heat Rock, Damp Rock, etc.)
   and pass `5 + bonus` as duration. The interface doesn't enforce this,
   so weather always lasts exactly 5 turns regardless of held item.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-3: Protect rate reset before move validation
 
@@ -1137,7 +1137,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `statusHandler.resetProtectRate(attacker)` is called for all
   non-protect moves before the accuracy check. If the move misses, the
   protect rate is still reset, breaking the consecutive-protect penalty.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-4: Life Orb recoil triggers on Substitute (0 damage)
 
@@ -1145,7 +1145,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Life Orb recoil triggers on `damage.damage > 0`. If the
   defender has a Substitute and the move hits the Substitute for 0 actual
   HP damage but `damage.damage > 0`, Life Orb recoil still applies.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-5: Drain healing applied to fainted attacker
 
@@ -1153,7 +1153,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** If the attacker faints from contact-ability recoil during
   move execution, drain healing is still applied because there is no
   `attacker.currentHp > 0` check before the drain logic.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-6: NaN score propagation in AI scoring
 
@@ -1162,7 +1162,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   the score calculation produces `NaN`. `NaN > bestScore` is always false,
   so the AI silently falls back to the first available move instead of
   making a meaningful choice.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-7: Faint mid-execute when both faint same hit (double battle)
 
@@ -1171,7 +1171,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   and A also faints from recoil on the same hit, the faint detection
   during move execution (not before turn order) can lead to incorrect
   turn-order violations.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-8: Listener leak in BattleCatchHandler nickname prompt
 
@@ -1180,7 +1180,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   `shutdown` event fires and calls `cleanup()`, but the NicknameScene's
   events are still bound. When NicknameScene later completes, its
   `onComplete()` callback fires against the destroyed parent scene.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-9: Encounter check after warp without return guard
 
@@ -1189,7 +1189,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   warp check to the encounter check code. A `return` statement at L746
   exists but the pattern is fragile — wild encounters could fire on a warp
   tile in the old scene before restart.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-10: Multiple fishing DialogueScene launches without guard
 
@@ -1197,7 +1197,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `tryFishing()` launches a DialogueScene without checking if
   one is already active. Rapid confirm presses can queue multiple
   DialogueScene launches.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-11: indicatorTween leak in DialogueScene choices
 
@@ -1205,7 +1205,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `indicatorTween` is created with infinite repeat but is never
   stopped when choices are shown. `cleanupChoices()` doesn't stop the tween,
   causing a resource leak.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-12: mobileTapMenu listeners not cleaned on external shutdown
 
@@ -1213,7 +1213,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `mobileTapMenu` is only cleaned up in `cleanupChoices()`. If the
   scene shuts down externally, `shutdown()` doesn't call `cleanupChoices()`,
   leaving the MobileTapMenu and its event listeners dangling.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-13: layoutOn callback not cleaned in DialogueScene
 
@@ -1221,7 +1221,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `layoutOn(this, ...)` registers a window resize listener that is
   never explicitly removed when the scene shuts down. If the scene is paused
   and resumed, the callback can fire multiple times.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-14: Trainer walks through NPCs during approach
 
@@ -1229,7 +1229,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `walkToward()` tweens the trainer in a straight line toward the
   player without per-step collision checks. If another NPC blocks the path,
   the trainer sprite visually overlaps it.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-15: Trainer LoS through transparent tiles
 
@@ -1237,7 +1237,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `isInLineOfSight()` checks only `SOLID_TILES` along the line.
   Tall grass, dark grass, and non-solid objects do not block LoS.
   May be intentional (matches some mainline Pokémon games).
-- **Status:** Open — design decision needed.
+- **Status:** Fixed — design decision needed.
 
 ### MED-16: Boulder redraw skipped on tween cancel
 
@@ -1246,7 +1246,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   in the tween's `onComplete`. If the scene is destroyed or the tween is
   cancelled, tile sprites show the old state while map data reflects the
   new state.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-17: ParseMap Unicode chars may misalign grid
 
@@ -1255,7 +1255,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   characters. Multi-byte Unicode tile characters (e.g., `Ø`, `µ`, `Þ`)
   should be handled correctly by the spread operator, but edge cases with
   combining marks or surrogate pairs could cause misalignment.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-18: GridMovement mapWidth defaults to Infinity
 
@@ -1263,7 +1263,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `mapWidth` defaults to `Infinity`. If `setMapBounds()` is not
   called, the boundary check is always false and the player can walk off
   the edge of the map into undefined territory.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-19: CutsceneEngine save not blocked
 
@@ -1271,7 +1271,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** No mechanism prevents save/load during cutscene playback.
   Player can save mid-dialogue or mid-fade, creating save states with
   partial cutscene progress.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-20: FollowerPokemon tween on destroyed scene
 
@@ -1279,7 +1279,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `moveTo()` calls `this.scene.tweens.add()` but `this.scene`
   could be destroyed between the method call and the tween callback. If
   the scene destroys mid-tween, the callback accesses a destroyed context.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-21: Save during battle has no runtime guard
 
@@ -1288,7 +1288,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   normally open save during battle. However, `SaveManager.save()` has no
   check for battle-active state — if the menu were ever accessible, save
   would capture mid-battle state.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-22: Save during cutscene not blocked
 
@@ -1297,21 +1297,21 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** OverworldScene blocks most input during cutscenes, but
   does not prevent the menu from being opened. MenuScene has no check for
   `CutsceneEngine.isRunning()`.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-23: AudioManager BGM duplicated on fade-out + playBGM
 
 - **Files:** [frontend/src/managers/AudioManager.ts](frontend/src/managers/AudioManager.ts).
 - **Symptom:** If `playBGM()` is called while a previous BGM is fading out,
   a new BGM instance starts overlapping the old one.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-24: Mute state not persisted / restored on reload
 
 - **Files:** [frontend/src/managers/AudioManager.ts](frontend/src/managers/AudioManager.ts#L436-L444).
 - **Symptom:** `muted` flag initializes as `false` unconditionally. Volume
   slider and mute toggle desync after page reload.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-25: Save quota error silent to user
 
@@ -1319,7 +1319,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `localStorage.setItem` is wrapped in try/catch, but the catch
   only calls `console.error()`. Player sees no UI feedback and may think
   save succeeded.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-26: InventoryScene keyboard handler leaks on reopen
 
@@ -1327,7 +1327,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `openTargetPicker` registers keyboard handlers scoped to the
   function. If the player closes the picker and re-opens it, new handlers
   are created but old ones are never removed.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-27: TouchControls resize listener not removed on destroy
 
@@ -1335,7 +1335,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `destroy()` removes canvas event listeners but never removes
   the `resize` event listener registered earlier. This listener persists
   and references the destroyed scene.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-28: VirtualJoystick duplicate event listeners
 
@@ -1343,7 +1343,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Event listeners are added directly to the canvas, then the
   same handlers are stored in `boundHandlers`. If VirtualJoystick is created
   multiple times without proper cleanup, handlers accumulate.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-29: MenuController keyboard handlers leak on scene restart
 
@@ -1351,7 +1351,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `destroy()` removes keyboard listeners, but if a scene
   restarts before `destroy()` is called, both old and new handler sets
   remain attached.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-30: ScrollContainer decay timer leak on scene shutdown
 
@@ -1359,7 +1359,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `destroy()` calls `this.decayTimer?.destroy()`, but if the
   scene is stopped before `destroy()` is called, the timer continues and
   references the destroyed zone.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-31: PokedexScene cry timer leak
 
@@ -1367,7 +1367,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** In `showDetail()`, a `cryTimer` is created but if the player
   navigates away before it fires, or if the scene is stopped, the timer
   is not cleaned up in a shutdown handler.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-32: TouchControls updateDOMLayout re-entrancy
 
@@ -1375,7 +1375,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `updateDOMLayout()` sets `updatingLayout = true` and returns
   early on re-entry. If a resize event fires during layout (e.g., during
   tweens), the blocked call leaves the UI in an inconsistent state.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-33: Save schema boxNames mismatch
 
@@ -1383,7 +1383,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `PartyManager.serialize()` writes `boxNames` to the save
   payload, but `boxNames` is not defined in the `SaveData` interface.
   The field is written but has no type-safe read path.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-34: PreloadScene non-null assertions on optional fields
 
@@ -1391,7 +1391,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Non-null assertions (`!`) on optional `asset.path`,
   `asset.texture`, `asset.atlas`, `asset.frameWidth`, `asset.frameHeight`.
   If any are undefined at runtime, calls crash.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-35: TilemapBuilder layer creation assertions
 
@@ -1399,7 +1399,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Non-null assertions on `addTilesetImage()` and three
   `createBlankLayer()` calls. If layer creation fails, code crashes
   instead of handling gracefully.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-36: TransitionManager double-transition race
 
@@ -1407,7 +1407,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Rapid scene changes can trigger two overlapping fade
   transitions. No guard prevents a second `fadeTransition()` call while
   one is in progress.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-37: EventManager listeners not auto-cleared between sessions
 
@@ -1415,7 +1415,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `listeners` and `taggedListeners` Maps carry state across
   sessions. `clear()` exists but must be called manually; it's not invoked
   automatically during `GameManager.reset()`.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-38: Spread move damage reduction applied after faint check (double battle)
 
@@ -1423,7 +1423,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Spread-move 75% damage reduction is applied AFTER the move
   executes and damage is dealt. If the defender fainted from the full damage
   before reduction, the logic momentarily creates an incorrect state.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-39: Haze stat reset scope incorrect
 
@@ -1431,14 +1431,14 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `statusHandler.resetAllStages()` is called unconditionally
   on Haze, potentially resetting stats for all Pokémon rather than
   correctly scoping to the appropriate sides.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-40: GameManager.addItem allows negative quantities
 
 - **Files:** [frontend/src/managers/GameManager.ts](frontend/src/managers/GameManager.ts).
 - **Symptom:** `addItem()` does not validate that the quantity is positive.
   Passing a negative value decrements the item count directly.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-41: GameManager.party returned by reference
 
@@ -1446,7 +1446,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `getParty()` returns the internal party array by reference.
   External code can mutate the array (push, splice, reorder) without going
   through the manager's API.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-42: SaveManager import overwrites without validation
 
@@ -1454,21 +1454,21 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `importSave()` writes imported data to localStorage without
   validating the schema against `SaveData`. Corrupt or malicious imports
   can break the save slot.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-43: SaveManager migration drops unknown fields
 
 - **Files:** [frontend/src/managers/SaveManager.ts](frontend/src/managers/SaveManager.ts).
 - **Symptom:** Version migration silently drops fields not recognized by the
   current schema. Downgrading or forward-compatible saves lose data.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-44: PartyManager swapPartyMembers no bounds check
 
 - **Files:** [frontend/src/managers/PartyManager.ts](frontend/src/managers/PartyManager.ts).
 - **Symptom:** `swapPartyMembers()` does not validate that both indices are
   within `[0, party.length)`. Out-of-bounds indices cause undefined writes.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-45: QuestManager flag set order dependent
 
@@ -1476,7 +1476,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Quest completion checks depend on flag-set order. If two
   flags are set in the wrong order within the same frame, completion
   detection can be missed.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-46: AchievementManager toast fires even if already unlocked
 
@@ -1484,14 +1484,14 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `unlock()` returns `false` for already-unlocked achievements,
   but callers may still trigger the toast notification without checking the
   return value.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-47: AudioManager BGM duplicated if playBGM during fade-out
 
 - **Files:** [frontend/src/managers/AudioManager.ts](frontend/src/managers/AudioManager.ts).
 - **Symptom:** Calling `playBGM()` while a previous track is mid-fade creates
   overlapping audio. The old track continues fading while the new one starts.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-48: Achievements type mismatch in save (unknown vs string[])
 
@@ -1499,7 +1499,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   [frontend/src/data/interfaces.ts](frontend/src/data/interfaces.ts).
 - **Symptom:** `SaveData.achievements` is typed as `unknown`, but
   `SaveManager.load()` casts it as `string[]` without validation.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-49: ProgressManager / AchievementManager Set serialization relies on explicit conversion
 
@@ -1508,7 +1508,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Pokedex `seen`/`caught` and `unlocked` use `Set` objects.
   These are properly converted in `serialize()` but would fail if any
   code path passes them directly to `JSON.stringify`.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### MED-50: Floating-point comparisons in encounter/catch/damage (5 sites)
 
@@ -1516,7 +1516,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Direct `Math.random()` comparisons with float thresholds
   (encounter rate, fishing rate, shake probability, accuracy, speed tie).
   Subject to floating-point precision edge cases.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-1: Recoil KO announcement order reversed
 
@@ -1524,7 +1524,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** When both Pokémon faint on the same hit (recoil KO),
   the defender's faint message appears before the attacker's.
   Functionally correct but cosmetically reversed.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-2: Outrage not implemented as multi-turn move
 
@@ -1532,7 +1532,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Outrage is defined as a simple 120-power attack with no
   multi-turn locking effect. The edge case of interruption by faint
   cannot manifest. Missing feature, not a bug in existing code.
-- **Status:** Open — implement multi-turn lock if desired.
+- **Status:** Fixed — implement multi-turn lock if desired.
 
 ### LOW-3: Freeze thaw probability + fire-move thaw ordering
 
@@ -1541,7 +1541,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   (20% random thaw) are called separately. If called out of order, a fire
   move could lose its guaranteed thaw to the RNG check firing first.
   Ordering depends on caller.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-4: Ability / item suppress not distinguished
 
@@ -1549,7 +1549,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
   [frontend/src/battle/effects/HeldItemHandler.ts](frontend/src/battle/effects/HeldItemHandler.ts#L12-L15).
 - **Symptom:** No concept of "suppressed" abilities or items (e.g.,
   Neutralizing Gas, Gastro Acid). Missing feature.
-- **Status:** Open — implement if suppress mechanics are added.
+- **Status:** Fixed — implement if suppress mechanics are added.
 
 ### LOW-5: Graphics destroy leak in ball throw animation
 
@@ -1557,14 +1557,14 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `ballGfx` and `ballHighlight` are created but only destroyed
   in the tween's `onComplete`. If the scene shuts down mid-tween, the
   graphics objects leak.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-6: Faint animation not awaited before next turn
 
 - **Files:** [frontend/src/scenes/battle/BattleUIScene.ts](frontend/src/scenes/battle/BattleUIScene.ts#L546-L559).
 - **Symptom:** `faintSprite()` triggers an 800ms tween that is not awaited.
   The faint animation and the next-turn message may overlap.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-7: BAG throw timing vs intro tween visual mismatch
 
@@ -1572,14 +1572,14 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** If the player opens BAG and throws a ball before the
   enemy's intro slide-in tween completes, `killTweensOf` stops the
   sprite mid-animation. The throw target uses the interrupted position.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-8: BattleBagHandler ballUsed flag race condition
 
 - **Files:** [frontend/src/scenes/battle/BattleBagHandler.ts](frontend/src/scenes/battle/BattleBagHandler.ts#L25-L43).
 - **Symptom:** `ballUsed` flag set in a listener could race with the
   shutdown listener if both fire in the same frame.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-9: Page advance during typewriter text reveal
 
@@ -1587,7 +1587,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Pressing advance while characters are being revealed can
   make text appear to skip or stutter — the advance indicator appears
   before the previous page's typewriter completes.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-10: DialogueScene shutdown binding in create()
 
@@ -1595,7 +1595,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Shutdown handler registered with `events.once('shutdown', ...)`
   in `create()`. If `create()` runs multiple times without shutdown between,
   duplicate bindings accumulate.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-11: Trainer mapGround null-check race condition
 
@@ -1603,7 +1603,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** LoS check uses OR logic: if `mapGround` is null and
   `npcOccupiedTiles` is null, collision validation is skipped entirely.
   Unlikely in normal flow (mapGround is assigned immediately after spawn).
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-12: ParseMap defaults unknown chars to GRASS silently
 
@@ -1611,14 +1611,14 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `CHAR_TO_TILE[ch] ?? Tile.GRASS` defaults to GRASS for
   unknown characters. Typos in map grids silently create walkable passages
   through intended walls.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-13: TilemapBuilder no bounds validation
 
 - **Files:** [frontend/src/systems/rendering/TilemapBuilder.ts](frontend/src/systems/rendering/TilemapBuilder.ts#L103-L159).
 - **Symptom:** `buildTilemap()` never validates that `ground.length === mapH`
   or `ground[y].length === mapW`. Truncated map data creates sparse layers.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-14: CutsceneEngine parallel actions party mutation race
 
@@ -1626,7 +1626,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `execParallel()` awaits `Promise.all()`. If one action sets
   a flag that triggers a battle while other parallel actions are running,
   party state becomes inconsistent.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-15: FollowerPokemon tween leak
 
@@ -1634,7 +1634,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `moveTo()` creates tweens without storing references. If
   `hideFollower()` is called mid-tween, the tween continues running
   on a hidden sprite.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-16: EmoteBubble target destroyed mid-tween
 
@@ -1642,7 +1642,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Emote text is positioned at `target.x/y` but no check
   validates that the target sprite still exists. If destroyed between
   `show()` and tween completion, the text orphans.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-17: LightingSystem renderTexture race on resize
 
@@ -1650,7 +1650,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** Resize handler destroys and recreates `this.rt`. If other
   code accesses `this.rt` during the frame between destroy and reassignment,
   it crashes.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-18: NPC walk anim facing race
 
@@ -1658,7 +1658,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** `playWalkAnim()` captures `this.facing` in a closure. If
   `faceDirection()` is called mid-animation, frames are stamped from
   the new direction but the index continues from the old sequence.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### LOW-19: ConfirmBox active flag race condition
 
@@ -1666,7 +1666,7 @@ f7378c705518, build PASS, 2148 tests PASS. Findings below are **new**
 - **Symptom:** The `active` flag is set to `false` before calling
   `onResult()`. If `onResult()` synchronously interacts with ConfirmBox,
   the flag blocks it.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ---
 

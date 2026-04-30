@@ -72,6 +72,7 @@ export class TouchControls {
   private domJoystickOriginX = 0;
   private domJoystickOriginY = 0;
   private updatingLayout = false;
+  private layoutPending = false;
   private boundHandlers: { element: EventTarget; event: string; handler: EventListener }[] = [];
 
   /** Register and track an event listener for cleanup. */
@@ -321,13 +322,20 @@ export class TouchControls {
   }
 
   private updateDOMLayout(): void {
-    if (this.updatingLayout) return;
+    if (this.updatingLayout) {
+      this.layoutPending = true;
+      return;
+    }
     this.updatingLayout = true;
 
     const canvas = this.scene.game.canvas;
     const controlsEl = document.getElementById('mobile-controls');
     if (!canvas || !controlsEl) {
       this.updatingLayout = false;
+      if (this.layoutPending) {
+        this.layoutPending = false;
+        this.updateDOMLayout();
+      }
       return;
     }
 
@@ -357,6 +365,10 @@ export class TouchControls {
     }
 
     this.updatingLayout = false;
+    if (this.layoutPending) {
+      this.layoutPending = false;
+      this.updateDOMLayout();
+    }
   }
 
   private setupDOMJoystick(): void {

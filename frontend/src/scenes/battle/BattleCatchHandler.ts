@@ -47,6 +47,12 @@ export function handlePokeBallUse(ctx: CatchContext, ballItemId: string): void {
     return;
   }
 
+  // CRIT-1: Don't allow catching fainted Pokémon
+  if (b.enemyPokemon.currentHp <= 0) {
+    ctx.msg("It won't have any effect!");
+    return;
+  }
+
   ballThrowCount++;
   ctx.setState('animating');
   ctx.hideActions();
@@ -65,8 +71,10 @@ export function handlePokeBallUse(ctx: CatchContext, ballItemId: string): void {
   // the throw target + every shake position is stable.
   ctx.scene.tweens.killTweensOf(b.enemySprite);
   b.enemySprite.setAlpha(1);
-  const enemyAnchorX = b.enemySprite.x;
-  const enemyAnchorY = b.enemySprite.y;
+  // LOW-7: Snap sprite to intended slot position so throw target is stable
+  b.enemySprite.setPosition(b.enemySpriteBaseX, b.enemySpriteBaseY);
+  const enemyAnchorX = b.enemySpriteBaseX;
+  const enemyAnchorY = b.enemySpriteBaseY;
 
   // BUG-021: Throw originates from the player back-sprite, not a hard-coded
   // (200, 400) which on portrait mobile sat above the actual Pokémon.
@@ -77,6 +85,8 @@ export function handlePokeBallUse(ctx: CatchContext, ballItemId: string): void {
   const startY = (b.playerSprite?.y ?? 400) - 20;
   const ballGfx = ctx.scene.add.circle(startX, startY, 8, 0xff3333).setDepth(100);
   const ballHighlight = ctx.scene.add.circle(startX - 2, startY - 2, 4, 0xffffff).setDepth(101);
+  activeBallGfx.add(ballGfx);
+  activeBallGfx.add(ballHighlight);
 
   ctx.scene.tweens.add({
     targets: [ballGfx, ballHighlight],
@@ -87,6 +97,8 @@ export function handlePokeBallUse(ctx: CatchContext, ballItemId: string): void {
     onComplete: () => {
       ballGfx.destroy();
       ballHighlight.destroy();
+      activeBallGfx.delete(ballGfx);
+      activeBallGfx.delete(ballHighlight);
       b.enemySprite.setAlpha(0);
       runShakeSequence(ctx, result.shakes, result.caught, 0, enemyAnchorX, enemyAnchorY);
     },
@@ -113,6 +125,8 @@ function runShakeSequence(
     const shakeY = (ballY || b.enemySprite.y) + 20;
     const shakeGfx = ctx.scene.add.circle(shakeX, shakeY, 10, 0xff3333).setDepth(100);
     const shakeHighlight = ctx.scene.add.circle(shakeX - 2, shakeY - 2, 4, 0xffffff).setDepth(101);
+    activeBallGfx.add(shakeGfx);
+    activeBallGfx.add(shakeHighlight);
 
     ctx.scene.time.delayedCall(400, () => {
       audio.playSFX(SFX.BALL_SHAKE);
@@ -125,6 +139,8 @@ function runShakeSequence(
         onComplete: () => {
           shakeGfx.destroy();
           shakeHighlight.destroy();
+          activeBallGfx.delete(shakeGfx);
+          activeBallGfx.delete(shakeHighlight);
           ctx.scene.time.delayedCall(300, () => {
             runShakeSequence(ctx, totalShakes, caught, currentShake + 1, ballX, ballY);
           });
@@ -143,6 +159,18 @@ const LEGENDARY_IDS = new Set([144, 145, 146, 150, 151]); // Articuno, Zapdos, M
 
 /** Tracks ball throws within the current battle for catch-first-ball achievement. */
 let ballThrowCount = 0;
+
+/** Active ball/shake graphics that need cleanup on scene shutdown (LOW-5). */
+const activeBallGfx = new Set<Phaser.GameObjects.GameObject>();
+
+/** Destroy any lingering ball graphics (called on scene shutdown). */
+export function cleanupBallGraphics(): void {
+  for (const gfx of activeBallGfx) {
+    if (!gfx.active) continue;
+    gfx.destroy();
+  }
+  activeBallGfx.clear();
+}
 
 /** Reset ball throw count at the start of a new battle. */
 export function resetBallThrowCount(): void {
@@ -295,18 +323,30 @@ function promptNickname(ctx: CatchContext, pokemon: PokemonInstance, speciesName
   }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(200);
 
   let cursor = 0;
+  let cleaned = false;
   const updateCursor = () => {
     yesText.setColor(cursor === 0 ? COLORS.textHighlight : COLORS.textWhite);
     noText.setColor(cursor === 1 ? COLORS.textHighlight : COLORS.textWhite);
   };
 
   const cleanup = () => {
+    if (cleaned) return;
+    cleaned = true;
     yesText.destroy();
     noText.destroy();
     scene.input.keyboard!.off('keydown-LEFT', onLeft);
     scene.input.keyboard!.off('keydown-RIGHT', onRight);
     scene.input.keyboard!.off('keydown-ENTER', onConfirm);
     scene.input.keyboard!.off('keydown-SPACE', onConfirm);
+    scene.events.off('shutdown', onShutdown);
+  };
+
+  // MED-8: On parent shutdown, clean up and stop NicknameScene if running
+  const onShutdown = () => {
+    cleanup();
+    if (scene.scene.isActive('NicknameScene')) {
+      scene.scene.stop('NicknameScene');
+    }
   };
 
   const onLeft = () => { cursor = 0; updateCursor(); };
@@ -315,8 +355,16 @@ function promptNickname(ctx: CatchContext, pokemon: PokemonInstance, speciesName
     cleanup();
     if (cursor === 0) {
       scene.scene.launch('NicknameScene', { pokemon, speciesName });
-      scene.scene.get('NicknameScene').events.once('shutdown', () => {
+      const nicknameScene = scene.scene.get('NicknameScene');
+      nicknameScene.events.once('shutdown', () => {
         callback();
+      });
+      // MED-8: Stop NicknameScene if parent shuts down while it's open
+      scene.events.once('shutdown', () => {
+        nicknameScene.events.off('shutdown');
+        if (scene.scene.isActive('NicknameScene')) {
+          scene.scene.stop('NicknameScene');
+        }
       });
     } else {
       callback();
@@ -329,6 +377,5 @@ function promptNickname(ctx: CatchContext, pokemon: PokemonInstance, speciesName
   scene.input.keyboard!.on('keydown-RIGHT', onRight);
   scene.input.keyboard!.on('keydown-ENTER', onConfirm);
   scene.input.keyboard!.on('keydown-SPACE', onConfirm);
-  // AUDIT-056: Clean up listeners if scene shuts down mid-prompt
-  scene.events.once('shutdown', cleanup);
+  scene.events.once('shutdown', onShutdown);
 }

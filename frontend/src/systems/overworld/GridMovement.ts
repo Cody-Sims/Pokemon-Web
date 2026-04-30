@@ -40,6 +40,14 @@ export class GridMovement {
   getIsMoving(): boolean { return this.isMoving; }
   getTileX(): number { return this.tileX; }
   getTileY(): number { return this.tileY; }
+
+  /** Teleport to a tile and snap the sprite immediately. */
+  setTilePosition(x: number, y: number): void {
+    this.tileX = x;
+    this.tileY = y;
+    this.snapToTile();
+  }
+
   getFacing(): Direction { return this.facing; }
   isRunning(): boolean { return this.running; }
   setRunning(running: boolean): void { this.running = running; }
@@ -54,6 +62,7 @@ export class GridMovement {
   /** Set map bounds for boundary validation. */
   private mapWidth = Infinity;
   private mapHeight = Infinity;
+  private boundsWarned = false;
 
   setMapBounds(width: number, height: number): void {
     this.mapWidth = width;
@@ -65,6 +74,12 @@ export class GridMovement {
     if (this.isMoving) return false;
 
     this.facing = direction;
+
+    // MED-18: Warn once if map bounds haven't been set
+    if (this.mapWidth === Infinity && !this.boundsWarned) {
+      console.warn('GridMovement: mapWidth not set, call setMapBounds()');
+      this.boundsWarned = true;
+    }
 
     let targetX = this.tileX;
     let targetY = this.tileY;
@@ -87,9 +102,6 @@ export class GridMovement {
     }
 
     this.isMoving = true;
-    // Store target tile but don't update tileX/tileY until tween completes
-    const prevTileX = this.tileX;
-    const prevTileY = this.tileY;
     const finalTileX = targetX;
     const finalTileY = targetY;
 
@@ -124,6 +136,13 @@ export class GridMovement {
           this.isMoving = false;
           this.moveCompleteCallback?.();
         },
+        onStop: () => {
+          // HIGH-13: If tween is killed externally, snap to nearest tile
+          this.tileX = Math.round((this.sprite as unknown as { x: number }).x / TILE_SIZE - 0.5);
+          this.tileY = Math.round((this.sprite as unknown as { y: number }).y / TILE_SIZE - 0.5);
+          this.isMoving = false;
+          this.snapToTile();
+        },
       });
     } else {
       this.scene.tweens.add({
@@ -136,6 +155,13 @@ export class GridMovement {
           this.tileY = finalTileY;
           this.isMoving = false;
           this.moveCompleteCallback?.();
+        },
+        onStop: () => {
+          // HIGH-13: If tween is killed externally, snap to nearest tile
+          this.tileX = Math.round((this.sprite as unknown as { x: number }).x / TILE_SIZE - 0.5);
+          this.tileY = Math.round((this.sprite as unknown as { y: number }).y / TILE_SIZE - 0.5);
+          this.isMoving = false;
+          this.snapToTile();
         },
       });
     }

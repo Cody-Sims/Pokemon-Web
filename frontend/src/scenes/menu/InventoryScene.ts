@@ -47,6 +47,7 @@ export class InventoryScene extends Phaser.Scene {
   private targetCursor = 0;
   private targetTexts: Phaser.GameObjects.Text[] = [];
   private targetPanel?: NinePatchPanel;
+  private pickerHandlers: (() => void)[] = [];
   private battleMode = false;
   private scrollContainer?: ScrollContainer;
 
@@ -493,6 +494,10 @@ export class InventoryScene extends Phaser.Scene {
     this.targetCursor = 0;
     this.targetTexts[0]?.setColor(COLORS.textHighlight);
 
+    // Clean up any existing picker handlers before registering new ones
+    this.pickerHandlers.forEach(fn => fn());
+    this.pickerHandlers = [];
+
     // Reuse keyboard for target selection
     const upHandler = () => {
       if (this.mode !== 'target') return;
@@ -509,10 +514,8 @@ export class InventoryScene extends Phaser.Scene {
     const confirmHandler = () => {
       if (this.mode !== 'target') return;
       this.applyItemToTarget(itemIdx, this.targetCursor);
-      kb.off('keydown-UP', upHandler);
-      kb.off('keydown-DOWN', downHandler);
-      kb.off('keydown-ENTER', confirmHandler);
-      kb.off('keydown-SPACE', confirmHandler);
+      this.pickerHandlers.forEach(fn => fn());
+      this.pickerHandlers = [];
     };
 
     const kb = this.input.keyboard!;
@@ -520,6 +523,13 @@ export class InventoryScene extends Phaser.Scene {
     kb.on('keydown-DOWN', downHandler);
     kb.on('keydown-ENTER', confirmHandler);
     kb.on('keydown-SPACE', confirmHandler);
+
+    this.pickerHandlers.push(
+      () => kb.off('keydown-UP', upHandler),
+      () => kb.off('keydown-DOWN', downHandler),
+      () => kb.off('keydown-ENTER', confirmHandler),
+      () => kb.off('keydown-SPACE', confirmHandler),
+    );
   }
 
   private closeTargetPicker(): void {
@@ -670,6 +680,8 @@ export class InventoryScene extends Phaser.Scene {
   }
 
   shutdown(): void {
+    this.pickerHandlers.forEach(fn => fn());
+    this.pickerHandlers = [];
     this.input.keyboard?.removeAllListeners();
     this.tweens.killAll();
     this.itemController?.destroy();

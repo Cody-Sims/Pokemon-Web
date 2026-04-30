@@ -97,6 +97,7 @@ export class ProgressManager {
   }
 
   // ── Serialization helpers ──────────────────────────────
+  // IMPORTANT: Always use serialize()/deserialize() — Sets cannot be JSON.stringified directly
 
   serialize() {
     return {

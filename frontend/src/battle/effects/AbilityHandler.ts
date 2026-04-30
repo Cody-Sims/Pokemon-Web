@@ -2,6 +2,12 @@ import { PokemonInstance, MoveData } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { PokemonType, WeatherCondition } from '@utils/type-helpers';
 import type { StatusEffectHandler } from './StatusEffectHandler';
+import { HeldItemHandler } from './HeldItemHandler';
+
+// TODO: Ability suppress (Neutralizing Gas, Gastro Acid) is not yet
+// distinguished from item suppress. Both should be tracked independently
+// so that removing one suppression source doesn't re-enable abilities
+// that are still suppressed by the other.
 
 /**
  * Ability hook system for Pokémon battles.
@@ -20,11 +26,17 @@ export class AbilityHandler {
     pokemon: PokemonInstance,
     opponent: PokemonInstance,
     statusHandler: StatusEffectHandler,
-  ): { messages: string[]; weather?: WeatherCondition } {
+  ): { messages: string[]; weather?: WeatherCondition; weatherDuration?: number } {
+    // Idempotent guard — prevent duplicate triggers (e.g. Intimidate firing twice)
+    const switchState = statusHandler.getState(pokemon);
+    if (switchState.switchInTriggered) return { messages: [] };
+    switchState.switchInTriggered = true;
+
     const ability = AbilityHandler.getAbility(pokemon);
     const name = pokemon.nickname ?? pokemonData[pokemon.dataId]?.name ?? '???';
     const messages: string[] = [];
     let weather: WeatherCondition | undefined;
+    let weatherDuration: number | undefined;
 
     switch (ability) {
       case 'intimidate': {
@@ -39,18 +51,22 @@ export class AbilityHandler {
       }
       case 'drizzle':
         weather = 'rain';
+        weatherDuration = 5 + HeldItemHandler.getWeatherDurationBonus(pokemon, 'rain');
         messages.push(`${name}'s Drizzle made it rain!`);
         break;
       case 'drought':
         weather = 'sun';
+        weatherDuration = 5 + HeldItemHandler.getWeatherDurationBonus(pokemon, 'sun');
         messages.push(`${name}'s Drought intensified the sun!`);
         break;
       case 'sand-stream':
         weather = 'sandstorm';
+        weatherDuration = 5 + HeldItemHandler.getWeatherDurationBonus(pokemon, 'sandstorm');
         messages.push(`${name}'s Sand Stream whipped up a sandstorm!`);
         break;
       case 'snow-warning':
         weather = 'hail';
+        weatherDuration = 5 + HeldItemHandler.getWeatherDurationBonus(pokemon, 'hail');
         messages.push(`${name}'s Snow Warning summoned a hailstorm!`);
         break;
       case 'trace': {
@@ -70,7 +86,7 @@ export class AbilityHandler {
       }
     }
 
-    return { messages, weather };
+    return { messages, weather, weatherDuration };
   }
 
   /** Called after a move deals damage to the defender. May inflict contact effects. */

@@ -1,9 +1,12 @@
 import Phaser from 'phaser';
 import { isReducedMotion } from '@utils/accessibility';
+import { SaveManager } from './SaveManager';
 
 /** Helper for screen wipe/fade transitions between scenes. */
 export class TransitionManager {
   private static instance: TransitionManager;
+  /** MED-36: Prevent overlapping transitions. */
+  private transitioning = false;
 
   private constructor() {}
 
@@ -16,8 +19,14 @@ export class TransitionManager {
 
   /** Fade the camera to black, run callback, then fade back in. */
   fadeTransition(scene: Phaser.Scene, callback: () => void, duration = 500): void {
+    if (this.transitioning) return;
+    this.transitioning = true;
+    SaveManager.blockSaves();
     if (isReducedMotion()) {
-      callback();
+      try { callback(); } finally {
+        this.transitioning = false;
+        SaveManager.unblockSaves();
+      }
       return;
     }
     try {
@@ -31,6 +40,13 @@ export class TransitionManager {
         // NEW-001: Check scene is still alive before fade-in
         if (scene.scene.isActive()) {
           scene.cameras.main.fadeIn(duration / 2, 0, 0, 0);
+          scene.cameras.main.once('camerafadeincomplete', () => {
+            this.transitioning = false;
+            SaveManager.unblockSaves();
+          });
+        } else {
+          this.transitioning = false;
+          SaveManager.unblockSaves();
         }
       });
     } catch (err) {
@@ -38,6 +54,8 @@ export class TransitionManager {
       try {
         callback();
       } catch { /* callback itself failed — nothing more we can do */ }
+      this.transitioning = false;
+      SaveManager.unblockSaves();
     }
   }
 }

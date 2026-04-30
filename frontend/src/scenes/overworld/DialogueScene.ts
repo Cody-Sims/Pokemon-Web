@@ -378,6 +378,7 @@ export class DialogueScene extends Phaser.Scene {
     const layout = ui(this);
     this.inChoiceMode = true;
     this.choiceCursor = 0;
+    this.indicatorTween?.stop();
     this.advanceIndicator.setAlpha(0);
 
     const choiceRowH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 30) : 30;
@@ -487,6 +488,7 @@ export class DialogueScene extends Phaser.Scene {
   }
 
   shutdown(): void {
+    this.cleanupChoices();
     this.input.keyboard?.removeAllListeners();
     this.input.removeAllListeners();
     this.typeTimer?.destroy();

@@ -28,9 +28,15 @@ export class PartnerAI {
 
     const selfData = pokemonData[pokemon.dataId];
 
+    // Find first alive enemy as default target
+    const aliveEnemies = enemies.filter(e => e && e.currentHp > 0);
+    if (aliveEnemies.length === 0) {
+      return { moveId: 'struggle', targetSlot: 2 };
+    }
+    let bestTarget = enemies.indexOf(aliveEnemies[0]) + 2; // slots start at 2
+
     let bestScore = -Infinity;
     let bestMoveId = availableMoves[0].moveId;
-    let bestTarget = 2; // Default to first enemy slot
 
     // Find a live enemy target
     const primaryTarget = enemies[0] && enemies[0].currentHp > 0 ? 0 : 1;

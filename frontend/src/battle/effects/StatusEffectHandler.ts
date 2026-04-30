@@ -36,6 +36,7 @@ interface BattlePokemonState {
   twoTurnCharging: string | null;  // Move ID being charged (Fly, Dig, Solar Beam)
   tracedAbility?: string;  // Ability copied by Trace (volatile, not persisted)
   originalAbility?: string;  // Original ability before Trace (for restoration)
+  switchInTriggered?: boolean;  // Idempotent guard for onSwitchIn ability triggers
 }
 
 // ── Stage multipliers ──────────────────────────────────────────
@@ -69,6 +70,11 @@ export class StatusEffectHandler {
 
   /** Call once per pokemon when entering battle. */
   initPokemon(pokemon: PokemonInstance): void {
+    // Reset toxic counter on switch-in so it restarts at 1/16
+    if (pokemon.status === 'badly-poisoned' || pokemon.status === 'bad-poison') {
+      pokemon.statusTurns = 1;
+    }
+
     this.states.set(pokemon, {
       statStages: { attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0, accuracy: 0, evasion: 0 },
       volatileStatuses: new Set(),
@@ -81,6 +87,11 @@ export class StatusEffectHandler {
 
   /** Remove all volatile state (call when pokemon switches out or battle ends). */
   clearPokemon(pokemon: PokemonInstance): void {
+    const state = this.states.get(pokemon);
+    // Restore original ability for Trace'd pokemon on switch-out
+    if (state?.originalAbility !== undefined) {
+      pokemon.ability = state.originalAbility;
+    }
     this.states.delete(pokemon);
   }
 
@@ -225,7 +236,12 @@ export class StatusEffectHandler {
 
   // ── Fire-type thawing ───────────────────────────────────────
 
-  /** Check if a fire-type move thaws a frozen defender. Call before damage. */
+  /**
+   * Check if a fire-type move thaws a frozen defender. Call before damage.
+   *
+   * IMPORTANT: Call checkThaw() BEFORE checkTurnStart() so that fire-move
+   * thawing is resolved before the random 20% thaw roll in checkTurnStart.
+   */
   checkThaw(defender: PokemonInstance, move: MoveData): string | null {
     if (move.type === 'fire' && defender.status === 'freeze') {
       defender.status = null;
@@ -274,6 +290,14 @@ export class StatusEffectHandler {
 
     const target = effect.target === 'self' ? attacker : defender;
     const targetName = pokeName(target);
+
+    // Substitute blocks status effects from opponent moves (not self-inflicted)
+    if (effect.target !== 'self') {
+      const defState = this.states.get(defender);
+      if (defState?.volatileStatuses?.has('substitute')) {
+        return { messages: [], recoilDamage: 0 };
+      }
+    }
 
     switch (effect.type) {
       // ── Status condition ──
@@ -514,9 +538,9 @@ export class StatusEffectHandler {
       messages.push(`${name} is hurt by poison! ${dmg} dmg.`);
     }
 
-    // ── Bad Poison (Toxic): 1/16 * N max HP, N increments each turn ──
+    // ── Bad Poison (Toxic): 1/16 * N max HP, N increments each turn (capped at 15) ──
     if (pokemon.status === 'bad-poison') {
-      const counter = pokemon.statusTurns ?? 1;
+      const counter = Math.min(pokemon.statusTurns || 1, 15);
       const dmg = Math.max(1, Math.floor((pokemon.stats.hp * counter) / 16));
       pokemon.currentHp = Math.max(0, pokemon.currentHp - dmg);
       totalDamage += dmg;

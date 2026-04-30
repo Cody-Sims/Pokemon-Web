@@ -71,7 +71,13 @@ describe('BattleStateMachine', () => {
 
   it('should not throw when transitioning to unregistered state', () => {
     const fsm = new BattleStateMachine();
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(() => fsm.transition('VICTORY')).not.toThrow();
-    expect(fsm.getState()).toBe('VICTORY');
+    // Should stay in INTRO since VICTORY is not registered
+    expect(fsm.getState()).toBe('INTRO');
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'BattleStateMachine: attempted transition to unregistered state "VICTORY"',
+    );
+    consoleSpy.mockRestore();
   });
 });

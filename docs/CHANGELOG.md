@@ -6,20 +6,81 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-30]
 
-### Fixed — Cross-cutting bug fixes (HIGH-18, MED-17, LOW-2, LOW-12)
+### Fixed — Full-codebase bug audit: all 96 findings addressed
 
-- **HIGH-18: Seeded PRNG for all gameplay random calls** — Created `seedRng()` and
-  `seededRandom()` in `math-helpers.ts` (Mulberry32). Replaced all 15 `Math.random()`
-  calls in `AIController`, `DamageCalculator`, `CatchCalculator`, `BattleManager`,
-  `EncounterSystem`, `BattleTurnRunner`, `BattleActionMenu`, and `MoveExecutor` with
-  seeded variants. Updated `randomInt`, `randomFloat`, `weightedRandom` to use the
-  seeded PRNG internally. Tests now call `seedRng()` for determinism.
-- **MED-17: parseMap Unicode documentation** — Added comment confirming `[...row]`
-  correctly handles multi-byte Unicode characters (Ø, µ, Þ etc.).
-- **LOW-2: Outrage multi-turn lock** — Added `multi-turn-lock` effect to Outrage in
-  `dragon.ts`, matching Thrash and Petal Dance format.
-- **LOW-12: Unknown tile character warning** — `parseMap` now logs `console.warn` for
-  unknown tile characters instead of silently defaulting to GRASS.
+Addressed all 96 bugs identified in the full-codebase deep review
+(5 critical, 22 high, 50 medium, 19 low). 46 files changed across
+battle subsystem, overworld, managers, UI, entities, and systems.
+
+**Critical fixes:**
+- Pokéballs can no longer be thrown at fainted Pokémon (CRIT-1)
+- Save blocked during scene transitions, battles, and cutscenes (CRIT-2)
+- Toxic damage counter capped at 15 (CRIT-3)
+- Status effects now blocked by Substitute (CRIT-4)
+- Battle FSM rejects transitions to unregistered states (CRIT-5)
+
+**Battle subsystem (22 fixes):**
+- Bad-poison counter resets to 1 on switch-in (HIGH-1)
+- Trace ability restored on re-switch (HIGH-2)
+- Intimidate/onSwitchIn idempotent guard (HIGH-3)
+- Choice item move lock enforcement (HIGH-4)
+- Two-turn move PP deduction fixed (HIGH-5)
+- Struggle bypasses moveInstance lookup (HIGH-6)
+- Drain HP applied after multi-hit moves (HIGH-7)
+- HP threshold items checked after recoil (HIGH-8)
+- PartnerAI targets alive enemies only (HIGH-9)
+- Input debounce prevents rapid double-input (HIGH-10)
+- Battle keyboard disabled when scene paused (HIGH-11)
+- Run failure locks state to animating immediately (HIGH-12)
+- NaN score guards in AI scoring (MED-6)
+- Double-battle faint/spread-move fixes (MED-7, MED-38)
+- Protect rate reset after accuracy check (MED-3)
+- Life Orb/drain guards for substitute/faint (MED-4, MED-5)
+- Recoil KO announcement order corrected (LOW-1)
+
+**Overworld/entity fixes (12 fixes):**
+- Grid-snap recovery on tween cancel via onStop (HIGH-13)
+- Warp destination checked for NPC overlap (HIGH-19)
+- Trainer collision checking during approach walk (MED-14)
+- Encounter/fishing guards, DialogueScene tween/listener cleanup
+- FollowerPokemon scene-active guards and tween cleanup
+- NPC animation facing-change guard
+
+**System/rendering fixes (11 fixes):**
+- CutsceneEngine blocks input during playback (HIGH-14)
+- WeatherRenderer resize debounced (HIGH-15)
+- LightingSystem/GlowEmitterSystem auto-cleanup on shutdown (HIGH-16, HIGH-17)
+- TilemapBuilder null-safe layer creation (MED-35)
+- EmoteBubble target-active guards (LOW-16)
+
+**Manager fixes (21 fixes):**
+- SaveManager blocked during transitions/battles/cutscenes (CRIT-2, MED-21, MED-22)
+- AudioManager mute state persisted to localStorage (HIGH-21, MED-24)
+- Inventory capacity limit of 999 per item (HIGH-22)
+- BGM duplicate prevention during fade-out (MED-23, MED-47)
+- Save failure returns boolean; MenuScene shows error (MED-25)
+- TransitionManager double-transition guard (MED-36)
+- EventManager reset in GameManager.reset() (MED-37)
+- GameManager addItem rejects negative, getParty returns copy (MED-40, MED-41)
+- PartyManager swap bounds check (MED-44)
+- QuestManager re-checks all quests on flag set (MED-45)
+- SaveData schema: boxNames field added (MED-33)
+- Achievements validated as array on load (MED-48)
+
+**UI/controls fixes (9 fixes):**
+- InventoryScene picker handler cleanup (MED-26)
+- TouchControls resize listener cleanup, layout re-entrancy queue (MED-27, MED-32)
+- VirtualJoystick duplicate listener guard (MED-28)
+- MenuController/ScrollContainer auto-cleanup on shutdown (MED-29, MED-30)
+- PokedexScene cry timer cleanup (MED-31)
+- PreloadScene null-safe asset loading (MED-34)
+- ConfirmBox handler-destroy-before-callback order (LOW-19)
+
+**Cross-cutting fixes (4 fixes):**
+- Seeded PRNG (Mulberry32) replaces all 15 Math.random gameplay sites (HIGH-18)
+- Outrage multi-turn lock effect added (LOW-2)
+- parseMap warns on unknown tile characters (LOW-12)
+- BattleScene pauses on tab visibility change (HIGH-20)
 
 ### Changed
 

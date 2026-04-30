@@ -77,6 +77,14 @@ export class PartyManager {
     return false; // all boxes full
   }
 
+  /** MED-44: Swap two party members by index with bounds validation. */
+  swapPartyMembers(indexA: number, indexB: number): void {
+    if (indexA < 0 || indexA >= this.party.length || indexB < 0 || indexB >= this.party.length) return;
+    const temp = this.party[indexA];
+    this.party[indexA] = this.party[indexB];
+    this.party[indexB] = temp;
+  }
+
   // ── Serialization helpers ──────────────────────────────
 
   serialize() {

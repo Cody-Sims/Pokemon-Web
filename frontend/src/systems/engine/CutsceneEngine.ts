@@ -5,6 +5,7 @@ import { EmoteBubble, EmoteType } from '@systems/rendering/EmoteBubble';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
+import { SaveManager } from '@managers/SaveManager';
 
 // ─── CutsceneAction union type ──────────────────────────────
 
@@ -67,6 +68,13 @@ export class CutsceneEngine {
   async play(cutscene: CutsceneDefinition): Promise<void> {
     if (this.running) return;
     this.running = true;
+    // MED-22: Block saves during cutscenes
+    SaveManager.blockSaves();
+    // HIGH-14: Block player input during cutscene
+    if (this.sceneAccess) {
+      this.scene.input?.keyboard?.resetKeys();
+      if (this.scene.input) this.scene.input.enabled = false;
+    }
     try {
       for (const action of cutscene.actions) {
         await this.executeAction(action);
@@ -81,6 +89,12 @@ export class CutsceneEngine {
       } catch { /* scene may already be stopped */ }
     } finally {
       this.running = false;
+      // MED-22: Unblock saves after cutscene completes
+      SaveManager.unblockSaves();
+      // HIGH-14: Re-enable player input after cutscene
+      if (this.sceneAccess && this.scene.input) {
+        this.scene.input.enabled = true;
+      }
     }
   }
 
@@ -253,6 +267,8 @@ export class CutsceneEngine {
   }
 
   private async execParallel(action: { actions: CutsceneAction[] }): Promise<void> {
+    // WARNING: Parallel actions that mutate game state (setFlag, givePokemon)
+    // may race with movement actions. Keep state-mutating actions sequential.
     await Promise.all(action.actions.map(a => this.executeAction(a)));
   }
 

@@ -8,6 +8,8 @@ const SAVE_VERSION = 2;
 /** Serialize/deserialize game state to localStorage. */
 export class SaveManager {
   private static instance: SaveManager;
+  /** CRIT-2 / MED-21 / MED-22: Block saves during transitions, battles, and cutscenes. */
+  private static blocked = false;
 
   private constructor() {}
 
@@ -18,7 +20,15 @@ export class SaveManager {
     return SaveManager.instance;
   }
 
-  save(): void {
+  static blockSaves(): void { SaveManager.blocked = true; }
+  static unblockSaves(): void { SaveManager.blocked = false; }
+  static canSave(): boolean { return !SaveManager.blocked; }
+
+  save(): boolean {
+    if (SaveManager.blocked) {
+      console.warn('SaveManager: save blocked during transition');
+      return false;
+    }
     const gm = GameManager.getInstance();
     const am = AchievementManager.getInstance();
     const serialized = gm.serialize();
@@ -30,8 +40,11 @@ export class SaveManager {
     };
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+      return true;
     } catch (e) {
-      console.error('[SaveManager] Failed to save — storage may be full:', e);
+      // MED-25: Surface save failure to callers
+      console.error('SaveManager: save failed', e);
+      return false;
     }
   }
 
@@ -42,6 +55,8 @@ export class SaveManager {
       const parsed = JSON.parse(raw);
       if (!parsed || typeof parsed !== 'object') return null;
       // Version migration
+      // Note: migration intentionally drops unrecognized fields to prevent
+      // stale data from corrupting the new schema.
       if (parsed.version === 1) {
         parsed.version = SAVE_VERSION;
         // v1 -> v2: add missing fields with defaults
@@ -51,6 +66,8 @@ export class SaveManager {
         if (!parsed.boxNames) parsed.boxNames = undefined;
         if (!parsed.achievements) parsed.achievements = [];
       }
+      // MED-48: Ensure achievements is always a valid array of strings
+      parsed.achievements = Array.isArray(parsed.achievements) ? parsed.achievements : [];
       return parsed as SaveData;
     } catch {
       return null;

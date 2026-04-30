@@ -90,4 +90,9 @@ export class EventManager {
       this.taggedListeners.clear();
     }
   }
+
+  /** MED-37: Reset all listeners between sessions to prevent leaks. */
+  reset(): void {
+    this.clear();
+  }
 }
