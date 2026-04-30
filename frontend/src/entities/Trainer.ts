@@ -11,6 +11,8 @@ export class Trainer extends NPC {
   public defeated = false;
   /** Reference to the map ground grid, set by OverworldScene after spawning. */
   public mapGround: number[][] | null = null;
+  /** NPC-occupied tile keys (\"x,y\" format), set by OverworldScene after spawning. */
+  public npcOccupiedTiles: Set<string> | null = null;
 
   constructor(
     scene: Phaser.Scene,
@@ -54,15 +56,18 @@ export class Trainer extends NPC {
     }
     if (!inRange) return false;
 
-    // Check for solid tiles between trainer and player (line-of-sight blocking)
-    if (this.mapGround) {
+    // Check for solid tiles and NPC-occupied tiles between trainer and player
+    if (this.mapGround || this.npcOccupiedTiles) {
       const dx = Math.sign(tileX - myTileX);
       const dy = Math.sign(tileY - myTileY);
       let cx = myTileX + dx;
       let cy = myTileY + dy;
       while (cx !== tileX || cy !== tileY) {
-        const tile = this.mapGround[cy]?.[cx];
-        if (tile !== undefined && SOLID_TILES.has(tile)) return false;
+        if (this.mapGround) {
+          const tile = this.mapGround[cy]?.[cx];
+          if (tile !== undefined && SOLID_TILES.has(tile)) return false;
+        }
+        if (this.npcOccupiedTiles?.has(`${cx},${cy}`)) return false;
         cx += dx;
         cy += dy;
       }

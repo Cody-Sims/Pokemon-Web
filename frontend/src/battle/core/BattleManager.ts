@@ -1,13 +1,11 @@
 import { PokemonInstance } from '@data/interfaces';
 import { moveData } from '@data/moves';
 import { BattleStateMachine } from './BattleStateMachine';
-import { MoveExecutor } from '../execution/MoveExecutor';
 import { StatusEffectHandler } from '../effects/StatusEffectHandler';
 import { WeatherManager } from '../effects/WeatherManager';
 import { AbilityHandler } from '../effects/AbilityHandler';
 import { HeldItemHandler } from '../effects/HeldItemHandler';
 import { AIController } from './AIController';
-import { calculateTurnOrder } from '../../scenes/battle/BattleTurnRunner';
 
 export type BattleType = 'wild' | 'trainer';
 
@@ -111,103 +109,6 @@ export class BattleManager {
   getBattleType() { return this.config.type; }
   getStatusHandler() { return this.statusHandler; }
   getWeatherManager() { return this.weatherManager; }
-
-  /** Player selects a move. Uses StatusEffectHandler for stat stages, status checks, and effects. */
-  selectMove(moveId: string): {
-    playerResult: ReturnType<typeof MoveExecutor.execute>;
-    enemyResult: ReturnType<typeof MoveExecutor.execute>;
-    turnMessages: string[];
-    endOfTurnMessages: string[];
-  } {
-    const turnMessages: string[] = [];
-
-    const enemyMoveId = this.getEnemyMove();
-    const turnOrder = calculateTurnOrder(
-      this.playerActive, this.enemyActive, moveId, enemyMoveId, this.statusHandler,
-    );
-
-    const first = turnOrder[0].attacker;
-    const second = turnOrder[1].attacker;
-    const firstMove = turnOrder[0].moveId;
-    const secondMove = turnOrder[1].moveId;
-
-    // Turn-start check for first mover
-    const firstFlinch = this.statusHandler.checkFlinch(first);
-    let firstResult: ReturnType<typeof MoveExecutor.execute>;
-    if (firstFlinch) {
-      turnMessages.push(firstFlinch);
-      firstResult = { damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false }, moveHit: false, moveName: '', attackerName: '', defenderName: '', effectMessages: [] };
-    } else {
-      const firstTurnStart = this.statusHandler.checkTurnStart(first);
-      turnMessages.push(...firstTurnStart.messages);
-      if (firstTurnStart.canAct) {
-        firstResult = MoveExecutor.execute(first, second, firstMove, this.statusHandler);
-        turnMessages.push(...firstResult.effectMessages);
-      } else {
-        firstResult = { damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false }, moveHit: false, moveName: '', attackerName: '', defenderName: '', effectMessages: [] };
-      }
-    }
-
-    // Second mover only acts if alive
-    let secondResult: ReturnType<typeof MoveExecutor.execute>;
-    if (second.currentHp > 0) {
-      const secondFlinch = this.statusHandler.checkFlinch(second);
-      if (secondFlinch) {
-        turnMessages.push(secondFlinch);
-        secondResult = { damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false }, moveHit: false, moveName: '', attackerName: '', defenderName: '', effectMessages: [] };
-      } else {
-        const secondTurnStart = this.statusHandler.checkTurnStart(second);
-        turnMessages.push(...secondTurnStart.messages);
-        if (secondTurnStart.canAct) {
-          secondResult = MoveExecutor.execute(second, first, secondMove, this.statusHandler);
-          turnMessages.push(...secondResult.effectMessages);
-        } else {
-          secondResult = { damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false }, moveHit: false, moveName: '', attackerName: '', defenderName: '', effectMessages: [] };
-        }
-      }
-    } else {
-      secondResult = { damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false }, moveHit: false, moveName: '', attackerName: '', defenderName: '', effectMessages: [] };
-    }
-
-    // End-of-turn effects
-    const endOfTurnMessages: string[] = [];
-
-    // AUDIT-007: Tick weather and apply end-of-turn weather damage
-    const weatherTickMsgs = this.weatherManager.tickTurn();
-    endOfTurnMessages.push(...weatherTickMsgs);
-
-    if (this.playerActive.currentHp > 0) {
-      const eot = this.statusHandler.applyEndOfTurn(this.playerActive, this.enemyActive);
-      endOfTurnMessages.push(...eot.messages);
-    }
-    if (this.enemyActive.currentHp > 0) {
-      const eot = this.statusHandler.applyEndOfTurn(this.enemyActive, this.playerActive);
-      endOfTurnMessages.push(...eot.messages);
-    }
-
-    // AUDIT-007: Apply weather chip damage (sandstorm/hail)
-    if (this.playerActive.currentHp > 0) {
-      const weatherDmg = this.weatherManager.applyEndOfTurn(this.playerActive);
-      if (weatherDmg) endOfTurnMessages.push(...weatherDmg.messages);
-    }
-    if (this.enemyActive.currentHp > 0) {
-      const weatherDmg = this.weatherManager.applyEndOfTurn(this.enemyActive);
-      if (weatherDmg) endOfTurnMessages.push(...weatherDmg.messages);
-    }
-
-    // AUDIT-029: Clear protect at end of turn so it doesn't persist
-    this.statusHandler.clearProtectAll();
-
-    this.fsm.transition('CHECK_FAINT');
-
-    const playerFirst = turnOrder[0].isPlayer;
-    return {
-      playerResult: playerFirst ? firstResult : secondResult,
-      enemyResult: playerFirst ? secondResult : firstResult,
-      turnMessages,
-      endOfTurnMessages,
-    };
-  }
 
   /** Attempt to flee from a wild battle. */
   attemptFlee(): boolean {

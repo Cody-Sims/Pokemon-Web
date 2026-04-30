@@ -32,23 +32,28 @@ export function collectEndOfTurnEffects(
     messages.push(`${pokeName} shook off ${statusName} with sheer determination!`);
   }
 
-  // Status effect end-of-turn (burn, poison, etc.)
-  const eotResult = statusHandler.applyEndOfTurn(pokemon, opponent);
-  messages.push(...eotResult.messages);
-
   // Ability end-of-turn (Speed Boost, Poison Heal, etc.)
-  // Poison Heal: skip normal poison damage and heal instead
+  // Poison Heal: skip normal poison damage entirely and heal 1/8 max HP instead.
+  // This must happen BEFORE applyEndOfTurn so the toxic counter doesn't increment
+  // and the wrong-formula undo problem is avoided.
   const ability = AbilityHandler.getAbility(pokemon);
-  if (ability === 'poison-heal' && (pokemon.status === 'poison' || pokemon.status === 'bad-poison')) {
-    // AUDIT-017: Undo the poison damage that was just applied by statusHandler
-    // and heal 1/8 max HP instead
+  const isPoisonHealActive = ability === 'poison-heal' && (pokemon.status === 'poison' || pokemon.status === 'bad-poison');
+
+  if (isPoisonHealActive) {
+    // Skip the poison/toxic tick — run applyEndOfTurn only for non-poison statuses
+    // (burn, leech seed, etc. are still applied normally)
+    const eotResult = statusHandler.applyEndOfTurnSkipPoison(pokemon, opponent);
+    messages.push(...eotResult.messages);
+
     const pokeName = pokemon.nickname ?? pokemonData[pokemon.dataId]?.name ?? '???';
-    const poisonDmg = Math.max(1, Math.floor(pokemon.stats.hp / (pokemon.status === 'bad-poison' ? 16 : 8)));
-    pokemon.currentHp = Math.min(pokemon.stats.hp, pokemon.currentHp + poisonDmg); // undo poison damage
     const heal = Math.max(1, Math.floor(pokemon.stats.hp / 8));
     pokemon.currentHp = Math.min(pokemon.stats.hp, pokemon.currentHp + heal);
     messages.push(`${pokeName} restored HP with Poison Heal!`);
   } else {
+    // Status effect end-of-turn (burn, poison, etc.)
+    const eotResult = statusHandler.applyEndOfTurn(pokemon, opponent);
+    messages.push(...eotResult.messages);
+
     const abilityEot = AbilityHandler.onEndOfTurn(pokemon, statusHandler);
     messages.push(...abilityEot.messages);
   }

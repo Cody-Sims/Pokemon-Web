@@ -342,6 +342,7 @@ export class MoveExecutor {
       defenderName,
       effectMessages: [
         ...thawMessages,
+        ...(damage.immunityMessage ? [damage.immunityMessage] : []),
         ...abilityAfterDmg.messages,
         ...itemAfterDmg.messages,
         ...attackLanded.messages,

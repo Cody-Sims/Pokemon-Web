@@ -48,6 +48,17 @@ export class BattleSwitchHandler {
       const name = pData?.name ?? '???';
       this.scene.msg(`Go! ${name}!`);
       this.scene.statusHandler.clearPokemon(party[index]);
+      this.scene.statusHandler.initPokemon(party[0]);
+
+      // Fire switch-in abilities (Intimidate, Drizzle, etc.)
+      const switchResult = AbilityHandler.onSwitchIn(
+        party[0],
+        b.enemyPokemon,
+        this.scene.statusHandler,
+      );
+      if (switchResult.messages.length > 0) {
+        this.scene.showMessageQueue(switchResult.messages, 0, () => {});
+      }
     });
 
     partyScene.events.once('shutdown', () => {
@@ -87,6 +98,17 @@ export class BattleSwitchHandler {
         const name = pData?.name ?? '???';
         this.scene.msg(`Go! ${name}!`);
         this.scene.statusHandler.clearPokemon(party[index]);
+        this.scene.statusHandler.initPokemon(party[0]);
+
+        // Fire switch-in abilities (Intimidate, Drizzle, etc.)
+        const switchResult = AbilityHandler.onSwitchIn(
+          party[0],
+          b.enemyPokemon,
+          this.scene.statusHandler,
+        );
+        if (switchResult.messages.length > 0) {
+          this.scene.showMessageQueue(switchResult.messages, 0, () => {});
+        }
       }
     });
 

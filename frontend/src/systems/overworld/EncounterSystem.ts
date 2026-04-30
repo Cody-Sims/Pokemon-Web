@@ -69,22 +69,16 @@ export class EncounterSystem {
 
     const nature = NATURES[Math.floor(Math.random() * NATURES.length)];
 
-    // Calculate stats with nature modifiers
+    // Calculate stats using the same formula as ExperienceCalculator.recalculateStats
+    // so wild encounters and level-up stats are consistent.
     const stats = {
       hp: Math.floor(((2 * data.baseStats.hp + ivs.hp) * level) / 100) + level + 10,
-      attack: Math.floor((((2 * data.baseStats.attack + ivs.attack) * level) / 100) + 5) * getNatureMultiplier(nature, 'attack'),
-      defense: Math.floor((((2 * data.baseStats.defense + ivs.defense) * level) / 100) + 5) * getNatureMultiplier(nature, 'defense'),
-      spAttack: Math.floor((((2 * data.baseStats.spAttack + ivs.spAttack) * level) / 100) + 5) * getNatureMultiplier(nature, 'spAttack'),
-      spDefense: Math.floor((((2 * data.baseStats.spDefense + ivs.spDefense) * level) / 100) + 5) * getNatureMultiplier(nature, 'spDefense'),
-      speed: Math.floor((((2 * data.baseStats.speed + ivs.speed) * level) / 100) + 5) * getNatureMultiplier(nature, 'speed'),
+      attack: Math.floor((((2 * data.baseStats.attack + ivs.attack) * level) / 100 + 5) * getNatureMultiplier(nature, 'attack')),
+      defense: Math.floor((((2 * data.baseStats.defense + ivs.defense) * level) / 100 + 5) * getNatureMultiplier(nature, 'defense')),
+      spAttack: Math.floor((((2 * data.baseStats.spAttack + ivs.spAttack) * level) / 100 + 5) * getNatureMultiplier(nature, 'spAttack')),
+      spDefense: Math.floor((((2 * data.baseStats.spDefense + ivs.spDefense) * level) / 100 + 5) * getNatureMultiplier(nature, 'spDefense')),
+      speed: Math.floor((((2 * data.baseStats.speed + ivs.speed) * level) / 100 + 5) * getNatureMultiplier(nature, 'speed')),
     };
-
-    // Round nature-modified stats
-    stats.attack = Math.floor(stats.attack);
-    stats.defense = Math.floor(stats.defense);
-    stats.spAttack = Math.floor(stats.spAttack);
-    stats.spDefense = Math.floor(stats.spDefense);
-    stats.speed = Math.floor(stats.speed);
 
     // Determine moves (up to 4 most recent)
     const learnedMoves = data.learnset

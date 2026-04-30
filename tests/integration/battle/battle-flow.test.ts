@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BattleManager, BattleConfig } from '../../../frontend/src/battle/core/BattleManager';
+import { MoveExecutor } from '../../../frontend/src/battle/execution/MoveExecutor';
 import { ExperienceCalculator } from '../../../frontend/src/battle/calculation/ExperienceCalculator';
 import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 
@@ -45,8 +46,8 @@ describe('Battle Flow Integration', () => {
     });
   });
 
-  describe('selectMove', () => {
-    it('should execute a turn and return results', () => {
+  describe('move execution', () => {
+    it('should execute a move and return results', () => {
       const player = makePokemon({ stats: { hp: 100, attack: 50, defense: 50, spAttack: 50, spDefense: 50, speed: 100 } });
       player.currentHp = 100;
       const enemy = makePokemon({ dataId: 1, stats: { hp: 50, attack: 10, defense: 10, spAttack: 10, spDefense: 10, speed: 5 } });
@@ -56,10 +57,10 @@ describe('Battle Flow Integration', () => {
       const bm = new BattleManager(config);
       bm.start();
 
-      const result = bm.selectMove('ember');
-      expect(result.playerResult).toBeDefined();
-      expect(result.enemyResult).toBeDefined();
-      expect(result.turnMessages).toBeDefined();
+      const result = MoveExecutor.execute(player, enemy, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
+      expect(result.damage).toBeDefined();
+      expect(result.moveName).toBeTruthy();
+      expect(result.effectMessages).toBeDefined();
     });
 
     it('should deal damage to enemy pokemon', () => {
@@ -73,11 +74,11 @@ describe('Battle Flow Integration', () => {
       bm.start();
 
       const hpBefore = enemy.currentHp;
-      bm.selectMove('ember');
+      MoveExecutor.execute(player, enemy, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
       expect(enemy.currentHp).toBeLessThan(hpBefore);
     });
 
-    it('should transition to VICTORY when enemy faints', () => {
+    it('should KO enemy with 1 HP', () => {
       const player = makePokemon({ stats: { hp: 100, attack: 200, defense: 200, spAttack: 200, spDefense: 200, speed: 200 } });
       player.currentHp = 100;
       const enemy = makePokemon({ dataId: 1, stats: { hp: 1, attack: 1, defense: 1, spAttack: 1, spDefense: 1, speed: 1 } });
@@ -86,11 +87,11 @@ describe('Battle Flow Integration', () => {
       const config: BattleConfig = { type: 'wild', playerParty: [player], enemyParty: [enemy] };
       const bm = new BattleManager(config);
       bm.start();
-      bm.selectMove('ember');
-      expect(bm.getState()).toBe('VICTORY');
+      MoveExecutor.execute(player, enemy, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
+      expect(enemy.currentHp).toBe(0);
     });
 
-    it('should transition to DEFEAT when player faints with no other pokemon', () => {
+    it('should deal damage to player when enemy attacks', () => {
       const player = makePokemon({ stats: { hp: 1, attack: 1, defense: 1, spAttack: 1, spDefense: 1, speed: 1 } });
       player.currentHp = 1;
       const enemy = makePokemon({ dataId: 16, stats: { hp: 200, attack: 200, defense: 200, spAttack: 200, spDefense: 200, speed: 200 } });
@@ -99,8 +100,8 @@ describe('Battle Flow Integration', () => {
       const config: BattleConfig = { type: 'wild', playerParty: [player], enemyParty: [enemy] };
       const bm = new BattleManager(config);
       bm.start();
-      bm.selectMove('ember');
-      expect(bm.getState()).toBe('DEFEAT');
+      MoveExecutor.execute(enemy, player, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
+      expect(player.currentHp).toBe(0);
     });
   });
 
@@ -172,9 +173,9 @@ describe('Battle Flow Integration', () => {
       const config: BattleConfig = { type: 'wild', playerParty: [player], enemyParty: [enemy] };
       const bm = new BattleManager(config);
       bm.start();
-      bm.selectMove('ember');
+      MoveExecutor.execute(player, enemy, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
 
-      expect(bm.getState()).toBe('VICTORY');
+      expect(enemy.currentHp).toBe(0);
 
       // Now award EXP
       const expGained = ExperienceCalculator.calculateExp(enemy, false);
@@ -194,9 +195,10 @@ describe('Battle Flow Integration', () => {
       const bm = new BattleManager(config);
       bm.start();
 
-      const result = bm.selectMove('scratch');
-      // Burn should cause residual damage
-      expect(result.endOfTurnMessages.some(m => m.includes('burn'))).toBe(true);
+      MoveExecutor.execute(player, enemy, 'scratch', bm.getStatusHandler(), bm.getWeatherManager());
+      // Burn should cause residual damage via StatusEffectHandler
+      const eot = bm.getStatusHandler().applyEndOfTurn(player, enemy);
+      expect(eot.messages.some(m => m.includes('burn'))).toBe(true);
       expect(player.currentHp).toBeLessThan(100);
     });
   });

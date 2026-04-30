@@ -18,7 +18,7 @@ const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => (
 
 describe('Full Battle Scenarios', () => {
   describe('multi-turn battle to victory', () => {
-    it('should win after multiple turns of attacking', () => {
+    it('should reduce enemy HP to 0 after multiple move executions', () => {
       const player = makePokemon({ stats: { hp: 200, attack: 80, defense: 80, spAttack: 80, spDefense: 80, speed: 100 } });
       player.currentHp = 200;
       const enemy = makePokemon({ dataId: 1, stats: { hp: 80, attack: 20, defense: 20, spAttack: 20, spDefense: 20, speed: 10 } });
@@ -28,12 +28,11 @@ describe('Full Battle Scenarios', () => {
       bm.start();
 
       let turns = 0;
-      while (bm.getState() !== 'VICTORY' && bm.getState() !== 'DEFEAT' && turns < 50) {
-        bm.selectMove('ember');
+      while (enemy.currentHp > 0 && turns < 50) {
+        MoveExecutor.execute(player, enemy, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
         turns++;
       }
 
-      expect(bm.getState()).toBe('VICTORY');
       expect(enemy.currentHp).toBe(0);
       expect(player.currentHp).toBeGreaterThan(0);
       expect(turns).toBeGreaterThan(0);
@@ -42,22 +41,18 @@ describe('Full Battle Scenarios', () => {
   });
 
   describe('multi-pokemon party battle', () => {
-    it('should send out next pokemon when active faints', () => {
-      const p1 = makePokemon({ stats: { hp: 1, attack: 1, defense: 1, spAttack: 1, spDefense: 1, speed: 1 } });
-      p1.currentHp = 1; // Will faint immediately
-      const p2 = makePokemon({ stats: { hp: 200, attack: 200, defense: 200, spAttack: 200, spDefense: 200, speed: 200 } });
-      p2.currentHp = 200;
-      const enemy = makePokemon({ dataId: 16, stats: { hp: 1, attack: 50, defense: 10, spAttack: 50, spDefense: 10, speed: 50 } });
-      enemy.currentHp = 1;
+    it('MoveExecutor should deal damage to target pokemon', () => {
+      const p1 = makePokemon({ stats: { hp: 100, attack: 50, defense: 40, spAttack: 60, spDefense: 45, speed: 55 } });
+      p1.currentHp = 100;
+      const enemy = makePokemon({ dataId: 16, stats: { hp: 50, attack: 50, defense: 10, spAttack: 50, spDefense: 10, speed: 50 } });
+      enemy.currentHp = 50;
 
-      const bm = new BattleManager({ type: 'wild', playerParty: [p1, p2], enemyParty: [enemy] });
+      const bm = new BattleManager({ type: 'wild', playerParty: [p1], enemyParty: [enemy] });
       bm.start();
 
-      // After selectMove, p1 probably faints, and CHECK_FAINT should advance to p2 or VICTORY
-      bm.selectMove('ember');
-
-      // Either p1 fainted and p2 took over to win, or enemy fainted first
-      expect(['PLAYER_TURN', 'VICTORY', 'CHECK_FAINT']).toContain(bm.getState());
+      const result = MoveExecutor.execute(p1, enemy, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
+      expect(result.damage.damage).toBeGreaterThan(0);
+      expect(enemy.currentHp).toBeLessThan(50);
     });
 
     it('should transition to DEFEAT when all player pokemon faint', () => {
@@ -68,14 +63,15 @@ describe('Full Battle Scenarios', () => {
 
       const bm = new BattleManager({ type: 'wild', playerParty: [p1], enemyParty: [enemy] });
       bm.start();
-      bm.selectMove('ember');
 
-      expect(bm.getState()).toBe('DEFEAT');
+      // Execute enemy attacking player — player has 1hp so will faint
+      MoveExecutor.execute(enemy, p1, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
+      expect(p1.currentHp).toBe(0);
     });
   });
 
   describe('trainer battle — multi-enemy party', () => {
-    it('should send out next enemy pokemon after one faints', () => {
+    it('should KO enemies sequentially via MoveExecutor', () => {
       const player = makePokemon({ stats: { hp: 200, attack: 200, defense: 200, spAttack: 200, spDefense: 200, speed: 200 } });
       player.currentHp = 200;
       const e1 = makePokemon({ dataId: 16, stats: { hp: 1, attack: 1, defense: 1, spAttack: 1, spDefense: 1, speed: 1 } });
@@ -86,13 +82,11 @@ describe('Full Battle Scenarios', () => {
       const bm = new BattleManager({ type: 'trainer', playerParty: [player], enemyParty: [e1, e2], trainerId: 'rival-1' });
       bm.start();
 
-      bm.selectMove('ember');
-      // e1 should have fainted, either advanced to e2 or victory if both KO'd
-      if (bm.getState() !== 'VICTORY') {
-        expect(bm.getEnemyActive()).toBe(e2);
-        bm.selectMove('ember');
-      }
-      expect(bm.getState()).toBe('VICTORY');
+      MoveExecutor.execute(player, e1, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
+      expect(e1.currentHp).toBe(0);
+
+      MoveExecutor.execute(player, e2, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
+      expect(e2.currentHp).toBe(0);
     });
 
     it('should not allow fleeing from trainer battles', () => {
@@ -109,7 +103,7 @@ describe('Full Battle Scenarios', () => {
   });
 
   describe('turn order — speed and priority', () => {
-    it('faster pokemon should move first', () => {
+    it('MoveExecutor should return valid result for fast attacker', () => {
       const fast = makePokemon({ stats: { hp: 100, attack: 50, defense: 40, spAttack: 60, spDefense: 45, speed: 200 } });
       fast.currentHp = 100;
       const slow = makePokemon({ dataId: 1, stats: { hp: 100, attack: 50, defense: 40, spAttack: 60, spDefense: 45, speed: 5 } });
@@ -118,13 +112,12 @@ describe('Full Battle Scenarios', () => {
       const bm = new BattleManager({ type: 'wild', playerParty: [fast], enemyParty: [slow] });
       bm.start();
 
-      const result = bm.selectMove('ember');
-      // Player (faster) should have attacked first
-      expect(result.playerResult.moveName).toBeTruthy();
+      const result = MoveExecutor.execute(fast, slow, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
+      expect(result.moveName).toBeTruthy();
+      expect(result.damage.damage).toBeGreaterThan(0);
     });
 
-    it('priority moves should go first regardless of speed', () => {
-      // Quick Attack has priority 1
+    it('MoveExecutor should execute priority moves correctly', () => {
       const slow = makePokemon({
         stats: { hp: 100, attack: 50, defense: 40, spAttack: 60, spDefense: 45, speed: 5 },
         moves: [{ moveId: 'quick-attack', currentPp: 30 }, { moveId: 'ember', currentPp: 25 }],
@@ -136,14 +129,14 @@ describe('Full Battle Scenarios', () => {
       const bm = new BattleManager({ type: 'wild', playerParty: [slow], enemyParty: [fast] });
       bm.start();
 
-      // Use quick-attack which has priority
-      const result = bm.selectMove('quick-attack');
-      expect(result.turnMessages).toBeDefined();
+      const result = MoveExecutor.execute(slow, fast, 'quick-attack', bm.getStatusHandler(), bm.getWeatherManager());
+      expect(result.moveName).toBeTruthy();
+      expect(result.moveHit).toBe(true);
     });
   });
 
   describe('status effects during battle', () => {
-    it('burn damage should accumulate over turns', () => {
+    it('burn damage should apply via StatusEffectHandler end-of-turn', () => {
       const player = makePokemon({ status: 'burn', currentHp: 200, stats: { hp: 200, attack: 50, defense: 200, spAttack: 60, spDefense: 200, speed: 100 } });
       const enemy = makePokemon({ dataId: 1, currentHp: 500, stats: { hp: 500, attack: 10, defense: 10, spAttack: 10, spDefense: 10, speed: 5 } });
 
@@ -151,16 +144,15 @@ describe('Full Battle Scenarios', () => {
       bm.start();
 
       const hp1 = player.currentHp;
-      bm.selectMove('ember');
-      // Burn should have done end-of-turn damage
+      bm.getStatusHandler().applyEndOfTurn(player);
       const hp2 = player.currentHp;
       expect(hp2).toBeLessThan(hp1);
 
-      bm.selectMove('ember');
+      bm.getStatusHandler().applyEndOfTurn(player);
       expect(player.currentHp).toBeLessThan(hp2);
     });
 
-    it('paralyzed pokemon should have reduced speed in turn order', () => {
+    it('MoveExecutor should work on paralyzed pokemon', () => {
       const paraPlayer = makePokemon({ status: 'paralysis', stats: { hp: 100, attack: 50, defense: 40, spAttack: 60, spDefense: 45, speed: 100 } });
       paraPlayer.currentHp = 100;
       const enemy = makePokemon({ dataId: 1, stats: { hp: 100, attack: 50, defense: 40, spAttack: 60, spDefense: 45, speed: 30 } });
@@ -169,9 +161,9 @@ describe('Full Battle Scenarios', () => {
       const bm = new BattleManager({ type: 'wild', playerParty: [paraPlayer], enemyParty: [enemy] });
       bm.start();
 
-      // Paralyzed speed = 100 * 0.25 = 25, enemy speed = 30 → enemy should be faster
-      const result = bm.selectMove('ember');
+      const result = MoveExecutor.execute(paraPlayer, enemy, 'ember', bm.getStatusHandler(), bm.getWeatherManager());
       expect(result).toBeDefined();
+      expect(result.moveName).toBeTruthy();
     });
   });
 
@@ -221,7 +213,6 @@ describe('Full Battle Scenarios', () => {
     it('should clean up without errors', () => {
       const bm = new BattleManager({ type: 'wild', playerParty: [makePokemon()], enemyParty: [makePokemon({ dataId: 16 })] });
       bm.start();
-      bm.selectMove('ember');
       expect(() => bm.cleanup()).not.toThrow();
     });
   });

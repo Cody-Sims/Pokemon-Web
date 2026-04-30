@@ -604,6 +604,9 @@ export class OverworldScene extends Phaser.Scene {
 
   private spawnTrainers(): void {
     const newTrainers = spawnTrainersHelper(this, this.mapDef);
+    for (const trainer of newTrainers) {
+      trainer.npcOccupiedTiles = this.npcOccupiedTiles;
+    }
     this.trainers.push(...newTrainers);
     this.npcs.push(...newTrainers);
   }

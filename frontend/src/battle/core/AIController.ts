@@ -90,7 +90,7 @@ export class AIController {
         );
         // STAB bonus
         const stab = selfData.types.includes(move.type as PokemonType) ? 1.5 : 1;
-        score = move.power * effectiveness * stab * (move.accuracy / 100);
+        score = move.power * effectiveness * stab * ((move.accuracy ?? 100) / 100);
 
         // Prefer finishing moves when opponent is low
         if (opponentHpPct < 0.3) score *= 1.5;

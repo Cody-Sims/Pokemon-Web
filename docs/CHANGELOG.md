@@ -6,6 +6,58 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-29]
 
+### Fixed — Bug audit pass, round 3
+
+Top-to-bottom code review of the battle subsystem, overworld, scenes,
+managers, and inventory. All fixes verified by build + 2148 Vitest tests.
+
+- **Post-damage hooks fired twice** — [`BattleUIScene.applyMoveResult`](../frontend/src/scenes/battle/BattleUIScene.ts)
+  duplicated `AbilityHandler.onAfterDamage`, `HeldItemHandler.onAttackLanded`,
+  `HeldItemHandler.onAfterDamage`, and `HeldItemHandler.checkHPThreshold` calls
+  that `MoveExecutor.execute` already performs. Removed the duplicate block;
+  ability/item messages now come solely from `result.effectMessages`.
+- **Voluntary switch skipped switch-in abilities** —
+  [`BattleSwitchHandler.openPartyMenu`](../frontend/src/scenes/battle/BattleSwitchHandler.ts)
+  and `promptPartySwitch` now call `statusHandler.initPokemon` and
+  `AbilityHandler.onSwitchIn` on the incoming Pokémon, matching the existing
+  `handleFaintedSwitch` path.
+- **Rare Candy dropped IVs/EVs/nature** —
+  [`InventoryScene`](../frontend/src/scenes/menu/InventoryScene.ts) level-up
+  branch now delegates to `ExperienceCalculator.recalculateStats` instead of
+  a base-only formula.
+- **Max Revive healed ~2 % HP** — the `heal-hp` branch now special-cases both
+  `revive` and `max-revive` by ID; Max Revive restores full HP.
+- **Potions could revive fainted Pokémon** — non-revive `heal-hp` items now
+  early-return with "It won't have any effect." when `currentHp <= 0`.
+- **"Sent to PC" message unreachable** —
+  [`BattleCatchHandler`](../frontend/src/scenes/battle/BattleCatchHandler.ts)
+  compares party length before and after `addToParty` instead of checking
+  the impossible `> 6` post-cap.
+- **Poison Heal undo wrong for bad-poison** —
+  [`BattleEndOfTurn`](../frontend/src/scenes/battle/BattleEndOfTurn.ts) now
+  checks for Poison Heal *before* the status tick and calls
+  `applyEndOfTurnSkipPoison` (new method on `StatusEffectHandler`) so the
+  toxic counter never increments and the heal is a clean 1/8 max HP.
+- **Toxic counter grew under Poison Heal** — resolved by the same skip-poison
+  approach above; the counter no longer increments when Poison Heal is active.
+- **Ability immunity messages dropped** —
+  [`DamageCalculator`](../frontend/src/battle/calculation/DamageCalculator.ts)
+  now includes `immunityMessage` in `DamageResult`;
+  [`MoveExecutor`](../frontend/src/battle/execution/MoveExecutor.ts) surfaces
+  it in `effectMessages` so Levitate / Volt Absorb / etc. explain the immunity.
+- **Wild encounter stats off-by-one vs level-up** —
+  [`EncounterSystem.createWildPokemon`](../frontend/src/systems/overworld/EncounterSystem.ts)
+  now applies `Math.floor(... * natureMod)` in a single pass, matching
+  `ExperienceCalculator.recalculateStats`.
+- **AI scored null-accuracy moves as NaN** —
+  [`AIController`](../frontend/src/battle/core/AIController.ts) now uses
+  `(move.accuracy ?? 100)` to treat bypass-accuracy moves as 100 %.
+- **Trainer LoS ignored blocking NPCs** —
+  [`Trainer.isInLineOfSight`](../frontend/src/entities/Trainer.ts) now checks
+  `npcOccupiedTiles` (set ref from OverworldScene) alongside `SOLID_TILES`.
+- **Dead `BattleManager.selectMove`** — removed unused turn pipeline and its
+  stale imports; tests updated to use `MoveExecutor.execute` directly.
+
 ### Fixed — Playthrough bug audit pass, round 2 (medium / polish)
 
 Follow-up sweep on the IDs left open after the first
@@ -78,14 +130,9 @@ Verified by `npm run build` (clean) and `npm run test` (2,148 tests pass).
 
 ### Added — Sprite improvement pass (per [docs/sprites-improvement-plan.md](sprites-improvement-plan.md))
 
-Authored real 16×16 PNG sprites for static map objects under the new
-[frontend/public/assets/sprites/objects/](../frontend/public/assets/sprites/objects)
-folder so map objects no longer fall back to the generic Poké Ball icon.
-Replaced the runtime `Phaser.Graphics.generateTexture` block in
-[PreloadScene.create](../frontend/src/scenes/boot/PreloadScene.ts) with a
-plain `image` loader — every static object now ships as a sub-256-byte
-PNG and is registered through `asset-manifest.json`'s new `objects`
-category:
+Authored procedural 16×16 object sprites in
+[`PreloadScene.create`](../frontend/src/scenes/boot/PreloadScene.ts) so map
+objects no longer fall back to the generic Poké Ball icon:
 
 - **`pc-terminal`** — replaces `item-ball` for every PC storage system in
   PokéCenters (Verdantia, Ironvale, Voltara, Wraithmoor, Scalecrest), the
@@ -125,29 +172,11 @@ were already loaded but unused in the map data:
 
 ### Fixed — Broken texture references
 
-Authored bespoke 64×51 atlases for the **`npc-rook`** (forest-green scout)
-and **`npc-zara`** (Synthesis admin, deep purple) story characters via
-hue-shifting from existing source atlases (see
-[temp/create_rook_zara_sprites.py](../temp/create_rook_zara_sprites.py)).
-These two appear in seven map spawn entries across the Abyssal Spire,
-Shattered Isles Shore, Route 7, and Aether Sanctum but had no dedicated
-art, previously causing missing-texture squares at runtime.
-
-### Changed — Asset layout
-
-- New [frontend/public/assets/sprites/objects/](../frontend/public/assets/sprites/objects)
-  folder for all static interactable objects (PCs, signs, item balls,
-  berry trees, vents, conduits, fossils, runes, pedestals, doors, memory
-  fragments, crystal clusters). They load as plain `image` assets — no
-  walk-frame atlases.
-- `sign-post` and `item-ball` were migrated from
-  `npcs/trainers/` (where they shipped as 192×17 atlases with 12 unused
-  walk frames) to `sprites/objects/` as plain 16×16 PNGs. The manifest
-  generator skips the legacy keys in `npcs/trainers/` so the new images
-  win.
-- Manifest generator [generate-atlas.js](../frontend/scripts/generate-atlas.js)
-  gained a new `buildObjects()` builder that scans the objects folder and
-  emits an `objects` category. Total tracked assets rose from 565 to 581.
+[`PreloadScene.preload`](../frontend/src/scenes/boot/PreloadScene.ts) now
+loads aliases for **`npc-rook`** and **`npc-zara`** (mapped to existing
+NPC atlases). These two story characters appear in seven map spawn entries
+across the Abyssal Spire, Shattered Isles Shore, Route 7, and Aether Sanctum
+but had no dedicated art, causing missing-texture squares at runtime.
 
 ### Changed — Tests
 

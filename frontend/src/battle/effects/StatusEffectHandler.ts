@@ -545,6 +545,58 @@ export class StatusEffectHandler {
     return { damage: totalDamage, messages, fainted: pokemon.currentHp <= 0 };
   }
 
+  /** Like applyEndOfTurn but skips poison/bad-poison damage and counter increment.
+   *  Used when Poison Heal is active so the toxic counter doesn't grow. */
+  applyEndOfTurnSkipPoison(pokemon: PokemonInstance, opponent?: PokemonInstance): EndOfTurnResult {
+    const name = pokeName(pokemon);
+    const messages: string[] = [];
+    let totalDamage = 0;
+
+    if (pokemon.currentHp <= 0) return { damage: 0, messages: [], fainted: true };
+
+    // Burn still applies
+    if (pokemon.status === 'burn') {
+      const dmg = Math.max(1, Math.floor(pokemon.stats.hp / 16));
+      pokemon.currentHp = Math.max(0, pokemon.currentHp - dmg);
+      totalDamage += dmg;
+      messages.push(`${name} is hurt by its burn! ${dmg} dmg.`);
+    }
+
+    // Poison / bad-poison: intentionally skipped (Poison Heal)
+
+    // Leech Seed
+    const state = this.getState(pokemon);
+    if (state.volatileStatuses.has('leech-seed') && pokemon.currentHp > 0) {
+      const dmg = Math.max(1, Math.floor(pokemon.stats.hp / 8));
+      pokemon.currentHp = Math.max(0, pokemon.currentHp - dmg);
+      totalDamage += dmg;
+      messages.push(`${name}'s health is sapped by Leech Seed! ${dmg} dmg.`);
+      if (opponent && opponent.currentHp > 0) {
+        const healed = Math.min(dmg, opponent.stats.hp - opponent.currentHp);
+        opponent.currentHp = Math.min(opponent.stats.hp, opponent.currentHp + dmg);
+        if (healed > 0) {
+          messages.push(`${pokeName(opponent)} restored ${healed} HP!`);
+        }
+      }
+    }
+
+    // Trap damage
+    if (state.volatileStatuses.has('trapped') && pokemon.currentHp > 0) {
+      state.trapTurns--;
+      if (state.trapTurns <= 0) {
+        state.volatileStatuses.delete('trapped');
+        messages.push(`${name} was freed from the trap!`);
+      } else {
+        const dmg = Math.max(1, Math.floor(pokemon.stats.hp / 8));
+        pokemon.currentHp = Math.max(0, pokemon.currentHp - dmg);
+        totalDamage += dmg;
+        messages.push(`${name} is hurt by the trap! ${dmg} dmg.`);
+      }
+    }
+
+    return { damage: totalDamage, messages, fainted: pokemon.currentHp <= 0 };
+  }
+
   // ── Reset stat stages (for Haze) ────────────────────────────
 
   resetAllStages(): void {

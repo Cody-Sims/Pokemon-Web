@@ -173,6 +173,7 @@ function onCatchSuccess(ctx: CatchContext): void {
   ctx.msg(`Gotcha! ${name} was caught!`);
 
   ctx.scene.time.delayedCall(1800, () => {
+    const partyLengthBefore = gm.getParty().length;
     const added = gm.addToParty(enemy);
     gm.markSeen(enemy.dataId);
     gm.markCaught(enemy.dataId);
@@ -200,7 +201,7 @@ function onCatchSuccess(ctx: CatchContext): void {
       am.unlock('all-starters');
     }
 
-    if (added && gm.getParty().length > 6) {
+    if (added && partyLengthBefore >= 6) {
       ctx.msg(`${name} was sent to the PC!`);
     } else if (added) {
       ctx.msg(`${name} was added to your party!`);

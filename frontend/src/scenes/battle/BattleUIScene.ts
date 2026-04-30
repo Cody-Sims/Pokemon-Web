@@ -7,7 +7,6 @@ import { GameManager } from '@managers/GameManager';
 import { MoveExecutor } from '@battle/execution/MoveExecutor';
 import { playMoveAnimation } from '@battle/execution/MoveAnimationPlayer';
 import type { StatusEffectHandler } from '@battle/effects/StatusEffectHandler';
-import { AbilityHandler } from '@battle/effects/AbilityHandler';
 import { HeldItemHandler } from '@battle/effects/HeldItemHandler';
 import type { WeatherManager } from '@battle/effects/WeatherManager';
 import type { BattleScene } from './BattleScene';
@@ -486,25 +485,12 @@ export class BattleUIScene extends Phaser.Scene {
       }
 
       // Show effect messages (status applied, stat changes, drain, recoil, etc.)
+      // NOTE: Ability/item hooks (onAfterDamage, onAttackLanded, checkHPThreshold)
+      // are already invoked in MoveExecutor.execute — their messages are included
+      // in result.effectMessages. Do NOT duplicate them here.
       const allEffectMsgs = [...result.effectMessages];
 
-      // ── Ability: onAfterDamage ──
-      if (result.moveHit && result.damage.damage > 0) {
-        const md = moveData[moveId];
-        if (md) {
-          const abilityResult = AbilityHandler.onAfterDamage(attacker, defender, md, result.damage.damage);
-          allEffectMsgs.push(...abilityResult.messages);
-        }
-        const lifeOrbResult = HeldItemHandler.onAttackLanded(attacker, result.damage.damage);
-        allEffectMsgs.push(...lifeOrbResult.messages);
-        const hpBeforeHit = defender.currentHp + result.damage.damage;
-        const focusResult = HeldItemHandler.onAfterDamage(defender, attacker, result.damage.damage, hpBeforeHit);
-        allEffectMsgs.push(...focusResult.messages);
-        const threshResult = HeldItemHandler.checkHPThreshold(defender);
-        allEffectMsgs.push(...threshResult.messages);
-      }
-
-      // ── Held item: status berry check ──
+      // ── Held item: status berry check (not handled inside MoveExecutor) ──
       if (defender.status) {
         const statusBerryResult = HeldItemHandler.onStatusApplied(defender);
         allEffectMsgs.push(...statusBerryResult.messages);

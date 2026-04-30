@@ -13,6 +13,7 @@ import { COLORS, FONTS, SPACING, mobileFontSize, isMobile } from '@ui/theme';
 import { blockReasonForItemUse } from '@systems/engine/ChallengeRules';
 import { SFX } from '@utils/audio-keys';
 import { tmData } from '@data/tm-data';
+import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
 import type { ItemData } from '@data/interfaces';
 
 type ItemCategory = 'medicine' | 'pokeball' | 'battle' | 'key' | 'tm';
@@ -541,17 +542,23 @@ export class InventoryScene extends Phaser.Scene {
     let message = '';
 
     if (eff.type === 'heal-hp') {
-      if (entry.item.id === 'revive') {
-        // Revive: only works on fainted Pokémon
+      if (entry.item.id === 'revive' || entry.item.id === 'max-revive') {
+        // Revive / Max Revive: only works on fainted Pokémon
         if (target.currentHp > 0) {
           message = `${target.nickname ?? pokemonData[target.dataId]?.name} isn't fainted!`;
         } else {
-          target.currentHp = Math.floor(target.stats.hp / 2);
+          const healAmount = entry.item.id === 'max-revive'
+            ? target.stats.hp
+            : Math.floor(target.stats.hp / 2);
+          target.currentHp = healAmount;
           used = true;
           message = `${target.nickname ?? pokemonData[target.dataId]?.name} was revived!`;
         }
       } else {
-        if (target.currentHp >= target.stats.hp) {
+        // Non-revive heal items cannot be used on fainted Pokémon
+        if (target.currentHp <= 0) {
+          message = "It won't have any effect.";
+        } else if (target.currentHp >= target.stats.hp) {
           message = `${target.nickname ?? pokemonData[target.dataId]?.name} is already at full HP!`;
         } else {
           let heal = eff.amount ?? 20;
@@ -596,21 +603,8 @@ export class InventoryScene extends Phaser.Scene {
         message = `${pName} is already at max level!`;
       } else {
         target.level += 1;
-        // Recalculate stats for the new level
-        const pData = pokemonData[target.dataId];
-        if (pData) {
-          const oldMaxHp = target.stats.hp;
-          target.stats = {
-            hp: Math.floor(((pData.baseStats.hp * 2) * target.level) / 100) + target.level + 10,
-            attack: Math.floor(((pData.baseStats.attack * 2) * target.level) / 100) + 5,
-            defense: Math.floor(((pData.baseStats.defense * 2) * target.level) / 100) + 5,
-            spAttack: Math.floor(((pData.baseStats.spAttack * 2) * target.level) / 100) + 5,
-            spDefense: Math.floor(((pData.baseStats.spDefense * 2) * target.level) / 100) + 5,
-            speed: Math.floor(((pData.baseStats.speed * 2) * target.level) / 100) + 5,
-          };
-          // Increase currentHp by the HP gain
-          target.currentHp += target.stats.hp - oldMaxHp;
-        }
+        // Recalculate stats including IVs, EVs, and nature
+        ExperienceCalculator.recalculateStats(target);
         used = true;
         message = `${pName} grew to Lv. ${target.level}!`;
       }

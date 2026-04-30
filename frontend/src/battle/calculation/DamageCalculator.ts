@@ -22,6 +22,7 @@ export interface DamageResult {
   effectiveness: number;
   isCritical: boolean;
   isSTAB: boolean;
+  immunityMessage?: string;
 }
 
 /** Calculates damage from standard Pokemon formula. */
@@ -46,7 +47,7 @@ export class DamageCalculator {
     // Check ability-based immunities
     const immunityCheck = AbilityHandler.checkImmunity(defender, move);
     if (immunityCheck.immune) {
-      return { damage: 0, effectiveness: 0, isCritical: false, isSTAB: false };
+      return { damage: 0, effectiveness: 0, isCritical: false, isSTAB: false, immunityMessage: immunityCheck.message };
     }
 
     const level = attacker.level;
