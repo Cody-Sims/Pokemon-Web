@@ -37,6 +37,9 @@ const palletGround = parseMap([
 
 export const palletTown: MapDefinition = {
   key: 'pallet-town',
+  // BUG-014: every NPC, sign, and route refers to this town as Littoral Town,
+  // so set the HUD label / banner to match the in-world name.
+  displayName: 'Littoral Town',
   width: 25,
   height: 30,
   ground: palletGround,

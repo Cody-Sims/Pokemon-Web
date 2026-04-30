@@ -126,6 +126,10 @@ export class IntroScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-ENTER', () => this.advance());
     this.input.keyboard!.on('keydown-SPACE', () => this.advance());
     this.input.on('pointerdown', () => this.advance());
+
+    // BUG-043: Register shutdown explicitly so the hidden DOM input is
+    // detached even when Phaser restarts the scene unexpectedly.
+    this.events.once('shutdown', this.shutdown, this);
   }
 
   private advance(): void {
@@ -283,7 +287,13 @@ export class IntroScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // DONE button
-    const doneBtn = this.add.text(width / 2, height * 0.82, '[ DONE ]', {
+    // BUG-044: Reserve a 150 px bottom safe-area on portrait mobile so the
+    // DOM touch controls / iOS home indicator don't sit on top of DONE/SKIP.
+    const portraitBuild = height > width;
+    const safeBottom = isMobile() && portraitBuild ? 150 : 0;
+    const doneY = portraitBuild ? height - safeBottom - 60 : height * 0.82;
+    const skipY = portraitBuild ? height - safeBottom - 22 : height * 0.92;
+    const doneBtn = this.add.text(width / 2, doneY, '[ DONE ]', {
       ...FONTS.menuItem,
       fontSize: mobileFontSize(18),
       color: COLORS.textHighlight,
@@ -292,7 +302,7 @@ export class IntroScene extends Phaser.Scene {
     doneBtn.on('pointerdown', () => this.confirmName());
 
     // SKIP button
-    const skipBtn = this.add.text(width / 2, height * 0.92, '[ SKIP ]', {
+    const skipBtn = this.add.text(width / 2, skipY, '[ SKIP ]', {
       ...FONTS.caption,
       fontSize: mobileFontSize(14),
       color: COLORS.textDim,
@@ -567,5 +577,24 @@ export class IntroScene extends Phaser.Scene {
     this.cameras.main.once('camerafadeoutcomplete', () => {
       this.scene.start('OverworldScene');
     });
+  }
+
+  /**
+   * BUG-043: Remove the hidden mobile-keyboard `<input>` if it survives a
+   * scene restart / unexpected shutdown. confirmName() removes it under
+   * normal flow; this is the safety net.
+   */
+  shutdown(): void {
+    if (this.hiddenInput) {
+      try {
+        this.hiddenInput.blur();
+        this.hiddenInput.remove();
+      } catch {
+        // ignore detach errors
+      }
+      this.hiddenInput = undefined;
+    }
+    this.input.keyboard?.removeAllListeners();
+    this.input.removeAllListeners();
   }
 }

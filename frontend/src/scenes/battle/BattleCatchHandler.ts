@@ -59,17 +59,25 @@ export function handlePokeBallUse(ctx: CatchContext, ballItemId: string): void {
   ctx.msg(`You threw a ${ballData?.name ?? 'Poké Ball'}!`);
   audio.playSFX(SFX.BALL_THROW);
 
-  const ballGfx = ctx.scene.add.circle(200, 400, 8, 0xff3333).setDepth(100);
-  ctx.scene.add.circle(200, 400, 4, 0xffffff).setDepth(101);
+  // BUG-021: Throw originates from the player back-sprite, not a hard-coded
+  // (200, 400) which on portrait mobile sat above the actual Pokémon.
+  // BUG-020: Capture the highlight dot so it can be destroyed alongside
+  // ballGfx — previous code orphaned a white pixel on screen for the rest
+  // of the battle and stacked another every throw.
+  const startX = b.playerSprite?.x ?? 200;
+  const startY = (b.playerSprite?.y ?? 400) - 20;
+  const ballGfx = ctx.scene.add.circle(startX, startY, 8, 0xff3333).setDepth(100);
+  const ballHighlight = ctx.scene.add.circle(startX - 2, startY - 2, 4, 0xffffff).setDepth(101);
 
   ctx.scene.tweens.add({
-    targets: ballGfx,
+    targets: [ballGfx, ballHighlight],
     x: b.enemySprite.x,
     y: b.enemySprite.y,
     duration: 500,
     ease: 'Sine.easeIn',
     onComplete: () => {
       ballGfx.destroy();
+      ballHighlight.destroy();
       b.enemySprite.setAlpha(0);
       runShakeSequence(ctx, result.shakes, result.caught, 0);
     },

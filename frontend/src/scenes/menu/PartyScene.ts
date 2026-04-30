@@ -18,13 +18,19 @@ export class PartyScene extends Phaser.Scene {
   private swapMode = false;
   private swapSourceIdx = -1;
   private selectMode = false;
+  /** When true the player must pick an alive Pokémon — ESC / Close / fainted picks are blocked (BUG-002). */
+  private forcedSwitch = false;
+  /** Per-slot row height; mirrors the value used during create(). */
+  private rowH: number = SPACING.slotHeight;
 
   constructor() {
     super({ key: 'PartyScene' });
   }
 
-  init(data?: { selectMode?: boolean }): void {
+  init(data?: { selectMode?: boolean; forcedSwitch?: boolean }): void {
     this.selectMode = data?.selectMode ?? false;
+    this.forcedSwitch = data?.forcedSwitch ?? false;
+    if (this.forcedSwitch) this.selectMode = true;
   }
 
   create(): void {
@@ -42,66 +48,108 @@ export class PartyScene extends Phaser.Scene {
     this.add.text(layout.cx, 30, 'POKEMON PARTY', { ...FONTS.heading, fontSize: mobileFontSize(22) }).setOrigin(0.5);
     this.add.rectangle(layout.cx, 48, 200, 2, COLORS.borderHighlight, 0.4);
 
+    // Top-right "✕" close button — always reachable inside the safe area on
+    // mobile, so the screen can be exited even when the bottom Close button
+    // is occluded by the home bar (B7).
+    // BUG-002: hide the close button entirely during forced switches —
+    // exiting before picking would softlock the battle.
+    if (!this.forcedSwitch) {
+      const closeBtnSize = Math.max(MIN_TOUCH_TARGET, 36);
+      const closeBtn = this.add.rectangle(
+        layout.w - closeBtnSize / 2 - 12, closeBtnSize / 2 + 12,
+        closeBtnSize, closeBtnSize, COLORS.bgPanel, 0.9,
+      ).setStrokeStyle(2, COLORS.borderHighlight).setInteractive({ useHandCursor: true });
+      const closeBtnText = this.add.text(
+        layout.w - closeBtnSize / 2 - 12, closeBtnSize / 2 + 12, '✕',
+        { ...FONTS.heading, fontSize: mobileFontSize(20), color: COLORS.textHighlight },
+      ).setOrigin(0.5);
+      closeBtn.on('pointerdown', () => this.closeScene());
+      closeBtnText.setInteractive({ useHandCursor: true });
+      closeBtnText.on('pointerdown', () => this.closeScene());
+    }
+
     this.slotBgs = [];
     this.cursor = 0;
     this.swapMode = false;
 
+    // Use a tighter row height on mobile so all 6 slots and the bottom
+    // helper text + Close button stay visible inside the safe area (B7).
+    const rowH = isMobile()
+      ? Math.min(SPACING.slotHeight, Math.floor((layout.h - 140) / 6))
+      : SPACING.slotHeight;
+    this.rowH = rowH;
+
     for (let i = 0; i < 6; i++) {
-      const y = 64 + i * SPACING.slotHeight;
+      const y = 64 + i * rowH;
       const hasMon = i < party.length;
       const p = hasMon ? party[i] : null;
 
-      const slotBg = this.add.rectangle(layout.cx, y + SPACING.slotHeight / 2, layout.w - 70, SPACING.slotHeight - 6,
+      const slotBg = this.add.rectangle(layout.cx, y + rowH / 2, layout.w - 70, rowH - 6,
         hasMon ? COLORS.bgCard : COLORS.bgDark, hasMon ? 0.9 : 0.5)
         .setStrokeStyle(1, hasMon ? COLORS.border : 0x2a2a3a);
       this.slotBgs.push(slotBg);
 
       if (!hasMon || !p) {
-        this.add.text(layout.cx, y + SPACING.slotHeight / 2, '—  Empty  —', { ...FONTS.bodySmall, fontSize: mobileFontSize(14), color: COLORS.textDim }).setOrigin(0.5);
+        this.add.text(layout.cx, y + rowH / 2, '—  Empty  —', { ...FONTS.bodySmall, fontSize: mobileFontSize(14), color: COLORS.textDim }).setOrigin(0.5);
         continue;
       }
 
       const pData = pokemonData[p.dataId];
       const name = p.nickname ?? pData?.name ?? '???';
-      const slotY = y + SPACING.slotHeight / 2;
+      const slotY = y + rowH / 2;
       const isFainted = p.currentHp <= 0;
+
+      // Layout columns (B6):
+      //   icon  : 0–14% (mini sprite)
+      //   left  : 14–42% (name on top, level + type badges on bottom)
+      //   right : 42–82% (HP label, HP bar, HP text)
+      //   status: 82–95% (status / FNT badge, anchored to right edge)
+      const iconX = Math.round(layout.w * 0.07);
+      const leftX = Math.round(layout.w * 0.16);
+      const hpX = Math.round(layout.w * 0.44);
+      const hpBarW = Math.min(170, Math.round(layout.w * 0.36));
+      const statusX = Math.round(layout.w * 0.90);
 
       // Mini sprite (icon) if texture exists
       const iconKey = pData?.spriteKeys.icon;
       if (iconKey && this.textures.exists(iconKey)) {
-        const icon = this.add.image(Math.round(layout.w * 0.04), slotY, iconKey).setScale(1.5);
+        const icon = this.add.image(iconX, slotY, iconKey).setScale(1.5);
         if (isFainted) icon.setAlpha(0.4).setTint(0x888888);
       }
 
-      // Name (dimmed if fainted)
-      const nameText = this.add.text(Math.round(layout.w * 0.07), slotY - 18, name, { ...FONTS.body, fontSize: mobileFontSize(16), fontStyle: 'bold' });
+      // Name (left-aligned, top half of slot)
+      const nameText = this.add.text(leftX, slotY - 18, name, { ...FONTS.body, fontSize: mobileFontSize(16), fontStyle: 'bold' });
       if (isFainted) nameText.setAlpha(0.5);
 
-      // Level
-      const lvText = this.add.text(Math.round(layout.w * 0.07), slotY + 4, `Lv. ${p.level}`, { ...FONTS.caption, fontSize: mobileFontSize(12) });
+      // Level (under the name)
+      const lvText = this.add.text(leftX, slotY + 2, `Lv. ${p.level}`, { ...FONTS.caption, fontSize: mobileFontSize(12) });
       if (isFainted) lvText.setAlpha(0.5);
 
-      // HP bar
-      this.add.text(Math.round(layout.w * 0.30), slotY - 18, 'HP', { ...FONTS.label, fontSize: mobileFontSize(11) });
-      drawHpBar(this, Math.round(layout.w * 0.33), slotY - 12, 170, 10, p.currentHp, p.stats.hp);
-      this.add.text(Math.round(layout.w * 0.56), slotY - 18, `${p.currentHp}/${p.stats.hp}`, { ...FONTS.caption, fontSize: mobileFontSize(12) });
-
-      // Type badges
+      // Type badges sit BELOW the level row so they cannot collide with the
+      // name on narrow viewports (B6). When two types exist they stack
+      // horizontally to the right of the level text.
       if (pData) {
+        const typeY = slotY + 18;
         pData.types.forEach((type, ti) => {
-          drawTypeBadge(this, Math.round(layout.w * 0.33) + ti * 72, slotY + 10, type);
+          const tx = leftX + 50 + ti * 56;
+          drawTypeBadge(this, tx, typeY, type);
         });
       }
 
+      // HP bar group (right column)
+      this.add.text(hpX, slotY - 18, 'HP', { ...FONTS.label, fontSize: mobileFontSize(11) });
+      drawHpBar(this, hpX + 14, slotY - 12, hpBarW, 10, p.currentHp, p.stats.hp);
+      this.add.text(hpX + 14, slotY + 4, `${p.currentHp}/${p.stats.hp}`, { ...FONTS.caption, fontSize: mobileFontSize(12) });
+
       // Status condition badge
       if (p.status) {
-        drawStatusBadge(this, layout.w - 90, slotY, p.status);
+        drawStatusBadge(this, statusX, slotY, p.status);
       }
 
       // Fainted indicator
       if (isFainted) {
-        this.add.rectangle(layout.w - 90, slotY, 64, 20, 0x661111).setStrokeStyle(1, 0xff3333);
-        this.add.text(layout.w - 90, slotY, 'FNT', { ...FONTS.label, fontSize: mobileFontSize(11), color: '#ff5555' }).setOrigin(0.5);
+        this.add.rectangle(statusX, slotY, 56, 18, 0x661111).setStrokeStyle(1, 0xff3333);
+        this.add.text(statusX, slotY, 'FNT', { ...FONTS.label, fontSize: mobileFontSize(11), color: '#ff5555' }).setOrigin(0.5);
         slotBg.setAlpha(0.6);
       }
 
@@ -131,21 +179,37 @@ export class PartyScene extends Phaser.Scene {
       wrap: false,
       onMove: (idx) => { this.cursor = idx; this.updateCursor(); },
       onConfirm: (idx) => this.onSlotConfirm(idx),
-      onCancel: () => this.closeScene(),
+      onCancel: () => { if (!this.forcedSwitch) this.closeScene(); },
       audioFeedback: true,
     });
 
     this.updateCursor();
 
-    this.add.text(layout.cx, layout.h - 52, this.selectMode ? 'Choose a Pokémon' : 'Select a Pokémon to view options', { ...FONTS.caption, fontSize: mobileFontSize(12) }).setOrigin(0.5);
-    drawButton(this, layout.cx, layout.h - 30, 'Close (ESC)', () => this.closeScene(), 140, Math.max(MIN_TOUCH_TARGET, 30));
+    // Helper text + bottom Close button. On mobile we lift them away from
+    // the home-bar safe area so they remain tappable (B7); the top-right
+    // ✕ button above is the always-on fallback.
+    const bottomLift = isMobile() ? 32 : 0;
+    this.add.text(
+      layout.cx, layout.h - 52 - bottomLift,
+      this.forcedSwitch
+        ? 'You must choose another Pokémon!'
+        : this.selectMode ? 'Choose a Pokémon' : 'Select a Pokémon to view options',
+      { ...FONTS.caption, fontSize: mobileFontSize(12) },
+    ).setOrigin(0.5);
+    if (!this.forcedSwitch) {
+      drawButton(
+        this, layout.cx, layout.h - 30 - bottomLift,
+        'Close (ESC)', () => this.closeScene(),
+        140, Math.max(MIN_TOUCH_TARGET, 30),
+      );
+    }
 
     // Re-layout on resize / orientation change
     let resizeInit = false;
     layoutOn(this, () => {
       if (!resizeInit) { resizeInit = true; return; }
       this.controller?.destroy();
-      this.scene.restart({ selectMode: this.selectMode });
+      this.scene.restart({ selectMode: this.selectMode, forcedSwitch: this.forcedSwitch });
     });
   }
 
@@ -162,9 +226,20 @@ export class PartyScene extends Phaser.Scene {
     const party = GameManager.getInstance().getParty();
     if (index >= party.length) return;
 
-    // In select mode, emit the selection and close
+    // In select mode, emit the selection and close.
+    // BUG-002: forcedSwitch must reject fainted picks and the "already-active"
+    // slot — otherwise the player can effectively dismiss the prompt.
     if (this.selectMode) {
+      if (this.forcedSwitch) {
+        const target = party[index];
+        if (!target || target.currentHp <= 0 || index === 0) {
+          AudioManager.getInstance().playSFX(SFX.CANCEL);
+          return;
+        }
+      }
       this.events.emit('pokemon-selected', index);
+      this.controller?.destroy();
+      this.scene.stop();
       return;
     }
 
@@ -182,7 +257,7 @@ export class PartyScene extends Phaser.Scene {
     this.controller?.setDisabled(true);
     const actions = ['SUMMARY', 'SWITCH', 'Cancel'];
     const menuX = layout.w - 140;
-    const menuY = 64 + index * SPACING.slotHeight + SPACING.slotHeight / 2;
+    const menuY = 64 + index * this.rowH + this.rowH / 2;
 
     const panel = new NinePatchPanel(this, menuX, menuY, 130, actions.length * Math.max(MIN_TOUCH_TARGET, 32) + 12, {
       fillColor: 0x0a0a18,
@@ -267,6 +342,7 @@ export class PartyScene extends Phaser.Scene {
   }
 
   private closeScene(): void {
+    if (this.forcedSwitch) return; // BUG-002: cannot close while a faint is unresolved
     this.controller?.destroy();
     this.scene.stop();
   }

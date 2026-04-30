@@ -23,6 +23,10 @@ export class PokedexScene extends Phaser.Scene {
   private caughtCount = 0;
   private countText?: Phaser.GameObjects.Text;
   private scrollContainer?: ScrollContainer;
+  /** BUG-016: debounce the Pokémon cry so scrolling doesn't spam audio. */
+  private cryTimer?: Phaser.Time.TimerEvent;
+  /** BUG-036 sibling: drop late sprite-load callbacks if the user navigated away. */
+  private detailRequestId = 0;
 
   constructor() {
     super({ key: 'PokedexScene' });
@@ -60,10 +64,19 @@ export class PokedexScene extends Phaser.Scene {
       ...FONTS.bodySmall, fontSize: mobileFontSize(13),
     }).setOrigin(0.5);
 
-    // Detail panel (right side)
-    new NinePatchPanel(this, layout.w - 155, layout.cy + 20, 270, layout.h - 130, {
-      fillColor: COLORS.bgCard, fillAlpha: 0.7, borderColor: COLORS.border, cornerRadius: 6,
-    });
+    // Detail panel — landscape uses the right-rail layout; portrait stacks
+    // it below the species list so neither pane gets clipped (BUG-017).
+    const isPortrait = layout.h > layout.w;
+    if (isPortrait) {
+      const detailH = Math.floor(layout.h * 0.40);
+      new NinePatchPanel(this, layout.cx, layout.h - detailH / 2 - 50, layout.w - 30, detailH, {
+        fillColor: COLORS.bgCard, fillAlpha: 0.7, borderColor: COLORS.border, cornerRadius: 6,
+      });
+    } else {
+      new NinePatchPanel(this, layout.w - 155, layout.cy + 20, 270, layout.h - 130, {
+        fillColor: COLORS.bgCard, fillAlpha: 0.7, borderColor: COLORS.border, cornerRadius: 6,
+      });
+    }
 
     // Close hint / tappable close button
     if (isMobile()) {
@@ -197,6 +210,8 @@ export class PokedexScene extends Phaser.Scene {
   private showDetail(idx: number): void {
     const layout = ui(this);
     this.detailGroup.clear(true, true);
+    // BUG-036: invalidate any in-flight async sprite-load callback.
+    const requestId = ++this.detailRequestId;
     const id = this.speciesList[idx];
     const gm = GameManager.getInstance();
     const dex = gm.getPokedex();
@@ -207,7 +222,10 @@ export class PokedexScene extends Phaser.Scene {
     let y = 90;
 
     if (!seen) {
-      const unknown = this.add.text(layout.w - 155, layout.cy, '???', {
+      const isPortraitU = layout.h > layout.w;
+      const ux = isPortraitU ? layout.cx : layout.w - 155;
+      const uy = isPortraitU ? Math.floor(layout.h * 0.75) : layout.cy;
+      const unknown = this.add.text(ux, uy, '???', {
         ...FONTS.heading, color: COLORS.textDim,
       }).setOrigin(0.5);
       this.detailGroup.add(unknown);
@@ -217,36 +235,54 @@ export class PokedexScene extends Phaser.Scene {
     const data = pokemonData[id];
     if (!data) return;
 
+    // BUG-017: Pick layout anchors based on orientation — landscape keeps the
+    // legacy right-rail detail panel; portrait stacks the detail block below
+    // the species list so neither pane gets clipped.
+    const isPortrait = layout.h > layout.w;
+    const detailCx = isPortrait ? layout.cx : layout.w - 155;
+    const detailTop = isPortrait ? Math.floor(layout.h * 0.55) : 90;
+
     // Sprite — load on demand if not yet in texture cache
     const spriteKey = data.spriteKeys.front;
+    const spriteY = isPortrait ? detailTop + 40 : y + 40;
     if (spriteKey && this.textures.exists(spriteKey)) {
-      const sprite = this.add.image(layout.w - 155, y + 40, spriteKey).setScale(2);
+      const sprite = this.add.image(detailCx, spriteY, spriteKey).setScale(2);
       this.detailGroup.add(sprite);
     } else if (spriteKey) {
       const name = data.name.toLowerCase();
       this.load.image(spriteKey, `assets/sprites/pokemon/${name}-front.png`);
       this.load.once('complete', () => {
+        // BUG-036: ignore if user navigated to a different species in the meantime.
+        if (requestId !== this.detailRequestId) return;
         if (this.detailGroup && this.textures.exists(spriteKey)) {
-          const sprite = this.add.image(layout.w - 155, y + 40, spriteKey).setScale(2);
+          const sprite = this.add.image(detailCx, spriteY, spriteKey).setScale(2);
           this.detailGroup.add(sprite);
         }
       });
       this.load.start();
     }
-    y += 90;
+    y = (isPortrait ? detailTop : y) + 90;
 
-    // Play Pokémon cry when viewing details
-    AudioManager.getInstance().playCry(id);
+    // BUG-016: Debounce the cry so scrolling doesn't spam the procedural
+    // audio generator — only fire after the cursor settles for ~250 ms.
+    if (this.cryTimer) {
+      this.cryTimer.remove(false);
+      this.cryTimer = undefined;
+    }
+    this.cryTimer = this.time.delayedCall(250, () => {
+      if (requestId !== this.detailRequestId) return;
+      AudioManager.getInstance().playCry(id);
+    });
 
     // Name
-    const nameText = this.add.text(layout.w - 155, y, data.name, {
+    const nameText = this.add.text(detailCx, y, data.name, {
       ...FONTS.body, fontStyle: 'bold', fontSize: mobileFontSize(17),
     }).setOrigin(0.5);
     this.detailGroup.add(nameText);
     y += 22;
 
     // Number
-    const numText = this.add.text(layout.w - 155, y, `#${String(id).padStart(3, '0')}`, {
+    const numText = this.add.text(detailCx, y, `#${String(id).padStart(3, '0')}`, {
       ...FONTS.caption,
     }).setOrigin(0.5);
     this.detailGroup.add(numText);
@@ -254,7 +290,8 @@ export class PokedexScene extends Phaser.Scene {
 
     // Types
     data.types.forEach((type, ti) => {
-      const badge = drawTypeBadge(this, layout.w - 175 + ti * 72, y, type);
+      const badgeX = isPortrait ? detailCx - 36 + ti * 72 : layout.w - 175 + ti * 72;
+      const badge = drawTypeBadge(this, badgeX, y, type);
       this.detailGroup.add(badge);
     });
     y += 28;
@@ -262,7 +299,7 @@ export class PokedexScene extends Phaser.Scene {
     // Status
     const status = caught ? 'Caught ●' : 'Seen ○';
     const statusColor = caught ? COLORS.textSuccess : COLORS.textGray;
-    const statusText = this.add.text(layout.w - 155, y, status, {
+    const statusText = this.add.text(detailCx, y, status, {
       ...FONTS.bodySmall, color: statusColor,
     }).setOrigin(0.5);
     this.detailGroup.add(statusText);
@@ -275,8 +312,9 @@ export class PokedexScene extends Phaser.Scene {
         ['HP', stats.hp], ['ATK', stats.attack], ['DEF', stats.defense],
         ['SPA', stats.spAttack], ['SPD', stats.spDefense], ['SPE', stats.speed],
       ];
+      const statX = isPortrait ? detailCx - 60 : x;
       statLabels.forEach(([label, val]) => {
-        const row = this.add.text(x, y, `${label}: ${val}`, {
+        const row = this.add.text(statX, y, `${label}: ${val}`, {
           fontSize: mobileFontSize(12), color: COLORS.textGray, fontFamily: 'monospace',
         });
         this.detailGroup.add(row);

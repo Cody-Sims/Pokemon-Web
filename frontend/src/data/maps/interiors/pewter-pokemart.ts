@@ -19,7 +19,8 @@ export const pewterPokemart: MapDefinition = {
   ground,
   encounterTableKey: '',
   isInterior: true,
-  displayName: 'PokéMart',
+  // NIT-005: every other mart prefixes the city name.
+  displayName: 'Pewter City PokéMart',
   npcs: [
     {
       id: 'pewter-mart-clerk',

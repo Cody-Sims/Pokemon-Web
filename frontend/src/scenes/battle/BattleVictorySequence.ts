@@ -82,16 +82,23 @@ function runLevelUpSequence(ctx: VictoryContext, name: string, _fromLevel: numbe
 
   ctx.scene.time.delayedCall(1500, () => {
     const p = b.playerPokemon;
-    ctx.msg(`HP: ${p.stats.hp} | ATK: ${p.stats.attack} | DEF: ${p.stats.defense} | SpA: ${p.stats.spAttack} | SpD: ${p.stats.spDefense} | SPD: ${p.stats.speed}`);
+    // BUG-034: Split the stat dump across two messages instead of stuffing
+    // it into a single line that has no wordWrap and got clipped against
+    // the right edge of the message bar on portrait viewports.
+    ctx.msg(`HP: ${p.stats.hp}  ATK: ${p.stats.attack}  DEF: ${p.stats.defense}`);
 
-    ctx.scene.time.delayedCall(2000, () => {
-      if (moveIdx < newMoves.length) {
-        offerNewMove(ctx, name, newMoves, moveIdx);
-      } else {
-        ctx.setState('message');
-        ctx.msg(isMobile() ? 'Tap to continue...' : 'Press Enter to continue...');
-        ctx.waitForConfirmThen(() => ctx.endBattle());
-      }
+    ctx.scene.time.delayedCall(1100, () => {
+      ctx.msg(`SpA: ${p.stats.spAttack}  SpD: ${p.stats.spDefense}  SPD: ${p.stats.speed}`);
+
+      ctx.scene.time.delayedCall(1100, () => {
+        if (moveIdx < newMoves.length) {
+          offerNewMove(ctx, name, newMoves, moveIdx);
+        } else {
+          ctx.setState('message');
+          ctx.msg(isMobile() ? 'Tap to continue...' : 'Press Enter to continue...');
+          ctx.waitForConfirmThen(() => ctx.endBattle());
+        }
+      });
     });
   });
 }

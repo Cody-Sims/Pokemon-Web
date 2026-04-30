@@ -66,6 +66,11 @@ export class BattleScene extends Phaser.Scene {
   // Synthesis aura
   private synthesisAura?: Phaser.GameObjects.Ellipse;
 
+  // BUG-001: Base transform of the player sprite captured at create() time so
+  // the switch handler can restore visibility after faintSprite() shrinks it.
+  public playerSpriteBaseScale = 4;
+  public playerSpriteBaseY = 0;
+
   private initData?: Record<string, unknown>;
 
   constructor() {
@@ -195,8 +200,11 @@ export class BattleScene extends Phaser.Scene {
     if (this.isTrainerBattle && trainerSpriteKey && this.textures.exists(trainerSpriteKey)) {
       // Enemy trainer stands behind their Pokémon (further right, behind enemy)
       const trainerX = Math.round(w * 0.78);
+      // BUG-013: Cap trainer scale on narrow / short viewports so the
+      // silhouette doesn't crash into the enemy info box and Pokémon sprite.
+      const trainerScale = isPortraitBattle ? 4 : Math.min(8, Math.max(4, w / 160));
       const enemyTrainer = this.add.image(w + 100, enemyY - 30, trainerSpriteKey, 0);
-      enemyTrainer.setScale(8).setAlpha(0.85).setDepth(0);
+      enemyTrainer.setScale(trainerScale).setAlpha(0.85).setDepth(0);
       this.tweens.add({ targets: enemyTrainer, x: trainerX, duration: 600, delay: 200, ease: 'Power2' });
     }
     // Enemy pokemon sprite (front view) — starts offscreen right, white tinted
@@ -206,6 +214,10 @@ export class BattleScene extends Phaser.Scene {
     // Player pokemon sprite (back view, larger) — starts offscreen left, white tinted
     this.playerSprite = this.add.image(-100, playerY - 20, playerData.spriteKeys.back)
       .setScale(4).setTint(0xffffff).setAlpha(0);
+    // Capture base transform so resetPlayerSprite() can restore visibility
+    // after faintSprite() collapses scale/alpha (BUG-001).
+    this.playerSpriteBaseScale = 4;
+    this.playerSpriteBaseY = playerY - 20;
 
     // ── Enemy info box (top-left) — starts above screen ──
     // Portrait viewports are too narrow for the legacy 300 px panel; shrink
@@ -412,7 +424,9 @@ export class BattleScene extends Phaser.Scene {
       const partner = this.playerPokemonSlots[1];
       if (partner && this.playerHpBars.length > 0) {
         const pPct = Math.max(0, partner.currentHp / partner.stats.hp);
-        this.tweens.add({ targets: this.playerHpBars[0], displayWidth: 150 * pPct, duration: 400 });
+        // BUG-011: read max width from the matching bg rectangle so portrait/landscape stay in sync
+        const maxW = this.playerHpBarBgs[0]?.width ?? 150;
+        this.tweens.add({ targets: this.playerHpBars[0], displayWidth: maxW * pPct, duration: 400 });
         this.playerHpBars[0].fillColor = pPct > 0.5 ? 0x4caf50 : pPct > 0.2 ? 0xffeb3b : 0xf44336;
         if (this.playerHpTexts.length > 0) {
           this.playerHpTexts[0].setText(`${Math.max(0, partner.currentHp)}/${partner.stats.hp}`);
@@ -423,8 +437,13 @@ export class BattleScene extends Phaser.Scene {
       const enemy2 = this.enemyPokemonSlots[1];
       if (enemy2 && this.enemyHpBars.length > 0) {
         const ePct = Math.max(0, enemy2.currentHp / enemy2.stats.hp);
-        this.tweens.add({ targets: this.enemyHpBars[0], displayWidth: 180 * ePct, duration: 400 });
+        const maxW = this.enemyHpBarBgs[0]?.width ?? 180;
+        this.tweens.add({ targets: this.enemyHpBars[0], displayWidth: maxW * ePct, duration: 400 });
         this.enemyHpBars[0].fillColor = ePct > 0.5 ? 0x4caf50 : ePct > 0.2 ? 0xffeb3b : 0xf44336;
+        // BUG-010: keep the slot-1 enemy HP text in sync — was created with '' and never updated.
+        if (this.enemyHpTexts.length > 0) {
+          this.enemyHpTexts[0].setText(`${Math.max(0, enemy2.currentHp)}/${enemy2.stats.hp}`);
+        }
       }
     }
   }
@@ -506,6 +525,31 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * BUG-001: Restore the player sprite's transform after faintSprite() has
+   * shrunk it to scaleY=0/alpha=0. Called when a switched-in Pokémon needs
+   * to become visible at the player slot again. Plays a short emerge-from-ball
+   * tween so the swap reads as a Pokémon being sent out.
+   */
+  resetPlayerSprite(): void {
+    const base = this.playerSpriteBaseScale;
+    const targetY = this.playerSpriteBaseY;
+    // Kill any in-flight faint/scale tweens still targeting the sprite so
+    // they don't fight the reset.
+    this.tweens.killTweensOf(this.playerSprite);
+    this.playerSprite.setAlpha(0).setScale(base, 0).setY(targetY).setTint(0xffffff);
+    this.tweens.add({
+      targets: this.playerSprite,
+      scaleY: base,
+      alpha: 1,
+      duration: 320,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.time.delayedCall(120, () => this.playerSprite.clearTint());
+      },
+    });
+  }
+
   /** Get EXP progress as 0-1 fraction toward next level. */
   getExpPercent(): number {
     const p = this.playerPokemon;
@@ -519,9 +563,13 @@ export class BattleScene extends Phaser.Scene {
   /** Animate the EXP bar fill. */
   animateExpBar(duration = 600): void {
     const pct = this.getExpPercent();
+    // BUG-012: Use the EXP bar bg width (matches the player HP bar width
+    // for the current viewport) instead of a hard-coded 180 so the fill
+    // doesn't overflow the bar frame on portrait mobile.
+    const maxW = this.expBarBg?.width ?? 180;
     this.tweens.add({
       targets: this.expBarFill,
-      displayWidth: 180 * pct,
+      displayWidth: maxW * pct,
       duration,
     });
   }
@@ -572,24 +620,38 @@ export class BattleScene extends Phaser.Scene {
   ): void {
     const { w, h } = ui(this);
 
-    // Player slot 0: x=200, y=350 (already placed as playerSprite)
-    // Player slot 1: x=350, y=370
-    this.playerSprite.setScale(3);
+    // BUG-004: Double-battle slot positions are now proportional to the
+    // viewport so the second enemy / partner stay on-screen on portrait
+    // mobile (the legacy 200/350/500/140/650/120 pixel coords pushed slot 1
+    // off the right edge on a 400-px-wide canvas).
+    const isPortrait = h > w;
+    const enemy0 = { x: Math.round(w * (isPortrait ? 0.55 : 0.55)), y: Math.round(h * (isPortrait ? 0.20 : 0.22)) };
+    const enemy1 = { x: Math.round(w * (isPortrait ? 0.78 : 0.78)), y: Math.round(h * (isPortrait ? 0.16 : 0.18)) };
+    const player0 = { x: Math.round(w * (isPortrait ? 0.22 : 0.25)), y: Math.round(h * (isPortrait ? 0.50 : 0.65)) };
+    const player1 = { x: Math.round(w * (isPortrait ? 0.42 : 0.40)), y: Math.round(h * (isPortrait ? 0.55 : 0.68)) };
+    const playerScale = isPortrait ? 2.5 : 3;
+    const enemyScale = isPortrait ? 1.25 : 1.5;
+
+    this.playerSprite.setScale(playerScale);
+    // Track double-battle base scale so resetPlayerSprite() restores the
+    // correct size after a faint switch (BUG-001).
+    this.playerSpriteBaseScale = playerScale;
     this.playerPokemonSlots = [playerParty[0] ?? null, playerParty[1] ?? null];
     this.enemyPokemonSlots = [enemyParty[0] ?? null, enemyParty[1] ?? null];
     this.playerSprites = [this.playerSprite];
     this.enemySprites = [this.enemySprite];
 
     // Reposition primary sprites for double layout
-    this.playerSprite.setPosition(200, 350);
-    this.enemySprite.setPosition(500, 140).setScale(1.5);
+    this.playerSprite.setPosition(player0.x, player0.y);
+    this.playerSpriteBaseY = player0.y;
+    this.enemySprite.setPosition(enemy0.x, enemy0.y).setScale(enemyScale);
 
     // Add second player Pokémon
     if (this.playerPokemonSlots[1]) {
       const p1 = this.playerPokemonSlots[1];
       const p1Data = pokemonData[p1.dataId];
       if (p1Data) {
-        const spr = this.add.image(350, 370, p1Data.spriteKeys.back).setScale(3).setAlpha(0);
+        const spr = this.add.image(player1.x, player1.y, p1Data.spriteKeys.back).setScale(playerScale).setAlpha(0);
         this.playerSprites.push(spr);
         this.tweens.add({ targets: spr, alpha: 1, duration: 600, delay: 400, ease: 'Power2', onComplete: () => spr.clearTint() });
       }
@@ -600,7 +662,7 @@ export class BattleScene extends Phaser.Scene {
       const e1 = this.enemyPokemonSlots[1];
       const e1Data = pokemonData[e1.dataId];
       if (e1Data) {
-        const spr = this.add.image(650, 120, e1Data.spriteKeys.front).setScale(1.5).setAlpha(0);
+        const spr = this.add.image(enemy1.x, enemy1.y, e1Data.spriteKeys.front).setScale(enemyScale).setAlpha(0);
         this.enemySprites.push(spr);
         this.tweens.add({ targets: spr, alpha: 1, duration: 600, delay: 400, ease: 'Power2', onComplete: () => spr.clearTint() });
       }

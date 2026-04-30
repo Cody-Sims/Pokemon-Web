@@ -44,8 +44,13 @@ export class BattleMoveMenu {
     const { w: mw, h: mh, cx: mcx } = ui(this.scene);
     const compactMoves = isMobile() && (window.innerHeight < 400 || mh < 400);
     const moveMenuH = compactMoves ? 50 : 100;
+    // BUG-003: Match the action menu's bottomReserve so the move grid
+    // doesn't render under the DOM joystick / A-B overlay on mobile portrait.
+    const isPortraitM = mh > mw;
+    const bottomReserveM = isMobile() && isPortraitM ? 100 : 10;
+    const menuY = mh - moveMenuH / 2 - bottomReserveM;
     this.moveMenuBg = this.scene.add
-      .rectangle(mcx, mh - moveMenuH / 2 - 10, mw - 20, moveMenuH, 0x1a1a2e, 0.95)
+      .rectangle(mcx, menuY, mw - 20, moveMenuH, 0x1a1a2e, 0.95)
       .setStrokeStyle(2, COLORS.borderLight);
 
     // Selection ring graphics — drawn on top of move buttons, repositioned by updateMoveCursor.
@@ -67,12 +72,13 @@ export class BattleMoveMenu {
       if (compactMoves) {
         const spacing = mw / (moves.length + 1);
         x = spacing * (i + 1);
-        y = mh - moveMenuH / 2 - 10;
+        y = menuY;
       } else {
         const col = i % 2;
         const row = Math.floor(i / 2);
         x = mcx - 120 + col * 240;
-        y = mh - 85 + row * moveRowH;
+        // Anchor rows to the same menuY used above so portrait + landscape stay aligned.
+        y = menuY - moveRowH / 2 + row * moveRowH;
       }
 
       // Type-colored button background

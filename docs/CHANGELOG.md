@@ -6,6 +6,123 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-04-29]
 
+### Fixed — Playthrough bug audit pass (BUG-001 through BUG-044)
+
+Comprehensive sweep across battle, overworld, menu, and intro flows. Each
+entry below references the IDs documented in [bugs.md](../bugs.md):
+
+- **BUG-001 / BUG-002** — Switching after a faint left the new Pokémon
+  invisible because [`faintSprite`](../frontend/src/scenes/battle/BattleScene.ts)
+  collapsed the back-sprite to `scaleY=0/alpha=0` and the switch handler only
+  updated the texture. Added [`BattleScene.resetPlayerSprite`](../frontend/src/scenes/battle/BattleScene.ts)
+  + base-transform tracking, and rewrote
+  [`BattleSwitchHandler.handleFaintedSwitch`](../frontend/src/scenes/battle/BattleSwitchHandler.ts)
+  to launch `PartyScene` in `selectMode` and listen for `pokemon-selected` so
+  the chosen Pokémon actually goes out instead of always falling back to the
+  first alive party slot.
+  [`PartyScene`](../frontend/src/scenes/menu/PartyScene.ts) now accepts
+  `forcedSwitch` and disables ESC/Close/fainted picks while the flag is set.
+- **BUG-003** — [`BattleMoveMenu.openMoveMenu`](../frontend/src/scenes/battle/BattleMoveMenu.ts)
+  now mirrors the action menu's `bottomReserve` so the 2×2 move grid no
+  longer renders behind the joystick / A-B DOM overlay on mobile portrait.
+- **BUG-004 / BUG-010 / BUG-011 / BUG-012 / BUG-013** — Double-battle
+  layout in [`BattleScene`](../frontend/src/scenes/battle/BattleScene.ts)
+  now derives slot positions and scales from the viewport (the legacy
+  hard-coded 200/350/500/140/650/120 pushed slot 1 off-screen on portrait).
+  `updateHpBars()` reads partner / second-enemy bar widths from their bg
+  rectangles instead of fixed 150/180, populates the previously-empty
+  slot-1 enemy HP text, and `animateExpBar()` uses the EXP bg width so the
+  fill no longer overflows on portrait. Trainer sprite scale is capped at
+  4× on portrait so the silhouette stops crashing into the enemy info box.
+- **BUG-014** — [`palletTown`](../frontend/src/data/maps/cities/pallet-town.ts)
+  has a `displayName: 'Littoral Town'` to match every NPC, sign, and route
+  reference. **BUG-030** gives Viridian and Pewter Pokémon Centers their
+  city-prefixed names, and **NIT-005** does the same for Pewter PokéMart.
+- **BUG-015 / BUG-017 / BUG-047** — [`SummaryScene`](../frontend/src/scenes/menu/SummaryScene.ts)
+  distributes tabs evenly, right-anchors the level header, picks a
+  portrait-aware sprite x, and provides a compact STATS layout (Base/IV/EV
+  collapsed under the value, smaller bar) so the right-most column doesn't
+  fall off canvas. The MOVES card now wraps the move name to the available
+  width before the right-anchored PP column. [`PokedexScene`](../frontend/src/scenes/menu/PokedexScene.ts)
+  uses a stacked layout in portrait, debounces cries to 250 ms (BUG-016),
+  and invalidates async sprite loads via `detailRequestId` (BUG-036).
+- **BUG-019** — [`LightingSystem.enableDarkness`](../frontend/src/systems/rendering/LightingSystem.ts)
+  registers its resize listener exactly once and `destroy()` removes it,
+  preventing leak-after-leak after re-entering caves.
+- **BUG-020 / BUG-021** — [`BattleCatchHandler`](../frontend/src/scenes/battle/BattleCatchHandler.ts)
+  captures the highlight dot and destroys it with the ball; the throw
+  origin now follows the player back-sprite instead of a hard-coded
+  (200, 400) coord that drifted on mobile portrait.
+- **BUG-031 / BUG-032 / BUG-033** — [`OverworldScene.update`](../frontend/src/scenes/overworld/OverworldScene.ts)
+  applies per-class depth deltas so the player wins ties against NPCs at
+  the same Y row, and includes the follower in the y-sort. The follower
+  scale dropped to ~70% of a tile (was 2× the player) and the permanent
+  0.92 alpha is gone — see [`FollowerPokemon`](../frontend/src/entities/FollowerPokemon.ts).
+- **BUG-034** — Level-up stat dump in [`BattleVictorySequence`](../frontend/src/scenes/battle/BattleVictorySequence.ts)
+  splits across two messages so neither overflows the message bar.
+- **BUG-037 / BUG-038** — [`InventoryScene`](../frontend/src/scenes/menu/InventoryScene.ts)
+  centers the empty-state text on `layout.cx` and pulls the action panel /
+  labels off the hard-coded x=200 anchor.
+- **BUG-039 / BUG-040 / BUG-041** — [`DialogueScene`](../frontend/src/scenes/overworld/DialogueScene.ts)
+  clamps speaker-name panel width to 55% of canvas with text wrap, and the
+  portrait sprite now picks an existing atlas frame and preserves aspect
+  ratio (no more squashed Professor / stretched gym leaders).
+- **BUG-043 / BUG-044** — [`IntroScene`](../frontend/src/scenes/title/IntroScene.ts)
+  reserves a 150 px bottom safe-area on portrait so DONE/SKIP clear the
+  iOS home indicator, and a registered `shutdown` handler removes the
+  hidden DOM `<input>` even when the scene restarts unexpectedly.
+
+Verified by `npm run build` (clean) and `npm run test` (2,148 tests pass).
+
+---
+
+## [2026-04-29]
+
+### Fixed — Mobile UI bug sweep (B1–B7)
+
+Triaged from a batch of mobile screenshots; tracked in
+[docs/bugs.md](docs/bugs.md).
+
+- **B1 — Challenge Modes "▶ BEGIN" clipped at bottom (portrait).** Pulled the
+  begin button up from `0.90 → 0.84` of the viewport height in portrait,
+  raised the description and tightened the toggle list spacing in
+  [TitleScene.ts](frontend/src/scenes/title/TitleScene.ts) so the button
+  stays inside the device safe area.
+- **B2 — "Quit to title?" prompt rendered behind the pause menu.**
+  [ConfirmBox.ts](frontend/src/ui/widgets/ConfirmBox.ts) now centers on the
+  camera, draws a full-screen dim, and forces every element to depth ≥ 1000
+  so it always appears modally on top. Caller `(x, y)` arguments are now
+  ignored.
+- **B3 — QUIT left HUD overlays running on the title screen.** The pause
+  menu's QUIT handler in
+  [MenuScene.ts](frontend/src/scenes/menu/MenuScene.ts) now stops
+  `MinimapScene`, `QuestTrackerScene`, and `PartyQuickViewScene` in addition
+  to `OverworldScene` before starting `TitleScene`.
+- **B4 — Could not exit the Rival's House before receiving a starter.** The
+  warp-blocker in
+  [OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts) now
+  treats a transition as allowed when *either* the source or target map is
+  flagged `isInterior`, so interior↔town moves always work even when the
+  party is empty.
+- **B5 — NPCs sometimes did not turn to face the player on interact.**
+  [NPC.faceDirection](frontend/src/entities/NPC.ts) now stops any in-flight
+  walk-animation timer before applying the new facing frame, so a stale
+  `playWalkAnim` tick can no longer overwrite the dialogue-time facing.
+- **B6 — Pokémon Party slots: name overlapped with the type badge.**
+  [PartyScene.ts](frontend/src/scenes/menu/PartyScene.ts) was retrofitted
+  with explicit columns (icon / name+level+types / HP / status), and the
+  type badge row was moved beneath the level so it can no longer collide
+  with the species name on narrow viewports.
+- **B7 — Could not exit the Pokémon Party screen on mobile.** Added a
+  top-right "✕" close button inside the safe area, lifted the bottom
+  "Close (ESC)" button by 32 px on mobile so it clears the home-bar inset,
+  and reduced slot row height on mobile so all six slots + the close
+  controls stay in view.
+
+---
+
+## [2026-04-29]
+
 ### Added — BP Shop (A.1 follow-up)
 
 - New [BPShopScene](frontend/src/scenes/battle/BPShopScene.ts) launched from the Battle Tower lobby (button or `B` key). Spends Battle Points (not Pokédollars) on competitive gear; no sell tab — purchases are one-way.

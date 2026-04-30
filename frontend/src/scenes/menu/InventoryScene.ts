@@ -207,7 +207,9 @@ export class InventoryScene extends Phaser.Scene {
 
     if (this.filteredItems.length === 0) {
       const layout = ui(this);
-      const empty = this.add.text(200, layout.cy, 'No items', {
+      // BUG-037: Center the empty-state text on the canvas instead of a
+      // hard-coded x=200 that drifted off-center on landscape viewports.
+      const empty = this.add.text(layout.cx, layout.cy, 'No items', {
         ...FONTS.bodySmall, color: COLORS.textDim,
       }).setOrigin(0.5);
       this.itemListGroup.add(empty);
@@ -360,8 +362,11 @@ export class InventoryScene extends Phaser.Scene {
     const isTm = entry.item.category === 'tm';
     const actions = isKey ? ['Cancel'] : isTm ? ['USE', 'Cancel'] : ['USE', 'TOSS', 'Cancel'];
     const layout = ui(this);
+    // BUG-038: Anchor the action panel to layout.cx instead of x=200 so it
+    // stays roughly under the focused item across viewport sizes.
+    const panelX = Math.min(Math.max(layout.cx, 140), layout.w - 80);
 
-    this.actionPanel = new NinePatchPanel(this, 200, layout.cy, 140, actions.length * 34 + 16, {
+    this.actionPanel = new NinePatchPanel(this, panelX, layout.cy, 140, actions.length * 34 + 16, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.95,
       borderColor: COLORS.borderLight,
@@ -369,7 +374,7 @@ export class InventoryScene extends Phaser.Scene {
     });
 
     this.actionTexts = actions.map((label, i) => {
-      return this.add.text(200, layout.cy - ((actions.length - 1) * 17) + i * 34, label, {
+      return this.add.text(panelX, layout.cy - ((actions.length - 1) * 17) + i * 34, label, {
         ...FONTS.body, fontSize: mobileFontSize(16),
       }).setOrigin(0.5);
     });

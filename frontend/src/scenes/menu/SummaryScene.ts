@@ -38,7 +38,8 @@ export class SummaryScene extends Phaser.Scene {
     const pData = pokemonData[this.pokemon.dataId];
     const name = this.pokemon.nickname ?? pData?.name ?? '???';
     this.add.text(40, 22, name, { ...FONTS.heading });
-    this.add.text(layout.w - 150, 22, `Lv. ${this.pokemon.level}`, { ...FONTS.heading, color: COLORS.textHighlight });
+    // Right-anchor the level so it stays on-canvas in portrait (BUG-015).
+    this.add.text(layout.w - 60, 22, `Lv. ${this.pokemon.level}`, { ...FONTS.heading, color: COLORS.textHighlight }).setOrigin(1, 0);
 
     // Type badges
     if (pData) {
@@ -50,10 +51,12 @@ export class SummaryScene extends Phaser.Scene {
     // Close button
     drawButton(this, layout.w - 40, 25, '✕', () => this.scene.stop(), Math.max(MIN_TOUCH_TARGET, 40), Math.max(MIN_TOUCH_TARGET, 30));
 
-    // Tabs
+    // Tabs — distribute evenly across the canvas so portrait viewports
+    // don't push the MOVES tab off the right edge (BUG-015).
     const tabs: Tab[] = ['INFO', 'STATS', 'MOVES'];
+    const tabSlot = (layout.w - 60) / tabs.length;
     this.tabTexts = tabs.map((tab, i) => {
-      const t = this.add.text(120 + i * 240, 80, tab, { ...FONTS.body, fontSize: mobileFontSize(16), color: COLORS.textGray })
+      const t = this.add.text(30 + tabSlot * (i + 0.5), 80, tab, { ...FONTS.body, fontSize: mobileFontSize(16), color: COLORS.textGray })
         .setOrigin(0.5)
         .setInteractive({ useHandCursor: true });
       t.setPadding(8, Math.max(0, (MIN_TOUCH_TARGET - 16) / 2), 8, Math.max(0, (MIN_TOUCH_TARGET - 16) / 2));
@@ -141,7 +144,10 @@ export class SummaryScene extends Phaser.Scene {
 
     // Pokemon sprite
     const spriteKey = pData?.spriteKeys.front;
-    const spriteX = layout.w - 110;
+    // BUG-015: Pin the sprite box near the right edge so it doesn't drift
+    // off-canvas on portrait viewports (was a hard-coded layout.w - 110).
+    const isPortraitInfo = layout.h > layout.w;
+    const spriteX = isPortraitInfo ? layout.w - 80 : layout.w - 110;
     const spriteY = 190;
     // Background box
     const spriteBox = this.add.rectangle(spriteX, spriteY, 120, 120, COLORS.bgCard).setStrokeStyle(2, COLORS.border);
@@ -250,7 +256,12 @@ export class SummaryScene extends Phaser.Scene {
   private drawStatsTab(): void {
     const p = this.pokemon;
     const pData = pokemonData[p.dataId];
-    const x = 50;
+    const layout = ui(this);
+    // BUG-015: Drop the right-most "Bar" column on narrow / portrait viewports
+    // so STAT/VALUE/IV/EV stay readable. Stats display the value column twice
+    // (numeric + bar) only when there's room for it.
+    const isPortraitStats = layout.h > layout.w || layout.w < 720;
+    const x = 30;
     let y = 120;
     const lineH = 38;
 
@@ -263,15 +274,25 @@ export class SummaryScene extends Phaser.Scene {
       { key: 'speed', label: 'Speed' },
     ];
 
+    // Column anchors — compact mode collapses Base/IV/EV into one IV/EV row
+    // under the value, so everything fits inside the panel.
+    const colVal = isPortraitStats ? x + 90 : x + 110;
+    const colBase = x + 180;
+    const colIv = x + 230;
+    const colEv = x + 270;
+    const barX = isPortraitStats ? colVal + 50 : x + 320;
+    const barW = isPortraitStats ? Math.min(160, layout.w - barX - 24) : 200;
+
     // Header
     const hdr = this.add.text(x, y, 'Stat', { fontSize: mobileFontSize(13), color: '#888888' });
-    const hdr2 = this.add.text(x + 110, y, 'Value', { fontSize: mobileFontSize(13), color: '#888888' });
-    const hdr3 = this.add.text(x + 180, y, 'Base', { fontSize: mobileFontSize(13), color: '#888888' });
-    const hdr4 = this.add.text(x + 230, y, 'IV', { fontSize: mobileFontSize(13), color: '#888888' });
-    const hdr5 = this.add.text(x + 270, y, 'EV', { fontSize: mobileFontSize(13), color: '#888888' });
-    const hdr6 = this.add.text(x + 320, y, 'Bar', { fontSize: mobileFontSize(13), color: '#888888' });
-    this.contentGroup.add(hdr); this.contentGroup.add(hdr2); this.contentGroup.add(hdr3);
-    this.contentGroup.add(hdr4); this.contentGroup.add(hdr5); this.contentGroup.add(hdr6);
+    const hdr2 = this.add.text(colVal, y, 'Value', { fontSize: mobileFontSize(13), color: '#888888' });
+    this.contentGroup.add(hdr); this.contentGroup.add(hdr2);
+    if (!isPortraitStats) {
+      const hdr3 = this.add.text(colBase, y, 'Base', { fontSize: mobileFontSize(13), color: '#888888' });
+      const hdr4 = this.add.text(colIv, y, 'IV', { fontSize: mobileFontSize(13), color: '#888888' });
+      const hdr5 = this.add.text(colEv, y, 'EV', { fontSize: mobileFontSize(13), color: '#888888' });
+      this.contentGroup.add(hdr3); this.contentGroup.add(hdr4); this.contentGroup.add(hdr5);
+    }
     y += 28;
 
     const maxStat = 200; // scale bar against this
@@ -291,19 +312,29 @@ export class SummaryScene extends Phaser.Scene {
       }
 
       const lbl = this.add.text(x, y, label, { fontSize: mobileFontSize(15), color: labelColor });
-      const val = this.add.text(x + 110, y, `${statVal}`, { fontSize: mobileFontSize(15), color: '#ffffff', fontStyle: 'bold' });
-      const bv = this.add.text(x + 180, y, `${baseVal}`, { fontSize: mobileFontSize(13), color: '#aaaaaa' });
-      const iv = this.add.text(x + 230, y, `${ivVal}`, { fontSize: mobileFontSize(13), color: '#88cc88' });
-      const ev = this.add.text(x + 270, y, `${evVal}`, { fontSize: mobileFontSize(13), color: '#cccc88' });
+      const val = this.add.text(colVal, y, `${statVal}`, { fontSize: mobileFontSize(15), color: '#ffffff', fontStyle: 'bold' });
+      this.contentGroup.add(lbl); this.contentGroup.add(val);
+
+      if (isPortraitStats) {
+        // Compact: tuck base/IV/EV into a small caption row under the stat
+        const cap = this.add.text(x, y + 16, `B${baseVal} · IV${ivVal} · EV${evVal}`, {
+          fontSize: mobileFontSize(10), color: '#888888',
+        });
+        this.contentGroup.add(cap);
+      } else {
+        const bv = this.add.text(colBase, y, `${baseVal}`, { fontSize: mobileFontSize(13), color: '#aaaaaa' });
+        const iv = this.add.text(colIv, y, `${ivVal}`, { fontSize: mobileFontSize(13), color: '#88cc88' });
+        const ev = this.add.text(colEv, y, `${evVal}`, { fontSize: mobileFontSize(13), color: '#cccc88' });
+        this.contentGroup.add(bv); this.contentGroup.add(iv); this.contentGroup.add(ev);
+      }
 
       // Stat bar
-      const barW = 200;
-      const barBg = this.add.rectangle(x + 320, y + 8, barW, 12, 0x333333).setOrigin(0, 0.5);
+      const barBg = this.add.rectangle(barX, y + 8, barW, 12, 0x333333).setOrigin(0, 0.5);
       const barPct = Math.min(1, statVal / maxStat);
       const barColor = statVal >= 100 ? 0x4caf50 : statVal >= 60 ? 0xffeb3b : 0xf44336;
-      const barFill = this.add.rectangle(x + 320, y + 8, barW * barPct, 12, barColor).setOrigin(0, 0.5);
+      const barFill = this.add.rectangle(barX, y + 8, barW * barPct, 12, barColor).setOrigin(0, 0.5);
 
-      [lbl, val, bv, iv, ev, barBg, barFill].forEach(obj => this.contentGroup.add(obj));
+      this.contentGroup.add(barBg); this.contentGroup.add(barFill);
       y += lineH;
     });
 
@@ -313,17 +344,26 @@ export class SummaryScene extends Phaser.Scene {
     const totalIvs = Object.values(p.ivs).reduce((a, b) => a + b, 0);
     const totalEvs = Object.values(p.evs).reduce((a, b) => a + b, 0);
     const totLine = this.add.text(x, y, `Total: ${totalStats}`, { fontSize: mobileFontSize(15), color: '#ffcc00', fontStyle: 'bold' });
-    const ivTot = this.add.text(x + 230, y, `${totalIvs}`, { fontSize: mobileFontSize(13), color: '#88cc88' });
-    const evTot = this.add.text(x + 270, y, `${totalEvs}/510`, { fontSize: mobileFontSize(13), color: '#cccc88' });
-    this.contentGroup.add(totLine); this.contentGroup.add(ivTot); this.contentGroup.add(evTot);
+    this.contentGroup.add(totLine);
+    if (!isPortraitStats) {
+      const ivTot = this.add.text(colIv, y, `${totalIvs}`, { fontSize: mobileFontSize(13), color: '#88cc88' });
+      const evTot = this.add.text(colEv, y, `${totalEvs}/510`, { fontSize: mobileFontSize(13), color: '#cccc88' });
+      this.contentGroup.add(ivTot); this.contentGroup.add(evTot);
+    } else {
+      const cap = this.add.text(x + 130, y, `IV ${totalIvs} · EV ${totalEvs}/510`, {
+        fontSize: mobileFontSize(11), color: '#aaaaaa',
+      });
+      this.contentGroup.add(cap);
+    }
 
     // Nature note
     y += 35;
     const natNote = this.add.text(x, y, `Nature: ${p.nature.charAt(0).toUpperCase() + p.nature.slice(1)} — ${getNatureDescription(p.nature)}`, {
       fontSize: mobileFontSize(13), color: '#aaaaaa',
+      wordWrap: { width: layout.w - x - 20 },
     });
     this.contentGroup.add(natNote);
-    const natHint = this.add.text(x, y + 20, 'Red = boosted by nature   Blue = lowered by nature', { fontSize: mobileFontSize(11), color: '#666688' });
+    const natHint = this.add.text(x, y + 24, 'Red = boosted by nature   Blue = lowered by nature', { fontSize: mobileFontSize(11), color: '#666688' });
     this.contentGroup.add(natHint);
   }
 
@@ -358,13 +398,20 @@ export class SummaryScene extends Phaser.Scene {
       this.contentGroup.add(catBadge);
       this.contentGroup.add(catLabel);
 
-      // Move name
-      const moveName = this.add.text(x + 170, y + 3, md.name, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
-      this.contentGroup.add(moveName);
-
-      // PP
-      const pp = this.add.text(layout.w - 100, y + 3, `PP ${m.currentPp}/${md.pp}`, { fontSize: mobileFontSize(14), color: '#aaaaaa' });
+      // PP — right-anchored so the move name has room before it (BUG-047).
+      const ppX = layout.w - 40;
+      const pp = this.add.text(ppX, y + 3, `PP ${m.currentPp}/${md.pp}`, { fontSize: mobileFontSize(14), color: '#aaaaaa' }).setOrigin(1, 0);
       this.contentGroup.add(pp);
+
+      // Move name with explicit wrap so long names ('Hyperspace Hole') don't
+      // collide with the PP column.
+      const nameX = x + 170;
+      const nameWrap = Math.max(80, ppX - nameX - 16);
+      const moveName = this.add.text(nameX, y + 3, md.name, {
+        fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold',
+        wordWrap: { width: nameWrap },
+      });
+      this.contentGroup.add(moveName);
 
       // Power / Accuracy
       const details: string[] = [];

@@ -19,7 +19,9 @@ export const pewterPokecenter: MapDefinition = {
   ground,
   encounterTableKey: '',
   isInterior: true,
-  displayName: 'Pokémon Center',
+  // BUG-030: prefix the city name so the HUD distinguishes it from
+  // every other Pokémon Center.
+  displayName: 'Pewter City Pokémon Center',
   npcs: [
     {
       id: 'pewter-nurse-inside',

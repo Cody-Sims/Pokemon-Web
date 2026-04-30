@@ -710,7 +710,12 @@ export class OverworldScene extends Phaser.Scene {
         }
         // Block leaving town without a starter — but always allow building entry
         const targetDef = mapRegistry[warp.targetMap];
-        if (gm.getParty().length === 0 && !targetDef?.isInterior) {
+        // Allow movement when either side of the warp is an interior. The
+        // intent of the no-starter gate is "do not let the player wander to a
+        // route" — interior↔town transitions (entering or leaving the rival's
+        // house, the lab, the player's home, etc.) must always work (B4).
+        const isInteriorTransition = this.mapDef.isInterior || targetDef?.isInterior;
+        if (gm.getParty().length === 0 && !isInteriorTransition) {
           this.scene.pause();
           this.scene.launch('DialogueScene', {
             dialogue: ['You should go see Prof. Willow first!'],
@@ -1008,14 +1013,23 @@ export class OverworldScene extends Phaser.Scene {
       controller.update(delta);
     }
 
-    // Y-based depth sorting: characters lower on screen render in front
+    // Y-based depth sorting: characters lower on screen render in front.
+    // BUG-031: Add a small per-class delta so the player wins ties against
+    // NPCs/trainers/objects on the same row (player +0.003, follower +0.002,
+    // trainers/NPCs +0.001, objects +0). Without this, NPCs added later in
+    // the loop ended up on top of the player whenever they shared a Y row.
+    // BUG-032: include the follower in the y-sort so it doesn't stick at a
+    // stale depth between movement tweens.
     const maxH = this.mapPixelH || 1;
-    this.player.setDepth(1 + (this.player.y / maxH) * 0.9);
+    this.player.setDepth(1 + (this.player.y / maxH) * 0.9 + 0.003);
+    if (this.follower) {
+      this.follower.setDepth(1 + (this.follower.y / maxH) * 0.9 + 0.002);
+    }
     for (const npc of this.npcs) {
-      npc.setDepth(1 + (npc.y / maxH) * 0.9);
+      npc.setDepth(1 + (npc.y / maxH) * 0.9 + 0.001);
     }
     for (const trainer of this.trainers) {
-      trainer.setDepth(1 + (trainer.y / maxH) * 0.9);
+      trainer.setDepth(1 + (trainer.y / maxH) * 0.9 + 0.001);
     }
     for (const obj of this.mapObjects) {
       obj.setDepth(1 + (obj.y / maxH) * 0.9);

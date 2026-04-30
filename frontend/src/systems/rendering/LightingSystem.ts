@@ -21,6 +21,9 @@ export class LightingSystem {
   private enabled = false;
   private playerLightRadius = DEFAULT_PLAYER_RADIUS;
   private staticLights: LightSource[] = [];
+  /** BUG-019: Single resize handler reference so re-entering a dark map
+   *  doesn't accumulate listeners that fight each other on every resize. */
+  private onResize?: () => void;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -62,17 +65,22 @@ export class LightingSystem {
       this.rt.setScrollFactor(0);
       this.rt.setDepth(DARKNESS_DEPTH);
 
-      // NEW-007: Recreate RT on window resize
-      this.scene.scale.on('resize', () => {
-        if (this.rt && this.enabled) {
-          const c = this.scene.cameras.main;
-          this.rt.destroy();
-          this.rt = this.scene.add.renderTexture(0, 0, c.width, c.height);
-          this.rt.setOrigin(0, 0);
-          this.rt.setScrollFactor(0);
-          this.rt.setDepth(DARKNESS_DEPTH);
-        }
-      });
+      // BUG-019: Register the resize handler exactly once. Previous code
+      // attached a fresh listener on every enableDarkness() call, leaking
+      // N copies that all destroyed/recreated the RT on a single resize.
+      if (!this.onResize) {
+        this.onResize = () => {
+          if (this.rt && this.enabled) {
+            const c = this.scene.cameras.main;
+            this.rt.destroy();
+            this.rt = this.scene.add.renderTexture(0, 0, c.width, c.height);
+            this.rt.setOrigin(0, 0);
+            this.rt.setScrollFactor(0);
+            this.rt.setDepth(DARKNESS_DEPTH);
+          }
+        };
+        this.scene.scale.on('resize', this.onResize);
+      }
     }
 
     this.enabled = true;
@@ -141,6 +149,11 @@ export class LightingSystem {
   destroy(): void {
     this.staticLights.length = 0;
     this.enabled = false;
+    // BUG-019: detach the singleton resize listener.
+    if (this.onResize) {
+      this.scene.scale.off('resize', this.onResize);
+      this.onResize = undefined;
+    }
     if (this.lightImage) {
       this.lightImage.destroy();
     }

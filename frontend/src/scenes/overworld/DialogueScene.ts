@@ -132,14 +132,31 @@ export class DialogueScene extends Phaser.Scene {
         cornerRadius: 4,
       });
       this.portraitBg.setDepth(DIALOGUE_DEPTH + 1);
-      this.portrait = this.add.sprite(pX, pY, this.portraitKey!, 'walk-down-0')
-        .setDisplaySize(portraitSize, portraitSize)
-        .setDepth(DIALOGUE_DEPTH + 2);
+      // BUG-040/041: Use the texture's natural aspect ratio and pick a
+      // frame the atlas actually has — `walk-down-0` was hard-coded but
+      // many trainer/portrait atlases only ship a single default frame.
+      const tex = this.textures.get(this.portraitKey!);
+      const availableFrames = tex?.getFrameNames?.() ?? [];
+      const frameName = availableFrames.includes('walk-down-0')
+        ? 'walk-down-0'
+        : availableFrames.find(f => f.startsWith('walk-down')) ?? availableFrames[0];
+      this.portrait = frameName !== undefined
+        ? this.add.sprite(pX, pY, this.portraitKey!, frameName)
+        : this.add.sprite(pX, pY, this.portraitKey!);
+      // Preserve aspect ratio: scale to fit inside portraitSize, don't stretch.
+      const src = this.portrait.frame?.cutWidth && this.portrait.frame?.cutHeight
+        ? { w: this.portrait.frame.cutWidth, h: this.portrait.frame.cutHeight }
+        : { w: this.portrait.width || portraitSize, h: this.portrait.height || portraitSize };
+      const scale = Math.min(portraitSize / src.w, portraitSize / src.h);
+      this.portrait.setScale(scale).setDepth(DIALOGUE_DEPTH + 2);
     }
 
     // ── Speaker name panel ────────────────────────────────────
     if (this.speaker) {
-      const speakerW = Math.max(100, this.speaker.length * 10 + 24);
+      // BUG-039: Clamp the panel width so long names don't push it past the
+      // dialogue text on portrait viewports or overlap the portrait sprite.
+      const desiredW = Math.max(100, this.speaker.length * 10 + 24);
+      const speakerW = Math.min(desiredW, Math.max(120, layout.w * 0.55));
       const speakerX = 20 + speakerW / 2;
       const speakerY = boxY - boxH / 2 - 16;
       this.speakerPanel = new NinePatchPanel(this, speakerX, speakerY, speakerW, 26, {
@@ -152,6 +169,7 @@ export class DialogueScene extends Phaser.Scene {
       this.speakerPanel.setDepth(DIALOGUE_DEPTH + 1);
       this.speakerText = this.add.text(speakerX, speakerY, this.speaker, {
         ...FONTS.caption, color: COLORS.textHighlight, fontStyle: 'bold', fontSize: mobileFontSize(13),
+        wordWrap: { width: speakerW - 12 },
       }).setOrigin(0.5).setDepth(DIALOGUE_DEPTH + 2);
     }
 
@@ -228,14 +246,17 @@ export class DialogueScene extends Phaser.Scene {
         }
       }
       if (this.speakerText) {
-        const sw = Math.max(100, (this.speaker?.length ?? 0) * 10 + 24);
+        const desired = Math.max(100, (this.speaker?.length ?? 0) * 10 + 24);
+        const sw = Math.min(desired, Math.max(120, l.w * 0.55));
         const sx = 20 + sw / 2;
         const sy = rBoxY - rBoxH / 2 - 16;
         this.speakerText.setPosition(sx, sy);
+        this.speakerText.setWordWrapWidth(sw - 12);
       }
       if (this.speakerPanel) {
         this.speakerPanel.destroy();
-        const sw = Math.max(100, (this.speaker?.length ?? 0) * 10 + 24);
+        const desired = Math.max(100, (this.speaker?.length ?? 0) * 10 + 24);
+        const sw = Math.min(desired, Math.max(120, l.w * 0.55));
         const sx = 20 + sw / 2;
         const sy = rBoxY - rBoxH / 2 - 16;
         this.speakerPanel = new NinePatchPanel(this, sx, sy, sw, 26, {

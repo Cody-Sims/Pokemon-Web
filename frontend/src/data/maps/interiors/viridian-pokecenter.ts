@@ -19,7 +19,9 @@ export const viridianPokecenter: MapDefinition = {
   ground,
   encounterTableKey: '',
   isInterior: true,
-  displayName: 'Pokémon Center',
+  // BUG-030: prefix the city name so the HUD distinguishes it from
+  // every other Pokémon Center.
+  displayName: 'Viridian City Pokémon Center',
   npcs: [
     {
       id: 'viridian-nurse-inside',
