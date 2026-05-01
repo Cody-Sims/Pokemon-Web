@@ -297,7 +297,7 @@ export class GameManager {
 
     // Stats sub-manager
     this._stats.deserialize({
-      gameStats: save.gameStats as GameStats | undefined,
+      gameStats: save.gameStats,
     });
   }
 }

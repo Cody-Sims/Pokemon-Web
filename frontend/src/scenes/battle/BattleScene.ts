@@ -413,6 +413,14 @@ export class BattleScene extends Phaser.Scene {
         this.showShinySparkle(this.playerSprite);
       });
     }
+
+    // BUG-FIX: Refresh HP bars and status indicators after intro animations
+    // complete. The bars are created with correct displayWidth, but
+    // updateStatusIndicators() (called from updateHpBars) was never invoked
+    // during create(), so a wounded/poisoned Pokémon showed no status icon.
+    this.time.delayedCall(introDelay + slideDuration + 200, () => {
+      this.updateHpBars();
+    });
   }
 
   /** Show shiny sparkle particle effect around a sprite. */

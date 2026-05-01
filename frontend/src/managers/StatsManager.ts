@@ -61,8 +61,18 @@ export class StatsManager {
     };
   }
 
-  deserialize(data: { gameStats?: GameStats; stepCount?: number }): void {
-    if (data.gameStats) this.gameStats = { ...defaultStats(), ...data.gameStats };
+  deserialize(data: { gameStats?: Record<string, number> | Partial<GameStats>; stepCount?: number }): void {
+    if (data.gameStats) {
+      // Merge only known keys onto defaults so missing or extra fields
+      // don't produce NaN on increment (fixes the `as GameStats` cast issue).
+      const defaults = defaultStats();
+      const merged = { ...defaults };
+      for (const key of Object.keys(defaults) as (keyof GameStats)[]) {
+        const val = (data.gameStats as Record<string, number>)[key];
+        if (typeof val === 'number') merged[key] = val;
+      }
+      this.gameStats = merged;
+    }
     if (data.stepCount != null) this.stepCount = data.stepCount;
   }
 }

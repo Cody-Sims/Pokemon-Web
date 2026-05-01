@@ -42,9 +42,6 @@ export class BattleSwitchHandler {
       b.playerPokemon = party[0];
       const pData = pokemonData[party[0].dataId];
       if (pData) b.playerSprite.setTexture(pData.spriteKeys.back);
-      // BUG-001: A voluntary switch never faints the prior Pokémon, so the
-      // sprite transform is still valid — just refresh HP.
-      b.updateHpBars();
       const name = pData?.name ?? '???';
       this.scene.msg(`Go! ${name}!`);
       this.scene.statusHandler.clearPokemon(party[index]);
@@ -59,6 +56,10 @@ export class BattleSwitchHandler {
       if (switchResult.messages.length > 0) {
         this.scene.showMessageQueue(switchResult.messages, 0, () => {});
       }
+
+      // BUG-FIX: Update HP bars AFTER initPokemon and ability hooks so the
+      // bar reflects the post-switch state (status icons, Intimidate, etc.).
+      b.updateHpBars();
     });
 
     partyScene.events.once('shutdown', () => {
@@ -173,7 +174,12 @@ export class BattleSwitchHandler {
         if (!newActive || newActive.currentHp <= 0) {
           newActive = party.find(p => p.currentHp > 0);
         }
-        if (!newActive) return;
+        if (!newActive) {
+          // BUG-FIX: No alive Pokémon found — end the battle as a loss
+          // instead of silently returning and leaving the battle frozen.
+          this.scene.endBattle();
+          return;
+        }
 
         // Swap the chosen Pokémon to the active slot.
         const activeIdx = party.indexOf(newActive);

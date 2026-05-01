@@ -4,6 +4,44 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-05-03]
+
+### Fixed — Battle HP bar, faint, and switch bug sweep (10 findings)
+
+**Battle scene (3 fixes):**
+- HP bars now show correct fill percentage on entry for wounded Pokémon
+  instead of 100% (initial `displayWidth` was already correct; added
+  `updateHpBars()` call after intro animations to refresh status icons)
+- Status icons (poison, burn, etc.) now appear during intro for Pokémon
+  that enter battle with a status condition
+- Catch shake graphic drift already fixed in prior pass; verified stable
+
+**Switch handler (2 fixes):**
+- `handleFaintedSwitch`: when no alive Pokémon is found (race between
+  PartyScene shutdown and selection), calls `endBattle()` instead of
+  silently returning and wedging the battle
+- Voluntary switch now calls `updateHpBars()` AFTER `initPokemon` and
+  ability hooks, so the bar reflects post-switch state (Intimidate, etc.)
+
+**BattleUIScene (3 fixes):**
+- `runEndOfTurnStep`: always calls `updateHpBars()` after
+  `collectEndOfTurnEffects`, even when no messages are produced (fixes
+  silent HP changes like Black Sludge drifting out of sync)
+- `runEndOfTurnStep`: no-message branch now uses `time.delayedCall(0)`
+  to break synchronous recursion and prevent stack overflow on long
+  status chains
+- `applyMoveResult` faint sequences now set `state = 'message'` and
+  call `hideActions()` before the faint delay to prevent stale input
+
+**Managers (2 fixes):**
+- `PartyManager.deserialize`: shallow-clones party and box instances
+  so runtime objects don't share references with the raw JSON parse
+  (prevents save data mutation leaking to runtime)
+- `StatsManager.deserialize`: accepts `Partial<GameStats>` and merges
+  only known numeric keys onto defaults; `SerializedSave.gameStats`
+  field changed from `Record<string, number>` to a typed partial
+  struct — removes the `as GameStats` cast in GameManager
+
 ## [2026-04-30]
 
 ### Fixed — Full-codebase bug audit: all 96 findings addressed

@@ -542,6 +542,10 @@ export class BattleUIScene extends Phaser.Scene {
           if (attacker.currentHp <= 0) {
             const atkName = attacker.nickname ?? pokemonData[attacker.dataId]?.name ?? '???';
             if (isPlayer) this.applyFaintFriendshipLoss(attacker);
+            // BUG-FIX: Lock state and hide actions before the faint delay
+            // to prevent stale input from reaching the action menu.
+            this.state = 'message';
+            this.hideActions();
             this.time.delayedCall(800, () => {
               AudioManager.getInstance().playSFX(SFX.FAINT);
               AudioManager.getInstance().playCry(attacker.dataId);
@@ -585,6 +589,10 @@ export class BattleUIScene extends Phaser.Scene {
             }
             const defName = defender.nickname ?? pokemonData[defender.dataId]?.name ?? '???';
             if (!isPlayer) this.applyFaintFriendshipLoss(defender);
+            // BUG-FIX: Lock state and hide actions before the faint delay
+            // to prevent stale input from reaching the action menu.
+            this.state = 'message';
+            this.hideActions();
             this.time.delayedCall(800, () => {
               AudioManager.getInstance().playSFX(SFX.FAINT);
               AudioManager.getInstance().playCry(defender.dataId);
@@ -653,7 +661,12 @@ export class BattleUIScene extends Phaser.Scene {
         this.time.delayedCall(400, () => this.runEndOfTurnStep(pokemonToCheck, idx + 1));
       });
     } else {
-      this.runEndOfTurnStep(pokemonToCheck, idx + 1);
+      // BUG-FIX: Always update HP bars even when no messages are produced,
+      // so silent HP changes (e.g. Black Sludge healing) stay in sync.
+      b.updateHpBars();
+      // BUG-FIX: Use delayedCall(0) to break synchronous recursion and
+      // prevent stack overflow on long status chains in double battles.
+      this.time.delayedCall(0, () => this.runEndOfTurnStep(pokemonToCheck, idx + 1));
     }
   }
 

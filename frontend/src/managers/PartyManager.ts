@@ -96,8 +96,12 @@ export class PartyManager {
   }
 
   deserialize(data: { party: PokemonInstance[]; boxes?: PokemonInstance[][]; boxNames?: string[] }): void {
-    this.party = data.party;
-    if (data.boxes) this.boxes = data.boxes;
-    if (data.boxNames) this.boxNames = data.boxNames;
+    // Shallow-clone each instance so the runtime party holds fresh objects
+    // rather than the raw JSON-parsed graph. This prevents mutations from
+    // leaking back into the save data and ensures future class-based
+    // PokemonInstance fields (Maps, Sets, methods) can be reconstructed.
+    this.party = data.party.map(p => ({ ...p, moves: p.moves.map(m => ({ ...m })) }));
+    if (data.boxes) this.boxes = data.boxes.map(box => box.map(p => ({ ...p, moves: p.moves.map(m => ({ ...m })) })));
+    if (data.boxNames) this.boxNames = [...data.boxNames];
   }
 }
