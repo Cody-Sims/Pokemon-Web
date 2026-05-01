@@ -6,6 +6,23 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-05-01]
 
+### Changed — Phase 3: Pewter & Tide Pools map improvements
+
+Redesigned two maps for a distinctive mountain-town and coastal experience.
+
+- **Pewter City** (30×30): Two-tier layout with cliff face (^) at row 12 splitting
+  the city into an upper plateau (Gym, Museum) and lower ground (PokéCenter,
+  PokéMart, two houses). Central staircase + east switchback path connect the tiers.
+  Rocky outcrop in NE corner with cracked rocks hiding a Hard Stone. South exit to
+  Viridian Forest and east exit to Route 3 preserved.
+- **Route 3** (widened 20→26×40): Coastal cliffside route with continuous cliff
+  face along the west edge and 2 natural breaks for beach access. Rope bridge
+  (8 dock-plank tiles) crossing a tide-pool water channel at mid-route. Lone-palm-
+  on-rock landmark at row 10. Surf-only islet with hidden Heart Scale items.
+  Inland meadow east of the path with ledge-based trainer gauntlet (3 trainers).
+  3 cracked rocks for Rock Smash exploration. 4 hidden items total (2 Heart Scales,
+  1 Stardust surf-only; 1 Hard Stone near Rock Smash gate).
+
 ### Changed — Phase 2: Viridian Arc map improvements
 
 Redesigned three maps for a more distinctive player journey from Viridian City

@@ -1,37 +1,38 @@
 import { MapDefinition, parseMap } from '../shared';
 
 const pewterGround = parseMap([
+  // 0         1         2
   // 012345678901234567890123456789
-  'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT', // 0
-  'T............................T', // 1
-  'T..RRRRR.....PP......RRRRR...T', // 2  - houses
-  'T..HH&HH.....PP......HH&HH...T', // 3  - walls with windows
-  'T..HHDHH.....PP......HHDHH...T', // 4
-  'T....PP......PP........PP....T', // 5
-  'T..PPPPPPPPPPPPPPPPPPPPPP....T', // 6  - main east-west road
-  'T..PP........................T', // 7
-  'T..PP....CCCCCC...MMMMMM.....T', // 8  PokéCenter + PokéMart
-  'T..PP....cccccc...mmmmmm.....T', // 9  walls
-  'T..PP....cceccc...mmnnmm.....T', // 10 doors
-  'T..PP......PP................T', // 11
-  'T..PPPPPPPPPPPPPPPPPPPPPP....T', // 12 - mid road
-  'T..PP........................T', // 13
-  'T..PP......AAAAAAAA..........T', // 14 - Gym roof
-  'T..PP......gggggggg..........T', // 15 - Gym wall
-  'T..PP......ggggaggg..........T', // 16 - Gym door
-  'T..PP........PP..PP..........T', // 17
-  'T..PP........PP.PPPPPPPPPPPPPP', // 18 east exit to Route 3
-  'T..PPPPPPPPPPPPPP...........PP', // 19
-  'T..PP.........PP.............T', // 20
-  'T..PP.....f...PP...f.........T', // 21
-  'T..PP.........PP.............T', // 22
-  'T..PP.........PP.............T', // 23
-  'T..PP.........PP.............T', // 24
-  'T..PP.....RRRRPP.............T', // 25 - museum/house
-  'T..PP.....HH&HPP.............T', // 26 - museum wall with window
-  'T..PP.....HHDHPP.............T', // 27
-  'T..PP.........PP.............T', // 28
-  'TTTTTTTTTTTTT.PP.TTTTTTTTTTTTT', // 29 - south exit to Route 2 / Forest
+  'TTTTTTTTTTTTTTTTTTTTTTT~~*~*~T', // 0  border + NE rocky outcrop
+  'T.............PP.......~.*..~T', // 1  cracked rocks in outcrop
+  'T..AAAAAAAA...PP...RRRRR.~...T', // 2  Gym roof (upper) + Museum roof
+  'T..gggggggg...PP...HH&HH.....T', // 3  Gym wall + Museum wall
+  'T..ggggaggg...PP...HHDHH.....T', // 4  Gym door + Museum door
+  'T......P......PP.....P.......T', // 5  paths from doors
+  'T.PPPPPPPPPPPPPPPPPPPPPPPPP..T', // 6  main upper E-W road
+  'T.............PP.............T', // 7  open plateau
+  'T....f........PP........f....T', // 8  flowers on plateau
+  'T.............PP.............T', // 9  open plateau
+  'T.............PP.............T', // 10 open plateau
+  'T.PPPPPPPPPPPPPPPPPPPPPPPPPP.T', // 11 cliff-top road
+  '^^^^^^^^^^^^^PPP^^^^^^^^^PP^^^', // 12 CLIFF FACE — central stairs + east gap
+  'T............PP..........PP..T', // 13 lower ground
+  'T..CCCCCC....PP..MMMMMM..PP..T', // 14 PokéCenter + PokéMart roofs
+  'T..c$cccc....PP..mmmmmm..PP..T', // 15 walls
+  'T..cceccc....PP..mmnnmm..PP..T', // 16 doors
+  'T....P.......PP....PPPPPPPP..T', // 17 door paths + east switchback
+  'T.PPPPPPPPPPPPPPPPPPPPPPPPPPPP', // 18 main lower road + east exit →
+  'T.PP..........PP............PP', // 19 east exit row 2
+  'T.PP..........PP.............T', // 20
+  'T.PP.RRRRR....PP....RRRRR....T', // 21 houses
+  'T.PP.HH&HH....PP....HH&HH....T', // 22 house walls
+  'T.PP.HHDHH....PP....HHDHH....T', // 23 house doors
+  'T.PP...P......PP......P......T', // 24 door paths
+  'T.PPPPPPPPPPPPPPPPPPPPPPPP...T', // 25 lower south road
+  'T.............PP.............T', // 26
+  'T.....f.......PP........f....T', // 27 flowers
+  'T.............PP.............T', // 28 sign area
+  'TTTTTTTTTTTTT.PP.TTTTTTTTTTTTT', // 29 south exit → Viridian Forest
 ]);
 
 export const pewterCity: MapDefinition = {
@@ -57,8 +58,8 @@ export const pewterCity: MapDefinition = {
     {
       id: 'pewter-museum-npc',
       name: 'Townsperson',
-      tileX: 10,
-      tileY: 25,
+      tileX: 18,
+      tileY: 5,
       textureKey: 'npc-male-2',
       facing: 'right',
       dialogue: [
@@ -69,8 +70,8 @@ export const pewterCity: MapDefinition = {
     {
       id: 'pewter-jerome',
       name: 'Jerome',
-      tileX: 18,
-      tileY: 14,
+      tileX: 12,
+      tileY: 9,
       textureKey: 'npc-hiker',
       facing: 'down',
       dialogue: [
@@ -102,7 +103,7 @@ export const pewterCity: MapDefinition = {
     {
       id: 'pewter-delivery-npc',
       name: 'Delivery Worker',
-      tileX: 8,
+      tileX: 4,
       tileY: 20,
       textureKey: 'npc-female-1',
       facing: 'right',
@@ -127,8 +128,8 @@ export const pewterCity: MapDefinition = {
     {
       id: 'pewter-curator',
       name: 'Curator',
-      tileX: 16,
-      tileY: 26,
+      tileX: 17,
+      tileY: 7,
       textureKey: 'npc-male-1',
       facing: 'left',
       dialogue: [
@@ -159,31 +160,32 @@ export const pewterCity: MapDefinition = {
       dialogue: ['PEWTER CITY', '"A Stone Gray City"'] }
   ],
   warps: [
-    // South exit → Viridian Forest
+    // South exit → Viridian Forest (UNCHANGED)
     { tileX: 14, tileY: 29, targetMap: 'viridian-forest', targetSpawnId: 'from-pewter' },
     { tileX: 15, tileY: 29, targetMap: 'viridian-forest', targetSpawnId: 'from-pewter' },
-    // Building doors
-    { tileX: 11, tileY: 10, targetMap: 'pewter-pokecenter', targetSpawnId: 'default' },
-    { tileX: 21, tileY: 10, targetMap: 'pewter-pokemart', targetSpawnId: 'default' },
-    { tileX: 20, tileY: 10, targetMap: 'pewter-pokemart', targetSpawnId: 'default' },
-    { tileX: 15, tileY: 16, targetMap: 'pewter-gym', targetSpawnId: 'default' },
-    { tileX: 12, tileY: 27, targetMap: 'pewter-museum', targetSpawnId: 'default' },
-    // House doors
-    { tileX: 5, tileY: 4, targetMap: 'pewter-city-house-1', targetSpawnId: 'default' },
-    { tileX: 23, tileY: 4, targetMap: 'pewter-city-house-2', targetSpawnId: 'default' },
-    // East exit → Route 3
+    // Building doors (upper plateau)
+    { tileX: 7, tileY: 4, targetMap: 'pewter-gym', targetSpawnId: 'default' },
+    { tileX: 21, tileY: 4, targetMap: 'pewter-museum', targetSpawnId: 'default' },
+    // Building doors (lower ground)
+    { tileX: 5, tileY: 16, targetMap: 'pewter-pokecenter', targetSpawnId: 'default' },
+    { tileX: 19, tileY: 16, targetMap: 'pewter-pokemart', targetSpawnId: 'default' },
+    { tileX: 20, tileY: 16, targetMap: 'pewter-pokemart', targetSpawnId: 'default' },
+    // House doors (lower ground)
+    { tileX: 7, tileY: 23, targetMap: 'pewter-city-house-1', targetSpawnId: 'default' },
+    { tileX: 22, tileY: 23, targetMap: 'pewter-city-house-2', targetSpawnId: 'default' },
+    // East exit → Route 3 (via switchback)
     { tileX: 29, tileY: 18, targetMap: 'route-3', targetSpawnId: 'from-pewter' },
     { tileX: 29, tileY: 19, targetMap: 'route-3', targetSpawnId: 'from-pewter' },
   ],
   spawnPoints: {
-    'default':         { x: 14, y: 12, direction: 'up' },
+    'default':         { x: 14, y: 13, direction: 'up' },
     'from-forest':     { x: 14, y: 28, direction: 'up' },
-    'from-pokecenter': { x: 11, y: 11, direction: 'down' },
-    'from-pokemart':   { x: 21, y: 11, direction: 'down' },
-    'from-gym':        { x: 15, y: 17, direction: 'down' },
-    'from-museum':     { x: 12, y: 28, direction: 'down' },
+    'from-pokecenter': { x: 5, y: 17, direction: 'down' },
+    'from-pokemart':   { x: 19, y: 17, direction: 'down' },
+    'from-gym':        { x: 7, y: 5, direction: 'down' },
+    'from-museum':     { x: 21, y: 5, direction: 'down' },
     'from-route-3':    { x: 28, y: 18, direction: 'left' },
-    'from-house-1':    { x: 5, y: 5, direction: 'down' },
-    'from-house-2':    { x: 23, y: 5, direction: 'down' },
+    'from-house-1':    { x: 7, y: 24, direction: 'down' },
+    'from-house-2':    { x: 22, y: 24, direction: 'down' },
   },
 };
