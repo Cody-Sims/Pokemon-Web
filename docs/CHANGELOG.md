@@ -4,6 +4,33 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-04-30]
+
+### Added — Procedural non-rectangular map generator
+
+Foundations for the map-improvements roadmap (Phase 0).
+
+- New `temp/scripts/map-gen/core/value-noise.ts`: deterministic 2-D value
+  noise with fBm, used to drive irregular shapes.
+- New `temp/scripts/map-gen/core/border-shaper.ts`: reusable primitives
+  `shapeOrganicBorder`, `carveCoastline`, `carveCliffEdge`, `punchEntrance`.
+  Each pass enforces interior connectivity automatically.
+- New `temp/scripts/map-gen/algorithms/organic-route.ts`: produces
+  non-rectangular routes with four silhouettes (`forest`, `coastal`,
+  `cliffside`, `peninsula`), branching alcoves, tall-grass patches and
+  one-way ledges. Output flows through the existing biome substitution and
+  TypeScript exporter unchanged.
+- CLI: new `npm run map:gen -- organic-route` subcommand with `--shape`,
+  `--roughness`, `--no-ledges` flags.
+
+Example:
+
+```bash
+npm run map:gen -- organic-route --width 22 --height 38 --shape coastal --seed 7 --biome standard
+```
+
+---
+
 ## [2026-05-01]
 
 ### Fixed — All remaining open bugs (34 issues from rounds 3-6)
@@ -74,6 +101,15 @@ save try/catch, AchievementManager reset, v1 defaults, map validation.
 ---
 
 ## [2026-04-30]
+
+### Changed — Map-improvements Phase 1: Littoral Town arc
+
+- Redesigned Littoral Town with a crescent bay, NW Cut alcove, flower-yard home block, off-center pier, tide-pool shoreline, and narrow single-door approaches for houses/lab.
+- Redesigned Route 1 into a shaped S-curve route with an uneven fork, Cut-gated reward alcove, stream crossing, Rock Smash gate, varied grass patches, and relocated NPC/trainer/object placements.
+- Updated [docs/Map-improvements.md](Map-improvements.md) to remove fixed map-size constraints, require one physical building door per building warp, prohibit visual side entrances, and make NPC/object overlap warnings phase blockers.
+- Extended `npm run map:validate` to warn when NPCs/trainers overlap objects and when objects are out of bounds or placed on solid tiles.
+
+Build clean. 66/66 maps validate. 2163/2163 tests pass.
 
 ### Added — Map-improvements Phase 0: Tooling & shared tiles
 

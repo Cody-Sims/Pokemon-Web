@@ -35,9 +35,12 @@ Result: every map plays the same. Walk to the top, walk to the bottom. We can do
 ### 2.1 Shape & flow
 
 - **Break the rectangle.** Use [DENSE_TREE](frontend/src/data/maps/tiles.ts) (`X`), [TREE](frontend/src/data/maps/tiles.ts) (`T`), [CLIFF_FACE](frontend/src/data/maps/tiles.ts) (`^`), and water (`W`) to carve out non-rectangular playable areas. Coves, peninsulas, jutting headlands, inset clearings — never a clean 4-edge box.
+- **Give every route a silhouette.** Routes should read as unique landforms, not bordered rectangles with a bent path inside. Use jagged treelines, diagonal cliff bands, water intrusions, grass islands, and asymmetric edge closures so the traversable area has a recognizable shape.
 - **Branching paths.** Every route should have at least **one main path + one optional branch**. Cities should have at least **two through-routes** so the player chooses where to enter buildings from.
 - **Loop, don't dead-end.** Hidden detours should rejoin the main path, not force a U-turn (unless they end at a reward).
 - **Sightlines.** Trainer line-of-sight is a feature. Place trees, signs, and ledges to create detour-or-fight choices.
+- **Door paths narrow to the door.** Building approaches should funnel to the actual door tile only. Do not draw wide `P` rectangles against walls or create visual side entrances into houses.
+- **One physical door = one warp.** If a building façade has one `D`/`E`/`e`/`n`/`a` door tile, it should have exactly one building warp on that door. Multi-tile route exits are fine for outdoor boundaries, but building doors must not use multiple invisible side warps.
 
 ### 2.2 Verticality & ledges
 
@@ -75,14 +78,46 @@ Each map should have **one distinct visual landmark** the player can describe in
 "The route with the fishing pier", "The town with the pond", "The forest with the giant moss
 boulder". Right now most maps would be described as "the rectangle".
 
-### 2.6 Size budget
+### 2.6 Flexible dimensions
 
-Don't blow up dimensions just to add space. Most routes can stay 20×40; we get exploration by
-*subtracting* from the playable area (more trees, more cliffs, less open ground) and *bending* the
-path, not by enlarging the grid. Cities can grow modestly (e.g. 30×30 → 32×34) when adding a real
-new district.
+Map size is a design choice, not a constraint. Keep existing dimensions when the redesign fits, but
+grow or shrink the grid when the silhouette, pacing, or landmark needs it. Do not enlarge maps just
+to add empty grass; use added space for real branches, landmarks, or traversal choices.
 
-### 2.7 Things to NOT change
+Routes should especially prioritize unique shapes over fixed dimensions. A route can be tall and
+narrow, squat and coastal, L-shaped, hourglass-shaped, or split by water/cliffs as long as its
+connecting warps and spawn points are updated in lockstep.
+
+#### Should we make routes wider?
+
+Mostly yes — but only on routes that earn it. The current 20-wide template was built for a single
+central path; once we introduce coastlines, peninsulas, cliff tiers, or branching, **20 columns is
+cramped** because each of these features eats 3-6 columns of edge space. Use these targets:
+
+| Silhouette                | Recommended width | Why                                                                                          |
+|---------------------------|-------------------|----------------------------------------------------------------------------------------------|
+| Forest interior           | 20-22             | Tree fringe takes 4-5 cols; a 3-wide path + 1 alcove run fits with room to wander            |
+| Coastal (one shore)       | 22-26             | South shore eats ~5 cols of water + sand; need 16+ playable cols above it                    |
+| Cliffside                 | 24-28             | Cliff face + soft fringe ~ 6 cols; reserve 16-20 for the path tier and any upper bench       |
+| Peninsula (sea on 2 sides)| 22-28             | Each shore eats ~4 cols; the landmass narrows toward a tip                                   |
+| Wide overworld (Routes 4, 7, 8 — coastal sweeps, plateaus) | 28-36 | Real horizontal routes; lets us place 2 parallel paths split by a ledge or water    |
+| City                      | 30-36             | Existing 30-wide cities are fine; only grow when adding a real new district (e.g. Phase 4)   |
+| Dungeon (BSP / cellular)  | 25-33 (odd)       | BSP requires odd dims; cellular caves below 22 produce mostly noise                          |
+
+Heights stay roughly the same as today (24-40 for routes, 25-32 for dungeons). The biggest player
+impact comes from **adding 2-6 columns of width** to coastal/peninsula/cliff routes, not from
+stretching them taller. Anything ≥ 30 wide should justify the size with a real branch or split, not
+empty grass.
+
+### 2.7 Placement safety
+
+- NPCs and trainers must not spawn on objects (`sign`, `item-ball`, `pc`, `door`, berry trees, etc.).
+- Objects must be on walkable base tiles unless they intentionally replace a tile that the interaction
+  system handles.
+- Re-run the validator after every coordinate change; overlap warnings are blockers for the current
+  phase even if the validator reports them as warnings for legacy-map compatibility.
+
+### 2.8 Things to NOT change
 
 - **Warp coordinates** stay where the connecting map expects them (or both sides update together).
 - **Story-critical NPCs** (Rook, Pip, Wade, Kael, Marina, gym leaders) keep their roles and badge gating.
@@ -98,8 +133,8 @@ For each map in the phase:
 1. **Read the current file** end-to-end. Note all NPC, trainer, object, warp, and spawn coords.
 2. **Sketch the new layout** in a comment block at the top of the redesigned grid (or in `temp/`). Identify: main path, branches, ledges, gates, landmark, hidden items.
 3. **Edit the character grid in-place** with targeted edits. Per [AGENTS.md anti-patterns](AGENTS.md), never rewrite the whole grid — preserve unchanged regions to keep diffs reviewable.
-4. **Update coordinates** for any NPC/trainer/object whose tile shifted. Use the line-comment `// 0` ... `// 39` row markers to keep counting honest.
-5. **Re-validate warps.** If the entry/exit `PP` columns moved, also update the connecting map's `warps` block and any `SpawnPoint`.
+4. **Update coordinates** for any NPC/trainer/object whose tile shifted. Use the line-comment `// 0` ... `// 39` row markers to keep counting honest, and verify no NPC/trainer shares a tile with an object.
+5. **Re-validate warps and doors.** If the entry/exit `PP` columns moved, also update the connecting map's `warps` block and any `SpawnPoint`. For buildings, keep one physical door tile paired with one warp, then make the path narrow to that door.
 6. **Run the toolchain:**
    ```bash
    npm run map:validate -- --map <map-key>
@@ -176,6 +211,102 @@ Extend [tools that back](frontend/src/data/maps/map-parser.ts) `npm run map:vali
 Update `npm run map:region` ([temp/region-map.ppm](temp/region-map.ppm)) so we can eyeball the whole
 Aurum region after each phase and confirm the world still feels coherent.
 
+### 0.5 Procedural non-rectangular generator (shipped 2026-04-30)
+
+The original phases of this plan all start from a *rectangular* generated grid and then carve. To
+make redesign cheaper, the toolchain now ships a procedural alternative that produces
+non-rectangular layouts directly. Use it as a **first-draft tool** for any route in Phases 1-10 —
+not as a one-shot map generator.
+
+#### What it provides
+
+- [temp/scripts/map-gen/core/value-noise.ts](temp/scripts/map-gen/core/value-noise.ts) — seeded 2-D value noise + fBm.
+- [temp/scripts/map-gen/core/border-shaper.ts](temp/scripts/map-gen/core/border-shaper.ts) — `shapeOrganicBorder`, `carveCoastline`, `carveCliffEdge`, `punchEntrance`. Every pass runs a flood-fill connectivity guard so the player can never be walled off.
+- [temp/scripts/map-gen/algorithms/organic-route.ts](temp/scripts/map-gen/algorithms/organic-route.ts) — `generateOrganicRoute` with four silhouettes (`forest`, `coastal`, `cliffside`, `peninsula`), meandering paths, branch alcoves and one-way ledges.
+- CLI: `npm run map:gen -- organic-route` with `--shape`, `--roughness`, `--seed`, `--biome`, `--format`, `--no-ledges`.
+
+The generator emits the same neutral character alphabet as `route-carver`, so all 10 biome themes
+(`volcanic`, `ghost`, `dragon`, `mine`, `electric`, `synthesis`, `cave`, …) and TypeScript export
+work unchanged.
+
+#### Recipe: use it on a real map
+
+For any route in Phases 1-10, follow this recipe instead of authoring the grid by hand:
+
+1. **Pick the silhouette** that matches the phase brief and the width target from
+   [Section 2.6](#26-flexible-dimensions). For example, Phase 1 Route 1 wants a
+   `coastal` shape at 22-24 wide.
+
+2. **Generate 3-5 candidates** with different seeds and write them to disk so you can compare:
+
+   ```bash
+   for seed in 7 13 21 42 99; do
+     npm run map:gen -- organic-route \
+       --width 24 --height 38 --shape coastal --seed $seed \
+       --format grid --out temp/map-previews/route-1-draft-$seed.txt
+   done
+   ```
+
+3. **Eyeball each draft** and pick the one whose path runs near where the existing warps live.
+   The generator's default entrances are north/south at the centre — if your real map needs warps
+   off-centre, edit `entrances` directly in a small wrapper script under `temp/scripts/`.
+
+4. **Export to TypeScript** for the chosen seed:
+
+   ```bash
+   npm run map:gen -- organic-route \
+     --width 24 --height 38 --shape coastal --seed 13 \
+     --format typescript --out temp/generated-maps/route-1-draft.ts
+   ```
+
+5. **Lift the `parseMap([...])` block only** into [route-1.ts](frontend/src/data/maps/routes/route-1.ts).
+   Keep the existing `npcs`, `trainers`, `objects`, `warps`, and `spawnPoints` arrays — *do not*
+   blow them away. The generated `MapDefinition` object exists only as a scaffold for the grid.
+
+6. **Re-anchor coordinates.** For every NPC, trainer, sign, item ball and warp, re-pick a tile in
+   the new grid that is walkable and on or beside the meandering path. Ledges (`J`) must not block
+   the only northbound route.
+
+7. **Sanity-check:** the generator prints the alcove and ledge counts to stderr — record them in
+   the commit message. Two alcoves are the natural homes for hidden items behind cuttable trees.
+
+8. **Run the toolchain** from [Section 3](#3-per-map-workflow-use-for-every-map-in-every-phase):
+
+   ```bash
+   npm run map:validate -- --map route-1
+   npm run map:preview  -- --map route-1
+   npm run build && npm run test
+   ```
+
+#### When *not* to use the generator
+
+- **Cities and interiors.** The generator does not understand buildings, so towns still need to be
+  hand-authored or driven by `npm run map:compose`. Use the organic generator only for the
+  surrounding landscape if a town has one.
+- **Story-critical map shapes.** Any map whose layout is referenced by a cutscene script (e.g.
+  Wraithmoor's misty graveyard) must be hand-tuned to match the storyline beats.
+- **Final polish.** The generator is for the *first draft*. Hand-edit the output for landmarks,
+  trainer lines of sight, and the one-screen-readable feel.
+
+#### Quick reference
+
+```bash
+# Forest interior route
+npm run map:gen -- organic-route --width 22 --height 36 --shape forest --seed 7
+
+# Coastal route with a wavy southern shore
+npm run map:gen -- organic-route --width 24 --height 32 --shape coastal --seed 13
+
+# Cliffside route, biome-themed for Verdantia
+npm run map:gen -- organic-route --width 26 --height 30 --shape cliffside --biome forest --seed 5
+
+# Peninsula route (sea on east + west)
+npm run map:gen -- organic-route --width 24 --height 30 --shape peninsula --seed 21
+
+# Volcanic route with biome substitution
+npm run map:gen -- organic-route --width 24 --height 32 --shape coastal --biome volcanic --seed 9
+```
+
 **Acceptance:** New tiles render in `npm run map:preview`. `npm run build && npm run test` is green.
 [docs/CHANGELOG.md](docs/CHANGELOG.md) and [maps/CONTEXT.md](frontend/src/data/maps/CONTEXT.md) updated.
 
@@ -183,8 +314,8 @@ Aurum region after each phase and confirm the world still feels coherent.
 
 ## Phase 1 — Littoral Town arc
 
-**Maps:** [pallet-town.ts](frontend/src/data/maps/cities/pallet-town.ts) (Littoral Town, 25×30),
-[route-1.ts](frontend/src/data/maps/routes/route-1.ts) (20×40)
+**Maps:** [pallet-town.ts](frontend/src/data/maps/cities/pallet-town.ts) (Littoral Town),
+[route-1.ts](frontend/src/data/maps/routes/route-1.ts)
 
 ### 1.1 Littoral Town redesign
 
@@ -227,6 +358,8 @@ Aurum region after each phase and confirm the world still feels coherent.
 
 - [ ] Both maps validate; both render correctly in `map:preview`.
 - [ ] All existing NPC/trainer/warp coords still work or are updated in lockstep.
+- [ ] Building approaches narrow to the door tile; no house has a visual side entrance or multiple building warps for one door.
+- [ ] No NPC/trainer shares a tile with a map object.
 - [ ] The full route can be traversed top-to-bottom without ledge backtracking; bottom-to-top requires engaging at least one trainer.
 - [ ] At least one Cut-gated and one Surf-gated reward exists across the two maps.
 - [ ] Tests in [tests/integration](tests/integration) covering Route 1 traversal still pass.

@@ -1,37 +1,47 @@
 import { MapDefinition, parseMap } from '../shared';
 
+// ═══ Littoral Town (Phase 1 of docs/Map-improvements.md) ═══
+// Crescent-shaped seaside town hugging a curved bay.
+// Layout intent:
+//   • NW corner: shallow inland cliff face (^) with a CUT_TREE alcove
+//     hiding a Potion (post-Badge-2 reward).
+//   • Two houses (player, rival) on a raised lawn with flower yards.
+//   • Oak's Lab sits on a low platform south of the town crossroads.
+//   • Southern coast bends into a C-bay: dock juts EAST of center, sandy
+//     beach curves around to the SW where TIDE_POOLS (6/7) replace open water.
+//   • Wade's dock has a rowboat sign-object at the end as a visual anchor.
 const palletGround = parseMap([
   // col: 0         1         2  4
   //      0123456789012345678901234
-  'TTTTTTTTTT.PPP.TTTTTTTTTT', // 0  - north exit to Route 1
-  'T..........PPP..........T', // 1
-  'T.RRRRRRR..PPP..RRRRRRR.T', // 2  - roofs (7 wide)
-  'T.HHH&HHH..PPP..HH&HHHH.T', // 3  - walls with windows
-  'T.HHHDHHHPPPPPPPHHHDHHH.T', // 4  - doors + path connecting
-  'T....PP....PPP....PP....T', // 5  - paths from doors
-  'T....PPPPPPPPPPPPPPPPP..T', // 6  - main horizontal path
-  'T..........PPP..........T', // 7
-  'T..f.......PPP........f.T', // 8  - flowers
-  'T..........PPP..........T', // 9
-  'T....BBBBBBBBBBBBBBB....T', // 10 - Lab roof
-  'T....LLLLLLLLLLLLLLL....T', // 11 - Lab walls
-  'T....LLLLLLLELLLLLLL....T', // 12 - Lab door
-  'T..........PPP..........T', // 13 - path from lab
-  'T.........PPPPP.........T', // 14
+  'X^^^TTTTTT.PPP.TTTTTTTTTT', // 0  - inland cliff NW; north exit to Route 1
+  '^^...........PPP........T', // 1
+  '^.>RRRRRRR...PPP.RRRRRRRT', // 2  - CUT_TREE; player roof 3-9; rival roof 17-23
+  '^..HHH&HHH...PPP.HHH&HHHT', // 3  - walls with windows
+  'T..HHHDHHH...PPP.HHHDHHHT', // 4  - single main doors only: player col 6; rival col 20
+  'T.....P......PPP....P...T', // 5  - one-tile door approaches, no side entrances
+  'T.....PPPP.PPPP...PPP...T', // 6  - crooked courtyard connector, not a rectangle
+  'T..ff......PPP..........T', // 7  - player house yard: flower garden
+  'T..ffff....PPP........f.T', // 8  - garden continues
+  'T..f.f.....PPP..........T', // 9  - garden tail
+  'T..........PPP..........T', // 10
+  'T....BBBBBBBBBBBBBBB....T', // 11 - Lab roof
+  'T....LLLLLLLLLLLLLLL....T', // 12 - Lab walls
+  'T....LLLLLLLELLLLLLL....T', // 13 - Lab door (col 12)
+  'T...........P...........T', // 14 - one-tile path directly below lab door
   'T..GG.....PPPPP.....GG..T', // 15 - grass patches
   'T..GG.....PPPPP.....GG..T', // 16
   'T..GG..f..PPPPP..f..GG..T', // 17 - grass + flowers
   'T.........PPPPP.........T', // 18
   'T..f......PPPPP......f..T', // 19
-  'T.........PPPPP.........T', // 20
-  'T.........PPPPP.........T', // 21
-  '..........PPPPP..........', // 22 - tree border ends, open south
-  'ss.....PPPPPPPPPPPPP..ss3', // 23 - sand, path widens to pier, palm
-  'ss7....PP.888888.PP..7ss.', // 24 - wet sand, solid dock platform
-  's77....PP.888888.PP.77ssW', // 25 - dock extends south
-  'W7s....PP.888888.PP..s7WW', // 26 - dock over shore
-  'WW7s...PP.888888.PP.s7WWW', // 27 - dock over water
-  'WWW7s..PPPP8888PPPP.s7WWW', // 28 - dock end platform
+  'T....~....PPPPP.........T', // 20 - lone rock landmark
+  'T.........PPPPPPP.......T', // 21 - path branches east toward dock
+  '......~..PPPPPPPPPPP....T', // 22 - tree border ends; dock approach widens east
+  'ss.....ssssssss888PPP....', // 23 - sandy beach (curves east); dock at col 15-17
+  's7s..ss77ss777sss888PPP..', // 24 - wet sand; dock columns extend south
+  's77s67s7677666ssss888P...', // 25 - tide pools cluster SW; dock continues
+  's766776677677WWWsss8888..', // 26 - dense tide pools meet open water
+  'WW7676677WWWWWWWWss8888..', // 27 - water expands east
+  'WWWWWWWWWWWWWWWWWWss88888', // 28 - dock juts further out east
   'WWWWWWWWWWWWWWWWWWWWWWWWW', // 29 - open sea
 ]);
 
@@ -109,7 +119,7 @@ export const palletTown: MapDefinition = {
     {
       id: 'pallet-wade',
       name: 'Wade',
-      tileX: 13,
+      tileX: 20,
       tileY: 26,
       textureKey: 'npc-sailor',
       facing: 'down',
@@ -132,8 +142,8 @@ export const palletTown: MapDefinition = {
         },
       ],
       schedule: {
-        morning: { x: 13, y: 26 },   // at the dock early
-        day: { x: 13, y: 26 },        // fishing all day
+        morning: { x: 20, y: 26 },   // at the dock early
+        day: { x: 20, y: 26 },        // fishing all day
         evening: { x: 7, y: 7 },      // heads into town in the evening
         night: 'hidden',               // goes home at night
       },
@@ -168,15 +178,22 @@ export const palletTown: MapDefinition = {
     {
       id: 'pallet-sign-lab',
       tileX: 10,
-      tileY: 13,
+      tileY: 14,
       textureKey: 'sign-post', objectType: 'sign',
       dialogue: ['OAK POKÉMON RESEARCH LAB'] },
     {
       id: 'pallet-dock-sign',
-      tileX: 8,
+      tileX: 14,
       tileY: 22,
       textureKey: 'sign-post', objectType: 'sign',
-      dialogue: ['LITTORAL TOWN PIER', '"Where the sea breeze begins"'] }
+      dialogue: ['LITTORAL TOWN PIER', '"Where the sea breeze begins"'] },
+    // ─── Hidden Potion behind the CUT_TREE at (2, 2) — post-Cut reward. ───
+    {
+      id: 'pallet-cut-alcove-potion',
+      tileX: 2,
+      tileY: 1,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['Found a Potion!'] }
   ],
   warps: [
     // North exit → Route 1
@@ -184,16 +201,16 @@ export const palletTown: MapDefinition = {
     { tileX: 12, tileY: 0, targetMap: 'route-1', targetSpawnId: 'from-pallet' },
     { tileX: 13, tileY: 0, targetMap: 'route-1', targetSpawnId: 'from-pallet' },
     // Building doors
-    { tileX: 5, tileY: 4, targetMap: 'pallet-player-house', targetSpawnId: 'default' },
-    { tileX: 19, tileY: 4, targetMap: 'pallet-rival-house', targetSpawnId: 'default' },
-    { tileX: 12, tileY: 12, targetMap: 'pallet-oak-lab', targetSpawnId: 'default' },
+    { tileX: 6, tileY: 4, targetMap: 'pallet-player-house', targetSpawnId: 'default' },
+    { tileX: 20, tileY: 4, targetMap: 'pallet-rival-house', targetSpawnId: 'default' },
+    { tileX: 12, tileY: 13, targetMap: 'pallet-oak-lab', targetSpawnId: 'default' },
   ],
   spawnPoints: {
     'default': { x: 12, y: 14, direction: 'up' },
     'from-route-1': { x: 12, y: 1, direction: 'down' },
-    'player-house': { x: 5, y: 5, direction: 'down' },
-    'from-player-house': { x: 5, y: 5, direction: 'down' },
-    'from-rival-house': { x: 19, y: 5, direction: 'down' },
-    'from-oak-lab': { x: 12, y: 13, direction: 'down' },
+    'player-house': { x: 6, y: 5, direction: 'down' },
+    'from-player-house': { x: 6, y: 5, direction: 'down' },
+    'from-rival-house': { x: 20, y: 5, direction: 'down' },
+    'from-oak-lab': { x: 12, y: 14, direction: 'down' },
   },
 };
