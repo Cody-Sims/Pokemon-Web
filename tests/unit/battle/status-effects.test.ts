@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { StatusEffectHandler } from '../../../frontend/src/battle/effects/StatusEffectHandler';
 import { PokemonInstance } from '../../../frontend/src/data/interfaces';
+import * as mathHelpers from '../../../frontend/src/utils/math-helpers';
 
 beforeEach(() => {
-  vi.spyOn(Math, 'random').mockReturnValue(0.5);
+  vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.5);
 });
 
 const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
@@ -57,12 +58,12 @@ describe('StatusEffectHandler', () => {
       handler.initPokemon(pokemon);
 
       // random = 0.1 → paralyzed (< 0.25)
-      vi.spyOn(Math, 'random').mockReturnValue(0.1);
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.1);
       let result = handler.checkTurnStart(pokemon);
       expect(result.canAct).toBe(false);
 
       // random = 0.5 → can act (>= 0.25)
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.5);
       result = handler.checkTurnStart(pokemon);
       expect(result.canAct).toBe(true);
     });
@@ -94,7 +95,7 @@ describe('StatusEffectHandler', () => {
       handler.initPokemon(pokemon);
 
       // random = 0.5 → stays frozen (>= 0.2)
-      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.5);
       const result = handler.checkTurnStart(pokemon);
       expect(result.canAct).toBe(false);
     });
@@ -105,7 +106,7 @@ describe('StatusEffectHandler', () => {
       handler.initPokemon(pokemon);
 
       // random = 0.1 → thaws (< 0.2)
-      vi.spyOn(Math, 'random').mockReturnValue(0.1);
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.1);
       const result = handler.checkTurnStart(pokemon);
       expect(result.canAct).toBe(true);
       expect(pokemon.status).toBeNull();
@@ -187,7 +188,7 @@ describe('StatusEffectHandler', () => {
       handler.initPokemon(attacker);
       handler.initPokemon(defender);
 
-      vi.spyOn(Math, 'random').mockReturnValue(0.01); // pass chance check
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.01); // pass chance check
       const result = handler.applyMoveEffect(attacker, defender, {
         id: 'confuse-ray', name: 'Confuse Ray', type: 'ghost', category: 'status', power: null, accuracy: 100, pp: 10,
         effect: { type: 'status', target: 'enemy', status: 'confusion', chance: 100 },
@@ -250,7 +251,7 @@ describe('StatusEffectHandler', () => {
       handler.initPokemon(attacker);
       handler.initPokemon(fireDefender);
 
-      vi.spyOn(Math, 'random').mockReturnValue(0.01);
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.01);
       const result = handler.applyMoveEffect(attacker, fireDefender, {
         id: 'will-o-wisp', name: 'Will-O-Wisp', type: 'fire', category: 'status', power: null, accuracy: 85, pp: 15,
         effect: { type: 'status', target: 'enemy', status: 'burn', chance: 100 },
@@ -267,7 +268,7 @@ describe('StatusEffectHandler', () => {
       handler.initPokemon(attacker);
       handler.initPokemon(electricDefender);
 
-      vi.spyOn(Math, 'random').mockReturnValue(0.01);
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.01);
       const result = handler.applyMoveEffect(attacker, electricDefender, {
         id: 'thunder-wave', name: 'Thunder Wave', type: 'electric', category: 'status', power: null, accuracy: 90, pp: 20,
         effect: { type: 'status', target: 'enemy', status: 'paralysis', chance: 100 },

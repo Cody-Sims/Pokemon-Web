@@ -83,8 +83,7 @@ describe('ChallengeRules', () => {
       const gm = GameManager.getInstance();
       gm.setChallengeModes(['minimalCatches']);
       // Bump the catch counter to 6 via the stats manager directly.
-      const stats = gm.statsMgr.getGameStats();
-      stats.totalCatches = 6;
+      gm.incrementStat('totalCatches', 6);
       const reason = blockReasonForCatch(makePokemon(4));
       expect(reason).not.toBeNull();
       expect(reason!).toMatch(/Minimal Catches/);

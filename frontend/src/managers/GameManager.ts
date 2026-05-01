@@ -6,6 +6,7 @@ import { ProgressManager, HallOfFameEntry } from './ProgressManager';
 import { PlayerStateManager, SpeedrunSplit } from './PlayerStateManager';
 import { StatsManager, GameStats, defaultStats } from './StatsManager';
 import { EventManager } from './EventManager';
+import { QuestManager } from './QuestManager';
 
 // Re-export types so existing `import { GameStats, HallOfFameEntry } from '@managers/GameManager'` still works
 export type { GameStats, HallOfFameEntry, SpeedrunSplit };
@@ -27,7 +28,7 @@ export class GameManager {
   private readonly _party = new PartyManager();
   private readonly _progress = new ProgressManager();
   private readonly _player = new PlayerStateManager();
-  private readonly _stats = new StatsManager();
+  private readonly _stats = StatsManager.getInstance();
 
   private constructor() { /* sub-manager constructors handle init */ }
 
@@ -59,6 +60,8 @@ export class GameManager {
     this._stats.reset();
     // MED-37: Clear stale event listeners between sessions
     EventManager.getInstance().reset();
+    // Re-register QuestManager automation after EventManager clears all listeners
+    QuestManager.getInstance().resetAutomation();
   }
 
   // ══════════════════════════════════════════════════════
@@ -215,6 +218,7 @@ export class GameManager {
   getGameStats(): GameStats { return this._stats.getGameStats(); }
   incrementStat(key: keyof GameStats, amount = 1): void { this._stats.incrementStat(key, amount); }
   getStat(key: keyof GameStats): number { return this._stats.getStat(key); }
+  recordMax(key: keyof GameStats, value: number): void { this._stats.recordMax(key, value); }
 
   getStepCount(): number { return this._stats.getStepCount(); }
   incrementStepCount(): number { return this._stats.incrementStepCount(); }

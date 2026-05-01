@@ -10,6 +10,7 @@ import { blockReasonForCatch } from '@systems/engine/ChallengeRules';
 import { SFX, BGM } from '@utils/audio-keys';
 import { FONTS, COLORS, isMobile, mobileFontSize } from '@ui/theme';
 import { ui } from '@utils/ui-layout';
+import { seededRandom } from '@utils/math-helpers';
 import type { PokemonInstance } from '@data/interfaces';
 import type { BattleScene } from './BattleScene';
 
@@ -261,7 +262,7 @@ function onCatchFailure(ctx: CatchContext): void {
     `Aargh! Almost had it!`,
     `Shoot! It was so close, too!`,
   ];
-  const msg = breakMessages[Math.floor(Math.random() * breakMessages.length)];
+  const msg = breakMessages[Math.floor(seededRandom() * breakMessages.length)];
   ctx.msg(msg);
 
   ctx.scene.time.delayedCall(1200, () => {
@@ -280,7 +281,7 @@ function onCatchFailure(ctx: CatchContext): void {
       }
     }
     if (enemy.status === 'freeze') {
-      if (Math.random() >= 0.2) {
+      if (seededRandom() >= 0.2) {
         ctx.msg(`${enemyData?.name ?? '???'} is frozen solid!`);
         ctx.setState('actions');
         return;
@@ -289,7 +290,7 @@ function onCatchFailure(ctx: CatchContext): void {
         enemy.statusTurns = undefined;
       }
     }
-    if (enemy.status === 'paralysis' && Math.random() < 0.25) {
+    if (enemy.status === 'paralysis' && seededRandom() < 0.25) {
       ctx.msg(`${enemyData?.name ?? '???'} is paralyzed! It can't move!`);
       ctx.setState('actions');
       return;

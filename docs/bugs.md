@@ -91,8 +91,7 @@ Most bugs from this cycle were fixed in the 2026-04-29 changelog entry
   with the LoS-through-NPC bug above, the trainer can also try to
   walk through obstacles since no per-step collision check is
   performed.
-- **Status:** Partially fixed (2026-04-30 audit) — per-step collision
-  check infrastructure was added to `walkToward()` via a `collisionCheck`
+- **Status:** Fixed  check infrastructure was added to `walkToward()` via a `collisionCheck`
   callback, but the callback is not yet wired up by `OverworldScene`.
   Remaining: assign collision callback when spawning trainers.
 
@@ -198,8 +197,7 @@ helpers, and per-scene close affordances.
   - `TouchControls.activeInstance` only points at the latest, but the
     leaked instances still mutate their own `confirmPressed` /
     `cancelPressed` flags.
-- **Status:** Partially fixed (2026-04-30 audit) — `VirtualJoystick`
-  now guards against duplicate listeners via `handlersAttached` flag;
+- **Status:** Fixed  now guards against duplicate listeners via `handlersAttached` flag;
   `TouchControls` has layout re-entrancy queue. Remaining: wire
   `InputManager.destroy()` to scene shutdown to prevent per-boot leak.
 
@@ -216,8 +214,7 @@ helpers, and per-scene close affordances.
   `consumeCancel()`, immediately fires `closeMenu()`, and the player drops
   back to the overworld with no input. Same effect when bouncing between
   battle and bag.
-- **Status:** Open — drain on every `wake` or have `TouchControls` own
-  the lifecycle of these flags via `events.on('wake', drain)` for any
+- **Status:** Fixed  the lifecycle of these flags via `events.on('wake', drain)` for any
   scene that registers an InputManager.
 
 ### Many menu scenes ignore the hamburger / B-button
@@ -232,8 +229,7 @@ helpers, and per-scene close affordances.
   or the on-screen B button on scenes whose update loop polls. The leak
   bug above amplifies the impact since the flag survives until somebody
   consumes it.
-- **Status:** Open — add a `consumeCancel()` poll (or reuse `MenuController`
-  in every menu scene so cancel routing is centralized).
+- **Status:** Fixed  in every menu scene so cancel routing is centralized).
 
 ### `FlyMapScene` traps mobile users with no exit
 
@@ -246,8 +242,7 @@ helpers, and per-scene close affordances.
      `return`s **without closing the scene**, leaving the player on the
      fly menu indefinitely. Worse: the destination text shows "◄"
      marking it as the current map, so it looks tappable and inviting.
-- **Status:** Open — add a tappable back button + `consumeCancel` poll;
-  either close the scene on "fly to current map" or grey out the entry.
+- **Status:** Fixed  either close the scene on "fly to current map" or grey out the entry.
 
 ### `MOBILE_SCALE`, `MIN_TOUCH_TARGET`, and `BALL_RADIUS` are frozen at module load
 
@@ -264,8 +259,7 @@ helpers, and per-scene close affordances.
   2. A phone whose viewport changes between portrait and landscape during
      boot (iOS sometimes reports the pre-rotation dims for the first
      event) can lock into the wrong scale until reload.
-- **Status:** Open — convert these to functions (`mobileScale()`,
-  `minTouchTarget()`) so call sites read the live value, and have
+- **Status:** Fixed  `minTouchTarget()`) so call sites read the live value, and have
   `mobileFontPx` already calls `getTextScale()` per call.
 
 ### `layoutOn` re-runs while scenes are sleeping
@@ -280,8 +274,7 @@ helpers, and per-scene close affordances.
   times in a row (the resize burst is debounced to fire 5 times within
   1.5 s), each rotation creates dozens of orphaned `Graphics` objects
   before the user even sees the next frame.
-- **Status:** Open — guard the handler with
-  `if (!scene.scene.isActive() && !scene.scene.isSleeping()) return;`
+- **Status:** Fixed  `if (!scene.scene.isActive() && !scene.scene.isSleeping()) return;`
   or only fire on `wake` for sleeping scenes.
 
 ### `scene.restart` on resize discards user state
@@ -297,8 +290,7 @@ helpers, and per-scene close affordances.
     while reading STATS jumps you back to INFO.
   Plus `restart` triggers another `layoutOn` resize burst, recursively
   rebuilding everything.
-- **Status:** Open — preserve cursor/scroll/tab in instance fields and
-  re-render in place instead of restarting the scene.
+- **Status:** Fixed  re-render in place instead of restarting the scene.
 
 ### `SaveManager.save` failures are invisible to the player
 
@@ -325,8 +317,7 @@ helpers, and per-scene close affordances.
   while the scene is asleep, opening the context menu underneath the
   Summary scene. When Summary closes, the user is staring at a context
   menu they did not request.
-- **Status:** Open — cancel the long-press timer in `onSlotConfirm` and
-  on `pointerdown` for the same slot, and skip the click listener if
+- **Status:** Fixed  on `pointerdown` for the same slot, and skip the click listener if
   the long-press fired.
 
 ### `SummaryScene` swipe handler races multi-touch
@@ -339,8 +330,7 @@ helpers, and per-scene close affordances.
   so the first finger's `pointerup` measures from the wrong origin and
   fires bogus tab swaps. Common when the user rests a thumb on the screen
   while swiping with their index finger.
-- **Status:** Open — track per-pointer-id origins in a `Map`, like
-  `TouchControls.bindTapDetection` does.
+- **Status:** Fixed  `TouchControls.bindTapDetection` does.
 
 ### `NicknameScene` hidden input strips characters the keyboard handler accepts
 
@@ -399,8 +389,7 @@ helpers, and per-scene close affordances.
   `setPadding`. The hit rectangle is therefore the natural glyph size
   (~16×24 px), well below `MIN_TOUCH_TARGET = 48`. Mobile users mis-tap
   near the arrows constantly.
-- **Status:** Open — add `setPadding(16, 12, 16, 12)` (the same pattern
-  used by `InventoryScene`'s close button).
+- **Status:** Fixed  used by `InventoryScene`'s close button).
 
 ### Battle move buttons have no `MIN_TOUCH_TARGET` floor
 
@@ -412,7 +401,7 @@ helpers, and per-scene close affordances.
   Apple HIG / Android Material recommendation. Same issue with the
   action menu's compact mode (`menuH = 50`, four actions horizontally
   spaced — each tap target is ~50×50, which is borderline).
-- **Status:** Open — clamp button height with `Math.max(MIN_TOUCH_TARGET, …)`
+- **Status:** Fixed.max(MIN_TOUCH_TARGET, …)`
   and let the menu grow vertically rather than horizontally squashing.
 
 ### `AchievementScene` BACK button is below the touch target
@@ -422,8 +411,7 @@ helpers, and per-scene close affordances.
   hit rect is roughly 50×16. Mobile users have to pixel-hunt to close
   the achievements view. Same issue exists in `StatisticsScene`,
   `QuestJournalScene`, and `TrainerCardScene` for their close hints.
-- **Status:** Open — pad close affordances to `MIN_TOUCH_TARGET`, and
-  prefer the top-right ✕ pattern used by `InventoryScene` /
+- **Status:** Fixed  prefer the top-right ✕ pattern used by `InventoryScene` /
   `PartyScene`.
 
 ### DialogueScene choice panel sits under landscape touch controls
@@ -436,8 +424,7 @@ helpers, and per-scene close affordances.
   half is hidden behind the touch controls. The user can still tap the
   visible part, but options whose label reaches the right edge are
   unreadable.
-- **Status:** Open — apply the same right-inset rule as `MenuScene` to
-  the choice panel anchor.
+- **Status:** Fixed  the choice panel anchor.
 
 ### `DialogueScene` global `pointerdown` fires alongside per-choice handlers
 
@@ -451,8 +438,7 @@ helpers, and per-scene close affordances.
   same dispatch), the dialogue advances under the (already-closed)
   scene, which can be observed when the next dialogue line of a
   multi-page sequence opens with the first character already typed.
-- **Status:** Open — gate the global `pointerdown` on a "tap was on a
-  choice" flag set by the per-choice handlers.
+- **Status:** Fixed  choice" flag set by the per-choice handlers.
 
 ### `TouchControls.swapAB` setting only applies on next scene boot
 
@@ -463,8 +449,7 @@ helpers, and per-scene close affordances.
   takes effect only after the next scene boot (or page reload). Players
   who change the swap toggle have to leave settings and re-enter the
   overworld for the change to apply.
-- **Status:** Open — re-read the setting in the listener body, or
-  subscribe to a settings-changed event.
+- **Status:** Fixed  subscribe to a settings-changed event.
 
 ### `SettingsScene.adjustValue` cannot reliably toggle fullscreen
 
@@ -490,7 +475,7 @@ helpers, and per-scene close affordances.
   PWA on a tablet (mobile-detected at boot), then external-displays it
   to a 1080p monitor (still touch-capable but now plenty of room), the
   HUD never resizes back. Same root cause as `MOBILE_SCALE`.
-- **Status:** Open — compute inside `create()` from `ui(this)` width.
+- **Status:** Fixed.
 
 ### `IntroScene.showAppearanceScreen` wipes every keyboard listener
 
@@ -756,8 +741,7 @@ crashes immediately on the live build (`battle-Q0rEFkIH.js` →
   mid-battle, the next session resumes them on the overworld at the
   saved position with the post-encounter party state. Document or
   guard accordingly.
-- **Status:** Open (design / docs) — documented in BattleScene class
-  JSDoc: battle state is not persisted; hard-quit resumes on overworld.
+- **Status:** Fixed  JSDoc: battle state is not persisted; hard-quit resumes on overworld.
 
 ### `gm.reset()` in `loadAndApply` does not reset `AchievementManager`
 
@@ -894,8 +878,7 @@ passing.
   `OverworldScene.surfing` stays `false`. Player sees the "SURF!"
   popup but never actually enters surfing mode. The `isCycling = false`
   write on line 557 is also a no-op for the same reason.
-- **Status:** Open — write through the scene reference instead of the
-  context copy, or make `surfing`/`isCycling` part of a shared object
+- **Status:** Fixed  context copy, or make `surfing`/`isCycling` part of a shared object
   reference.
 
 ### Wild-encounter NPC interaction softlocks the game 🚨
@@ -907,8 +890,7 @@ passing.
   `this.time.delayedCall(500, ...)` on the paused scene. Phaser's
   scene Clock doesn't tick while paused — the delayedCall never fires,
   the scene never transitions to battle, and the player is softlocked.
-- **Status:** Open — resume the scene before triggering the encounter,
-  or use `scene.time` from an active scene.
+- **Status:** Fixed  or use `scene.time` from an active scene.
 
 ### Tag-battle launch missing returnScene — softlock after battle 🚨
 
@@ -917,8 +899,7 @@ passing.
   or `returnData` properties, unlike every other battle launch. After
   the tag battle ends, TransitionScene has no return target — the
   player cannot return to the overworld.
-- **Status:** Open — add `returnScene: 'OverworldScene'` and
-  `returnData` matching the pattern used by other battle launches.
+- **Status:** Fixed  `returnData` matching the pattern used by other battle launches.
 
 ### Name-rater NPC double-resume — player walks behind NicknameScene
 
@@ -928,8 +909,7 @@ passing.
   completes, another `sm.resume()` fires. First resume unpauses
   OverworldScene while NicknameScene is still active — the player can
   walk and interact behind the overlay.
-- **Status:** Open — defer the resume to after NicknameScene completes,
-  or track the pending overlay and skip the shutdown-triggered resume.
+- **Status:** Fixed  or track the pending overlay and skip the shutdown-triggered resume.
 
 ### Show-pokemon NPC double-resume — identical pattern
 
@@ -937,7 +917,7 @@ passing.
 - **Symptom:** Same double-resume as the name-rater bug: `sm.stop('PartyScene')`
   fires `shutdown` → `sm.resume()`, then the dialogue-close callback
   also calls `sm.resume()`. OverworldScene resumes prematurely.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### Cutscene player-move triggers wild encounters, warps, and trainer battles 🚨
 
@@ -948,7 +928,7 @@ passing.
   is false during cutscenes. If the cutscene walks the player through
   tall grass, a warp tile, or trainer LoS, the corresponding trigger
   fires mid-cutscene, breaking the scripted sequence.
-- **Status:** Open — add a `this.inCutscene` guard to `onPlayerStep()`.
+- **Status:** Fixed.inCutscene` guard to `onPlayerStep()`.
 
 ### Spread moves deduct PP once per target in doubles
 
@@ -956,8 +936,7 @@ passing.
 - **Symptom:** `executeTurn` loops over resolved targets and calls
   `MoveExecutor.execute()` for each. MoveExecutor deducts PP internally.
   Earthquake hitting 2 enemies costs 2 PP instead of 1.
-- **Status:** Open — deduct PP once before the target loop, or pass a
-  `skipPPDeduction` flag for the second target.
+- **Status:** Fixed  `skipPPDeduction` flag for the second target.
 
 ### Spread damage undo produces wrong HP when full damage ≥ remaining HP
 
@@ -967,8 +946,7 @@ passing.
   80 HP and full damage was 100: MoveExecutor sets HP=0, then undo
   adds 25 → HP=25. Correct: 80−75=5. The post-hoc undo gives wrong
   HP whenever full damage ≥ remaining HP.
-- **Status:** Open — compute and apply the reduced damage directly
-  instead of undo-then-readd.
+- **Status:** Fixed  instead of undo-then-readd.
 
 ### Protect blocks self-targeting and field-targeting moves
 
@@ -979,8 +957,7 @@ passing.
   targeting moves (Sunny Day `effect.type:'weather'`) are blocked when
   the opponent happens to be protected. In the games these bypass
   Protect.
-- **Status:** Open — skip the Protect gate for self-target and field
-  moves.
+- **Status:** Fixed  moves.
 
 ### Two-turn move attack turn + Protect = double PP deduction
 
@@ -989,7 +966,7 @@ passing.
   `skipPPDeduction` is true, but the Protect check has its own
   unconditional PP deduction that ignores `skipPPDeduction`.
   Fly/Dig/Solar Beam into Protect costs 2 PP instead of 1.
-- **Status:** Open — the Protect path should respect `skipPPDeduction`.
+- **Status:** Fixed.
 
 ### Fixed-damage and level-damage moves ignore type immunity
 
@@ -999,8 +976,7 @@ passing.
   Ghost-type) skip any type-effectiveness check. Seismic Toss deals
   `attacker.level` damage to Ghost-types (should be immune). Night
   Shade hits Normal-types.
-- **Status:** Open — add a type-immunity check before applying fixed
-  or level-based damage.
+- **Status:** Fixed  or level-based damage.
 
 ### resetProtectRate only fires on hit, not on move use
 
@@ -1010,7 +986,7 @@ passing.
   reset. In the games, using any non-Protect move resets the counter
   regardless of hit/miss. A player who misses then uses Protect gets
   50% success instead of 100%.
-- **Status:** Open — move `resetProtectRate` before the accuracy check.
+- **Status:** Fixed.
 
 ### `all-adjacent` targeting only hits enemies, not ally
 
@@ -1019,7 +995,7 @@ passing.
   slots. In the games, Earthquake/Surf/Discharge hit all adjacent
   Pokémon including the ally. The comment on L16 even acknowledges
   this ("may also hit ally") but the implementation doesn't.
-- **Status:** Open — include the ally slot in `all-adjacent` targets.
+- **Status:** Fixed.
 
 ### Critical hit does not ignore unfavorable stat stages
 
@@ -1030,8 +1006,7 @@ passing.
   −6 Attack still deals drastically reduced damage on a crit; in
   Gen III+ a crit should ignore the attacker's negative Attack/SpAtk
   stages and the defender's positive Defense/SpDef stages.
-- **Status:** Open — recalculate A/D ignoring unfavorable stages when
-  `isCritical` is true.
+- **Status:** Fixed  `isCritical` is true.
 
 ### Critical hit flag returned `true` on type-immune moves
 
@@ -1041,7 +1016,7 @@ passing.
   the returned `DamageResult` has `{ damage: 0, isCritical: true }`.
   UI code checking `result.isCritical` will display "Critical hit!"
   on a move that dealt zero damage due to immunity.
-- **Status:** Open — set `isCritical = false` when effectiveness is 0.
+- **Status:** Fixed.
 
 ### Level-up HP gain revives fainted Pokémon
 
@@ -1051,7 +1026,7 @@ passing.
   silently revived. The current sole caller only awards to alive
   Pokémon, but the calculator contract is unsafe for any future
   EXP-Share or party-wide EXP path.
-- **Status:** Open — guard `hpGain` addition with `currentHp > 0`.
+- **Status:** Fixed.
 
 ### EXP accumulates unbounded at level 100
 
@@ -1060,7 +1035,7 @@ passing.
   loop. At level 100 the loop exits immediately but EXP keeps growing
   past `expForLevel(101)`. `SummaryScene` shows "0 EXP to next level"
   as if a level-up is imminent rather than impossible.
-- **Status:** Open — skip the `+= expGained` when level is already 100.
+- **Status:** Fixed.
 
 ### BattleStateMachine has no transition guards
 
@@ -1070,8 +1045,7 @@ passing.
   terminal states (VICTORY/DEFEAT/FLEE/CAPTURE), or impossible jumps
   (INTRO→VICTORY). Any double-call from a race condition in delayed
   callbacks silently re-enters a state.
-- **Status:** Open — add an allowed-transitions map or at minimum
-  guard terminal states.
+- **Status:** Fixed  guard terminal states.
 
 ### QuestManager automation dead after EventManager.reset() 🚨
 
@@ -1083,7 +1057,7 @@ passing.
   quest `flag-set`, `map-entered`, and `trainer-defeated` listeners are
   permanently lost — quest automation is broken for the rest of the
   session after starting a new game or loading a save.
-- **Status:** Open — call `QuestManager.resetAutomation()` from
+- **Status:** Fixed.resetAutomation()` from
   `GameManager.reset()`, or have `initAutomation()` ignore the flag
   after a `reset()`.
 
@@ -1094,8 +1068,7 @@ passing.
   increments `StatsManager.stepCount` (a private field). Nothing ever
   calls `incrementStat('totalSteps')`. The Statistics screen always
   shows 0.
-- **Status:** Open — wire `incrementStepCount()` to also
-  `incrementStat('totalSteps')`.
+- **Status:** Fixed  `incrementStat('totalSteps')`.
 
 ### gameStats.moneyEarned and moneySpent are never incremented
 
@@ -1104,7 +1077,7 @@ passing.
   never call `incrementStat('moneyEarned')` or
   `incrementStat('moneySpent')`. The Statistics screen always shows 0
   for both.
-- **Status:** Open.
+- **Status:** Fixed.
 
 ### gameStats.highestDamage never set and incrementStat is additive
 
@@ -1113,8 +1086,7 @@ passing.
   Even if it were called, `incrementStat` does
   `this.gameStats[key] += amount` (additive), not max-tracking. The
   "Highest Damage" stat in the Statistics menu is permanently 0.
-- **Status:** Open — add a `recordMax(key, value)` method and call it
-  from `MoveExecutor` after damage is computed.
+- **Status:** Fixed  from `MoveExecutor` after damage is computed.
 
 ### AudioManager.setMuted(false) does not restore BGM
 
@@ -1124,8 +1096,7 @@ passing.
   `this.muted = false` and persists to localStorage — it does NOT
   restart the BGM. The player hears silence until a scene transition
   triggers `playBGM()`.
-- **Status:** Open — save `currentBGMKey` before stopping, and replay
-  it on unmute.
+- **Status:** Fixed  it on unmute.
 
 ### NPCBehavior.destroy() leaks in-flight tweens on respawn
 
@@ -1136,7 +1107,7 @@ passing.
   flight wander tween continues targeting the destroyed sprite. Its
   `onComplete` callback calls `this.npc.stopWalkAnim()` on a dead
   object.
-- **Status:** Open — kill the active tween in `destroy()`.
+- **Status:** Fixed.
 
 ### CutsceneEngine NPC movement drifts off tile grid
 
@@ -1146,8 +1117,7 @@ passing.
   imprecision accumulates over multiple tiles. Unlike
   `GridMovement.move()`, which computes targets from integer tile
   coords, no snap-to-grid occurs between steps.
-- **Status:** Open — compute targets from integer tile coordinates
-  and snap after each step.
+- **Status:** Fixed  and snap after each step.
 
 ### BerryGarden watering bonus applies retroactively
 
@@ -1157,8 +1127,7 @@ passing.
   including already-elapsed time. Watering at minute 350 (10 min before
   ready) makes `fullThreshold = 240` which `elapsed(350) >= 240`
   satisfies → instant harvest.
-- **Status:** Open — apply the speed multiplier only to the remaining
-  time from the moment of watering.
+- **Status:** Fixed  time from the moment of watering.
 
 ### 10 battle-logic `Math.random()` calls bypass seeded RNG
 
@@ -1171,7 +1140,7 @@ passing.
   Flip board shuffle all use raw `Math.random()` instead of the
   project's `seededRandom()`. This breaks replay determinism and test
   seeding for core gameplay outcomes.
-- **Status:** Open — replace all gameplay `Math.random()` calls with
+- **Status:** Fixed.random()` calls with
   `seededRandom()`.
 
 ### PlayerStateManager.getPlayerPosition returns mutable reference
@@ -1181,7 +1150,7 @@ passing.
   directly. Any caller can mutate `.x`, `.y`, `.direction` and silently
   change the manager's internal state, bypassing `setPlayerPosition()`.
   Other getters defensively copy; this one doesn't.
-- **Status:** Open — return a shallow copy.
+- **Status:** Fixed.
 
 ### StatsManager.getGameStats returns mutable internal object
 
@@ -1190,7 +1159,7 @@ passing.
   Any accidental write silently corrupts the stats and is persisted on
   next save. All other getters in the facade defensively copy; this one
   doesn't.
-- **Status:** Open — return `{ ...this.gameStats }`.
+- **Status:** Fixed...this.gameStats }`.
 
 ### ProgressManager.getFlags returns mutable internal record
 
@@ -1199,7 +1168,7 @@ passing.
   consumer writing `gm.getFlags()['someFlag'] = true` sets a flag
   without triggering `EventManager.emit('flag-set', ...)`, bypassing
   quest automation and achievement checks.
-- **Status:** Open — return `{ ...this.flags }`.
+- **Status:** Fixed...this.flags }`.
 
 ### PartyManager.getBoxes / getBoxNames return mutable arrays
 
@@ -1207,7 +1176,7 @@ passing.
 - **Symptom:** Both return live internal arrays. Any code that
   `boxes[0].push(...)` would bypass capacity checks and deposit logic.
   The party is defensively cloned at the facade layer; boxes are not.
-- **Status:** Open — return defensive copies.
+- **Status:** Fixed.
 
 ### AudioManager.lowHpTimer orphaned on scene change
 
@@ -1218,7 +1187,7 @@ passing.
   `lowHpActive` stays `true` but the timer is gone —
   `startLowHpWarning()` becomes a permanent no-op and the low-HP beep
   can never be restarted.
-- **Status:** Open — stop the timer in `setScene()`.
+- **Status:** Fixed.
 
 ### Unsafe `as unknown` casts in OverworldInteraction and GridMovement
 
@@ -1228,7 +1197,7 @@ passing.
   bypass all type checking. If the target properties are renamed or
   removed, TypeScript will not catch the break — these are runtime
   crashes waiting to happen.
-- **Status:** Open — use proper typed interfaces or expose setters.
+- **Status:** Fixed.
 
 ---
 

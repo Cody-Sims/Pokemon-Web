@@ -20,6 +20,7 @@ export class AudioManager {
   private previousBGMKey = '';
   private savedBgmKey = '';
   private bgmPaused = false;
+  private lastBGMKey: string | null = null;
 
   private constructor() {
     // HIGH-21 / MED-24: Restore mute state from persisted settings
@@ -47,6 +48,7 @@ export class AudioManager {
     if (this.scene && this.scene.tweens && this.currentBGM) {
       try { this.scene.tweens.killTweensOf(this.currentBGM); } catch { /* scene may already be destroyed */ }
     }
+    this.stopLowHpWarning(); // clean up old timer before switching scenes
     this.scene = scene;
     this.handleAutoplayPolicy();
   }
@@ -456,9 +458,13 @@ export class AudioManager {
       localStorage.setItem('pokemon-web-settings', JSON.stringify(settings));
     } catch { /* ignore storage errors */ }
     if (muted) {
+      this.lastBGMKey = this.currentBGMKey;
       this.stopBGM();
       this.stopLowHpWarning();
       this.stopLoHpWarning();
+    } else if (this.lastBGMKey) {
+      this.playBGM(this.lastBGMKey);
+      this.lastBGMKey = null;
     }
   }
   isMuted(): boolean { return this.muted; }

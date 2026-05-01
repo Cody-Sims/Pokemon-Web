@@ -60,7 +60,7 @@ import {
 import { getBestRod, attemptFish } from './OverworldFishing';
 import { healParty as healPartyHelper } from './OverworldHealing';
 import { getFootstepSFX as getFootstepSFXHelper } from './OverworldFootsteps';
-import { tryInteract as tryInteractHelper, InteractionContext } from './OverworldInteraction';
+import { tryInteract as tryInteractHelper, InteractionContext, OverworldState } from './OverworldInteraction';
 import { buildTilemap, redrawTilemapTile, TilemapResult } from '@systems/rendering/TilemapBuilder';
 import { GlowEmitterSystem } from '@systems/rendering/GlowEmitterSystem';
 
@@ -84,8 +84,13 @@ export class OverworldScene extends Phaser.Scene {
   private cutsceneEngine!: CutsceneEngine;
   /** Frames to skip confirm input after resuming (prevents re-trigger). */
   private resumeCooldown = 0;
-  private isCycling = false;
-  private surfing = false;
+  /** Shared mutable reference so interaction handlers can write through. */
+  private readonly overworldState: OverworldState = { surfing: false, isCycling: false };
+
+  private get isCycling(): boolean { return this.overworldState.isCycling; }
+  private set isCycling(v: boolean) { this.overworldState.isCycling = v; }
+  private get surfing(): boolean { return this.overworldState.surfing; }
+  private set surfing(v: boolean) { this.overworldState.surfing = v; }
   /** Tilemap layers + animated sprite references created by TilemapBuilder. */
   private tilemapResult: TilemapResult | null = null;
   private tileAnimFrame = 0;
@@ -663,6 +668,8 @@ export class OverworldScene extends Phaser.Scene {
   // ── Per-step hooks ────────────────────────────────────────
   private onPlayerStep(): void {
     if (this.transitioning) return;
+    // Don't trigger warps/encounters/trainers during cutscene movement
+    if (this.cutsceneEngine?.isRunning()) return;
 
     // Move follower to the player's previous position (1-tile trail)
     if (this.follower?.visible) {
@@ -918,7 +925,7 @@ export class OverworldScene extends Phaser.Scene {
       player: this.player,
       npcs: this.npcs,
       mapObjects: this.mapObjects,
-      surfing: this.surfing,
+      overworldState: this.overworldState,
       cutsceneEngine: this.cutsceneEngine,
       triggerTrainerBattle: (t) => this.triggerTrainerBattle(t),
       triggerWildEncounter: (p) => this.triggerWildEncounter(p),
@@ -930,6 +937,7 @@ export class OverworldScene extends Phaser.Scene {
       pushBoulder: (bx, by, d) => this.pushBoulder(bx, by, d),
       tryFishing: () => this.tryFishing(),
       getGameMinutes: () => this.gameClock.getTotalElapsed(),
+      mapKey: this.mapKey,
     };
     tryInteractHelper(ctx);
   }

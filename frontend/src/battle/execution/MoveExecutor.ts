@@ -33,6 +33,7 @@ export class MoveExecutor {
     moveId: string,
     statusHandler?: StatusEffectHandler,
     weatherManager?: WeatherManager,
+    skipPPDeduction?: boolean,
   ): MoveExecutionResult {
     const move = moveData[moveId];
     const attackerName = attacker.nickname ?? `Pokemon #${attacker.dataId}`;
@@ -49,8 +50,8 @@ export class MoveExecutor {
 
     if (!move) return miss();
 
-    // Track whether PP was already deducted during a two-turn charge
-    let skipPPDeduction = false;
+    // Track whether PP deduction should be skipped (two-turn attack turn or spread move subsequent targets)
+    let shouldSkipPP = skipPPDeduction ?? false;
 
     // ── Two-turn move: charge turn ──
     if (move.effect?.type === 'two-turn' && statusHandler) {
@@ -84,14 +85,19 @@ export class MoveExecutor {
       }
       // Attack turn — clear charging and proceed with normal execution
       statusHandler.clearCharging(attacker);
-      skipPPDeduction = true;
+      shouldSkipPP = true;
     }
 
     // ── Protect / Detect: check if defender is protected ──
-    if (statusHandler && move.effect?.type !== 'protect' && statusHandler.isProtected(defender)) {
-      // Deduct PP even though the move is blocked
-      const moveInstance = attacker.moves.find(m => m.moveId === moveId);
-      if (moveInstance && moveInstance.currentPp > 0) moveInstance.currentPp--;
+    // Skip the Protect gate for self-targeting and field-targeting moves
+    if (statusHandler && move.effect?.type !== 'protect'
+        && move.effect?.target !== 'self' && move.effect?.type !== 'weather'
+        && statusHandler.isProtected(defender)) {
+      // Deduct PP even though the move is blocked (respect shouldSkipPP for two-turn attack turns)
+      if (!shouldSkipPP) {
+        const moveInstance = attacker.moves.find(m => m.moveId === moveId);
+        if (moveInstance && moveInstance.currentPp > 0) moveInstance.currentPp--;
+      }
 
       return {
         damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false },
@@ -162,7 +168,7 @@ export class MoveExecutor {
       // Deduct PP before accuracy check (PP is spent on attempt, not on hit)
       // HIGH-5: Skip if this is a two-turn move's attack turn (PP deducted on charge)
       const moveInstance = attacker.moves.find(m => m.moveId === moveId);
-      if (moveInstance && !skipPPDeduction && move.effect?.type !== 'two-turn') {
+      if (moveInstance && !shouldSkipPP && move.effect?.type !== 'two-turn') {
         if (moveInstance.currentPp > 0) {
           moveInstance.currentPp--;
         } else {
@@ -170,6 +176,11 @@ export class MoveExecutor {
           return miss();
         }
       }
+    }
+
+    // Reset protect success rate on every move use, regardless of hit/miss
+    if (statusHandler && move.effect?.type !== 'protect') {
+      statusHandler.resetProtectRate(attacker);
     }
 
     // Check accuracy (AUDIT-026: pass attacker/defender for accuracy/evasion stages)
@@ -185,11 +196,6 @@ export class MoveExecutor {
         };
       }
       return miss();
-    }
-
-    // MED-3: Reset protect success rate only after accuracy check succeeds
-    if (statusHandler && move.effect?.type !== 'protect') {
-      statusHandler.resetProtectRate(attacker);
     }
 
     // BUG-027: Dream Eater requires target to be asleep
@@ -247,6 +253,24 @@ export class MoveExecutor {
 
     // Fixed damage (Sonic Boom = 20, Dragon Rage = 40)
     if (move.effect?.type === 'fixed-damage') {
+      // Check type immunity before applying fixed damage
+      const defData = pokemonData[defender.dataId];
+      if (defData) {
+        const eff = getCombinedEffectiveness(
+          move.type as PokemonType,
+          defData.types as [PokemonType] | [PokemonType, PokemonType]
+        );
+        if (eff === 0) {
+          return {
+            damage: { damage: 0, effectiveness: 0, isCritical: false, isSTAB: false },
+            moveHit: false,
+            moveName: move.name,
+            attackerName,
+            defenderName,
+            effectMessages: [`It doesn't affect ${defenderName}...`],
+          };
+        }
+      }
       const dmg = move.effect.amount ?? 0;
       defender.currentHp = Math.max(0, defender.currentHp - dmg);
       return {
@@ -261,6 +285,24 @@ export class MoveExecutor {
 
     // Level-based damage (Seismic Toss, Night Shade, Psywave)
     if (move.effect?.type === 'level-damage') {
+      // Check type immunity before applying level-based damage
+      const defData = pokemonData[defender.dataId];
+      if (defData) {
+        const eff = getCombinedEffectiveness(
+          move.type as PokemonType,
+          defData.types as [PokemonType] | [PokemonType, PokemonType]
+        );
+        if (eff === 0) {
+          return {
+            damage: { damage: 0, effectiveness: 0, isCritical: false, isSTAB: false },
+            moveHit: false,
+            moveName: move.name,
+            attackerName,
+            defenderName,
+            effectMessages: [`It doesn't affect ${defenderName}...`],
+          };
+        }
+      }
       const dmg = attacker.level;
       defender.currentHp = Math.max(0, defender.currentHp - dmg);
       return {

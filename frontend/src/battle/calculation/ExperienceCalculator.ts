@@ -70,6 +70,11 @@ export class ExperienceCalculator {
 
   /** Award EXP and handle level ups. Returns info about levels gained. */
   static awardExp(pokemon: PokemonInstance, expGained: number): LevelUpResult {
+    // Bug #11: Skip EXP gain at level 100
+    if (pokemon.level >= 100) {
+      return { levelsGained: 0, newLevel: pokemon.level, newMoves: [] };
+    }
+
     pokemon.exp += expGained;
     let levelsGained = 0;
     const newMoves: string[] = [];
@@ -118,9 +123,9 @@ export class ExperienceCalculator {
     // HP formula (nature does not affect HP)
     pokemon.stats.hp = Math.floor(((2 * base.hp + iv.hp + Math.floor(ev.hp / 4)) * level) / 100) + level + 10;
 
-    // Increase currentHp by the amount the max HP grew
+    // Increase currentHp by the amount the max HP grew (only for non-fainted Pokémon)
     const hpGain = pokemon.stats.hp - oldMaxHp;
-    if (hpGain > 0) {
+    if (hpGain > 0 && pokemon.currentHp > 0) {
       pokemon.currentHp += hpGain;
     }
 

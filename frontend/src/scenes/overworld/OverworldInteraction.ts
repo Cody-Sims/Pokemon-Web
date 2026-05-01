@@ -16,13 +16,20 @@ import type { Direction } from '@utils/type-helpers';
 import type { PokemonInstance } from '@data/interfaces';
 import type { CutsceneDefinition } from '@systems/engine/CutsceneEngine';
 
+/** Shared mutable overworld state — passed by reference so handlers can write through. */
+export interface OverworldState {
+  surfing: boolean;
+  isCycling: boolean;
+}
+
 export interface InteractionContext {
   scene: Phaser.Scene;
   mapDef: MapDefinition;
   player: { getTilePosition(): { x: number; y: number }; getFacing(): Direction };
   npcs: NPC[];
   mapObjects: InteractableObject[];
-  surfing: boolean;
+  /** Shared mutable reference — write to this to update the scene's surfing/isCycling. */
+  overworldState: OverworldState;
   cutsceneEngine: { play(cutscene: CutsceneDefinition): void };
   triggerTrainerBattle(trainer: Trainer): void;
   triggerWildEncounter(pokemon: PokemonInstance): void;
@@ -35,6 +42,8 @@ export interface InteractionContext {
   tryFishing(): void;
   /** Total game minutes elapsed (for time-gated interactions like berry trees). */
   getGameMinutes(): number;
+  /** Map key for return-from-battle data. */
+  mapKey: string;
 }
 
 /** Handle player interact action — NPC dialogue/dispatch and tile interactions. */
@@ -201,9 +210,10 @@ export function tryInteract(ctx: InteractionContext): void {
         sm.pause();
         sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
         sm.get('DialogueScene').events.once('shutdown', () => {
-          // Launch party selection, then naming input for the chosen Pokémon
+          let selectionHandled = false;
           sm.launch('PartyScene', { selectMode: true });
           sm.get('PartyScene').events.once('pokemon-selected', (index: number) => {
+            selectionHandled = true;
             sm.stop('PartyScene');
             const party = gm.getParty();
             const selected = party[index];
@@ -214,8 +224,10 @@ export function tryInteract(ctx: InteractionContext): void {
             });
           });
           sm.get('PartyScene').events.once('shutdown', () => {
-            // If PartyScene shut down without selection, just resume
-            sm.resume();
+            // Only resume if PartyScene shut down without a selection
+            if (!selectionHandled) {
+              sm.resume();
+            }
           });
         });
         return;
@@ -239,6 +251,7 @@ export function tryInteract(ctx: InteractionContext): void {
             sm.get('DialogueScene').events.once('shutdown', () => {
               sm.start('TransitionScene', {
                 targetScene: 'BattleScene',
+                returnScene: 'OverworldScene',
                 targetData: {
                   isDouble: true,
                   allyParty,
@@ -246,6 +259,7 @@ export function tryInteract(ctx: InteractionContext): void {
                   trainerId: enemy1Id,
                   victoryFlag: wonFlag ?? '',
                 },
+                returnData: { mapKey: ctx.mapKey, spawnId: '__resume' },
               });
             });
             return;
@@ -264,8 +278,10 @@ export function tryInteract(ctx: InteractionContext): void {
           sm.pause();
           sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
           sm.get('DialogueScene').events.once('shutdown', () => {
+            let selectionHandled = false;
             sm.launch('PartyScene', { selectMode: true });
             sm.get('PartyScene').events.once('pokemon-selected', (index: number) => {
+              selectionHandled = true;
               sm.stop('PartyScene');
               const party = gm.getParty();
               const selected = party[index];
@@ -281,7 +297,12 @@ export function tryInteract(ctx: InteractionContext): void {
                 sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
               }
             });
-            sm.get('PartyScene').events.once('shutdown', () => sm.resume());
+            sm.get('PartyScene').events.once('shutdown', () => {
+              // Only resume if PartyScene shut down without a selection
+              if (!selectionHandled) {
+                sm.resume();
+              }
+            });
           });
           return;
         }
@@ -295,6 +316,9 @@ export function tryInteract(ctx: InteractionContext): void {
           sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
           sm.get('DialogueScene').events.once('shutdown', () => {
             const wild = EncounterSystem.createWildPokemon(speciesId, lvl);
+            // Resume before triggering encounter — triggerWildEncounter uses
+            // delayedCall which won't fire on a paused scene.
+            sm.resume();
             ctx.triggerWildEncounter(wild);
           });
           return;
@@ -549,12 +573,11 @@ export function tryInteract(ctx: InteractionContext): void {
     }
 
     // Surf: start surfing on water
-    if (tile === Tile.WATER && !ctx.surfing && OverworldAbilities.canUse('surf')) {
+    if (tile === Tile.WATER && !ctx.overworldState.surfing && OverworldAbilities.canUse('surf')) {
       ctx.showFieldAbilityPopup('SURF!');
-      // AUDIT-016: Actually enable surfing
-      (ctx as unknown as { surfing: boolean }).surfing = true;
+      ctx.overworldState.surfing = true;
       // Auto-dismount bicycle when entering water
-      (ctx as unknown as { isCycling: boolean }).isCycling = false;
+      ctx.overworldState.isCycling = false;
       AchievementManager.getInstance().unlock('surf-first');
       return;
     }

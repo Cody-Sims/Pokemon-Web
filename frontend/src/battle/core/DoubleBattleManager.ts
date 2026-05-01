@@ -252,7 +252,10 @@ export class DoubleBattleManager {
         turnMessages.push(...turnStart.messages);
         if (!turnStart.canAct) continue;
 
-        // Execute against each target
+        // Deduct PP once before iterating targets (spread moves deducted PP per target)
+        const isSpread = targets.length > 1;
+        let ppDeducted = false;
+
         for (const targetIdx of targets) {
           // Re-check attacker is still alive before each hit (MED-7: faint mid-execute)
           if (!attacker || attacker.currentHp <= 0) break;
@@ -261,22 +264,25 @@ export class DoubleBattleManager {
           const defender = refreshedActive[targetIdx];
           if (!defender || defender.currentHp <= 0) continue;
 
-          // Calculate spread move damage reduction BEFORE executing
-          const isSpread = targets.length > 1;
+          // Compute spread damage reduction BEFORE applying to defender HP
+          const skipPP = ppDeducted;
+          const hpBefore = defender.currentHp;
           const result = MoveExecutor.execute(
             attacker,
             defender,
             action.moveId,
             this.statusHandler,
             this.weatherManager,
+            skipPP,
           );
+          ppDeducted = true;
 
-          // Apply 75% spread-move reduction: undo full damage then apply reduced
+          // Apply 75% spread-move reduction: restore to pre-hit HP, apply reduced damage
           if (isSpread && result.damage.damage > 0) {
-            const reduced = Math.floor(result.damage.damage * 0.75);
-            const diff = result.damage.damage - reduced;
-            defender.currentHp = Math.min(defender.currentHp + diff, defender.stats.hp);
-            result.damage = { ...result.damage, damage: reduced };
+            const fullDmg = result.damage.damage;
+            const reducedDmg = Math.floor(fullDmg * 0.75);
+            defender.currentHp = Math.max(0, hpBefore - reducedDmg);
+            result.damage = { ...result.damage, damage: reducedDmg };
           }
 
           results.push(result);
@@ -361,9 +367,11 @@ export class DoubleBattleManager {
         return isPlayerSide ? [2, 3] : [0, 1];
 
       case 'all-adjacent': {
-        // Hits both enemies (spread moves in doubles)
-        const enemies = isPlayerSide ? [2, 3] : [0, 1];
-        return enemies;
+        // Hits both enemies and the ally in doubles (spread moves like Earthquake)
+        const enemySlots = isPlayerSide ? [2, 3] : [0, 1];
+        const allySlot = isPlayerSide ? (attackerSlot === 0 ? 1 : 0) : (attackerSlot === 2 ? 3 : 2);
+        const active = this.getActiveBattlers();
+        return [...enemySlots, allySlot].filter(i => active[i] && active[i]!.currentHp > 0);
       }
 
       case 'all':

@@ -45,7 +45,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     });
 
     it('moonblast should lower enemy spAttack at 30% chance', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.1); // Below 30% → effect triggers
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.1); // Below 30% → effect triggers
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'moonblast', currentPp: 15 }] });
       const defender = makePokemon({ dataId: 1 });
@@ -56,7 +56,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     });
 
     it('moonblast should NOT lower enemy spAttack when chance fails', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.9); // Above 30% → no effect
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.9); // Above 30% → no effect
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'moonblast', currentPp: 15 }] });
       const defender = makePokemon({ dataId: 1 });
@@ -77,7 +77,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
 
     it('play-rough should lower enemy attack at 10% chance', () => {
       vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.05);
-      vi.spyOn(Math, 'random').mockReturnValue(0.05); // Below 10%
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.05); // Below 10%
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'play-rough', currentPp: 10 }] });
       const defender = makePokemon({ dataId: 1 });
@@ -137,7 +137,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     );
 
     it('bite should cause flinch at 30% chance', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.1); // Below 30%
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.1); // Below 30%
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'bite', currentPp: 25 }] });
       const defender = makePokemon({ dataId: 1 });
@@ -151,7 +151,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     });
 
     it('dark-pulse should cause flinch at 20% chance', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.1); // Below 20%
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.1); // Below 20%
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'dark-pulse', currentPp: 15 }] });
       const defender = makePokemon({ dataId: 1 });
@@ -162,7 +162,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     });
 
     it('dark-pulse should NOT flinch when chance fails', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.9); // Above 20%
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.9); // Above 20%
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'dark-pulse', currentPp: 15 }] });
       const defender = makePokemon({ dataId: 1 });
@@ -173,7 +173,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     });
 
     it('crunch should lower enemy defense at 20% chance', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.1); // Below 20%
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.1); // Below 20%
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'crunch', currentPp: 15 }] });
       const defender = makePokemon({ dataId: 1 });
@@ -236,7 +236,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     );
 
     it('lick should inflict paralysis at 30% chance', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.1); // Below 30%
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.1); // Below 30%
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'lick', currentPp: 30 }] });
       const defender = makePokemon({ dataId: 1 });
@@ -247,7 +247,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     });
 
     it('lick should NOT inflict paralysis when chance fails', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.9); // Above 30%
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.9); // Above 30%
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'lick', currentPp: 30 }] });
       const defender = makePokemon({ dataId: 1 });
@@ -285,7 +285,7 @@ describe('New Move Effects — Fairy / Dark / Ghost', () => {
     });
 
     it('shadow-ball should lower enemy spDefense at 20% chance', () => {
-      vi.spyOn(Math, 'random').mockReturnValue(0.1); // Below 20%
+      vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.1); // Below 20%
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'shadow-ball', currentPp: 15 }] });
       const defender = makePokemon({ dataId: 1 });

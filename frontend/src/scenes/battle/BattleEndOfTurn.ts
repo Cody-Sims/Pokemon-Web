@@ -4,6 +4,7 @@ import { HeldItemHandler } from '@battle/effects/HeldItemHandler';
 import type { PokemonInstance } from '@data/interfaces';
 import type { StatusEffectHandler } from '@battle/effects/StatusEffectHandler';
 import type { WeatherManager } from '@battle/effects/WeatherManager';
+import { seededRandom } from '@utils/math-helpers';
 
 export interface EndOfTurnEffects {
   messages: string[];
@@ -20,7 +21,7 @@ export function collectEndOfTurnEffects(
   const messages: string[] = [];
 
   // Friendship status cure: 10% chance for player's pokemon with friendship >= 220
-  if (isPlayer && pokemon.status && pokemon.friendship >= 220 && Math.random() < 0.1) {
+  if (isPlayer && pokemon.status && pokemon.friendship >= 220 && seededRandom() < 0.1) {
     const statusName =
       pokemon.status === 'paralysis' ? 'paralysis'
       : pokemon.status === 'burn' ? 'its burn'

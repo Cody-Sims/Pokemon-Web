@@ -27,8 +27,21 @@ export function defaultStats(): GameStats {
  * Extracted from GameManager to separate stats concerns.
  */
 export class StatsManager {
+  private static instance: StatsManager;
   private gameStats: GameStats = defaultStats();
   private stepCount = 0;
+
+  static getInstance(): StatsManager {
+    if (!StatsManager.instance) {
+      StatsManager.instance = new StatsManager();
+    }
+    return StatsManager.instance;
+  }
+
+  /** Reset singleton (for testing). */
+  static resetInstance(): void {
+    StatsManager.instance = undefined as unknown as StatsManager;
+  }
 
   /** Reset all stats for a new game. */
   reset(): void {
@@ -38,17 +51,25 @@ export class StatsManager {
 
   // ── Game Stats ─────────────────────────────────────────
 
-  getGameStats(): GameStats { return this.gameStats; }
+  getGameStats(): GameStats { return { ...this.gameStats }; }
   incrementStat(key: keyof GameStats, amount = 1): void {
     this.gameStats[key] += amount;
   }
   getStat(key: keyof GameStats): number { return this.gameStats[key]; }
+
+  /** Record a max-value stat (e.g. highestDamage). Only updates if value exceeds current. */
+  recordMax(key: keyof GameStats, value: number): void {
+    if (value > (this.gameStats[key] ?? 0)) {
+      this.gameStats[key] = value;
+    }
+  }
 
   // ── Step Counter ───────────────────────────────────────
 
   getStepCount(): number { return this.stepCount; }
   incrementStepCount(): number {
     this.stepCount++;
+    this.incrementStat('totalSteps', 1);
     return this.stepCount;
   }
 

@@ -43,7 +43,7 @@ export class ProgressManager {
 
   getFlag(flag: string): boolean { return this.flags[flag] ?? false; }
   setFlag(flag: string, value = true): void { this.flags[flag] = value; }
-  getFlags(): Record<string, boolean> { return this.flags; }
+  getFlags(): Record<string, boolean> { return { ...this.flags }; }
 
   // ── Trainers ───────────────────────────────────────────
 

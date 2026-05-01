@@ -2,9 +2,12 @@ import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
 import { TILE_SIZE, WALK_DURATION } from '@utils/constants';
 
+/** Sprite type for GridMovement — must have position and be a valid tween target. */
+type GridSprite = Phaser.GameObjects.Components.Transform & Phaser.GameObjects.GameObject & { x: number; y: number };
+
 /** Grid-locked tween movement engine for sprites. */
 export class GridMovement {
-  private sprite: Phaser.GameObjects.Components.Transform & Phaser.GameObjects.GameObject;
+  private sprite: GridSprite;
   private scene: Phaser.Scene;
   private isMoving = false;
   private tileX: number;
@@ -19,7 +22,7 @@ export class GridMovement {
 
   constructor(
     scene: Phaser.Scene,
-    sprite: Phaser.GameObjects.Components.Transform & Phaser.GameObjects.GameObject,
+    sprite: GridSprite,
     startTileX: number,
     startTileY: number
   ) {
@@ -116,7 +119,7 @@ export class GridMovement {
     if (isLedge) {
       // Hop animation: move horizontally/vertically + arc upward
       const hopDuration = Math.round(WALK_DURATION * 1.2);
-      const startY = (this.sprite as unknown as { y: number }).y;
+      const startY = this.sprite.y;
       this.scene.tweens.add({
         targets: this.sprite,
         x: targetPxX,
@@ -127,10 +130,10 @@ export class GridMovement {
           const progress = tween.progress;
           const arcHeight = -12 * Math.sin(progress * Math.PI);
           const baseY = Phaser.Math.Linear(startY, targetPxY, progress);
-          (this.sprite as unknown as { y: number }).y = baseY + arcHeight;
+          this.sprite.y = baseY + arcHeight;
         },
         onComplete: () => {
-          (this.sprite as unknown as { y: number }).y = targetPxY;
+          this.sprite.y = targetPxY;
           this.tileX = finalTileX;
           this.tileY = finalTileY;
           this.isMoving = false;
@@ -138,8 +141,8 @@ export class GridMovement {
         },
         onStop: () => {
           // HIGH-13: If tween is killed externally, snap to nearest tile
-          this.tileX = Math.round((this.sprite as unknown as { x: number }).x / TILE_SIZE - 0.5);
-          this.tileY = Math.round((this.sprite as unknown as { y: number }).y / TILE_SIZE - 0.5);
+          this.tileX = Math.round(this.sprite.x / TILE_SIZE - 0.5);
+          this.tileY = Math.round(this.sprite.y / TILE_SIZE - 0.5);
           this.isMoving = false;
           this.snapToTile();
         },
@@ -158,8 +161,8 @@ export class GridMovement {
         },
         onStop: () => {
           // HIGH-13: If tween is killed externally, snap to nearest tile
-          this.tileX = Math.round((this.sprite as unknown as { x: number }).x / TILE_SIZE - 0.5);
-          this.tileY = Math.round((this.sprite as unknown as { y: number }).y / TILE_SIZE - 0.5);
+          this.tileX = Math.round(this.sprite.x / TILE_SIZE - 0.5);
+          this.tileY = Math.round(this.sprite.y / TILE_SIZE - 0.5);
           this.isMoving = false;
           this.snapToTile();
         },
@@ -171,7 +174,7 @@ export class GridMovement {
 
   /** Snap sprite to current tile position without tween. */
   snapToTile(): void {
-    (this.sprite as unknown as { x: number; y: number }).x = this.tileX * TILE_SIZE + TILE_SIZE / 2;
-    (this.sprite as unknown as { x: number; y: number }).y = this.tileY * TILE_SIZE + TILE_SIZE / 2;
+    this.sprite.x = this.tileX * TILE_SIZE + TILE_SIZE / 2;
+    this.sprite.y = this.tileY * TILE_SIZE + TILE_SIZE / 2;
   }
 }

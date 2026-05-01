@@ -58,13 +58,13 @@ export class DamageCalculator {
     let D: number;
     // Foul Play uses the defender's base Attack stat (without stat stages)
     const isFoulPlay = move.id === 'foul-play';
+    const attackStatKey = move.category === 'physical' ? 'attack' as const : 'spAttack' as const;
+    const defenseStatKey = move.category === 'physical' ? 'defense' as const : 'spDefense' as const;
     if (statusHandler) {
       A = move.category === 'physical'
-        ? (isFoulPlay ? defender.stats.attack : statusHandler.getEffectiveStat(attacker, 'attack'))
-        : statusHandler.getEffectiveStat(attacker, 'spAttack');
-      D = move.category === 'physical'
-        ? statusHandler.getEffectiveStat(defender, 'defense')
-        : statusHandler.getEffectiveStat(defender, 'spDefense');
+        ? (isFoulPlay ? defender.stats.attack : statusHandler.getEffectiveStat(attacker, attackStatKey))
+        : statusHandler.getEffectiveStat(attacker, attackStatKey);
+      D = statusHandler.getEffectiveStat(defender, defenseStatKey);
     } else {
       A = move.category === 'physical' ? (isFoulPlay ? defender : attacker).stats.attack : attacker.stats.spAttack;
       D = move.category === 'physical' ? defender.stats.defense : defender.stats.spDefense;
@@ -72,6 +72,38 @@ export class DamageCalculator {
 
     // AUDIT-002: Floor defense at 1 to prevent division by zero
     D = Math.max(1, D);
+
+    // Type effectiveness — use Synthesis typeOverride if present
+    const defenderTypes = defender.typeOverride ?? defenderData.types;
+    const effectiveness = getCombinedEffectiveness(
+      move.type as PokemonType,
+      defenderTypes as [PokemonType] | [PokemonType, PokemonType]
+    );
+
+    // Critical hit
+    let isCritical = seededRandom() < CRIT_CHANCE;
+    // Bug #9: No critical hit on type-immune moves
+    if (effectiveness === 0) {
+      isCritical = false;
+    }
+
+    // Bug #8: Critical hit ignores unfavorable stat stages
+    if (isCritical && statusHandler && !isFoulPlay) {
+      const atkStage = statusHandler.getState(attacker).statStages[attackStatKey];
+      const defStage = statusHandler.getState(defender).statStages[defenseStatKey];
+      // If attacker's attack stage is negative, recalculate without stage penalty
+      if (atkStage < 0) {
+        const baseA = attacker.stats[attackStatKey];
+        const neutralA = Math.floor(baseA * (STAGE_MULTIPLIERS[0] ?? 1));
+        A = Math.max(1, neutralA);
+      }
+      // If defender's defense stage is positive, recalculate without stage boost
+      if (defStage > 0) {
+        const baseD = defender.stats[defenseStatKey];
+        const neutralD = Math.floor(baseD * (STAGE_MULTIPLIERS[0] ?? 1));
+        D = Math.max(1, neutralD);
+      }
+    }
 
     // Base damage
     let damage = ((2 * level / 5 + 2) * power * A / D) / 50 + 2;
@@ -83,16 +115,8 @@ export class DamageCalculator {
       damage *= STAB_MULTIPLIER;
     }
 
-    // Type effectiveness — use Synthesis typeOverride if present
-    const defenderTypes = defender.typeOverride ?? defenderData.types;
-    const effectiveness = getCombinedEffectiveness(
-      move.type as PokemonType,
-      defenderTypes as [PokemonType] | [PokemonType, PokemonType]
-    );
     damage *= effectiveness;
 
-    // Critical hit
-    const isCritical = seededRandom() < CRIT_CHANCE;
     if (isCritical) {
       damage *= CRIT_MULTIPLIER;
     }

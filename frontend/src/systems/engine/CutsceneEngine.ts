@@ -165,11 +165,17 @@ export class CutsceneEngine {
     const dy = action.direction === 'up' ? -1 : action.direction === 'down' ? 1 : 0;
 
     for (let i = 0; i < action.tiles; i++) {
-      const targetX = npc.x + dx * TILE_SIZE;
-      const targetY = npc.y + dy * TILE_SIZE;
+      // Compute targets from integer tile coordinates to prevent drift
+      const tileX = Math.round(npc.x / TILE_SIZE);
+      const tileY = Math.round(npc.y / TILE_SIZE);
+      const targetX = (tileX + dx) * TILE_SIZE + TILE_SIZE / 2;
+      const targetY = (tileY + dy) * TILE_SIZE + TILE_SIZE / 2;
       npc.faceDirection(action.direction);
       npc.playWalkAnim(speed);
       await this.tweenTo(npc as unknown as Phaser.GameObjects.Sprite, targetX, targetY, speed);
+      // Snap to grid after each step to prevent floating-point accumulation
+      npc.x = targetX;
+      npc.y = targetY;
     }
     npc.stopWalkAnim();
   }

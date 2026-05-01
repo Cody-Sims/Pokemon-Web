@@ -28,6 +28,7 @@ export class NPCBehaviorController {
   private timer = 0;
   private nextActionAt: number;
   private isMoving = false;
+  private activeTween?: Phaser.Tweens.Tween;
 
   // Origin tile for wander radius
   private originX: number;
@@ -145,7 +146,7 @@ export class NPCBehaviorController {
     // Tween the NPC one tile
     this.isMoving = true;
     this.npc.playWalkAnim(WALK_DURATION);
-    this.scene.tweens.add({
+    this.activeTween = this.scene.tweens.add({
       targets: this.npc,
       x: targetX * TILE_SIZE + TILE_SIZE / 2,
       y: targetY * TILE_SIZE + TILE_SIZE / 2,
@@ -153,11 +154,16 @@ export class NPCBehaviorController {
       onComplete: () => {
         this.npc.stopWalkAnim();
         this.isMoving = false;
+        this.activeTween = undefined;
       },
     });
   }
 
   destroy(): void {
+    if (this.activeTween) {
+      this.activeTween.destroy();
+      this.activeTween = undefined;
+    }
     this.isMoving = false;
   }
 }

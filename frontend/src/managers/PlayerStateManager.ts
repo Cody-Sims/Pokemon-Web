@@ -2,6 +2,7 @@ import { DifficultyMode, DifficultyConfig, DIFFICULTY_CONFIGS } from '@data/diff
 import { ChallengeMode } from '@data/challenge-modes';
 import { PokemonType } from '@utils/type-helpers';
 import { SpeedrunRecords } from '@systems/engine/SpeedrunRecords';
+import { StatsManager } from './StatsManager';
 
 /** A speed-run split — playtime snapshot at a notable event. */
 export interface SpeedrunSplit {
@@ -110,7 +111,7 @@ export class PlayerStateManager {
 
   getCurrentMap(): string { return this.currentMap; }
   setCurrentMap(map: string): void { this.currentMap = map; }
-  getPlayerPosition(): { x: number; y: number; direction: string } { return this.playerPosition; }
+  getPlayerPosition(): { x: number; y: number; direction: string } { return { ...this.playerPosition }; }
   setPlayerPosition(pos: { x: number; y: number; direction: string }): void { this.playerPosition = pos; }
 
   // ── Bag (inventory) ────────────────────────────────────
@@ -146,10 +147,12 @@ export class PlayerStateManager {
   addMoney(amount: number): void {
     if (amount < 0) return; // Prevent negative money additions
     this.money += amount;
+    StatsManager.getInstance().incrementStat('moneyEarned', amount);
   }
   spendMoney(amount: number): boolean {
     if (amount < 0 || this.money < amount) return false;
     this.money -= amount;
+    StatsManager.getInstance().incrementStat('moneySpent', amount);
     return true;
   }
 

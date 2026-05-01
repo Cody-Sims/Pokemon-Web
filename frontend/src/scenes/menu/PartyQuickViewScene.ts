@@ -1,13 +1,20 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, isMobile, MIN_TOUCH_TARGET } from '@ui/theme';
+import { COLORS, isMobile, minTouchTarget } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
 
 const MAX_PARTY = 6;
-const BALL_RADIUS = isMobile() ? 10 : 8;
-const BALL_SPACING = isMobile() ? 28 : 24;
 const STROKE_WIDTH = 2;
+
+/** Compute ball radius based on current device state. */
+function ballRadius(): number {
+  return isMobile() ? 10 : 8;
+}
+/** Compute ball spacing based on current device state. */
+function ballSpacing(): number {
+  return isMobile() ? 28 : 24;
+}
 
 /** HP-based fill colours matching theme constants. */
 const HP_GREEN = COLORS.hpGreen;   // >50%
@@ -43,6 +50,8 @@ export class PartyQuickViewScene extends Phaser.Scene {
 
   create(): void {
     const layout = ui(this);
+    const BALL_RADIUS = ballRadius();
+    const BALL_SPACING = ballSpacing();
 
     // Total width of the row of balls
     const totalWidth = (MAX_PARTY - 1) * BALL_SPACING;
@@ -75,7 +84,7 @@ export class PartyQuickViewScene extends Phaser.Scene {
 
     // Interactive hit zone covering the full strip -- meets MIN_TOUCH_TARGET
     const hitWidth = bgWidth;
-    const hitHeight = Math.max(bgHeight, MIN_TOUCH_TARGET);
+    const hitHeight = Math.max(bgHeight, minTouchTarget());
     const hitZone = this.add.zone(0, 0, hitWidth, hitHeight).setInteractive();
     this.container.add(hitZone);
 

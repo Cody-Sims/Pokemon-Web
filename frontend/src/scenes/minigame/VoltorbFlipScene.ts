@@ -5,6 +5,7 @@ import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX } from '@utils/audio-keys';
+import { seededRandom } from '@utils/math-helpers';
 
 interface CardData {
   value: number; // 0 = Voltorb, 1-3 = multiplier
@@ -152,7 +153,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
         positions.push([r, c]);
     // Fisher-Yates shuffle
     for (let i = positions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = Math.floor(seededRandom() * (i + 1));
       [positions[i], positions[j]] = [positions[j], positions[i]];
     }
     return positions;

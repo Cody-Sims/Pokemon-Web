@@ -46,9 +46,9 @@ export class PartyManager {
 
   // ── PC Boxes ───────────────────────────────────────────
 
-  getBoxes(): PokemonInstance[][] { return this.boxes; }
+  getBoxes(): PokemonInstance[][] { return this.boxes.map(box => [...box]); }
   getBox(index: number): PokemonInstance[] { return this.boxes[index] ?? []; }
-  getBoxNames(): string[] { return this.boxNames; }
+  getBoxNames(): string[] { return [...this.boxNames]; }
   setBoxName(index: number, name: string): void { if (index >= 0 && index < 12) this.boxNames[index] = name; }
 
   /** Deposit a Pokémon into a specific box slot. Returns true on success. */

@@ -704,11 +704,13 @@ export class TouchControls {
   private setupDOMButtons(): void {
     const btnA = document.getElementById('btn-a');
     const btnB = document.getElementById('btn-b');
-    const swapped = this.readSetting('swapAB') === 'true';
 
     if (btnA) {
-      const aAction = swapped ? 'cancel' : 'confirm';
       const aStart = () => {
+        // Re-read swapAB each press so toggling the setting takes
+        // immediate effect without a scene reboot.
+        const swapped = this.readSetting('swapAB') === 'true';
+        const aAction = swapped ? 'cancel' : 'confirm';
         if (aAction === 'confirm') this.confirmPressed = true;
         else this.cancelPressed = true;
         btnA.classList.add('pressed');
@@ -720,8 +722,9 @@ export class TouchControls {
     }
 
     if (btnB) {
-      const bAction = swapped ? 'confirm' : 'cancel';
       const bStart = () => {
+        const swapped = this.readSetting('swapAB') === 'true';
+        const bAction = swapped ? 'confirm' : 'cancel';
         if (bAction === 'confirm') this.confirmPressed = true;
         else this.cancelPressed = true;
         btnB.classList.add('pressed');

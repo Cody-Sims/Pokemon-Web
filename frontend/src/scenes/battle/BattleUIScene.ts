@@ -29,6 +29,7 @@ import { BattleActionMenu } from './BattleActionMenu';
 import { BattleMoveMenu } from './BattleMoveMenu';
 import { BattleBagHandler } from './BattleBagHandler';
 import { BattleSwitchHandler } from './BattleSwitchHandler';
+import { seededRandom } from '@utils/math-helpers';
 
 export type UIState = 'actions' | 'moves' | 'animating' | 'message' | 'target-select';
 
@@ -489,6 +490,8 @@ export class BattleUIScene extends Phaser.Scene {
             gm.incrementStat('superEffectiveHits');
             if (gm.getStat('superEffectiveHits') >= 50) am.unlock('type-master');
           }
+          // Track highest damage dealt
+          GameManager.getInstance().statsMgr.recordMax('highestDamage', result.damage.damage);
         }
       } else if (!result.moveHit) {
         this.msg(`${name}'s attack missed!`);
@@ -578,7 +581,7 @@ export class BattleUIScene extends Phaser.Scene {
           // Check defender faint
           if (defender.currentHp <= 0) {
             // Friendship survival
-            if (!isPlayer && defender.friendship >= 220 && Math.random() < 0.1) {
+            if (!isPlayer && defender.friendship >= 220 && seededRandom() < 0.1) {
               defender.currentHp = 1;
               b.updateHpBars();
               const survName = defender.nickname ?? pokemonData[defender.dataId]?.name ?? '???';

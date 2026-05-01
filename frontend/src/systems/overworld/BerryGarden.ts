@@ -112,21 +112,18 @@ export class BerryGarden {
       for (const plot of all[mapId]) {
         if (plot.stage === 'empty' || plot.stage === 'ready') continue;
 
-        const elapsed = currentTime - plot.plantedAt;
-        const wasWatered = plot.wateredAt > 0;
-        const speedMultiplier = wasWatered ? 1.5 : 1.0; // watering = 50% faster
-
         if (plot.stage === 'planted') {
-          const threshold = this.PLANTED_TO_GROWING / speedMultiplier;
-          if (elapsed >= threshold) {
+          const effectiveElapsed = this.effectiveElapsed(currentTime, plot, this.PLANTED_TO_GROWING);
+          if (effectiveElapsed >= this.PLANTED_TO_GROWING) {
             plot.stage = 'growing';
             changed = true;
           }
         }
 
         if (plot.stage === 'growing') {
-          const fullThreshold = (this.PLANTED_TO_GROWING + this.GROWING_TO_READY) / speedMultiplier;
-          if (elapsed >= fullThreshold) {
+          const fullThreshold = this.PLANTED_TO_GROWING + this.GROWING_TO_READY;
+          const effectiveElapsed = this.effectiveElapsed(currentTime, plot, fullThreshold);
+          if (effectiveElapsed >= fullThreshold) {
             plot.stage = 'ready';
             changed = true;
           }
@@ -135,6 +132,22 @@ export class BerryGarden {
     }
 
     if (changed) this.savePlots(all);
+  }
+
+  /**
+   * Compute effective elapsed time accounting for watering.
+   * Watering speeds up only the time remaining from the moment water was applied,
+   * not retroactively from planting.
+   */
+  private static effectiveElapsed(now: number, plot: BerryPlot, threshold: number): number {
+    const rawElapsed = now - plot.plantedAt;
+    if (plot.wateredAt <= 0) return rawElapsed;
+
+    const speedMultiplier = 1.5;
+    const elapsedBeforeWater = plot.wateredAt - plot.plantedAt;
+    const elapsedAfterWater = now - plot.wateredAt;
+    // Only the time after watering is sped up
+    return elapsedBeforeWater + elapsedAfterWater * speedMultiplier;
   }
 
   // ── Internal helpers ──

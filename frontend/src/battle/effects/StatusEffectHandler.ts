@@ -1,7 +1,7 @@
 import { PokemonInstance, MoveData } from '@data/interfaces';
 import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
-import { clamp, randomInt } from '@utils/math-helpers';
+import { clamp, randomInt, seededRandom } from '@utils/math-helpers';
 import { Stats, StatStages, StatusCondition, VolatileStatus, MoveEffect, PokemonType } from '@utils/type-helpers';
 import { HeldItemHandler } from './HeldItemHandler';
 
@@ -172,7 +172,7 @@ export class StatusEffectHandler {
     // ── Freeze ──
     if (pokemon.status === 'freeze') {
       // 20% chance to thaw each turn
-      if (Math.random() < 0.2) {
+      if (seededRandom() < 0.2) {
         pokemon.status = null;
         messages.push(`${name} thawed out!`);
       } else {
@@ -183,7 +183,7 @@ export class StatusEffectHandler {
 
     // ── Paralysis ──
     if (pokemon.status === 'paralysis') {
-      if (Math.random() < 0.25) {
+      if (seededRandom() < 0.25) {
         messages.push(`${name} is paralyzed! It can't move!`);
         return { canAct: false, messages };
       }
@@ -198,7 +198,7 @@ export class StatusEffectHandler {
       } else {
         messages.push(`${name} is confused!`);
         // 50% chance to hit self
-        if (Math.random() < 0.5) {
+        if (seededRandom() < 0.5) {
           // AUDIT-046: Use proper confusion damage formula (level-based like the games)
           const confusionPower = 40;
           const level = pokemon.level;
@@ -286,7 +286,7 @@ export class StatusEffectHandler {
 
     // Check probability
     const chance = effect.chance ?? 100;
-    if (Math.random() * 100 >= chance) return { messages: [] };
+    if (seededRandom() * 100 >= chance) return { messages: [] };
 
     const target = effect.target === 'self' ? attacker : defender;
     const targetName = pokeName(target);
@@ -305,7 +305,7 @@ export class StatusEffectHandler {
         let status = effect.status;
         // Support random status selection (e.g. Tri Attack)
         if (!status && effect.randomStatus && effect.randomStatus.length > 0) {
-          status = effect.randomStatus[Math.floor(Math.random() * effect.randomStatus.length)];
+          status = effect.randomStatus[Math.floor(seededRandom() * effect.randomStatus.length)];
         }
         if (!status) break;
 
@@ -491,7 +491,7 @@ export class StatusEffectHandler {
       case 'protect': {
         const atkState = this.getState(attacker);
         // Success chance halves each consecutive use
-        if (Math.random() < atkState.protectSuccessRate) {
+        if (seededRandom() < atkState.protectSuccessRate) {
           atkState.volatileStatuses.add('protect');
           atkState.protectSuccessRate *= 0.5;
           messages.push(`${pokeName(attacker)} protected itself!`);

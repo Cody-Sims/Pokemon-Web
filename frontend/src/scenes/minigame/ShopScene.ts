@@ -6,7 +6,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { itemData } from '@data/item-data';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
-import { COLORS, FONTS, SPACING, mobileFontSize, isMobile, MIN_TOUCH_TARGET, MOBILE_SCALE, minTouchTarget, mobileScale } from '@ui/theme';
+import { COLORS, FONTS, SPACING, mobileFontSize, isMobile, minTouchTarget, mobileScale } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { ItemData } from '@data/interfaces';
 import { TouchControls } from '@ui/controls/TouchControls';
@@ -211,7 +211,7 @@ export class ShopScene extends Phaser.Scene {
 
     const visible = this.filteredItems.slice(this.scrollOffset, this.scrollOffset + this.maxVisible);
     const startY = 90;
-    const lineH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 36 * MOBILE_SCALE) : 36;
+    const lineH = isMobile() ? Math.max(minTouchTarget(), 36 * mobileScale()) : 36;
 
     visible.forEach((entry, i) => {
       const y = startY + i * lineH;

@@ -4,6 +4,31 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-05-01]
+
+### Fixed — All remaining open bugs (34 issues from rounds 3-6)
+
+Addressed every remaining open bug across all audit cycles.
+Build passes, 2163 tests pass. 0 open bugs remain.
+
+**Critical/blocking:** SURF value-copy fix, wild-encounter softlock,
+tag-battle returnScene, cutscene encounter guard, QuestManager
+automation reset, TitleScene Continue crash (SerializedSave), HP bar init.
+
+**Battle logic (13):** Spread PP/damage, Protect self/field bypass,
+two-turn+Protect PP, fixed/level immunity, resetProtectRate on use,
+all-adjacent ally, crit stages, crit on immune, fainted level-up,
+L100 EXP cap, terminal state guards, 10 seededRandom replacements.
+
+**Overworld (6):** NPC double-resume, tween leaks, cutscene grid snap,
+berry garden timing, unsafe casts.
+
+**Managers/stats (10):** Stats tracking (steps, money, highestDamage),
+BGM unmute restore, lowHpTimer cleanup, 5 defensive copy getters.
+
+**Save/load (10):** SerializedSave type, delete loadFromSave, split
+save try/catch, AchievementManager reset, v1 defaults, map validation.
+
 ## [2026-05-03]
 
 ### Fixed — Input/DOM/misc bug batch (11 issues)

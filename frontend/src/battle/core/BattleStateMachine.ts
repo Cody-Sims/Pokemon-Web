@@ -8,6 +8,8 @@ interface StateHandler {
 
 /** Finite state machine for the battle flow. */
 export class BattleStateMachine {
+  private static readonly TERMINAL_STATES = new Set<BattleState>(['VICTORY', 'DEFEAT', 'FLEE', 'CAPTURE']);
+
   private currentState: BattleState = 'INTRO';
   private states = new Map<BattleState, StateHandler>();
 
@@ -20,6 +22,11 @@ export class BattleStateMachine {
   }
 
   transition(newState: BattleState): void {
+    if (BattleStateMachine.TERMINAL_STATES.has(this.currentState)) {
+      console.warn(`BattleStateMachine: cannot leave terminal state "${this.currentState}"`);
+      return;
+    }
+
     if (!this.states.has(newState)) {
       console.error(`BattleStateMachine: attempted transition to unregistered state "${newState}"`);
       return;
