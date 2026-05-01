@@ -4,6 +4,32 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-05-01]
+
+### Changed — Phase 2: Viridian Arc map improvements
+
+Redesigned three maps for a more distinctive player journey from Viridian City
+through Route 2 to Viridian Forest.
+
+- **Viridian City** (30×30): Added river running east-west with 2 bridges
+  dividing north bank (PokéCenter, PokéMart) from south bank (Gym, houses).
+  West-side park with flowers, pond, and sign. Route 2 exit moved to northeast
+  corner. Cut tree gates a hidden Repel (post-Badge 2 backtrack).
+- **Route 2** (widened 20→24×30): L-shaped layout with cliff face on the west
+  side. Path enters from Viridian Forest at top-right, bends west at mid-map
+  with 2-tile cliff + stairs, continues south to Viridian City. Lone NPC house
+  tucked into the bend interior. 2 cuttable trees; Crystal Cavern entrance
+  preserved on eastern cliffs.
+- **Viridian Forest** (25×40): Y-shaped branching tree-trail with left and
+  right branches (rows 7–25) that rejoin at north clearing. Deep grove sub-area
+  with dark grass. 3 cuttable trees opening hidden item alcoves (Net Ball,
+  Repel, Oran Berry). Fixed pre-existing NPC/object overlap: bugcatcher-5
+  stays at (18,22), lost Geodude moved to (20,22).
+- All internal warps updated in lockstep; external warps unchanged (Viridian
+  City south → Route 1, Forest north → Pewter City).
+
+---
+
 ## [2026-04-30]
 
 ### Added — Procedural non-rectangular map generator

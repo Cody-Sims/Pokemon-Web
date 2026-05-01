@@ -2,46 +2,46 @@ import { MapDefinition, parseMap } from '../shared';
 
 const forestGround = parseMap([
   // 0123456789012345678901234
-  'XXXXXXXX.PP.XXXXXXXXXXX.X', // 0  - north exit to Pewter side
-  'X..1......PP......1.....X', // 1  pines frame the entrance
-  'X..GGG.%..PP...GGGG.....X', // 2  irregular grass, bush
-  'X.GGG.....PP....GGG...1.X', // 3  shifted patch, pine
-  'X..GG.....PP.....GGG....X', // 4  varied grass shapes
-  'X.........PP..1.........X', // 5  lone pine in clearing
-  'X....PPPPPPPPPPP........X', // 6  ── east-west connector ──
-  'X..1.PP........~.1......X', // 7  rocky clearing: pines & rock
-  'X....PP..GGG..¢GGG......X', // 8  moss boulder among trees
-  'X....PP..GGG...GGG...%..X', // 9  bush at edge
-  'X....PP...GG...GGG......X', // 10 thinning grass
-  'X..%.PP.......~.........X', // 11 bush & rock on forest floor
-  'X....PPPPPPPPPPP........X', // 12 ── east-west connector ──
-  'X..1......PP.....%......X', // 13 pine, undergrowth
-  'X....GG...PP....GGG...1.X', // 14 irregular grass, pine
-  'X...GGG...PP....GGG.....X', // 15 dense grass patch
-  'X....GG...PP....GG......X', // 16 thinning at edges
-  'X.........PP...1........X', // 17 lone pine
-  'X....¢....PP............X', // 18 ancient moss boulder
-  'X....PPPPPPPPPPP........X', // 19 ── east-west connector ──
-  'X.ff.PP..4444...........X', // 20 flowers & deep old forest
-  'X.f..PP.44444.f.........X', // 21 dark canopy floor
-  'X....PP..4444..GGG......X', // 22 dark grass fades to tall
-  'X....PP...44~...........X', // 23 rock in dark grove
-  'X....PPPPPPPPPPP........X', // 24 ── east-west connector ──
-  'X..%......PP.....1......X', // 25 dense undergrowth section
-  'X..GGG.1..PP...GGGG.....X', // 26 pine among grass
-  'X..GGG....PP.....GGG.%..X', // 27 bush at clearing edge
-  'X..GGG....PP.....GG.....X', // 28 uneven grass
-  'X....~....PP......¢.....X', // 29 scattered rock & mossy stone
-  'X.........PP....1.%.....X', // 30 pine & bush
-  'X...GG....PP...GGG......X', // 31 staggered grass
-  'X...GGG.1.PP...GG.......X', // 32 pine breaks up grass
-  'X...GG....PP...GGG......X', // 33 irregular patch
-  'X......1..PP.......%....X', // 34 pine & bush in clearing
-  'X..f..1...PP......f.....X', // 35 wildflowers, pine
-  'X.........PP..%..1......X', // 36 bush & pine near exit
-  'X...1.....PP.........1..X', // 37 pines near south exit
+  'XXXXXXXXX.PP.XXXXXXXXXXXX', // 0  - north exit to Pewter City
+  'X..1......PP......1.....X', // 1
+  'X...GGG...PP...GGG..1...X', // 2  branching grass
+  'X..GGG....PP...GGG......X', // 3
+  'X...GG....PP....GG......X', // 4
+  'X.........PP..1.........X', // 5  clearing
+  'X...PPPPPPPPPPPPPPPPP...X', // 6  ── branches rejoin --
+  'X..1.PP..........PP.1...X', // 7  fork: left + right branches
+  'X....PP.GGG......PP.....X', // 8  left branch path
+  'X....PP.GGG......PP..%..X', // 9  right branch path
+  'X....PP..GG......PP.....X', // 10
+  'X..%.PP....~.....PP.....X', // 11 rock on forest floor
+  'X...PPPPPPPPPPPPPPPPP...X', // 12 ── east-west connector --
+  'X..1......PP.......%....X', // 13
+  'X....GG...PP...GGG..1...X', // 14 irregular grass
+  'X...GGG...PP...GGG......X', // 15 dense grass
+  'X....GG...PP...GG.......X', // 16
+  'X.........PP...1........X', // 17
+  'X>.........PP...........X', // 18 cut tree #1
+  'X...PPPPPPPPPPPPPPPPP...X', // 19 ── east-west connector --
+  'X.ff.PP.44444....PP.....X', // 20 deep grove: dark grass + flowers
+  'X.f..PP444444....PP.....X', // 21 dense dark canopy
+  'X....PP.44444....PP.GGG.X', // 22 deep grove + right-side grass
+  'X....PP..44~.....PP.GGG.X', // 23 rock in grove
+  'X....PP..........PP.>...X', // 24 cut tree #2
+  'X...PPPPPPPPPPPPPPPPP...X', // 25 ── east-west connector --
+  'X..%......PP......1.....X', // 26 dense undergrowth
+  'X..GGG..1.PP..GGGG......X', // 27 grass patches
+  'X..GGG....PP..>.GG.%....X', // 28 cut tree #3
+  'X..GGG....PP....GG......X', // 29
+  'X....~....PP.....1.%....X', // 30 rock + pine
+  'X...GG....PP..GGG.......X', // 31
+  'X...GGG.1.PP..GG........X', // 32
+  'X...GG....PP..GGG.......X', // 33
+  'X......1..PP.......%....X', // 34
+  'X..f..1...PP.....f......X', // 35
+  'X.........PP..%..1......X', // 36
+  'X...1.....PP.........1..X', // 37
   'X.........PP............X', // 38 south approach
-  'XXXXXXXX.PP.XXXXXXXXXXX.X', // 39 - south exit to Route 2
+  'XXXXXXXXX.PP.XXXXXXXXXXXX', // 39 - south exit to Route 2
 ]);
 
 export const viridianForest: MapDefinition = {
@@ -128,7 +128,7 @@ export const viridianForest: MapDefinition = {
       dialogue: ['VIRIDIAN FOREST', 'Watch your step — Bug Pokémon everywhere!'] },
     {
       id: 'forest-lost-geodude',
-      tileX: 18,
+      tileX: 20,
       tileY: 22,
       textureKey: 'item-ball', objectType: 'item-ball',
       dialogue: [
@@ -147,20 +147,47 @@ export const viridianForest: MapDefinition = {
     {
       id: 'forest-synthesis-device',
       tileX: 20,
-      tileY: 8,
+      tileY: 9,
       textureKey: 'item-ball', objectType: 'item-ball',
       dialogue: [
         'There\'s a strange device implanted in this tree...',
         'It hums with a faint teal glow.',
         'It seems to be measuring something in the ground.',
       ],
-      setsFlag: 'found_synthesis_sensor' }
+      setsFlag: 'found_synthesis_sensor' },
+    {
+      id: 'forest-net-ball',
+      tileX: 3,
+      tileY: 18,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['Found a Net Ball!'],
+      givesItem: 'net-ball',
+      requireFlag: 'badge_2',
+    },
+    {
+      id: 'forest-repel',
+      tileX: 21,
+      tileY: 24,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['Found a Repel!'],
+      givesItem: 'repel',
+      requireFlag: 'badge_2',
+    },
+    {
+      id: 'forest-oran-berry',
+      tileX: 15,
+      tileY: 28,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['Found an Oran Berry!'],
+      givesItem: 'oran-berry',
+      requireFlag: 'badge_2',
+    },
   ],
   warps: [
     // South exit → Route 2
-    { tileX: 9, tileY: 39, targetMap: 'route-2', targetSpawnId: 'from-forest' },
     { tileX: 10, tileY: 39, targetMap: 'route-2', targetSpawnId: 'from-forest' },
-    // North exit → Pewter City
+    { tileX: 11, tileY: 39, targetMap: 'route-2', targetSpawnId: 'from-forest' },
+    // North exit → Pewter City (FIXED ── do not move)
     { tileX: 9, tileY: 0, targetMap: 'pewter-city', targetSpawnId: 'from-forest' },
     { tileX: 10, tileY: 0, targetMap: 'pewter-city', targetSpawnId: 'from-forest' },
   ],

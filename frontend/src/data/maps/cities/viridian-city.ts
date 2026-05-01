@@ -1,36 +1,37 @@
 import { MapDefinition, parseMap } from '../shared';
 
 const viridianGround = parseMap([
-  // 012345678901234567890123456789
-  'TTTTTTTTTTTTT.PP.TTTTTTTTTTTTT', // 0  - north exit to Route 2
-  'T..............PP............T', // 1
-  'T..RRRRR.......PP.......RRRRRT', // 2  - houses
-  'T..HH&HH.......PP.......HH&HHT', // 3  - walls with windows
-  'T..HHDHH.......PP.......HHDHHT', // 4
-  'T....PP........PP........PP..T', // 5
-  'T..PPPPPPPPPPPPPPPPPPPPPPPP..T', // 6  - main east-west road
-  'T..PP........................T', // 7
-  'T..PP....CCCCCC....MMMMMM....T', // 8  - PokéCenter roof / Mart roof
-  'T..PP....cccccc....mmmmmm....T', // 9  - PokéCenter wall / Mart wall
-  'T..PP....cceccc....mmnmmm....T', // 10 - PokéCenter door / Mart door
-  'T..PP......PP........PP......T', // 11
-  'T..PP......PP........PP......T', // 12
-  'T..PPPPPPPPPPPPPPPPPPPPPPPP..T', // 13 - another east-west road
-  'T..PP.........PP.............T', // 14
-  'T..PP....AAAAAAPP............T', // 15 - Gym roof
-  'T..PP....ggggggPP............T', // 16 - Gym wall
-  'T..PP....ggagggPP............T', // 17 - Gym door
-  'T..PP......PP..PP............T', // 18
-  'T..PP......PP..PP..f....f....T', // 19
-  'T..PPPPPPPPPPPPPP............T', // 20
-  'T..PP.........PP.............T', // 21
-  'T..PP.....f...PP...f.........T', // 22
-  'T..PP.........PP.............T', // 23
-  'T..PP.........PPWWWW.........T', // 24 - pond
-  'T..PP.........PPWWWW.........T', // 25
-  'T..PP.........PPWWWW.........T', // 26
-  'T..PP.........PP.............T', // 27
-  'T..PP.........PP.............T', // 28
+  // 0         1         2
+  // 0123456789012345678901234567 89
+  'TTTTTTTTTTTTTTTTTTTTTTTTTT.PPT', // 0  - NE exit to Route 2
+  'T..........................PPT', // 1
+  'T..CCCCCC......MMMMMM......PPT', // 2  - PokéCenter + PokéMart roofs
+  'T..c$cccc......m$mmmm......PPT', // 3  - walls with windows
+  'T..cceccc......mmnmmm......PPT', // 4  - doors
+  'T....PP..........PP........PPT', // 5  - paths from doors
+  'TPPPPPPPPPPPPPPPPPPPPPPPPPPPPT', // 6  - main E-W road (north bank)
+  'T.PP.............PP..........T', // 7  - paths to bridges
+  'TWPPWWWWWWWWWWWWWPPWWWWWWWWWWT', // 8  - river + 2 bridges
+  'TWPPWWWWWWWWWWWWWPPWWWWWWWWWWT', // 9  - river row 2
+  'T.PP.............PP..........T', // 10 - south bank approach
+  'TPPPPPPPPPPPPPPPPPPPPPPPPPPPPT', // 11 - main E-W road (south bank)
+  'T..PP..........PP............T', // 12 - paths diverge
+  'Tfff..AAAAAAA..PP............T', // 13 - park flowers + Gym roof
+  'TfSf..ggggggg..PP......RRRRR.T', // 14 - park sign + Gym wall + House2 roof
+  'Tfff..gggaggg..PP......HH&HH.T', // 15 - park + Gym door + House2 wall
+  'T........PP....PP......HHDHH.T', // 16 - Gym approach + House2 door
+  'T.WW...PP.....RRRRR...PP.....T', // 17 - pond + House1 roof
+  'T.WW...PP.....HH&HH...PP.....T', // 18 - pond + House1 wall
+  'T.WW...PP.....HHDHH...PP.....T', // 19 - pond + House1 door
+  'T......PP......PP.....PP.....T', // 20
+  'T..>...PP......PP.....PP.....T', // 21 - cut tree (requires Cut)
+  'T..P...PPPPPPPPPP.....PP.....T', // 22 - alley behind cut tree
+  'T.............PP......PP.....T', // 23
+  'T.............PPPPPPPPPPPP...T', // 24 - paths merge
+  'T.............PP....f...f....T', // 25
+  'T.............PP.............T', // 26
+  'T.............PP.............T', // 27
+  'T.............PP.............T', // 28
   'TTTTTTTTTTTTT.PP.TTTTTTTTTTTTT', // 29 - south exit to Route 1
 ]);
 
@@ -57,8 +58,8 @@ export const viridianCity: MapDefinition = {
     {
       id: 'viridian-gym-block',
       name: 'Townsperson',
-      tileX: 10,
-      tileY: 18,
+      tileX: 9,
+      tileY: 16,
       textureKey: 'npc-male-3',
       facing: 'up',
       requireFlag: '!badge_7',
@@ -67,7 +68,7 @@ export const viridianCity: MapDefinition = {
     {
       id: 'viridian-route2-guide',
       name: 'Guide',
-      tileX: 6,
+      tileX: 25,
       tileY: 1,
       textureKey: 'npc-oldman',
       facing: 'down',
@@ -76,8 +77,8 @@ export const viridianCity: MapDefinition = {
     {
       id: 'viridian-magnus',
       name: 'Magnus',
-      tileX: 24,
-      tileY: 15,
+      tileX: 20,
+      tileY: 12,
       textureKey: 'npc-male-3',
       facing: 'left',
       dialogue: [
@@ -136,7 +137,7 @@ export const viridianCity: MapDefinition = {
     {
       id: 'viridian-edgar',
       name: 'Edgar',
-      tileX: 10,
+      tileX: 12,
       tileY: 1,
       textureKey: 'npc-oldman',
       facing: 'down',
@@ -156,10 +157,10 @@ export const viridianCity: MapDefinition = {
         },
       ],
       schedule: {
-        morning: { x: 10, y: 1 },    // near Route 2 entrance in the morning
-        day: { x: 14, y: 12 },        // strolls to the town center during the day
-        evening: { x: 5, y: 4 },      // heads home near the houses in the evening
-        night: 'hidden',               // asleep at night
+        morning: { x: 12, y: 1 },
+        day: { x: 10, y: 12 },
+        evening: { x: 22, y: 17 },
+        night: 'hidden',
       },
     }
   ],
@@ -167,35 +168,44 @@ export const viridianCity: MapDefinition = {
   objects: [
     {
       id: 'viridian-sign-south',
-      tileX: 15,
+      tileX: 17,
       tileY: 28,
       textureKey: 'sign-post', objectType: 'sign',
-      dialogue: ['VIRIDIAN CITY', '"The Eternally Green Paradise"'] }
+      dialogue: ['VIRIDIAN CITY', '"The Eternally Green Paradise"'] },
+    {
+      id: 'viridian-repel',
+      tileX: 3,
+      tileY: 23,
+      textureKey: 'item-ball', objectType: 'item-ball',
+      dialogue: ['Found a Repel!'],
+      givesItem: 'repel',
+      requireFlag: 'badge_2',
+    },
   ],
   warps: [
     // South exit → Route 1
     { tileX: 14, tileY: 29, targetMap: 'route-1', targetSpawnId: 'from-viridian' },
     { tileX: 15, tileY: 29, targetMap: 'route-1', targetSpawnId: 'from-viridian' },
-    // North exit → Route 2
-    { tileX: 14, tileY: 0, targetMap: 'route-2', targetSpawnId: 'from-viridian' },
-    { tileX: 15, tileY: 0, targetMap: 'route-2', targetSpawnId: 'from-viridian' },
+    // North exit → Route 2 (northeast corner)
+    { tileX: 27, tileY: 0, targetMap: 'route-2', targetSpawnId: 'from-viridian' },
+    { tileX: 28, tileY: 0, targetMap: 'route-2', targetSpawnId: 'from-viridian' },
     // Building doors
-    { tileX: 11, tileY: 10, targetMap: 'viridian-pokecenter', targetSpawnId: 'default' },
-    { tileX: 21, tileY: 10, targetMap: 'viridian-pokemart', targetSpawnId: 'default' },
+    { tileX: 5, tileY: 4, targetMap: 'viridian-pokecenter', targetSpawnId: 'default' },
+    { tileX: 17, tileY: 4, targetMap: 'viridian-pokemart', targetSpawnId: 'default' },
     // House doors
-    { tileX: 5, tileY: 4, targetMap: 'viridian-city-house-1', targetSpawnId: 'default' },
-    { tileX: 26, tileY: 4, targetMap: 'viridian-city-house-2', targetSpawnId: 'default' },
+    { tileX: 16, tileY: 19, targetMap: 'viridian-city-house-1', targetSpawnId: 'default' },
+    { tileX: 25, tileY: 16, targetMap: 'viridian-city-house-2', targetSpawnId: 'default' },
     // Viridian Gym door (requires 7 badges)
-    { tileX: 11, tileY: 17, targetMap: 'viridian-gym', targetSpawnId: 'default', requireFlag: 'badge_7' },
+    { tileX: 9, tileY: 15, targetMap: 'viridian-gym', targetSpawnId: 'default', requireFlag: 'badge_7' },
   ],
   spawnPoints: {
-    'default':         { x: 14, y: 13, direction: 'up' },
+    'default':         { x: 14, y: 12, direction: 'up' },
     'from-route-1':    { x: 14, y: 28, direction: 'up' },
-    'from-route-2':    { x: 14, y: 1,  direction: 'down' },
-    'from-pokecenter': { x: 11, y: 11, direction: 'down' },
-    'from-pokemart':   { x: 21, y: 11, direction: 'down' },
-    'from-house-1':    { x: 5, y: 5, direction: 'down' },
-    'from-house-2':    { x: 26, y: 5, direction: 'down' },
-    'from-gym':        { x: 11, y: 18, direction: 'down' },
+    'from-route-2':    { x: 27, y: 1,  direction: 'down' },
+    'from-pokecenter': { x: 5, y: 5, direction: 'down' },
+    'from-pokemart':   { x: 17, y: 5, direction: 'down' },
+    'from-house-1':    { x: 16, y: 20, direction: 'down' },
+    'from-house-2':    { x: 25, y: 17, direction: 'down' },
+    'from-gym':        { x: 9, y: 16, direction: 'down' },
   },
 };
