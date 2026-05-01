@@ -68,8 +68,9 @@ export class SynthesisHandler {
 
     // Apply type override if present
     if (formData.typeOverride) {
+      state.originalTypes = pokemon.typeOverride ?? undefined;
+      pokemon.typeOverride = formData.typeOverride;
       messages.push(`${name}'s type changed!`);
-      state.originalTypes = undefined; // stored externally by the battle system if needed
     }
 
     // Apply ability override if present
@@ -105,6 +106,13 @@ export class SynthesisHandler {
     if (state.boosts.spAttack) pokemon.stats.spAttack = Math.max(1, pokemon.stats.spAttack - state.boosts.spAttack);
     if (state.boosts.spDefense) pokemon.stats.spDefense = Math.max(1, pokemon.stats.spDefense - state.boosts.spDefense);
     if (state.boosts.speed) pokemon.stats.speed = Math.max(1, pokemon.stats.speed - state.boosts.speed);
+
+    // Restore type override
+    if (state.originalTypes !== undefined) {
+      pokemon.typeOverride = state.originalTypes;
+    } else {
+      delete pokemon.typeOverride;
+    }
 
     // Restore ability
     if (state.originalAbility !== undefined) {

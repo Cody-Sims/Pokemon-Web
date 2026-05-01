@@ -6,9 +6,10 @@ import { AudioManager } from '@managers/AudioManager';
 import { itemData } from '@data/item-data';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
-import { COLORS, FONTS, SPACING, mobileFontSize, isMobile, MIN_TOUCH_TARGET, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, SPACING, mobileFontSize, isMobile, MIN_TOUCH_TARGET, MOBILE_SCALE, minTouchTarget, mobileScale } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { ItemData } from '@data/interfaces';
+import { TouchControls } from '@ui/controls/TouchControls';
 
 type ShopTab = 'buy' | 'sell';
 
@@ -42,8 +43,9 @@ export class ShopScene extends Phaser.Scene {
     super({ key: 'ShopScene' });
   }
 
-  create(data: { shopId?: string }): void {
+  create(data: { shopId?: string; savedTab?: ShopTab }): void {
     this.shopId = data?.shopId ?? 'viridian-city';
+    if (data?.savedTab) this.tab = data.savedTab;
     const shopId = this.shopId;
     // Dynamically import shop data
     import('@data/shop-data').then(mod => {
@@ -155,7 +157,7 @@ export class ShopScene extends Phaser.Scene {
     layoutOn(this, () => {
       if (!resizeInit) { resizeInit = true; return; }
       this.listController?.destroy();
-      this.scene.restart({ shopId: this.shopId });
+      this.scene.restart({ shopId: this.shopId, savedTab: this.tab });
     });
   }
 
@@ -335,6 +337,7 @@ export class ShopScene extends Phaser.Scene {
     this.add.text(panelX - 80, panelY - 10, '◀', {
       ...FONTS.heading, color: COLORS.textHighlight,
     }).setOrigin(0.5).setDepth(11).setInteractive({ useHandCursor: true })
+      .setPadding(16, 12, 16, 12)
       .on('pointerdown', () => this.adjustQuantity(-1));
     this.itemListGroup.add(this.children.list[this.children.list.length - 1]);
 
@@ -346,6 +349,7 @@ export class ShopScene extends Phaser.Scene {
     this.add.text(panelX + 80, panelY - 10, '▶', {
       ...FONTS.heading, color: COLORS.textHighlight,
     }).setOrigin(0.5).setDepth(11).setInteractive({ useHandCursor: true })
+      .setPadding(16, 12, 16, 12)
       .on('pointerdown', () => this.adjustQuantity(1));
     this.itemListGroup.add(this.children.list[this.children.list.length - 1]);
 
@@ -462,6 +466,13 @@ export class ShopScene extends Phaser.Scene {
   private close(): void {
     this.listController?.destroy();
     this.scene.stop();
+  }
+
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeCancel()) {
+      this.close();
+    }
   }
 
   shutdown(): void {

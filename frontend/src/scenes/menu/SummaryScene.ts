@@ -6,7 +6,8 @@ import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
 import { itemData } from '@data/item-data';
 import { ExperienceCalculator, getNatureMultiplier, getNatureDescription } from '@battle/calculation/ExperienceCalculator';
-import { COLORS, FONTS, SPACING, TYPE_COLORS, CATEGORY_COLORS, drawPanel, drawTypeBadge, drawHpBar, drawButton, hpColor, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
+import { COLORS, FONTS, SPACING, TYPE_COLORS, CATEGORY_COLORS, drawPanel, drawTypeBadge, drawHpBar, drawButton, hpColor, mobileFontSize, mobileScale, minTouchTarget, isMobile } from '@ui/theme';
+import { TouchControls } from '@ui/controls/TouchControls';
 
 type Tab = 'INFO' | 'STATS' | 'MOVES';
 
@@ -21,9 +22,10 @@ export class SummaryScene extends Phaser.Scene {
     super({ key: 'SummaryScene' });
   }
 
-  init(data: { pokemon: PokemonInstance; partyIndex?: number }): void {
+  init(data: { pokemon: PokemonInstance; partyIndex?: number; tab?: Tab }): void {
     this.pokemon = data.pokemon;
     this.partyIndex = data.partyIndex ?? 0;
+    this.currentTab = data.tab ?? 'INFO';
   }
 
   create(): void {
@@ -49,7 +51,7 @@ export class SummaryScene extends Phaser.Scene {
     }
 
     // Close button
-    drawButton(this, layout.w - 40, 25, '✕', () => this.scene.stop(), Math.max(MIN_TOUCH_TARGET, 40), Math.max(MIN_TOUCH_TARGET, 30));
+    drawButton(this, layout.w - 40, 25, '✕', () => this.scene.stop(), Math.max(minTouchTarget(), 40), Math.max(minTouchTarget(), 30));
 
     // Tabs — distribute evenly across the canvas so portrait viewports
     // don't push the MOVES tab off the right edge (BUG-015).
@@ -59,7 +61,7 @@ export class SummaryScene extends Phaser.Scene {
       const t = this.add.text(30 + tabSlot * (i + 0.5), 80, tab, { ...FONTS.body, fontSize: mobileFontSize(16), color: COLORS.textGray })
         .setOrigin(0.5)
         .setInteractive({ useHandCursor: true });
-      t.setPadding(8, Math.max(0, (MIN_TOUCH_TARGET - 16) / 2), 8, Math.max(0, (MIN_TOUCH_TARGET - 16) / 2));
+      t.setPadding(8, Math.max(0, (minTouchTarget() - 16) / 2), 8, Math.max(0, (minTouchTarget() - 16) / 2));
       t.on('pointerdown', () => { this.currentTab = tab; this.updateTabs(); this.drawContent(); });
       return t;
     });
@@ -82,15 +84,16 @@ export class SummaryScene extends Phaser.Scene {
 
     // Swipe left/right to navigate tabs on mobile
     if (isMobile()) {
-      let swipeStartX = 0;
-      let swipeStartY = 0;
+      const swipeOrigins = new Map<number, { x: number; y: number }>();
       this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-        swipeStartX = pointer.x;
-        swipeStartY = pointer.y;
+        swipeOrigins.set(pointer.id, { x: pointer.x, y: pointer.y });
       });
       this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-        const dx = pointer.x - swipeStartX;
-        const dy = pointer.y - swipeStartY;
+        const origin = swipeOrigins.get(pointer.id);
+        swipeOrigins.delete(pointer.id);
+        if (!origin) return;
+        const dx = pointer.x - origin.x;
+        const dy = pointer.y - origin.y;
         if (Math.abs(dx) > 50 && Math.abs(dy) < 30) {
           const tabs: Tab[] = ['INFO', 'STATS', 'MOVES'];
           const idx = tabs.indexOf(this.currentTab);
@@ -112,7 +115,7 @@ export class SummaryScene extends Phaser.Scene {
     let resizeInit = false;
     layoutOn(this, () => {
       if (!resizeInit) { resizeInit = true; return; }
-      this.scene.restart({ pokemon: this.pokemon, partyIndex: this.partyIndex });
+      this.scene.restart({ pokemon: this.pokemon, partyIndex: this.partyIndex, tab: this.currentTab });
     });
   }
 
@@ -447,5 +450,12 @@ export class SummaryScene extends Phaser.Scene {
   shutdown(): void {
     this.input.keyboard?.removeAllListeners();
     this.input.removeAllListeners();
+  }
+
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeCancel()) {
+      this.scene.stop();
+    }
   }
 }

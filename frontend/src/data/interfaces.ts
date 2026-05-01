@@ -23,6 +23,8 @@ export interface MoveData {
   pp: number;
   effect?: MoveEffect;
   priority?: number;
+  /** Whether this move makes physical contact. Defaults to true for physical moves, false otherwise. */
+  contact?: boolean;
 }
 
 export interface ItemData {
@@ -86,6 +88,8 @@ export interface PokemonInstance {
   ability?: string;
   heldItem?: string | null;
   isShiny?: boolean;
+  /** Synthesis-mode type override; when set, replaces species types for STAB/effectiveness. */
+  typeOverride?: [PokemonType] | [PokemonType, PokemonType];
 }
 
 export interface MoveInstance {

@@ -45,6 +45,8 @@ export class PlayerStateManager {
   /** Lifetime full clears per tier. */
   private towerClears: Record<string, number> = {};
   private gameClockMinutes = 0;
+  /** Remaining repel steps — persisted so map transitions and battle returns don't discard them. */
+  private repelSteps = 0;
   private speedrunSplits: SpeedrunSplit[] = [];
   private settings: Record<string, string | number | boolean> = {
     textSpeed: 'medium',
@@ -87,6 +89,7 @@ export class PlayerStateManager {
     this.monotypeLock = null;
     this.berryPlots = {};
     this.berryHarvests = {};
+    this.repelSteps = 0;
     this.battlePoints = 0;
     this.towerBestStreak = {};
     this.towerClears = {};
@@ -231,6 +234,11 @@ export class PlayerStateManager {
     this.towerClears[tier] = (this.towerClears[tier] ?? 0) + 1;
   }
 
+  // ── Repel ───────────────────────────────────────────────
+
+  getRepelSteps(): number { return this.repelSteps; }
+  setRepelSteps(steps: number): void { this.repelSteps = Math.max(0, steps); }
+
   // ── Game Clock ─────────────────────────────────────────
 
   getGameClockMinutes(): number { return this.gameClockMinutes; }
@@ -272,6 +280,7 @@ export class PlayerStateManager {
       settings: this.settings,
       berryPlots: this.berryPlots,
       berryHarvests: this.berryHarvests,
+      repelSteps: this.repelSteps,
       battlePoints: this.battlePoints,
       towerBestStreak: this.towerBestStreak,
       towerClears: this.towerClears,
@@ -295,6 +304,7 @@ export class PlayerStateManager {
     settings?: Record<string, string | number | boolean>;
     berryPlots?: Record<string, unknown[]>;
     berryHarvests?: Record<string, number>;
+    repelSteps?: number;
     battlePoints?: number;
     towerBestStreak?: Record<string, number>;
     towerClears?: Record<string, number>;
@@ -315,6 +325,7 @@ export class PlayerStateManager {
     if (data.settings) this.settings = { ...this.settings, ...data.settings };
     if (data.berryPlots) this.berryPlots = data.berryPlots;
     if (data.berryHarvests) this.berryHarvests = data.berryHarvests;
+    if (typeof data.repelSteps === 'number') this.repelSteps = data.repelSteps;
     if (typeof data.battlePoints === 'number') this.battlePoints = data.battlePoints;
     if (data.towerBestStreak) this.towerBestStreak = data.towerBestStreak;
     if (data.towerClears) this.towerClears = data.towerClears;

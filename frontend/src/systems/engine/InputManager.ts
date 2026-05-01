@@ -80,4 +80,10 @@ export class InputManager {
   getTouchControls(): TouchControls | undefined {
     return this.touchControls;
   }
+
+  /** Clean up touch controls. Call from scene shutdown. */
+  destroy(): void {
+    this.touchControls?.destroy();
+    this.touchControls = undefined;
+  }
 }

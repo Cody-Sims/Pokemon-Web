@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE, TYPE_COLORS, isMobile } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale, TYPE_COLORS, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager, HallOfFameEntry } from '@managers/GameManager';
 import { pokemonData } from '@data/pokemon';
 import { SFX } from '@utils/audio-keys';
+import { TouchControls } from '@ui/controls/TouchControls';
 
 /**
  * Hall of Fame scene showing past champion completions.
@@ -168,5 +169,12 @@ export class HallOfFameScene extends Phaser.Scene {
   private close(): void {
     AudioManager.getInstance().playSFX(SFX.CANCEL);
     this.scene.stop();
+  }
+
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeCancel()) {
+      this.close();
+    }
   }
 }

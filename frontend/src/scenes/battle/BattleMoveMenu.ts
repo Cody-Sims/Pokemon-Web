@@ -4,7 +4,7 @@ import { pokemonData } from '@data/pokemon';
 import { getCombinedEffectiveness } from '@data/type-chart';
 import type { PokemonType } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
-import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
+import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile, minTouchTarget } from '@ui/theme';
 import { ui } from '@utils/ui-layout';
 import { getMoveTarget } from '@battle/core/DoubleBattleManager';
 import type { BattleUIScene } from './BattleUIScene';
@@ -84,7 +84,7 @@ export class BattleMoveMenu {
       // Type-colored button background
       const typeCol = md ? (TYPE_COLORS[md.type] ?? 0x888888) : 0x888888;
       const btnW = compactMoves ? 120 : 180;
-      const btnH = compactMoves ? 30 : 40;
+      const btnH = Math.max(minTouchTarget(), compactMoves ? 30 : 40);
       const bg = this.scene.add.graphics();
       bg.fillStyle(typeCol, 0.25);
       bg.fillRoundedRect(x - btnW / 2, y - btnH / 2, btnW, btnH, 4);

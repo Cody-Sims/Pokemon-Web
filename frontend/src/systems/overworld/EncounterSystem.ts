@@ -12,6 +12,10 @@ export class EncounterSystem {
   private repelSteps = 0;
   private rng: () => number = seededRandom;
 
+  constructor(initialRepelSteps = 0) {
+    this.repelSteps = initialRepelSteps;
+  }
+
   /** Inject a seeded PRNG for deterministic encounters (e.g. replays). */
   setRng(rng: () => number): void {
     this.rng = rng;
@@ -123,6 +127,10 @@ export class EncounterSystem {
 
   useRepel(steps: number): void {
     this.repelSteps = steps;
+  }
+
+  getRepelSteps(): number {
+    return this.repelSteps;
   }
 
   resetSteps(): void {

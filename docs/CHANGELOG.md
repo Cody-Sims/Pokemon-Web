@@ -6,6 +6,82 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-05-03]
 
+### Fixed — Input/DOM/misc bug batch (11 issues)
+
+- **NicknameScene hidden input regex mismatch:** Shared `NICKNAME_CHAR_REGEX`, `NICKNAME_STRIP_REGEX`, and `NICKNAME_MAX_LENGTH` between keyboard handler and DOM input filter. Suppress keydown when DOM input is focused. Play `SFX.CANCEL` on skip.
+- **IntroScene nickname inconsistencies + DOM lifecycle:** Same shared charset validation; wire hidden input cleanup to `events.once('shutdown', ...)` to prevent orphaned DOM elements.
+- **ConfirmBox dim overlay doesn't swallow taps:** Use Phaser `event.stopPropagation()` on the EventData object (not native DOM event) and set `useHandCursor: false` on the dim.
+- **SettingsScene fullscreen toggle unreliable:** Fullscreen now only toggles from a direct pointer gesture; keyboard path shows current state. Re-read `scale.isFullscreen` after the request resolves.
+- **IntroScene.showAppearanceScreen wipes all listeners:** Track name-typing handler and remove only that specific one instead of `removeAllListeners()`.
+- **MobileTapMenu double-activation with per-choice pointerdown:** On mobile, only `MobileTapMenu` handles taps; per-text `pointerdown` is desktop-only.
+- **Hidden DOM inputs registered with iOS Safari autofill:** Set `autocorrect="off"`, `spellcheck="false"`, `inputmode="text"`, and `name="nickname-disabled"` on both NicknameScene and IntroScene.
+- **Trainer.walkToward collision check not wired:** Assign `collisionCheck` callback on trainer spawn in OverworldScene.
+- **InputManager/TouchControls leak:** Added `destroy()` method to InputManager; called from OverworldScene shutdown.
+- **BattleScene resume-from-save:** Added JSDoc documenting that battle state is not persisted.
+- **Item-balls cannot be walked onto:** `rebuildNpcOccupiedTiles` now skips `item-ball` objects; signs/PCs/doors remain blocking.
+
+---
+
+## [2026-05-01]
+
+### Fixed — Mobile UI bug batch (15 issues)
+
+- **Cross-scene cancel/confirm leak:** Drain `TouchControls` flags on `MenuScene.create()` and on every `wake` event so stale presses don't auto-close the pause menu.
+- **Hamburger / B-button ignored in many menus:** Added `consumeCancel()` polling to `InventoryScene`, `SettingsScene`, `PokedexScene` (already via MenuController), `FlyMapScene`, `HallOfFameScene`, `AchievementScene`, `StatisticsScene`, `QuestJournalScene`, `SummaryScene`, `TrainerCardScene`, and `ShopScene`.
+- **FlyMapScene traps mobile users:** Added tappable `← BACK` button + `consumeCancel` poll; fly-to-current-map now closes the scene instead of trapping.
+- **MOBILE_SCALE / MIN_TOUCH_TARGET frozen at module load:** Converted to `mobileScale()` / `minTouchTarget()` functions; updated all call sites. Deprecated const exports remain for backward compat.
+- **layoutOn re-runs while scenes are sleeping:** Added `!scene.scene.isActive()` guard to skip resize callbacks on sleeping scenes.
+- **scene.restart discards user state:** `SummaryScene` preserves active tab, `InventoryScene` preserves category + scroll, `ShopScene` preserves buy/sell tab across resize restarts.
+- **PartyScene long-press fights click:** Unified pointerdown handler cancels long-press timer in `onSlotConfirm`; long-press flag suppresses redundant click dispatch.
+- **SummaryScene swipe races multi-touch:** Replaced shared swipeStart fields with per-pointer-id `Map` tracking.
+- **ShopScene quantity arrows sub-touch-target:** Added `setPadding(16, 12)` to ◀/▶ arrows.
+- **Battle move buttons no MIN_TOUCH_TARGET floor:** Clamped button height with `Math.max(minTouchTarget(), …)`.
+- **AchievementScene BACK button below touch target:** Added `setPadding(16, 12)` to back button; same for `StatisticsScene` close and `TrainerCardScene` close hint.
+- **DialogueScene choice panel under landscape touch controls:** Applied right-inset (140 px) on landscape mobile.
+- **DialogueScene global pointerdown fires alongside choices:** Added `choiceTappedThisFrame` flag set by per-choice handlers, checked by global handler.
+- **TouchControls swapAB only applies on next boot:** DOM button listeners now re-read `swapAB` setting on each press.
+- **PartyQuickView ball radius frozen at module load:** Converted `BALL_RADIUS`/`BALL_SPACING` to functions computed inside `create()`.
+
+### Changed
+
+- Completed full-codebase bug review cycle, round 6 (33 findings: 5 critical, 10 high, 12 medium, 6 low). See `docs/bugs.md` "2026-05-01 audit cycle — round 6" for details.
+
+---
+
+## [2026-04-30]
+
+### Added — Map-improvements Phase 0: Tooling & shared tiles
+
+Foundation work for the map-improvements roadmap (see `docs/Map-improvements.md`).
+The runtime handlers for Cut, Rock Smash, and Strength were already wired in
+`OverworldInteraction.ts` / `OverworldFieldAbilities.ts`; Phase 0 closes the
+remaining data-plumbing and validator gaps so subsequent phases can author
+real exploration content.
+
+- Added char mappings in `frontend/src/data/maps/map-parser.ts`:
+  - `'>'` → `Tile.CUT_TREE` (cuttable tree, blocks until Cut is used)
+  - `'*'` → `Tile.CRACKED_ROCK` (smashable rock, Rock Smash target)
+  - `'+'` → `Tile.STRENGTH_BOULDER` (pushable boulder, Strength target)
+- Mirrored the new chars in the validator's `VALID_CHARS` and `CHAR_TO_TILE`.
+- Added new validator checks in `temp/scripts/map-gen/validate/map-validator.ts`:
+  - **Exploration heuristic** (routes/dungeons): warn when the interior uses
+    fewer than 3 distinct solid tile types or contains zero field-ability
+    gate tiles. Currently flags 25 maps for follow-up.
+  - **Warp pair audit** (cross-map): error when a warp's `targetMap` is not
+    a registered map key, or when its `targetSpawn` doesn't exist on the
+    destination. Index reads every `key:` in every map file plus the
+    canonical `mapRegistry` entries in `data/maps/index.ts` so factory-built
+    keys (e.g. `'pallet-town-house-1'`) resolve correctly.
+- Added unit tests `tests/unit/data/field-ability-tiles.test.ts` (17 tests)
+  covering the new tile constants, parser char mappings, `SOLID_TILES` /
+  `OVERLAY_BASE` / `FOREGROUND_TILES` / `TILE_COLORS` membership.
+
+Build clean. 66/66 maps validate (415 warnings, 0 errors). 2163/2163 tests pass.
+
+---
+
+## [2026-05-03]
+
 ### Fixed — Battle HP bar, faint, and switch bug sweep (10 findings)
 
 **Battle scene (3 fixes):**

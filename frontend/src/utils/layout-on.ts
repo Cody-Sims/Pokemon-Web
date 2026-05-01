@@ -10,7 +10,13 @@
  */
 export function layoutOn(scene: Phaser.Scene, fn: () => void): void {
   fn(); // initial layout
-  const handler = () => fn();
+  const handler = () => {
+    // Don't re-layout while the scene is sleeping — another scene is
+    // on top and will handle its own resize. Without this guard, the
+    // sleeping scene creates orphaned game objects that pile up.
+    if (!scene.scene.isActive()) return;
+    fn();
+  };
   scene.scale.on('resize', handler);
   scene.events.once('shutdown', () => scene.scale.off('resize', handler));
 }

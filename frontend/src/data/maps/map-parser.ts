@@ -64,6 +64,10 @@ const CHAR_TO_TILE: Record<string, number> = {
   '^': Tile.CLIFF_FACE,
   ',': Tile.CAVE_FLOOR,
   ';': Tile.CAVE_WALL,
+  // Field-ability target tiles (Phase 0 of Map-improvements.md)
+  '>': Tile.CUT_TREE,         // small cuttable tree (Cut)
+  '*': Tile.CRACKED_ROCK,     // smashable rock (Rock Smash)
+  '+': Tile.STRENGTH_BOULDER, // pushable boulder (Strength)
   // Exterior windows (use & for house window to avoid W=WATER conflict)
   '&': Tile.HOUSE_WINDOW,
   '@': Tile.LAB_WINDOW,

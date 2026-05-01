@@ -185,7 +185,7 @@ export class SettingsScene extends Phaser.Scene {
       ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
     }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
     fsLeftArrow.setPadding(12, 10, 12, 10);
-    fsLeftArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(-1); });
+    fsLeftArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.toggleFullscreenFromGesture(); });
 
     const fsValue = this.add.text(valueX, fsY, fsState, {
       ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
@@ -195,7 +195,7 @@ export class SettingsScene extends Phaser.Scene {
       ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
     }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
     fsRightArrow.setPadding(12, 10, 12, 10);
-    fsRightArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.adjustValue(1); });
+    fsRightArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.toggleFullscreenFromGesture(); });
 
     const fsHitArea = this.add.rectangle(layout.cx, fsY + rowH / 2 - 4, layout.w - 40, rowH, 0x000000, 0)
       .setInteractive({ useHandCursor: true });
@@ -268,11 +268,12 @@ export class SettingsScene extends Phaser.Scene {
     const gm = GameManager.getInstance();
     const audio = AudioManager.getInstance();
 
-    // Fullscreen toggle (last row)
+    // Fullscreen toggle (last row) — only togglable via direct pointer gesture
+    // because the Fullscreen API requires a user-activation event. Keyboard
+    // path would fail silently on Safari / iOS. Show a hint instead.
     if (idx === SETTING_DEFS.length) {
-      this.isFullscreen = !this.isFullscreen;
-      if (this.isFullscreen) this.scale.startFullscreen();
-      else this.scale.stopFullscreen();
+      // Re-read actual fullscreen state to stay in sync
+      this.isFullscreen = this.scale.isFullscreen;
       const state = this.isFullscreen ? 'ON' : 'OFF';
       this.settingTexts[idx].value.setText(state);
       audio.playSFX(SFX.CURSOR);
@@ -343,6 +344,20 @@ export class SettingsScene extends Phaser.Scene {
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
   }
 
+  /** Toggle fullscreen from a direct pointer gesture (required by the Fullscreen API). */
+  private toggleFullscreenFromGesture(): void {
+    this.scale.toggleFullscreen();
+    // Re-read actual state after the request to stay in sync
+    this.time.delayedCall(100, () => {
+      this.isFullscreen = this.scale.isFullscreen;
+      const idx = SETTING_DEFS.length;
+      if (this.settingTexts[idx]) {
+        this.settingTexts[idx].value.setText(this.isFullscreen ? 'ON' : 'OFF');
+      }
+    });
+    AudioManager.getInstance().playSFX(SFX.CURSOR);
+  }
+
   private closeSettings(): void {
     // Persist settings to localStorage
     const gm = GameManager.getInstance();
@@ -358,6 +373,13 @@ export class SettingsScene extends Phaser.Scene {
       this.scene.wake(this.returnScene);
     } else {
       this.scene.resume(this.returnScene);
+    }
+  }
+
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeCancel()) {
+      this.closeSettings();
     }
   }
 

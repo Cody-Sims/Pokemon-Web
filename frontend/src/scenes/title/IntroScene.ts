@@ -5,6 +5,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { hintText } from '@utils/hint-text';
+import { NICKNAME_CHAR_REGEX, NICKNAME_STRIP_REGEX, NICKNAME_MAX_LENGTH } from '@utils/nickname-validation';
 
 /**
  * IntroScene — "Welcome to the world of Pokémon!" professor intro,
@@ -26,6 +27,8 @@ export class IntroScene extends Phaser.Scene {
   private difficultyMode: import('@data/difficulty').DifficultyMode = 'classic';
   private challengeModes: import('@data/challenge-modes').ChallengeMode[] = [];
   private hiddenInput?: HTMLInputElement;
+  /** Tracked keyboard handler for name input, removed specifically on phase change. */
+  private _nameKeydownHandler?: (event: KeyboardEvent) => void;
 
   // Pre-built intro slides
   private readonly slides = [
@@ -317,9 +320,13 @@ export class IntroScene extends Phaser.Scene {
     if (isMobile()) {
       this.hiddenInput = document.createElement('input');
       this.hiddenInput.type = 'text';
-      this.hiddenInput.maxLength = 10;
+      this.hiddenInput.maxLength = NICKNAME_MAX_LENGTH;
       this.hiddenInput.autocomplete = 'off';
       this.hiddenInput.autocapitalize = 'words';
+      this.hiddenInput.setAttribute('autocorrect', 'off');
+      this.hiddenInput.setAttribute('spellcheck', 'false');
+      this.hiddenInput.setAttribute('inputmode', 'text');
+      this.hiddenInput.name = 'nickname-disabled';
       Object.assign(this.hiddenInput.style, {
         position: 'fixed', left: '50%', top: '40%', transform: 'translate(-50%, -50%)',
         width: '200px', fontSize: '16px', // 16px prevents iOS auto-zoom
@@ -337,17 +344,25 @@ export class IntroScene extends Phaser.Scene {
         setTimeout(() => { if (this.hiddenInput) this.hiddenInput.style.pointerEvents = 'none'; }, 500);
       });
 
-      // Sync hidden input value → game
+      // Sync hidden input value → game (shared regex + max-length)
       this.hiddenInput.addEventListener('input', () => {
-        const val = this.hiddenInput!.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+        const val = this.hiddenInput!.value.replace(NICKNAME_STRIP_REGEX, '').slice(0, NICKNAME_MAX_LENGTH);
         this.hiddenInput!.value = val;
         this.nameInput = val;
         this.updateNameDisplay();
       });
     }
 
-    // Keyboard input for typing (desktop / hardware keyboard)
-    this.input.keyboard!.on('keydown', (event: KeyboardEvent) => {
+    // Clean up hidden DOM input on scene shutdown to avoid orphaned elements
+    this.events.once('shutdown', () => {
+      this.hiddenInput?.remove();
+      this.hiddenInput = undefined;
+    });
+
+    // Track keyboard handler so we can remove it specifically in
+    // showAppearanceScreen without wiping all listeners.
+    const nameKeydownHandler = (event: KeyboardEvent) => {
+      if (this.hiddenInput && document.activeElement === this.hiddenInput) return;
       if (event.key === 'Enter') {
         this.confirmName();
         return;
@@ -357,12 +372,14 @@ export class IntroScene extends Phaser.Scene {
         this.updateNameDisplay();
         return;
       }
-      // Allow letters and numbers, max 10 chars
-      if (this.nameInput.length < 10 && /^[a-zA-Z0-9]$/.test(event.key)) {
+      // Allow letters, numbers, spaces, hyphens — shared max-length constant
+      if (this.nameInput.length < NICKNAME_MAX_LENGTH && NICKNAME_CHAR_REGEX.test(event.key)) {
         this.nameInput += event.key;
         this.updateNameDisplay();
       }
-    });
+    };
+    this.input.keyboard!.on('keydown', nameKeydownHandler);
+    this._nameKeydownHandler = nameKeydownHandler;
   }
 
   private updateNameDisplay(): void {
@@ -403,9 +420,11 @@ export class IntroScene extends Phaser.Scene {
   private showAppearanceScreen(): void {
     this.isAnimating = true;
 
-    // Clear all listeners and fade out
-    this.input.keyboard!.removeAllListeners();
-    this.input.removeAllListeners();
+    // Remove only the name-typing listeners we added, not all listeners.
+    if (this._nameKeydownHandler) {
+      this.input.keyboard!.off('keydown', this._nameKeydownHandler);
+      this._nameKeydownHandler = undefined;
+    }
 
     // Fade everything out
     const allVisible = this.children.list.filter(c => (c as any).alpha > 0) as Phaser.GameObjects.GameObject[];

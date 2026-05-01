@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AchievementManager, AchievementDef } from '@managers/AchievementManager';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
+import { TouchControls } from '@ui/controls/TouchControls';
 
 type CategoryFilter = 'all' | 'story' | 'collection' | 'battle' | 'exploration' | 'challenge';
 
@@ -76,10 +77,11 @@ export class AchievementScene extends Phaser.Scene {
       wordWrap: { width: layout.w - 80 },
     }).setOrigin(0.5);
 
-    // Back button
+    // Back button — padded to meet MIN_TOUCH_TARGET
     const backBtn = this.add.text(40, layout.h - 25, '← BACK', {
       ...FONTS.menuItem, fontSize: mobileFontSize(14), color: COLORS.textGray,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    backBtn.setPadding(16, 12, 16, 12);
     backBtn.on('pointerdown', () => this.closeScene());
 
     // Input
@@ -125,7 +127,7 @@ export class AchievementScene extends Phaser.Scene {
     // Grid layout
     const startY = 95;
     const cellW = Math.floor((layout.w - 40) / this.COLS);
-    const cellH = Math.round(52 * MOBILE_SCALE);
+    const cellH = Math.round(52 * mobileScale());
     const maxIdx = Math.min(this.filtered.length, (this.scrollOffset + this.VISIBLE_ROWS) * this.COLS);
 
     for (let i = this.scrollOffset * this.COLS; i < maxIdx; i++) {
@@ -204,5 +206,12 @@ export class AchievementScene extends Phaser.Scene {
   private closeScene(): void {
     AudioManager.getInstance().playSFX(SFX.CANCEL);
     this.scene.stop();
+  }
+
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeCancel()) {
+      this.closeScene();
+    }
   }
 }

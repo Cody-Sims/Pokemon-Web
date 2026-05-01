@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
@@ -33,6 +33,8 @@ const FLY_DESTINATIONS: FlyDestination[] = [
   { mapKey: 'scalecrest-citadel', displayName: 'Scalecrest Citadel',  gridX: 5, gridY: 1 },
   { mapKey: 'cinderfall-town',    displayName: 'Cinderfall Town',     gridX: 7, gridY: 1 },
 ];
+
+import { TouchControls } from '@ui/controls/TouchControls';
 
 export class FlyMapScene extends Phaser.Scene {
   private cursor = 0;
@@ -77,7 +79,7 @@ export class FlyMapScene extends Phaser.Scene {
 
     // Destination list
     const startY = 80;
-    const rowH = Math.round(40 * MOBILE_SCALE);
+    const rowH = Math.round(40 * mobileScale());
     const fontSize = mobileFontSize(17);
 
     this.destTexts = this.destinations.map((dest, i) => {
@@ -103,6 +105,13 @@ export class FlyMapScene extends Phaser.Scene {
     this.cursor = 0;
     this.updateCursor();
 
+    // Back button for mobile users (no physical ESC key)
+    const backBtn = this.add.text(40, layout.h - 30, '← BACK', {
+      ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textGray,
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    backBtn.setPadding(16, 12, 16, 12);
+    backBtn.on('pointerdown', () => this.close());
+
     // Keyboard navigation
     this.input.keyboard!.on('keydown-UP', () => {
       this.cursor = (this.cursor - 1 + this.destinations.length) % this.destinations.length;
@@ -117,6 +126,13 @@ export class FlyMapScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-ENTER', () => this.confirmFly());
     this.input.keyboard!.on('keydown-SPACE', () => this.confirmFly());
     this.input.keyboard!.on('keydown-ESC', () => this.close());
+  }
+
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeCancel()) {
+      this.close();
+    }
   }
 
   private updateCursor(): void {
@@ -137,8 +153,9 @@ export class FlyMapScene extends Phaser.Scene {
     const gm = GameManager.getInstance();
 
     if (dest.mapKey === gm.getCurrentMap()) {
-      // Already here
+      // Already here — close the fly menu instead of trapping the user
       AudioManager.getInstance().playSFX(SFX.CANCEL);
+      this.close();
       return;
     }
 

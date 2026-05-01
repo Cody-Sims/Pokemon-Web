@@ -20,6 +20,16 @@ import {
   PLATFORM_PALETTE_TECH,
 } from '@ui/widgets/BattlePlatform';
 
+/**
+ * BattleScene — turn-based Pokémon battle.
+ *
+ * **Save / resume behaviour:** Battle state is NOT persisted. The save format
+ * has no field for "battle in progress". If the user hard-quits mid-battle
+ * (e.g. closes the tab or kills the app), the next session resumes on the
+ * overworld at the last saved position with the party state as it was at
+ * the most recent auto-save. A "Battle was interrupted" toast may be shown
+ * if the engine detects a dirty-shutdown flag (not yet implemented).
+ */
 export class BattleScene extends Phaser.Scene {
   public battleManager!: BattleManager;
   public playerPokemon!: PokemonInstance;

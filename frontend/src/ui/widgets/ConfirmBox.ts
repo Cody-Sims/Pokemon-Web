@@ -35,9 +35,14 @@ export class ConfirmBox {
     // Full-screen dim so the underlying scene cannot bleed through and the
     // prompt always reads as a modal layer.
     this.dim = scene.add.rectangle(cx, cy, cam.width, cam.height, 0x000000, 0.55)
-      .setDepth(CONFIRM_DEPTH).setInteractive();
-    // Swallow taps that hit the dim so they never reach buttons underneath.
-    this.dim.on('pointerdown', (p: Phaser.Input.Pointer) => p.event.stopPropagation?.());
+      .setDepth(CONFIRM_DEPTH).setInteractive({ useHandCursor: false });
+    // Swallow taps on the dim so they never reach buttons underneath.
+    // Setting the dim as interactive with a no-op handler ensures Phaser's
+    // input depth ordering prevents underlying game objects from receiving
+    // the pointer event.
+    this.dim.on('pointerdown', (_pointer: Phaser.Input.Pointer, _localX: number, _localY: number, event: Phaser.Types.Input.EventData) => {
+      event.stopPropagation();
+    });
 
     this.background = scene.add.rectangle(cx, cy, 180, 110, 0x222222, 0.98)
       .setDepth(CONFIRM_DEPTH + 1);

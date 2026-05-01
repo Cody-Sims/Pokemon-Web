@@ -221,8 +221,8 @@ export class OverworldScene extends Phaser.Scene {
       MapPreloader.preloadAdjacentMaps(this, this.mapKey);
     });
 
-    // Init encounter system
-    this.encounterSystem = new EncounterSystem();
+    // Init encounter system — restore repel steps from persistent state
+    this.encounterSystem = new EncounterSystem(GameManager.getInstance().getRepelSteps());
     this.gameClock = new GameClock(GameManager.getInstance().getGameClockMinutes());
     this.lastTimePeriod = this.gameClock.getTimePeriod();
 
@@ -623,6 +623,12 @@ export class OverworldScene extends Phaser.Scene {
     const newTrainers = spawnTrainersHelper(this, this.mapDef);
     for (const trainer of newTrainers) {
       trainer.npcOccupiedTiles = this.npcOccupiedTiles;
+      trainer.collisionCheck = (x: number, y: number) => {
+        const tile = this.mapDef.ground[y]?.[x];
+        if (tile !== undefined && SOLID_TILES.has(tile)) return true;
+        if (this.npcOccupiedTiles.has(`${x},${y}`)) return true;
+        return false;
+      };
     }
     this.trainers.push(...newTrainers);
     this.npcs.push(...newTrainers);
@@ -1274,7 +1280,10 @@ export class OverworldScene extends Phaser.Scene {
       const ty = Math.floor(npc.y / TILE_SIZE);
       next.push(`${tx},${ty}`);
     }
+    // Item-balls are walkable (player steps on them to collect); only
+    // blocking object types (signs, PCs, doors) occupy tiles.
     for (const obj of this.mapObjects) {
+      if (obj.objectType === 'item-ball') continue;
       const tx = Math.floor(obj.x / TILE_SIZE);
       const ty = Math.floor(obj.y / TILE_SIZE);
       next.push(`${tx},${ty}`);
@@ -1302,7 +1311,12 @@ export class OverworldScene extends Phaser.Scene {
   }
 
   shutdown(): void {
+    // Persist repel steps so they survive map transitions and battle returns
+    if (this.encounterSystem) {
+      GameManager.getInstance().setRepelSteps(this.encounterSystem.getRepelSteps());
+    }
     this.input.keyboard?.removeAllListeners();
+    this.inputManager?.destroy();
     this.lightingSystem?.destroy();
     this.ambientSFX?.destroy();
     this.weatherRenderer?.destroy();

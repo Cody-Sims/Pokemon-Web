@@ -4,7 +4,7 @@ import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
-import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawStatusBadge, drawHpBar, drawButton, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
+import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawStatusBadge, drawHpBar, drawButton, mobileFontSize, mobileScale, minTouchTarget, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
@@ -22,6 +22,10 @@ export class PartyScene extends Phaser.Scene {
   private forcedSwitch = false;
   /** Per-slot row height; mirrors the value used during create(). */
   private rowH: number = SPACING.slotHeight;
+  /** Active long-press timer so it can be cancelled from onSlotConfirm. */
+  private longPressTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Set to true when a long-press fires, preventing the click handler from acting. */
+  private longPressFired = false;
 
   constructor() {
     super({ key: 'PartyScene' });
@@ -54,7 +58,7 @@ export class PartyScene extends Phaser.Scene {
     // BUG-002: hide the close button entirely during forced switches —
     // exiting before picking would softlock the battle.
     if (!this.forcedSwitch) {
-      const closeBtnSize = Math.max(MIN_TOUCH_TARGET, 36);
+      const closeBtnSize = Math.max(minTouchTarget(), 36);
       const closeBtn = this.add.rectangle(
         layout.w - closeBtnSize / 2 - 12, closeBtnSize / 2 + 12,
         closeBtnSize, closeBtnSize, COLORS.bgPanel, 0.9,
@@ -155,22 +159,29 @@ export class PartyScene extends Phaser.Scene {
 
       slotBg.setInteractive({ useHandCursor: true });
       slotBg.on('pointerover', () => this.controller?.hoverIndex(i));
-      slotBg.on('pointerdown', () => this.controller?.clickIndex(i));
+      slotBg.on('pointerdown', () => {
+        // Cancel any existing long-press timer from another slot
+        if (this.longPressTimer) { clearTimeout(this.longPressTimer); this.longPressTimer = null; }
+        this.longPressFired = false;
 
-      // Long-press (500ms) opens context menu directly on mobile
-      if (isMobile() && hasMon) {
-        let longPressTimer: ReturnType<typeof setTimeout> | null = null;
-        slotBg.on('pointerdown', () => {
-          longPressTimer = setTimeout(() => {
-            longPressTimer = null;
+        // Start long-press detection on mobile
+        if (isMobile() && hasMon) {
+          this.longPressTimer = setTimeout(() => {
+            this.longPressTimer = null;
+            this.longPressFired = true;
             this.cursor = i;
             this.updateCursor();
             this.openContextMenu(i);
           }, 500);
-        });
-        slotBg.on('pointerup', () => { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } });
-        slotBg.on('pointerout', () => { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } });
-      }
+        }
+
+        // Dispatch to controller click unless long-press already fired
+        if (!this.longPressFired) {
+          this.controller?.clickIndex(i);
+        }
+      });
+      slotBg.on('pointerup', () => { if (this.longPressTimer) { clearTimeout(this.longPressTimer); this.longPressTimer = null; } });
+      slotBg.on('pointerout', () => { if (this.longPressTimer) { clearTimeout(this.longPressTimer); this.longPressTimer = null; } });
     }
 
     this.controller = new MenuController(this, {
@@ -200,7 +211,7 @@ export class PartyScene extends Phaser.Scene {
       drawButton(
         this, layout.cx, layout.h - 30 - bottomLift,
         'Close (ESC)', () => this.closeScene(),
-        140, Math.max(MIN_TOUCH_TARGET, 30),
+        140, Math.max(minTouchTarget(), 30),
       );
     }
 
@@ -223,6 +234,11 @@ export class PartyScene extends Phaser.Scene {
   }
 
   private onSlotConfirm(index: number): void {
+    // Cancel any pending long-press timer so it doesn't fire after
+    // the confirm handler opens a sub-scene.
+    if (this.longPressTimer) { clearTimeout(this.longPressTimer); this.longPressTimer = null; }
+    if (this.longPressFired) { this.longPressFired = false; return; }
+
     const party = GameManager.getInstance().getParty();
     if (index >= party.length) return;
 
@@ -259,14 +275,14 @@ export class PartyScene extends Phaser.Scene {
     const menuX = layout.w - 140;
     const menuY = 64 + index * this.rowH + this.rowH / 2;
 
-    const panel = new NinePatchPanel(this, menuX, menuY, 130, actions.length * Math.max(MIN_TOUCH_TARGET, 32) + 12, {
+    const panel = new NinePatchPanel(this, menuX, menuY, 130, actions.length * Math.max(minTouchTarget(), 32) + 12, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.95,
       borderColor: COLORS.borderLight,
       cornerRadius: 6,
     });
 
-    const itemSpacing = Math.max(MIN_TOUCH_TARGET, 32);
+    const itemSpacing = Math.max(minTouchTarget(), 32);
     const texts = actions.map((label, i) => {
       return this.add.text(menuX, menuY - ((actions.length - 1) * (itemSpacing / 2)) + i * itemSpacing, label, {
         ...FONTS.body, fontSize: mobileFontSize(15),

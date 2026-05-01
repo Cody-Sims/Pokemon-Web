@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale, isMobile, minTouchTarget } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
 import { QuestManager } from '@managers/QuestManager';
 import { QuestDefinition } from '@data/quest-data';
+import { TouchControls } from '@ui/controls/TouchControls';
 
 export class QuestJournalScene extends Phaser.Scene {
   private tab: 'active' | 'complete' = 'active';
@@ -344,6 +345,14 @@ export class QuestJournalScene extends Phaser.Scene {
         this.detailGroup.add(rewardText);
         y += 18;
       });
+    }
+  }
+
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeCancel()) {
+      AudioManager.getInstance().playSFX(SFX.CANCEL);
+      this.scene.stop();
     }
   }
 }

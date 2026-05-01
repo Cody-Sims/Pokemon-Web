@@ -4,6 +4,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
 import type { PokemonInstance } from '@data/interfaces';
+import { NICKNAME_CHAR_REGEX, NICKNAME_STRIP_REGEX, NICKNAME_MAX_LENGTH } from '@utils/nickname-validation';
 
 /**
  * NicknameScene — Overlay scene for entering a Pokémon nickname.
@@ -98,9 +99,13 @@ export class NicknameScene extends Phaser.Scene {
     if (isMobile()) {
       this.hiddenInput = document.createElement('input');
       this.hiddenInput.type = 'text';
-      this.hiddenInput.maxLength = 10;
+      this.hiddenInput.maxLength = NICKNAME_MAX_LENGTH;
       this.hiddenInput.autocomplete = 'off';
       this.hiddenInput.autocapitalize = 'words';
+      this.hiddenInput.setAttribute('autocorrect', 'off');
+      this.hiddenInput.setAttribute('spellcheck', 'false');
+      this.hiddenInput.setAttribute('inputmode', 'text');
+      this.hiddenInput.name = 'nickname-disabled';
       Object.assign(this.hiddenInput.style, {
         position: 'fixed', left: '50%', top: '35%', transform: 'translate(-50%, -50%)',
         width: '200px', fontSize: '16px',
@@ -118,7 +123,7 @@ export class NicknameScene extends Phaser.Scene {
       });
 
       this.hiddenInput.addEventListener('input', () => {
-        const val = this.hiddenInput!.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+        const val = this.hiddenInput!.value.replace(NICKNAME_STRIP_REGEX, '').slice(0, NICKNAME_MAX_LENGTH);
         this.hiddenInput!.value = val;
         this.nameInput = val;
         this.updateNameDisplay();
@@ -131,13 +136,16 @@ export class NicknameScene extends Phaser.Scene {
       });
     }
 
-    // Keyboard input
+    // Keyboard input — suppress when the hidden DOM input is focused to
+    // avoid double-firing on Bluetooth keyboards paired to mobile devices.
     this.input.keyboard!.on('keydown', (event: KeyboardEvent) => {
+      if (this.hiddenInput && document.activeElement === this.hiddenInput) return;
       if (event.key === 'Enter') {
         this.confirmNickname();
         return;
       }
       if (event.key === 'Escape') {
+        AudioManager.getInstance().playSFX(SFX.CANCEL);
         this.scene.stop();
         return;
       }
@@ -146,8 +154,8 @@ export class NicknameScene extends Phaser.Scene {
         this.updateNameDisplay();
         return;
       }
-      // Allow letters, numbers, spaces, hyphens — max 12 chars
-      if (this.nameInput.length < 12 && /^[a-zA-Z0-9 \-]$/.test(event.key)) {
+      // Allow letters, numbers, spaces, hyphens — shared max-length constant
+      if (this.nameInput.length < NICKNAME_MAX_LENGTH && NICKNAME_CHAR_REGEX.test(event.key)) {
         this.nameInput += event.key;
         this.updateNameDisplay();
       }

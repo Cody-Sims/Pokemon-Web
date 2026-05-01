@@ -55,8 +55,10 @@ export class InventoryScene extends Phaser.Scene {
     super({ key: 'InventoryScene' });
   }
 
-  create(data?: { battleMode?: boolean }): void {
+  create(data?: { battleMode?: boolean; savedCategoryIndex?: number; savedScrollOffset?: number }): void {
     this.battleMode = data?.battleMode ?? false;
+    if (data?.savedCategoryIndex !== undefined) this.categoryIndex = data.savedCategoryIndex;
+    if (data?.savedScrollOffset !== undefined) this.scrollOffset = data.savedScrollOffset;
     this.detailGroup = this.add.group();
     this.itemListGroup = this.add.group();
     const layout = ui(this);
@@ -169,7 +171,7 @@ export class InventoryScene extends Phaser.Scene {
       if (!resizeInit) { resizeInit = true; return; }
       this.itemController?.destroy();
       this.scrollContainer?.destroy();
-      this.scene.restart({ battleMode: this.battleMode });
+      this.scene.restart({ battleMode: this.battleMode, savedCategoryIndex: this.categoryIndex, savedScrollOffset: this.scrollOffset });
     });
   }
 
@@ -669,9 +671,13 @@ export class InventoryScene extends Phaser.Scene {
   }
 
   update(): void {
-    if (this.mode !== 'browse') return;
     const touch = TouchControls.getInstance();
     if (!touch) return;
+    if (touch.consumeCancel()) {
+      this.handleEsc();
+      return;
+    }
+    if (this.mode !== 'browse') return;
     if (touch.consumeSwipeUp()) {
       this.itemController?.navigate('up');
     } else if (touch.consumeSwipeDown()) {

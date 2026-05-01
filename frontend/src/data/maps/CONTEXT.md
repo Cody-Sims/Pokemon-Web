@@ -29,3 +29,18 @@ by `CHAR_TO_TILE` from `map-parser.ts`.
 - Always validate with `npm run map:validate` after editing
 - Never rewrite entire character grids from scratch — make targeted edits
 - Look up tile characters in `CHAR_TO_TILE` from `map-parser.ts`
+
+## Field-ability target tiles (Phase 0 of `docs/Map-improvements.md`)
+
+Three tile chars exist for placing field-ability gates in any map:
+
+| Char | Tile | Cleared by | Notes |
+|---|---|---|---|
+| `>` | `CUT_TREE` | Cut (Badge 1) | Cleared in-place → grass; renders as foreground (player walks under) |
+| `*` | `CRACKED_ROCK` | Rock Smash (Badge 1) | Cleared in-place → grass |
+| `+` | `STRENGTH_BOULDER` | Strength (Badge 4) | Pushable; destination must be walkable |
+
+The runtime is wired in `frontend/src/scenes/overworld/OverworldInteraction.ts`
+and `frontend/src/scenes/overworld/OverworldFieldAbilities.ts`. The validator
+(`npm run map:validate`) warns when a route or dungeon contains zero of these
+tiles — see exploration heuristic in `temp/scripts/map-gen/validate/map-validator.ts`.

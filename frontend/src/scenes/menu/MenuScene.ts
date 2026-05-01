@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale, minTouchTarget } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
@@ -25,6 +25,10 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Drain any stale confirm/cancel flags left by the previous scene
+    // so MenuScene's first update() doesn't immediately act on them.
+    TouchControls.getInstance()?.drain();
+
     // Build menu labels dynamically.
     // BUG-060: "QUIT" used to sit adjacent to "EXIT" and both verbs read as
     // "close this screen" — a mis-tap discarded unsaved progress. The
@@ -133,6 +137,11 @@ export class MenuScene extends Phaser.Scene {
       this.cursorIcon.setFontSize(fSize);
       this.updateCursor();
     });
+
+    // Drain stale confirm/cancel when returning from a child scene
+    this.events.on('wake', () => {
+      TouchControls.getInstance()?.drain();
+    });
   }
 
   /**
@@ -152,9 +161,9 @@ export class MenuScene extends Phaser.Scene {
 
     // Default sizes (kept for landscape / desktop where there is plenty of
     // vertical room).
-    const baseRowH = Math.round(48 * MOBILE_SCALE);
+    const baseRowH = Math.round(48 * mobileScale());
     const baseFontPx = 18;
-    const baseW = Math.round(220 * MOBILE_SCALE);
+    const baseW = Math.round(220 * mobileScale());
 
     // If the default row height already fits, use it.
     let rowH = baseRowH;

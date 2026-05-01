@@ -192,6 +192,9 @@ export class DoubleBattleManager {
     this.turnCount++;
     this.fsm.transition('EXECUTE_TURN');
 
+    // Clear protect at the start of each turn so it doesn't persist
+    this.statusHandler.clearProtectAll();
+
     const turnMessages: string[] = [];
     const results: MoveExecutionResult[] = [];
     const allActive = this.getActiveBattlers();
@@ -230,6 +233,7 @@ export class DoubleBattleManager {
         const switched = this.switchPokemon(action.pokemonIndex, action.switchToIndex);
         if (switched) {
           turnMessages.push(`Switched in slot ${action.pokemonIndex}!`);
+          turnMessages.push(...this.getLastSwitchMessages());
         }
         continue;
       }
@@ -299,6 +303,18 @@ export class DoubleBattleManager {
       if (opponent && opponent.currentHp > 0) {
         const eot = this.statusHandler.applyEndOfTurn(pokemon, opponent);
         endOfTurnMessages.push(...eot.messages);
+      }
+
+      // Ability end-of-turn effects (Speed Boost, Poison Heal, etc.)
+      if (pokemon.currentHp > 0) {
+        const abilityEot = AbilityHandler.onEndOfTurn(pokemon, this.statusHandler);
+        endOfTurnMessages.push(...abilityEot.messages);
+      }
+
+      // Held item end-of-turn effects (Leftovers, Black Sludge, etc.)
+      if (pokemon.currentHp > 0) {
+        const itemEot = HeldItemHandler.onEndOfTurn(pokemon);
+        endOfTurnMessages.push(...itemEot.messages);
       }
 
       // AUDIT-008: Apply weather chip damage (sandstorm/hail) to each active Pokemon
@@ -472,7 +488,30 @@ export class DoubleBattleManager {
     }
 
     this.statusHandler.initPokemon(newPokemon);
+
+    // Fire switch-in abilities (Intimidate, weather setters, etc.)
+    const opponent = isPlayerSide
+      ? (this.enemyActive[0]?.currentHp ?? 0) > 0 ? this.enemyActive[0]! : this.enemyActive[1]
+      : (this.playerActive[0]?.currentHp ?? 0) > 0 ? this.playerActive[0]! : this.playerActive[1];
+    if (opponent && opponent.currentHp > 0) {
+      const switchResult = AbilityHandler.onSwitchIn(newPokemon, opponent, this.statusHandler);
+      if (switchResult.weather) {
+        this.weatherManager.setWeather(switchResult.weather, switchResult.weatherDuration);
+      }
+      this.lastSwitchMessages = switchResult.messages;
+    }
+
     return true;
+  }
+
+  /** Messages produced by the most recent switchPokemon call (ability triggers, etc.). */
+  private lastSwitchMessages: string[] = [];
+
+  /** Retrieve and clear messages from the last switch-in. */
+  getLastSwitchMessages(): string[] {
+    const msgs = this.lastSwitchMessages;
+    this.lastSwitchMessages = [];
+    return msgs;
   }
 
   getState(): string {

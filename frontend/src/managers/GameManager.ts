@@ -187,6 +187,9 @@ export class GameManager {
   /** Increment the full-clear counter for `tier`. */
   recordTowerClear(tier: string): void { this._player.recordTowerClear(tier); }
 
+  getRepelSteps(): number { return this._player.getRepelSteps(); }
+  setRepelSteps(steps: number): void { this._player.setRepelSteps(steps); }
+
   getGameClockMinutes(): number { return this._player.getGameClockMinutes(); }
   setGameClockMinutes(minutes: number): void { this._player.setGameClockMinutes(minutes); }
 

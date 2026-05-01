@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SpeedrunRecords } from '@systems/engine/SpeedrunRecords';
 import { SFX } from '@utils/audio-keys';
+import { TouchControls } from '@ui/controls/TouchControls';
 
 /**
  * Statistics sub-menu scene showing tracked GameStats data.
@@ -60,7 +61,7 @@ export class StatisticsScene extends Phaser.Scene {
     ];
 
     const startY = 70;
-    const lineH = Math.round(34 * MOBILE_SCALE);
+    const lineH = Math.round(34 * mobileScale());
     const fontSize = mobileFontSize(15);
     const labelX = 60;
     const valueX = layout.w - 60;
@@ -131,6 +132,7 @@ export class StatisticsScene extends Phaser.Scene {
     const closeBtn = this.add.text(layout.cx, layout.h - 25, '[ CLOSE ]', {
       ...FONTS.caption, color: COLORS.textDim,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.setPadding(16, 12, 16, 12);
     closeBtn.on('pointerdown', () => this.close());
 
     // Input (BUG-085: removed global pointerdown close)
@@ -141,6 +143,13 @@ export class StatisticsScene extends Phaser.Scene {
   private close(): void {
     AudioManager.getInstance().playSFX(SFX.CANCEL);
     this.scene.stop();
+  }
+
+  update(): void {
+    const tc = TouchControls.getInstance();
+    if (tc?.consumeCancel()) {
+      this.close();
+    }
   }
 
   /**

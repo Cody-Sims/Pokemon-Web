@@ -53,6 +53,8 @@ export class DialogueScene extends Phaser.Scene {
   private choiceCursor = 0;
   private inChoiceMode = false;
   private choicePanel?: NinePatchPanel;
+  /** Set by per-choice pointerdown handlers so the global handler skips the same frame. */
+  private choiceTappedThisFrame = false;
   private mobileTapMenu?: MobileTapMenu;
   private lastChoiceMoveTick = 0;
   private callingScene = 'OverworldScene';
@@ -289,12 +291,16 @@ export class DialogueScene extends Phaser.Scene {
     // Input — tap to advance on touch devices
     // Skip when in choice mode — per-item handlers on choice texts handle taps directly.
     this.input.on('pointerdown', () => {
+      if (this.choiceTappedThisFrame) return;
       if (!this.inChoiceMode) this.handleInput();
     });
   }
 
   /** Poll touch A button each frame (raw DOM events bypass Phaser scenes). */
   update(): void {
+    // Reset per-frame flag so the global pointerdown handler works again
+    this.choiceTappedThisFrame = false;
+
     const tc = TouchControls.getInstance();
     if (tc?.consumeConfirm()) {
       this.handleInput();
@@ -384,7 +390,11 @@ export class DialogueScene extends Phaser.Scene {
     const choiceRowH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 30) : 30;
     const choiceW = isMobile() ? 180 : 150;
     const choiceH = this.choices.length * choiceRowH + 16;
-    const choiceX = layout.w - 100;
+    // Apply a right inset on landscape mobile so the choice panel doesn't
+    // sit behind the DOM touch controls (~140 px on the right edge).
+    const isLandscapeMobile = layout.w > layout.h && TouchControls.isTouchDevice();
+    const rightInset = isLandscapeMobile ? 140 : 0;
+    const choiceX = layout.w - 100 - rightInset;
     const isChoicePortrait = layout.h > layout.w;
     const choiceY = (isChoicePortrait ? layout.h - 200 : layout.h - 140) - choiceH / 2;
 
@@ -397,6 +407,7 @@ export class DialogueScene extends Phaser.Scene {
     });
     this.choicePanel.setDepth(DIALOGUE_DEPTH + 3);
 
+    const useMobileTapMenu = isMobile();
     this.choiceTexts = this.choices.map((choice, i) => {
       const t = this.add.text(
         choiceX, choiceY - choiceH / 2 + 16 + i * choiceRowH,
@@ -405,13 +416,17 @@ export class DialogueScene extends Phaser.Scene {
       ).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(DIALOGUE_DEPTH + 4);
       t.setPadding(8, Math.max(0, (choiceRowH - 16) / 2), 8, Math.max(0, (choiceRowH - 16) / 2));
       t.on('pointerover', () => { this.choiceCursor = i; this.updateChoiceCursor(); });
-      t.on('pointerdown', () => { this.choiceCursor = i; this.selectChoice(); });
+      // Only register per-text pointerdown on desktop; mobile uses MobileTapMenu
+      if (!useMobileTapMenu) {
+        t.on('pointerdown', () => { this.choiceTappedThisFrame = true; this.choiceCursor = i; this.selectChoice(); });
+      }
       return t;
     });
     this.updateChoiceCursor();
 
-    if (isMobile()) {
+    if (useMobileTapMenu) {
       this.mobileTapMenu = new MobileTapMenu(this, this.choiceTexts, (index: number) => {
+        this.choiceTappedThisFrame = true;
         this.choiceCursor = index;
         this.selectChoice();
       });

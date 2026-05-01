@@ -56,11 +56,11 @@ export class DamageCalculator {
     // Choose attack/defense stats based on move category, using stat stages if available
     let A: number;
     let D: number;
-    // BUG-050: Foul Play uses the defender's Attack stat
+    // Foul Play uses the defender's base Attack stat (without stat stages)
     const isFoulPlay = move.id === 'foul-play';
     if (statusHandler) {
       A = move.category === 'physical'
-        ? statusHandler.getEffectiveStat(isFoulPlay ? defender : attacker, 'attack')
+        ? (isFoulPlay ? defender.stats.attack : statusHandler.getEffectiveStat(attacker, 'attack'))
         : statusHandler.getEffectiveStat(attacker, 'spAttack');
       D = move.category === 'physical'
         ? statusHandler.getEffectiveStat(defender, 'defense')
@@ -76,16 +76,18 @@ export class DamageCalculator {
     // Base damage
     let damage = ((2 * level / 5 + 2) * power * A / D) / 50 + 2;
 
-    // STAB
-    const isSTAB = attackerData.types.includes(move.type as PokemonType);
+    // STAB — use Synthesis typeOverride if present
+    const attackerTypes = attacker.typeOverride ?? attackerData.types;
+    const isSTAB = attackerTypes.includes(move.type as PokemonType);
     if (isSTAB) {
       damage *= STAB_MULTIPLIER;
     }
 
-    // Type effectiveness
+    // Type effectiveness — use Synthesis typeOverride if present
+    const defenderTypes = defender.typeOverride ?? defenderData.types;
     const effectiveness = getCombinedEffectiveness(
       move.type as PokemonType,
-      defenderData.types as [PokemonType] | [PokemonType, PokemonType]
+      defenderTypes as [PokemonType] | [PokemonType, PokemonType]
     );
     damage *= effectiveness;
 

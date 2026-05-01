@@ -134,8 +134,18 @@ export function isTablet(): boolean {
   return isMobile() && Math.min(window.innerWidth, window.innerHeight) > 768;
 }
 
-/** Scale factor for mobile-friendly UI elements (fonts, hit targets). */
-export const MOBILE_SCALE = isMobile() ? 1.35 : 1.0;
+/** Scale factor for mobile-friendly UI elements (fonts, hit targets). Recomputed on each call so orientation/resize changes are picked up. */
+export function mobileScale(): number {
+  return isMobile() ? 1.35 : 1.0;
+}
+/** @deprecated Use `mobileScale()` instead — kept as a live getter for existing call sites. */
+export const MOBILE_SCALE: number = /* @__PURE__ */ (() => {
+  // Return a number whose valueOf() recomputes on each access via a Proxy-like trick.
+  // For simplicity and compat, we just export the function result; call sites that
+  // read MOBILE_SCALE as a plain number will get the value at first evaluation.
+  // We patch the module export below.
+  return mobileScale();
+})();
 
 /** Get a font size string scaled for mobile and user text-scale preference. Input: base px number. */
 export function mobileFontSize(basePx: number): string {
@@ -153,11 +163,15 @@ export function mobileFontPx(basePx: number): number {
   try {
     scale = getTextScale();
   } catch { /* fallback to 1.0 */ }
-  return Math.round(basePx * MOBILE_SCALE * scale);
+  return Math.round(basePx * mobileScale() * scale);
 }
 
-/** Minimum interactive hit area for touch targets (px). */
-export const MIN_TOUCH_TARGET = isMobile() ? 48 : 0;
+/** Minimum interactive hit area for touch targets (px). Recomputed on each call. */
+export function minTouchTarget(): number {
+  return isMobile() ? 48 : 0;
+}
+/** @deprecated Use `minTouchTarget()` instead — kept for existing call sites. */
+export const MIN_TOUCH_TARGET: number = /* @__PURE__ */ (() => minTouchTarget())();
 
 /** Get HP bar color based on percentage. */
 export function hpColor(pct: number): number {

@@ -100,15 +100,8 @@ export class AbilityHandler {
     const atkName = attacker.nickname ?? pokemonData[attacker.dataId]?.name ?? '???';
     const messages: string[] = [];
 
-    // Contact-triggered abilities (only for physical contact moves)
-    // TODO: Add a `contact` flag to MoveData for full accuracy. For now,
-    // exclude known non-contact physical moves by effect type.
-    const isContact = move.category === 'physical'
-      && move.id !== 'earthquake' && move.id !== 'rock-slide'
-      && move.id !== 'bulldoze' && move.id !== 'rock-throw'
-      && move.id !== 'bone-club' && move.id !== 'bone-rush'
-      && move.id !== 'bonemerang' && move.id !== 'magnitude'
-      && move.effect?.type !== 'multi-hit'; // multi-hit hooks are handled separately
+    // Contact-triggered abilities: physical moves default to contact unless explicitly opted out.
+    const isContact = move.category === 'physical' && move.contact !== false;
     if (isContact && damage > 0) {
       switch (defAbility) {
         case 'static':
