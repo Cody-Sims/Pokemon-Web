@@ -11,7 +11,7 @@ type PersistedSave = SerializedGameState & {
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === 'object' && !Array.isArray(value);
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 function isStringArray(value: unknown): value is string[] {
@@ -20,6 +20,21 @@ function isStringArray(value: unknown): value is string[] {
 
 function isNumberArray(value: unknown): value is number[] {
   return Array.isArray(value) && value.every(item => typeof item === 'number' && Number.isFinite(item));
+}
+
+function isValidMove(value: unknown): boolean {
+  return isRecord(value) &&
+    typeof value.moveId === 'string' &&
+    typeof value.currentPp === 'number' &&
+    Number.isFinite(value.currentPp);
+}
+
+function isValidPokemon(value: unknown): boolean {
+  return isRecord(value) &&
+    typeof value.dataId === 'number' &&
+    Number.isFinite(value.dataId) &&
+    Array.isArray(value.moves) &&
+    value.moves.every(isValidMove);
 }
 
 function getSaveValidationError(data: Record<string, unknown>): string | null {
@@ -33,15 +48,7 @@ function getSaveValidationError(data: Record<string, unknown>): string | null {
 
   const pokedex = data.pokedex;
   const position = data.playerPosition;
-  const validParty = Array.isArray(data.party) && data.party.every(pokemon =>
-    isRecord(pokemon) &&
-    typeof pokemon.dataId === 'number' && Number.isFinite(pokemon.dataId) &&
-    Array.isArray(pokemon.moves) &&
-    pokemon.moves.every(move =>
-      isRecord(move) && typeof move.moveId === 'string' &&
-      typeof move.currentPp === 'number' && Number.isFinite(move.currentPp)
-    )
-  );
+  const validParty = Array.isArray(data.party) && data.party.every(isValidPokemon);
   const validBag = Array.isArray(data.bag) && data.bag.every(item =>
     isRecord(item) && typeof item.itemId === 'string' &&
     typeof item.quantity === 'number' && Number.isFinite(item.quantity)

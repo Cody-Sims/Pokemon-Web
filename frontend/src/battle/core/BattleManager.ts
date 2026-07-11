@@ -32,17 +32,17 @@ export class BattleManager {
   private weatherManager: WeatherManager;
 
   constructor(config: BattleConfig) {
-    const playerActiveIndex = config.playerParty.findIndex(p => p.currentHp > 0);
-    const enemyActiveIndex = config.enemyParty.findIndex(p => p.currentHp > 0);
-    if (playerActiveIndex === -1 || enemyActiveIndex === -1) {
+    const initialPlayerIndex = config.playerParty.findIndex(p => p.currentHp > 0);
+    const initialEnemyIndex = config.enemyParty.findIndex(p => p.currentHp > 0);
+    if (initialPlayerIndex === -1 || initialEnemyIndex === -1) {
       throw new Error('BattleManager requires each party to contain a Pokémon with HP greater than zero.');
     }
 
     this.config = config;
-    this.playerActiveIndex = playerActiveIndex;
-    this.enemyActiveIndex = enemyActiveIndex;
-    this.playerActive = config.playerParty[playerActiveIndex];
-    this.enemyActive = config.enemyParty[enemyActiveIndex];
+    this.playerActiveIndex = initialPlayerIndex;
+    this.enemyActiveIndex = initialEnemyIndex;
+    this.playerActive = config.playerParty[initialPlayerIndex];
+    this.enemyActive = config.enemyParty[initialEnemyIndex];
     this.fsm = new BattleStateMachine();
     this.statusHandler = new StatusEffectHandler();
     this.weatherManager = new WeatherManager();

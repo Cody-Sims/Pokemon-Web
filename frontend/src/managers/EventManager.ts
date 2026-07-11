@@ -8,6 +8,7 @@ export interface EventMap {
   'berry-harvested': [harvest: { treeId: string; berryId: string }];
 }
 
+/** Cross-scene events must be declared in EventMap before use. */
 type EventName = keyof EventMap;
 type EventCallback<K extends EventName = EventName> = (...args: EventMap[K]) => void;
 

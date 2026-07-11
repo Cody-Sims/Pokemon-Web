@@ -22,6 +22,8 @@ export default defineConfig({
     environment: 'node',
     coverage: {
       provider: 'v8',
+      // Production modules are outside `root`; include loaded external modules
+      // without forcing V8 to parse every unexecuted TypeScript source file.
       allowExternal: true,
       exclude: [
         path.resolve(__dirname, '../frontend/src/scenes/**'),
