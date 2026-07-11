@@ -17,6 +17,10 @@ applyTo: 'frontend/src/managers/**'
 | `QuestManager` | Quest state tracking, objective progress, completion checks. |
 | `AchievementManager` | Achievement unlock tracking and toast notifications. |
 | `TransitionManager` | Scene transition animations (fade, wipe, etc.). |
+| `PartyManager` | Party and PC-box state composed by `GameManager`. |
+| `PlayerStateManager` | Player identity, inventory, settings, and runtime state composed by `GameManager`. |
+| `ProgressManager` | Badges, flags, Pokédex, and story progress composed by `GameManager`. |
+| `StatsManager` | Gameplay statistics and step-count tracking composed by `GameManager`. |
 
 ## Rules
 

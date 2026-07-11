@@ -22,8 +22,17 @@ export default defineConfig({
     environment: 'node',
     coverage: {
       provider: 'v8',
-      include: ['../frontend/src/**/*.ts'],
-      exclude: ['../frontend/src/scenes/**', '../frontend/src/main.ts'],
+      allowExternal: true,
+      exclude: [
+        path.resolve(__dirname, '../frontend/src/scenes/**'),
+        path.resolve(__dirname, '../frontend/src/main.ts'),
+      ],
+      thresholds: {
+        statements: 55,
+        branches: 45,
+        functions: 60,
+        lines: 55,
+      },
     },
   },
 });

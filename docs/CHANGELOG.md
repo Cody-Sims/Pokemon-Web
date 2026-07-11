@@ -6,6 +6,17 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-11]
 
+### Fixed — Runtime and state hardening
+
+- Validate battle parties and consistently apply switch-in state, abilities, and
+  weather when active Pokémon change.
+- Validate imported save structure before deserialization and restore live state
+  if applying or persisting an import fails.
+- Restrict the cross-scene event bus to declared event names and payloads.
+- Align CI and deployment with the documented Node.js 22 minimum.
+- Enable coverage for production modules outside the Vitest test root and add
+  global regression thresholds.
+
 ### Changed — Lifecycle and dependency cleanup
 
 - Replaced the FPS monitor's no-op interval with a cancellable animation-frame

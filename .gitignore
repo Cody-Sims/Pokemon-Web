@@ -20,6 +20,7 @@ Thumbs.db
 # Playwright
 .playwright-mcp/
 tests/playwright-report/
+tests/coverage/
 tests/e2e/screenshots/
 # Visual regression baselines are platform-specific (e.g. -darwin, -linux).
 # Don't commit local snapshots — generate them in CI on a fixed Linux runner
@@ -39,4 +40,3 @@ npm-debug.log*
 temp/
 
 .copilot-tracking/
-

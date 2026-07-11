@@ -15,6 +15,10 @@ methods or `getInstance()`.
 | `QuestManager.ts` | `QuestManager` | Quest state tracking, objective progress, completion checks. |
 | `AchievementManager.ts` | `AchievementManager` | Achievement unlock tracking and toast notifications. |
 | `TransitionManager.ts` | `TransitionManager` | Scene transition animations (fade, wipe, etc.). |
+| `PartyManager.ts` | — | Focused party and PC-box state owned by `GameManager`. |
+| `PlayerStateManager.ts` | — | Focused player identity, inventory, settings, and runtime state owned by `GameManager`. |
+| `ProgressManager.ts` | — | Focused badge, flag, Pokédex, and story-progress state owned by `GameManager`. |
+| `StatsManager.ts` | `StatsManager` | Gameplay statistics and step-count tracking used by `GameManager`. |
 
 ## Conventions
 
