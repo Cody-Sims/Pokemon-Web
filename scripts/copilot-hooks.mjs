@@ -100,7 +100,7 @@ async function main() {
   process.stdout.write(`${JSON.stringify(output)}\n`);
 }
 
-const isEntryPoint = process.argv[1]
+const isEntryPoint = typeof process.argv[1] === 'string'
   && pathToFileURL(resolve(process.argv[1])).href === import.meta.url;
 
 if (isEntryPoint) {
