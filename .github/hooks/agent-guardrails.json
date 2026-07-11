@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "node scripts/copilot-hooks.mjs session-start",
+        "powershell": "node scripts/copilot-hooks.mjs session-start",
+        "timeoutSec": 5
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "matcher": "bash|powershell",
+        "bash": "node scripts/copilot-hooks.mjs pre-tool-use",
+        "powershell": "node scripts/copilot-hooks.mjs pre-tool-use",
+        "timeoutSec": 5
+      }
+    ]
+  }
+}

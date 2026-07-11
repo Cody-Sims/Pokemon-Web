@@ -1,5 +1,8 @@
 ---
-description: "Generate, validate, and maintain pixel art tiles and NPC/character sprites for the Pokemon Web game tileset. Use when creating new tiles, fixing tile quality, generating NPC sprites, or modifying the tileset."
+name: tile-sprite-gen
+description: "Generate, validate, and maintain pixel art tiles and NPC/character sprites for the Pokémon Web game tileset. Use when creating new tiles, fixing tile quality, generating NPC sprites, or modifying the tileset."
+license: ISC
+compatibility: Requires Python 3 with Pillow plus the Node.js project toolchain.
 ---
 
 # Tile & Sprite Generation Skill

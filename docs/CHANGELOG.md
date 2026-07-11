@@ -4,6 +4,21 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-07-11]
+
+### Added — Agent workflow optimization
+
+- Added canonical repository-wide Copilot instructions plus path-scoped frontend,
+  future-backend, and agent-workflow guidance.
+- Added AgentSkills-compatible workflows for frontend changes, explicitly requested
+  backend work, quality gates, and the existing tile/sprite workflow.
+- Added tested Copilot session and pre-tool hooks that provide concise setup context
+  and block destructive shell, unsafe staging, and direct push commands.
+- Documented progressive disclosure, parallel delegation, skill discovery, hook
+  maintenance, and validation routing in `AGENTS.md` and `llms.txt`.
+
+---
+
 ## [2026-04-30]
 
 ### Added — Procedural non-rectangular map generator
