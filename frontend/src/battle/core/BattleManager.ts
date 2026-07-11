@@ -35,7 +35,7 @@ export class BattleManager {
     const playerActiveIndex = config.playerParty.findIndex(p => p.currentHp > 0);
     const enemyActiveIndex = config.enemyParty.findIndex(p => p.currentHp > 0);
     if (playerActiveIndex === -1 || enemyActiveIndex === -1) {
-      throw new Error('BattleManager requires each party to contain a conscious Pokémon.');
+      throw new Error('BattleManager requires each party to contain a Pokémon with HP greater than zero.');
     }
 
     this.config = config;

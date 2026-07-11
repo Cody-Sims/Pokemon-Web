@@ -65,6 +65,14 @@ describe('SaveManager — export / import (plan.md D.6)', () => {
     expect(mockStorage.getItem('pokemon-web-save')).toBeNull();
   });
 
+  it('importJson rejects non-finite numeric values', () => {
+    const sm = SaveManager.getInstance();
+    const malformed = JSON.parse(sm.exportJson());
+    malformed.playerPosition.x = null;
+
+    expect(sm.importJson(JSON.stringify(malformed))).toMatch(/playerPosition/);
+  });
+
   it('restores live state when imported storage cannot be written', () => {
     const gm = GameManager.getInstance();
     gm.setPlayerName('Existing');

@@ -35,21 +35,24 @@ function getSaveValidationError(data: Record<string, unknown>): string | null {
   const position = data.playerPosition;
   const validParty = Array.isArray(data.party) && data.party.every(pokemon =>
     isRecord(pokemon) &&
-    typeof pokemon.dataId === 'number' &&
+    typeof pokemon.dataId === 'number' && Number.isFinite(pokemon.dataId) &&
     Array.isArray(pokemon.moves) &&
     pokemon.moves.every(move =>
-      isRecord(move) && typeof move.moveId === 'string' && typeof move.currentPp === 'number'
+      isRecord(move) && typeof move.moveId === 'string' &&
+      typeof move.currentPp === 'number' && Number.isFinite(move.currentPp)
     )
   );
   const validBag = Array.isArray(data.bag) && data.bag.every(item =>
-    isRecord(item) && typeof item.itemId === 'string' && typeof item.quantity === 'number'
+    isRecord(item) && typeof item.itemId === 'string' &&
+    typeof item.quantity === 'number' && Number.isFinite(item.quantity)
   );
   const validFlags = isRecord(data.flags) &&
     Object.values(data.flags).every(value => typeof value === 'boolean');
   const validPokedex = isRecord(pokedex) &&
     isNumberArray(pokedex.seen) && isNumberArray(pokedex.caught);
   const validPosition = isRecord(position) &&
-    typeof position.x === 'number' && typeof position.y === 'number' &&
+    typeof position.x === 'number' && Number.isFinite(position.x) &&
+    typeof position.y === 'number' && Number.isFinite(position.y) &&
     typeof position.direction === 'string';
 
   const checks: [string, boolean][] = [

@@ -201,7 +201,7 @@ describe('Battle Flow Integration', () => {
         type: 'wild',
         playerParty: [],
         enemyParty: [makePokemon({ dataId: 16 })],
-      })).toThrow(/conscious/);
+      })).toThrow(/HP greater than zero/);
     });
   });
 
