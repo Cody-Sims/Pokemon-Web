@@ -32,7 +32,7 @@ export function createSessionContext(input = {}, environment = {}) {
   const nodeVersion = environment.nodeVersion ?? process.version;
   const setup = dependenciesPresent
     ? 'Dependencies are present.'
-    : 'Run npm install before other npm commands.';
+    : 'Dependencies are not present; run npm install before other npm commands.';
 
   return {
     additionalContext: [

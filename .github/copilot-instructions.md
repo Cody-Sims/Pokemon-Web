@@ -1,4 +1,4 @@
-# Pokemon Web repository instructions
+# Pokémon Web repository instructions
 
 Read `AGENTS.md` before changing code. It is the source of truth for architecture,
 commands, file placement, maintenance triggers, and common mistakes. When working

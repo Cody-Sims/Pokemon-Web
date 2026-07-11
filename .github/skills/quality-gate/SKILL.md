@@ -5,7 +5,7 @@ license: ISC
 compatibility: Requires Node.js 22+, npm, and Playwright for browser checks.
 ---
 
-# Quality gate
+# Quality Gate
 
 ## Determine the change surface
 
