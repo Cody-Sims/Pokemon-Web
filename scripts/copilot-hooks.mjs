@@ -29,8 +29,8 @@ const BLOCKED_COMMANDS = [
 
 export function createSessionContext(input = {}, environment = {}) {
   const cwd = typeof input.cwd === 'string' ? input.cwd : process.cwd();
-  const packagePresent = existsSync(`${cwd}/package.json`);
-  const dependenciesPresent = existsSync(`${cwd}/node_modules`);
+  const packagePresent = existsSync(resolve(cwd, 'package.json'));
+  const dependenciesPresent = existsSync(resolve(cwd, 'node_modules'));
   const nodeVersion = environment.nodeVersion ?? process.version;
   const setup = dependenciesPresent
     ? 'Dependencies are present.'

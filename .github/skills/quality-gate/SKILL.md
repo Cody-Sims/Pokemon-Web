@@ -13,7 +13,7 @@ Inspect `git status --short` and `git diff --check`. Classify changed paths befo
 running checks:
 
 - Documentation-only: review links, paths, dates, and instruction consistency.
-- Agent workflow: validate JSON, exercise hooks with representative stdin, and
+- Agent workflow: validate JSON, test hooks with representative stdin payloads, and
   validate every `SKILL.md` frontmatter.
 - TypeScript logic or data: focused tests, then `npm run test` and `npm run build`.
 - Scene or UI: add focused Playwright coverage.
