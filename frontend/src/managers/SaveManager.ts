@@ -26,13 +26,15 @@ function isValidMove(value: unknown): boolean {
   return isRecord(value) &&
     typeof value.moveId === 'string' &&
     typeof value.currentPp === 'number' &&
-    Number.isFinite(value.currentPp);
+    Number.isInteger(value.currentPp) &&
+    value.currentPp >= 0;
 }
 
 function isValidPokemon(value: unknown): boolean {
   return isRecord(value) &&
     typeof value.dataId === 'number' &&
-    Number.isFinite(value.dataId) &&
+    Number.isInteger(value.dataId) &&
+    value.dataId > 0 &&
     Array.isArray(value.moves) &&
     value.moves.every(isValidMove);
 }
@@ -51,7 +53,7 @@ function getSaveValidationError(data: Record<string, unknown>): string | null {
   const validParty = Array.isArray(data.party) && data.party.every(isValidPokemon);
   const validBag = Array.isArray(data.bag) && data.bag.every(item =>
     isRecord(item) && typeof item.itemId === 'string' &&
-    typeof item.quantity === 'number' && Number.isFinite(item.quantity)
+    typeof item.quantity === 'number' && Number.isInteger(item.quantity) && item.quantity >= 0
   );
   const validFlags = isRecord(data.flags) &&
     Object.values(data.flags).every(value => typeof value === 'boolean');

@@ -29,6 +29,8 @@ export default defineConfig({
         path.resolve(__dirname, '../frontend/src/scenes/**'),
         path.resolve(__dirname, '../frontend/src/main.ts'),
       ],
+      // Initial regression floor based on the measured production-module
+      // baseline; raise these values as additional gameplay paths gain tests.
       thresholds: {
         statements: 55,
         branches: 45,
