@@ -156,6 +156,53 @@ describe('Battle Flow Integration', () => {
       expect(bm.switchPokemon(5)).toBe(false);
       expect(bm.switchPokemon(-1)).toBe(false);
     });
+
+    it('should reject switching to the active pokemon', () => {
+      const bm = new BattleManager({
+        type: 'wild',
+        playerParty: [makePokemon()],
+        enemyParty: [makePokemon({ dataId: 16 })],
+      });
+
+      expect(bm.switchPokemon(0)).toBe(false);
+    });
+
+    it('should apply switch-in weather abilities', () => {
+      const droughtUser = makePokemon({ dataId: 1, ability: 'drought' });
+      const bm = new BattleManager({
+        type: 'wild',
+        playerParty: [makePokemon(), droughtUser],
+        enemyParty: [makePokemon({ dataId: 16 })],
+      });
+
+      expect(bm.switchPokemon(1)).toBe(true);
+      expect(bm.getWeatherManager().getWeather()).toBe('sun');
+    });
+  });
+
+  describe('party validation', () => {
+    it('selects the first conscious party members', () => {
+      const player = makePokemon({ currentHp: 0 });
+      const reserve = makePokemon({ dataId: 1 });
+      const enemy = makePokemon({ dataId: 16, currentHp: 0 });
+      const enemyReserve = makePokemon({ dataId: 19 });
+      const bm = new BattleManager({
+        type: 'wild',
+        playerParty: [player, reserve],
+        enemyParty: [enemy, enemyReserve],
+      });
+
+      expect(bm.getPlayerActive()).toBe(reserve);
+      expect(bm.getEnemyActive()).toBe(enemyReserve);
+    });
+
+    it('rejects parties without a conscious pokemon', () => {
+      expect(() => new BattleManager({
+        type: 'wild',
+        playerParty: [],
+        enemyParty: [makePokemon({ dataId: 16 })],
+      })).toThrow(/conscious/);
+    });
   });
 
   describe('full battle flow: attack → damage → faint → EXP', () => {

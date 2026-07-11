@@ -3,8 +3,12 @@ import { MoveExecutor } from '../../../frontend/src/battle/execution/MoveExecuto
 import { StatusEffectHandler } from '../../../frontend/src/battle/effects/StatusEffectHandler';
 import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 import { moveData } from '../../../frontend/src/data/moves';
+import { seedRng } from '../../../frontend/src/utils/math-helpers';
 
-beforeEach(() => { vi.spyOn(Math, 'random').mockReturnValue(0.5); });
+beforeEach(() => {
+  seedRng(42);
+  vi.spyOn(Math, 'random').mockReturnValue(0.5);
+});
 
 const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
   dataId: 4, level: 20, currentHp: 100,

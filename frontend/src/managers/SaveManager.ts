@@ -1,9 +1,75 @@
-import { SaveData } from '@data/interfaces';
 import { GameManager } from './GameManager';
 import { AchievementManager } from './AchievementManager';
 
 const SAVE_KEY = 'pokemon-web-save';
 const SAVE_VERSION = 2;
+type SerializedGameState = ReturnType<GameManager['serialize']>;
+type PersistedSave = SerializedGameState & {
+  version: number;
+  timestamp: number;
+  achievements: string[];
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(item => typeof item === 'string');
+}
+
+function isNumberArray(value: unknown): value is number[] {
+  return Array.isArray(value) && value.every(item => typeof item === 'number' && Number.isFinite(item));
+}
+
+function getSaveValidationError(data: Record<string, unknown>): string | null {
+  const required = [
+    'version', 'playerName', 'party', 'badges', 'flags', 'trainersDefeated',
+    'pokedex', 'currentMap', 'playerPosition', 'bag', 'money', 'playtime',
+  ];
+  for (const key of required) {
+    if (!(key in data)) return `Save file is missing required field "${key}".`;
+  }
+
+  const pokedex = data.pokedex;
+  const position = data.playerPosition;
+  const validParty = Array.isArray(data.party) && data.party.every(pokemon =>
+    isRecord(pokemon) &&
+    typeof pokemon.dataId === 'number' &&
+    Array.isArray(pokemon.moves) &&
+    pokemon.moves.every(move =>
+      isRecord(move) && typeof move.moveId === 'string' && typeof move.currentPp === 'number'
+    )
+  );
+  const validBag = Array.isArray(data.bag) && data.bag.every(item =>
+    isRecord(item) && typeof item.itemId === 'string' && typeof item.quantity === 'number'
+  );
+  const validFlags = isRecord(data.flags) &&
+    Object.values(data.flags).every(value => typeof value === 'boolean');
+  const validPokedex = isRecord(pokedex) &&
+    isNumberArray(pokedex.seen) && isNumberArray(pokedex.caught);
+  const validPosition = isRecord(position) &&
+    typeof position.x === 'number' && typeof position.y === 'number' &&
+    typeof position.direction === 'string';
+
+  const checks: [string, boolean][] = [
+    ['version', typeof data.version === 'number' && Number.isInteger(data.version)],
+    ['playerName', typeof data.playerName === 'string'],
+    ['party', validParty],
+    ['badges', isStringArray(data.badges)],
+    ['flags', validFlags],
+    ['trainersDefeated', isStringArray(data.trainersDefeated)],
+    ['pokedex', validPokedex],
+    ['currentMap', typeof data.currentMap === 'string'],
+    ['playerPosition', validPosition],
+    ['bag', validBag],
+    ['money', typeof data.money === 'number' && Number.isFinite(data.money)],
+    ['playtime', typeof data.playtime === 'number' && Number.isFinite(data.playtime)],
+    ['achievements', data.achievements === undefined || isStringArray(data.achievements)],
+  ];
+  const invalid = checks.find(([, valid]) => !valid);
+  return invalid ? `Save file field "${invalid[0]}" has an invalid value.` : null;
+}
 
 /** Serialize/deserialize game state to localStorage. */
 export class SaveManager {
@@ -48,12 +114,12 @@ export class SaveManager {
     }
   }
 
-  load(): SaveData | null {
+  load(): PersistedSave | null {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
     try {
       const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== 'object') return null;
+      if (!isRecord(parsed)) return null;
       // Version migration
       // Note: migration intentionally drops unrecognized fields to prevent
       // stale data from corrupting the new schema.
@@ -66,9 +132,9 @@ export class SaveManager {
         if (!parsed.boxNames) parsed.boxNames = undefined;
         if (!parsed.achievements) parsed.achievements = [];
       }
-      // MED-48: Ensure achievements is always a valid array of strings
-      parsed.achievements = Array.isArray(parsed.achievements) ? parsed.achievements : [];
-      return parsed as SaveData;
+      if (parsed.achievements === undefined) parsed.achievements = [];
+      if (getSaveValidationError(parsed)) return null;
+      return parsed as PersistedSave;
     } catch {
       return null;
     }
@@ -78,15 +144,7 @@ export class SaveManager {
   loadAndApply(): boolean {
     const data = this.load();
     if (!data) return false;
-    const gm = GameManager.getInstance();
-    gm.reset(); // Clear stale state before loading
-    // AUDIT-001: Use deserialize() which handles the flat save format from serialize()
-    gm.deserialize(data as unknown as ReturnType<typeof gm.serialize>);
-    // Restore achievements
-    if (data.achievements && Array.isArray(data.achievements)) {
-      AchievementManager.getInstance().deserialize(data.achievements as string[]);
-    }
-    return true;
+    return this.applyTransaction(data);
   }
 
   hasSave(): boolean {
@@ -131,22 +189,50 @@ export class SaveManager {
       return 'Save file is missing the top-level object.';
     }
     const data = parsed as Record<string, unknown>;
-    // Minimum-viable shape check — required fields the deserializer touches.
-    const required = ['playerName', 'party', 'badges', 'flags'];
-    for (const key of required) {
-      if (!(key in data)) {
-        return `Save file is missing required field "${key}".`;
-      }
-    }
     if (typeof data.version === 'number' && data.version > SAVE_VERSION) {
       return `Save version ${data.version} is newer than this build (${SAVE_VERSION}).`;
     }
+    if (data.achievements === undefined) data.achievements = [];
+    const validationError = getSaveValidationError(data);
+    if (validationError) return validationError;
+    const imported = data as PersistedSave;
+    const previous = this.createPersistedSave();
+    if (!this.applyTransaction(imported)) {
+      return 'Imported save could not be applied.';
+    }
     try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(parsed));
+      localStorage.setItem(SAVE_KEY, JSON.stringify(imported));
     } catch {
+      this.applyTransaction(previous);
       return 'Failed to write save to local storage (quota?).';
     }
-    return this.loadAndApply() ? null : 'Imported save could not be applied.';
+    return null;
+  }
+
+  private createPersistedSave(): PersistedSave {
+    return {
+      version: SAVE_VERSION,
+      timestamp: Date.now(),
+      ...GameManager.getInstance().serialize(),
+      achievements: AchievementManager.getInstance().serialize(),
+    };
+  }
+
+  private applyTransaction(data: PersistedSave): boolean {
+    const previous = this.createPersistedSave();
+    const apply = (save: PersistedSave): void => {
+      const gm = GameManager.getInstance();
+      gm.reset();
+      gm.deserialize(save);
+      AchievementManager.getInstance().deserialize(save.achievements);
+    };
+    try {
+      apply(data);
+      return true;
+    } catch {
+      apply(previous);
+      return false;
+    }
   }
 
   /**

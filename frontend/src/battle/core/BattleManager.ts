@@ -32,9 +32,17 @@ export class BattleManager {
   private weatherManager: WeatherManager;
 
   constructor(config: BattleConfig) {
+    const playerActiveIndex = config.playerParty.findIndex(p => p.currentHp > 0);
+    const enemyActiveIndex = config.enemyParty.findIndex(p => p.currentHp > 0);
+    if (playerActiveIndex === -1 || enemyActiveIndex === -1) {
+      throw new Error('BattleManager requires each party to contain a conscious Pokémon.');
+    }
+
     this.config = config;
-    this.playerActive = config.playerParty[0];
-    this.enemyActive = config.enemyParty[0];
+    this.playerActiveIndex = playerActiveIndex;
+    this.enemyActiveIndex = enemyActiveIndex;
+    this.playerActive = config.playerParty[playerActiveIndex];
+    this.enemyActive = config.enemyParty[enemyActiveIndex];
     this.fsm = new BattleStateMachine();
     this.statusHandler = new StatusEffectHandler();
     this.weatherManager = new WeatherManager();
@@ -66,14 +74,10 @@ export class BattleManager {
           if (nextAlive === -1) {
             this.fsm.transition('VICTORY');
           } else {
+            this.statusHandler.clearPokemon(this.enemyActive);
             this.enemyActiveIndex = nextAlive;
             this.enemyActive = this.config.enemyParty[nextAlive];
-            // Initialize status tracking and fire switch-in abilities
-            this.statusHandler.initPokemon(this.enemyActive);
-            const switchResult = AbilityHandler.onSwitchIn(this.enemyActive, this.playerActive, this.statusHandler);
-            if (switchResult.weather) {
-              this.weatherManager.setWeather(switchResult.weather, switchResult.weatherDuration);
-            }
+            this.activateSwitchIn(this.enemyActive, this.playerActive);
             this.fsm.transition('PLAYER_TURN');
           }
         } else if (this.playerActive.currentHp <= 0) {
@@ -84,8 +88,10 @@ export class BattleManager {
           if (nextAlive === -1) {
             this.fsm.transition('DEFEAT');
           } else {
+            this.statusHandler.clearPokemon(this.playerActive);
             this.playerActiveIndex = nextAlive;
             this.playerActive = this.config.playerParty[nextAlive];
+            this.activateSwitchIn(this.playerActive, this.enemyActive);
             this.fsm.transition('PLAYER_TURN');
           }
         } else {
@@ -125,12 +131,21 @@ export class BattleManager {
   /** Switch the active player Pokemon. Clears volatile statuses from old, inits new. */
   switchPokemon(index: number): boolean {
     if (index < 0 || index >= this.config.playerParty.length) return false;
+    if (index === this.playerActiveIndex) return false;
     if (this.config.playerParty[index].currentHp <= 0) return false;
     this.statusHandler.clearPokemon(this.playerActive);
     this.playerActiveIndex = index;
     this.playerActive = this.config.playerParty[index];
-    this.statusHandler.initPokemon(this.playerActive);
+    this.activateSwitchIn(this.playerActive, this.enemyActive);
     return true;
+  }
+
+  private activateSwitchIn(pokemon: PokemonInstance, opponent: PokemonInstance): void {
+    this.statusHandler.initPokemon(pokemon);
+    const result = AbilityHandler.onSwitchIn(pokemon, opponent, this.statusHandler);
+    if (result.weather) {
+      this.weatherManager.setWeather(result.weather, result.weatherDuration);
+    }
   }
 
   /** Clean up the StatusEffectHandler and WeatherManager when the battle ends. */

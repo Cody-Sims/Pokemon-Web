@@ -53,6 +53,32 @@ describe('SaveManager — export / import (plan.md D.6)', () => {
     expect(sm.importJson(future)).toMatch(/newer/);
   });
 
+  it('importJson rejects malformed required fields without replacing state', () => {
+    const gm = GameManager.getInstance();
+    gm.setPlayerName('Existing');
+    const sm = SaveManager.getInstance();
+    const malformed = JSON.parse(sm.exportJson());
+    malformed.party = [{ dataId: 1, moves: 'not-an-array' }];
+
+    expect(sm.importJson(JSON.stringify(malformed))).toMatch(/party/);
+    expect(gm.getPlayerName()).toBe('Existing');
+    expect(mockStorage.getItem('pokemon-web-save')).toBeNull();
+  });
+
+  it('restores live state when imported storage cannot be written', () => {
+    const gm = GameManager.getInstance();
+    gm.setPlayerName('Existing');
+    const sm = SaveManager.getInstance();
+    const imported = JSON.parse(sm.exportJson());
+    imported.playerName = 'Imported';
+    vi.spyOn(mockStorage, 'setItem').mockImplementation(() => {
+      throw new Error('quota');
+    });
+
+    expect(sm.importJson(JSON.stringify(imported))).toMatch(/local storage/);
+    expect(gm.getPlayerName()).toBe('Existing');
+  });
+
   it('export then import round-trips the player name and badges', () => {
     const gm = GameManager.getInstance();
     gm.setPlayerName('Echo');
