@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { TILE_SIZE } from '@utils/constants';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { startFpsMonitor } from '@utils/perf-profile';
+import { startFpsMonitor, stopFpsMonitor } from '@utils/perf-profile';
 import { Player } from '@entities/Player';
 import { FollowerPokemon } from '@entities/FollowerPokemon';
 import { NPC } from '@entities/NPC';
@@ -1319,6 +1319,7 @@ export class OverworldScene extends Phaser.Scene {
   }
 
   shutdown(): void {
+    stopFpsMonitor();
     // Persist repel steps so they survive map transitions and battle returns
     if (this.encounterSystem) {
       GameManager.getInstance().setRepelSteps(this.encounterSystem.getRepelSteps());

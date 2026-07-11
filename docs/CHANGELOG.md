@@ -4,6 +4,19 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-07-11]
+
+### Changed — Lifecycle and dependency cleanup
+
+- Replaced the FPS monitor's no-op interval with a cancellable animation-frame
+  loop and stop monitoring when the overworld shuts down.
+- Destroy the shared battle particle pool when the battle UI shuts down so it
+  cannot retain objects from a previous scene.
+- Updated Vite to 8.1.4, resolving the known Vite and transitive PostCSS
+  advisories reported by `npm audit`.
+
+---
+
 ## [2026-04-30]
 
 ### Added — Procedural non-rectangular map generator

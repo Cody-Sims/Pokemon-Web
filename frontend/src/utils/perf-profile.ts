@@ -80,11 +80,11 @@ let lowFpsWindowCount = 0;
 const FPS_SAMPLE_INTERVAL = 2000;
 const LOW_FPS_THRESHOLD = 24;
 const DOWNGRADE_AFTER_WINDOWS = 3;
-let fpsMonitorTimer: ReturnType<typeof setInterval> | null = null;
+let fpsMonitorFrame: number | null = null;
 let onQualityChange: ((q: RenderQuality) => void) | null = null;
 
 export function startFpsMonitor(onDowngrade?: (q: RenderQuality) => void): void {
-  if (fpsMonitorTimer) return;
+  if (fpsMonitorFrame !== null) return;
   onQualityChange = onDowngrade ?? null;
   fpsWindowSamples = [];
   lowFpsWindowCount = 0;
@@ -114,16 +114,18 @@ export function startFpsMonitor(onDowngrade?: (q: RenderQuality) => void): void 
         onQualityChange?.(newQuality);
       }
     }
-    if (fpsMonitorTimer) requestAnimationFrame(tick);
+    if (fpsMonitorFrame !== null) {
+      fpsMonitorFrame = requestAnimationFrame(tick);
+    }
   };
 
-  fpsMonitorTimer = setInterval(() => {}, 60000) as unknown as ReturnType<typeof setInterval>;
-  requestAnimationFrame(tick);
+  fpsMonitorFrame = requestAnimationFrame(tick);
 }
 
 export function stopFpsMonitor(): void {
-  if (fpsMonitorTimer) {
-    clearInterval(fpsMonitorTimer);
-    fpsMonitorTimer = null;
+  if (fpsMonitorFrame !== null) {
+    cancelAnimationFrame(fpsMonitorFrame);
+    fpsMonitorFrame = null;
+    onQualityChange = null;
   }
 }

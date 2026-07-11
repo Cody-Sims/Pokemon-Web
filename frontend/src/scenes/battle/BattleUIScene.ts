@@ -5,7 +5,7 @@ import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { GameManager } from '@managers/GameManager';
 import { MoveExecutor } from '@battle/execution/MoveExecutor';
-import { playMoveAnimation } from '@battle/execution/MoveAnimationPlayer';
+import { destroyPool, playMoveAnimation } from '@battle/execution/MoveAnimationPlayer';
 import type { StatusEffectHandler } from '@battle/effects/StatusEffectHandler';
 import { HeldItemHandler } from '@battle/effects/HeldItemHandler';
 import type { WeatherManager } from '@battle/effects/WeatherManager';
@@ -772,6 +772,7 @@ export class BattleUIScene extends Phaser.Scene {
     this.input.removeAllListeners();
     this.tweens.killAll();
     this.time.removeAllEvents();
+    destroyPool();
     cleanupBallGraphics();
   }
 }
