@@ -36,7 +36,7 @@ export function createSessionContext(input = {}, environment = {}) {
 
   return {
     additionalContext: [
-      'Pokemon Web is a frontend-only Phaser + TypeScript + Vite application.',
+      'Pokémon Web is a frontend-only Phaser + TypeScript + Vite application.',
       'Read AGENTS.md, the nearest CONTEXT.md, and matching .github/instructions files before editing.',
       `${setup} Required final checks are npm run test and npm run build.`,
       `Environment: Node ${nodeVersion}; package.json ${packagePresent ? 'found' : 'not found'} in ${cwd}.`,
