@@ -1,6 +1,6 @@
 ---
 description: Rules for maintaining AI instructions, skills, hooks, and discovery documents
-applyTo: 'AGENTS.md,llms.txt,.github/copilot-instructions.md,.github/instructions/**,.github/skills/**,.github/hooks/**,scripts/copilot-hooks.mjs'
+applyTo: 'AGENTS.md,llms.txt,.github/{copilot-instructions.md,instructions/**,skills/**,hooks/**},scripts/copilot-hooks.mjs'
 ---
 
 # Agent workflow instructions

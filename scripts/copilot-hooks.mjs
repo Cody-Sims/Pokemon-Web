@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const BLOCKED_COMMANDS = [
   {
@@ -98,6 +100,9 @@ async function main() {
   process.stdout.write(`${JSON.stringify(output)}\n`);
 }
 
-if (process.argv[1]?.endsWith('copilot-hooks.mjs')) {
+const isEntryPoint = process.argv[1]
+  && pathToFileURL(resolve(process.argv[1])).href === import.meta.url;
+
+if (isEntryPoint) {
   await main();
 }

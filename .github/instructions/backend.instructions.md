@@ -7,7 +7,7 @@ applyTo: 'backend/**,workers/**'
 
 ## Current state
 
-Pokemon Web has no backend. It is deployed as a static GitHub Pages application and
+Pokémon Web has no backend. It is deployed as a static GitHub Pages application and
 stores saves in browser localStorage. Files under `backend/` or `workers/` represent
 an explicit architecture change and require the task to define the runtime,
 deployment target, persistence model, and client integration.
