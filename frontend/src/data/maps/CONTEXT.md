@@ -43,4 +43,4 @@ Three tile chars exist for placing field-ability gates in any map:
 The runtime is wired in `frontend/src/scenes/overworld/OverworldInteraction.ts`
 and `frontend/src/scenes/overworld/OverworldFieldAbilities.ts`. The validator
 (`npm run map:validate`) warns when a route or dungeon contains zero of these
-tiles — see exploration heuristic in `temp/scripts/map-gen/validate/map-validator.ts`.
+tiles — see exploration heuristic in `scripts/map-gen/validate/map-validator.ts`.

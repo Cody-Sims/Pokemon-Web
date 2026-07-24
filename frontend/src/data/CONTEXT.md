@@ -27,9 +27,9 @@ arrays conforming to interfaces defined in `interfaces.ts`.
 
 | Directory | Content | Barrel Export |
 |---|---|---|
-| `maps/` | 66 map definitions organized by `cities/`, `routes/`, `interiors/`, `dungeons/` | `maps/index.ts` → `mapRegistry` |
-| `moves/` | Per-type move data (16 type files) | `moves/index.ts` → `moveData` |
-| `pokemon/` | Per-type species data (153 Pokémon) | `pokemon/index.ts` → `pokemonData` |
+| `maps/` | 66 map source files organized by `cities/`, `routes/`, `interiors/`, `dungeons/`; `mapRegistry` currently exposes 82 entries because some source modules export multiple maps | `maps/index.ts` → `mapRegistry` |
+| `moves/` | Per-type move data (18 type files, 244 moves) | `moves/index.ts` → `moveData` |
+| `pokemon/` | Per-type species data (155 Pokémon) | `pokemon/index.ts` → `pokemonData` |
 | `trainers/` | Trainer data by category (rival, gym, elite four, etc.) | `trainers/index.ts` |
 
 ## Conventions

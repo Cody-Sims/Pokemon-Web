@@ -13,6 +13,10 @@ All notable changes to the Pokemon Web project.
   modules.
 - Added a Vitest production import-cycle regression check that resolves frontend
   TypeScript path aliases and reports the full cycle path on failure.
+### Fixed - Documentation drift
+
+- Corrected verified agent, architecture, testing, scene, manager, data, and context documentation drift for current registries, commands, map rendering, and ownership policy.
+- Added `DEC-0017` to document source-of-truth ownership for repository documentation types.
 
 ### Fixed - Build purity
 

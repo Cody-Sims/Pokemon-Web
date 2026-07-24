@@ -14,8 +14,8 @@ Scenes are organized by gameplay domain in subdirectories:
 | `boot/` | Asset loading | 2 (BootScene, PreloadScene) |
 | `title/` | Main menu, new game | 2 (TitleScene, IntroScene) |
 | `overworld/` | Exploration | 1 scene + 8 helpers |
-| `battle/` | Turn-based combat | 2 scenes + 7 helpers |
-| `menu/` | Pause menu system | 13 scenes |
+| `battle/` | Turn-based combat | 4 scenes + 12 helpers |
+| `menu/` | Pause menu system | 16 scenes |
 | `pokemon/` | Pokémon management | 4 scenes |
 | `minigame/` | Shops and mini-games | 2 scenes |
 

@@ -4,7 +4,8 @@
 
 ## Overview
 
-Client-side static web app featuring 153 Pokémon, 66 maps, turn-based battles, and a
+Client-side static web app featuring 155 Pokémon, 244 moves, 82 registered map
+entries from 66 map source files, turn-based battles, 50 achievements, and a
 complete storyline. No backend. Built on Phaser 3 for 2D rendering, TypeScript for
 type safety, and Vite for fast bundling.
 
@@ -67,8 +68,13 @@ type safety, and Vite for fast bundling.
 ## Commands
 
 - `npm run dev` — Development server
-- `npm run build` — Type-check + production build
-- `npm run test` — Unit + integration tests
+- `npm run build` — Deterministic asset generation, type-check, and production build
+- `npm run lint` — Report-only ESLint
+- `npm run format:check` — Prettier check
+- `npm run test` — Unit + integration + replay Vitest suite
+- `npm run test:unit` — Unit tests only
+- `npm run test:integration` — Integration tests only
+- `npm run test:coverage` — Vitest coverage with thresholds
 - `npm run test:e2e` — Playwright end-to-end tests
 - `npm run agent:validate` — Validate agent customizations and shadow architecture
 - `npm run agent:global:install` — Install reusable agents and skills under `~/.copilot`

@@ -10,8 +10,8 @@ via `EventManager`, never through direct references.
 | `boot/` | `BootScene`, `PreloadScene` | Asset loading pipeline with progress bar |
 | `title/` | `TitleScene`, `IntroScene` | Main menu, new game setup, professor intro |
 | `overworld/` | `OverworldScene` + 8 helpers | Top-down exploration: movement, NPCs, dialogue, fishing, field abilities, footsteps, transitions |
-| `battle/` | `BattleScene`, `BattleUIScene` + 7 helpers | Turn-based combat: sprites, UI overlay, turn pipeline, catch sequence, victory handling |
-| `menu/` | 13 scenes | Pause menu, inventory, party, summary, pokédex, settings, quests, trainer card, achievements, fly map, statistics, hall of fame |
+| `battle/` | 4 scenes + 12 helpers | Turn-based combat: sprites, UI overlay, Battle Tower/BP shop, turn pipeline, catch sequence, victory handling |
+| `menu/` | 16 scenes | Pause menu, inventory, party, summary, pokédex, settings, quests, trainer card, achievements, fly map, town/minimap, statistics, hall of fame |
 | `pokemon/` | `StarterSelectScene`, `NicknameScene`, `MoveTutorScene`, `PCScene` | Pokémon management outside of battle |
 | `minigame/` | `ShopScene`, `VoltorbFlipScene` | Shop and mini-game UIs |
 

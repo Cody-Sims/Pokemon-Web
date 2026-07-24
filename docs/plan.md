@@ -13,10 +13,10 @@
 | Metric | Value |
 |--------|-------|
 | Build | Clean (zero TS errors) |
-| Tests | 1,084 unit/integration + 18 E2E (Playwright) |
-| Open bugs | 0 |
-| Bundle | ~1.8 MB total (phaser 1.2 MB, battle 170 KB, index 393 KB) |
-| Pokémon | 153 species · 217 moves · 79 maps · 50 achievements |
+| Tests | `npm run test` passes 2,250 Vitest tests; Playwright E2E commands are available |
+| Open bugs | See `docs/bugs.md` |
+| Bundle | Production build emits Phaser (~1.2 MB), battle (~210 KB), maps (~169 KB), and index (~489 KB) chunks |
+| Pokémon | 155 species · 244 moves · 82 registered map entries from 66 map source files · 50 achievements |
 | Phases shipped | 20 development phases + 8 polish sprints |
 
 The game is feature-complete: full 4-act storyline, 8 gyms, Elite Four, post-game,
@@ -229,7 +229,7 @@ Wire remaining triggers: every gym badge unlock, sweep-trainer, underdog-win, ty
 
 Auto-generate a region map image from the warp graph — useful for the Town Map and for marketing screenshots.
 
-> **Status (2026-04-26)**: Shipped. `npm run map:region` invokes `temp/scripts/map-gen/region/region-map.ts` which introspects every map source file, builds the warp graph, runs a deterministic seeded force-directed layout, and writes a labelled PPM to `temp/region-map.ppm`.
+> **Status (2026-04-26)**: Shipped. `npm run map:region` invokes `scripts/map-gen/region/region-map.ts` which introspects every map source file, builds the warp graph, runs a deterministic seeded force-directed layout, and writes a labelled PPM to `temp/region-map.ppm`.
 
 ---
 

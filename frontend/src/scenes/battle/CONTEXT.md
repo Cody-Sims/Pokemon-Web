@@ -13,6 +13,11 @@ Turn-based combat UI and orchestration. Delegates core battle logic to
 | `BPShopScene.ts` | `BPShopScene` | A.1 BP Shop. Spends Battle Points (not Pokédollars) on competitive held items, berries, and rare candies. |
 | `BattleTurnRunner.ts` | `BattleTurnRunner` | Turn execution pipeline: priority, speed, move resolution. |
 | `BattleMessageQueue.ts` | `BattleMessageQueue` | Queues and displays battle messages sequentially. |
+| `BattleActionMenu.ts` | `BattleActionMenu` | Renders and routes Fight/Bag/Pokémon/Run action choices. |
+| `BattleMoveMenu.ts` | `BattleMoveMenu` | Renders move choices and PP/type details. |
+| `BattleBagHandler.ts` | `BattleBagHandler` | Opens bag interactions and routes selected items into battle flow. |
+| `BattleSwitchHandler.ts` | `BattleSwitchHandler` | Handles party switching, forced replacement, and switch messaging. |
+| `BattleMessageHandler.ts` | `BattleMessageHandler` | Coordinates common battle message display flows. |
 | `BattleDamageNumbers.ts` | `BattleDamageNumbers` | Floating damage number animations. |
 | `BattleEndOfTurn.ts` | `BattleEndOfTurn` | Collects end-of-turn effects (weather, status, held items). |
 | `BattleCatchHandler.ts` | `BattleCatchHandler` | Catch sequence: ball throw, shakes, success/fail, nickname prompt. |
