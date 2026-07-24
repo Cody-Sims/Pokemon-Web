@@ -199,10 +199,13 @@ function formatCycle(cycle: string[]): string {
 }
 
 describe('frontend production import graph', () => {
+  // Parses every file under frontend/src with the TypeScript compiler, so it is
+  // far slower than a normal unit test and will exceed the 5s default timeout
+  // on a loaded machine. The work is CPU-bound and bounded, not hanging.
   it('does not contain runtime import cycles', () => {
     const cycles = findCycles(buildImportGraph());
     const formattedCycles = cycles.map(formatCycle).join('\n');
 
     expect(cycles, `Expected zero production import cycles. Found:\n${formattedCycles}`).toEqual([]);
-  });
+  }, 60_000);
 });
