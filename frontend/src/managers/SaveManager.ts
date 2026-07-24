@@ -1,15 +1,29 @@
 import type { SaveData } from './save-types';
 import { GameManager } from './GameManager';
 import { AchievementManager } from './AchievementManager';
+import {
+  CURRENT_SAVE_VERSION,
+  SaveDataDeserializationError,
+  type SaveValidationError,
+  formatSaveValidationErrors,
+  validateSaveData,
+} from './SaveCodec';
 
 const SAVE_KEY = 'pokemon-web-save';
-const SAVE_VERSION = 2;
+const SAVE_VERSION = CURRENT_SAVE_VERSION;
+const CORRUPT_SAVE_KEY = `${SAVE_KEY}-corrupt`;
+
+export type SaveManagerError =
+  | { type: 'json'; message: string }
+  | { type: 'validation'; message: string; errors: SaveValidationError[] }
+  | { type: 'apply'; message: string };
 
 /** Serialize/deserialize game state to localStorage. */
 export class SaveManager {
   private static instance: SaveManager;
   /** CRIT-2 / MED-21 / MED-22: Block saves during transitions, battles, and cutscenes. */
   private static blocked = false;
+  private lastError: SaveManagerError | null = null;
 
   private constructor() {}
 
@@ -23,6 +37,7 @@ export class SaveManager {
   static blockSaves(): void { SaveManager.blocked = true; }
   static unblockSaves(): void { SaveManager.blocked = false; }
   static canSave(): boolean { return !SaveManager.blocked; }
+  getLastError(): SaveManagerError | null { return this.lastError; }
 
   save(): boolean {
     if (SaveManager.blocked) {
@@ -53,23 +68,18 @@ export class SaveManager {
     if (!raw) return null;
     try {
       const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== 'object') return null;
-      // Version migration
-      // Note: migration intentionally drops unrecognized fields to prevent
-      // stale data from corrupting the new schema.
-      if (parsed.version === 1) {
-        parsed.version = SAVE_VERSION;
-        // v1 -> v2: add missing fields with defaults
-        if (!parsed.gameStats) parsed.gameStats = undefined;
-        if (!parsed.hallOfFame) parsed.hallOfFame = [];
-        if (!parsed.visitedMaps) parsed.visitedMaps = [];
-        if (!parsed.boxNames) parsed.boxNames = undefined;
-        if (!parsed.achievements) parsed.achievements = [];
+      const validated = validateSaveData(parsed);
+      if (!validated.ok) {
+        const message = formatSaveValidationErrors(validated.errors);
+        this.lastError = { type: 'validation', message, errors: validated.errors };
+        this.backupCorruptSave(raw);
+        return null;
       }
-      // MED-48: Ensure achievements is always a valid array of strings
-      parsed.achievements = Array.isArray(parsed.achievements) ? parsed.achievements : [];
-      return parsed as SaveData;
+      this.lastError = null;
+      return validated.data;
     } catch {
+      this.lastError = { type: 'json', message: 'Save file is not valid JSON.' };
+      this.backupCorruptSave(raw);
       return null;
     }
   }
@@ -78,15 +88,26 @@ export class SaveManager {
   loadAndApply(): boolean {
     const data = this.load();
     if (!data) return false;
-    const gm = GameManager.getInstance();
-    gm.reset(); // Clear stale state before loading
-    // AUDIT-001: Use deserialize() which handles the flat save format from serialize()
-    gm.deserialize(data as unknown as ReturnType<typeof gm.serialize>);
-    // Restore achievements
-    if (data.achievements && Array.isArray(data.achievements)) {
-      AchievementManager.getInstance().deserialize(data.achievements as string[]);
+    try {
+      const gm = GameManager.getInstance();
+      gm.reset(); // Clear stale state before loading
+      // AUDIT-001: Use deserialize() which handles the flat save format from serialize()
+      gm.deserialize(data as unknown as ReturnType<typeof gm.serialize>);
+      // Restore achievements
+      if (data.achievements && Array.isArray(data.achievements)) {
+        AchievementManager.getInstance().deserialize(data.achievements.filter(item => typeof item === 'string'));
+      }
+      this.lastError = null;
+      return true;
+    } catch (error) {
+      const message = error instanceof SaveDataDeserializationError
+        ? error.message
+        : 'Save data could not be applied.';
+      this.lastError = { type: 'apply', message };
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (raw) this.backupCorruptSave(raw);
+      return false;
     }
-    return true;
   }
 
   hasSave(): boolean {
@@ -125,28 +146,33 @@ export class SaveManager {
     try {
       parsed = JSON.parse(json);
     } catch {
+      this.lastError = { type: 'json', message: 'Save file is not valid JSON.' };
       return 'Save file is not valid JSON.';
     }
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      this.lastError = { type: 'json', message: 'Save file is missing the top-level object.' };
       return 'Save file is missing the top-level object.';
     }
-    const data = parsed as Record<string, unknown>;
-    // Minimum-viable shape check — required fields the deserializer touches.
-    const required = ['playerName', 'party', 'badges', 'flags'];
-    for (const key of required) {
-      if (!(key in data)) {
-        return `Save file is missing required field "${key}".`;
-      }
-    }
-    if (typeof data.version === 'number' && data.version > SAVE_VERSION) {
-      return `Save version ${data.version} is newer than this build (${SAVE_VERSION}).`;
+    const validated = validateSaveData(parsed);
+    if (!validated.ok) {
+      const message = formatSaveValidationErrors(validated.errors);
+      this.lastError = { type: 'validation', message, errors: validated.errors };
+      return message;
     }
     try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(parsed));
+      localStorage.setItem(SAVE_KEY, JSON.stringify(validated.data));
     } catch {
       return 'Failed to write save to local storage (quota?).';
     }
     return this.loadAndApply() ? null : 'Imported save could not be applied.';
+  }
+
+  private backupCorruptSave(raw: string): void {
+    try {
+      localStorage.setItem(CORRUPT_SAVE_KEY, raw);
+    } catch {
+      // Keep the original save untouched even if backup storage is unavailable.
+    }
   }
 
   /**

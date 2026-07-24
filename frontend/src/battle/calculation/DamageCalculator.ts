@@ -2,11 +2,12 @@ import { PokemonInstance, MoveData } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { getCombinedEffectiveness } from '@battle/calculation/TypeEffectiveness';
 import { STAB_MULTIPLIER, CRIT_CHANCE, CRIT_MULTIPLIER, RANDOM_MIN, RANDOM_MAX } from '@utils/constants';
-import { randomFloat, seededRandom } from '@utils/math-helpers';
 import { PokemonType } from '@utils/type-helpers';
 import type { StatusEffectHandler } from '../effects/StatusEffectHandler';import { AbilityHandler } from '../effects/AbilityHandler';
 import { HeldItemHandler } from '../effects/HeldItemHandler';
 import type { WeatherManager } from '../effects/WeatherManager';
+import type { BattleRng } from '../core/BattleRng';
+import { globalBattleRng } from '../core/BattleRng';
 
 // Accuracy/evasion stage multipliers (Gen III+ formula)
 const STAGE_MULTIPLIERS: Record<number, number> = {
@@ -31,6 +32,7 @@ export class DamageCalculator {
     move: MoveData,
     statusHandler?: StatusEffectHandler,
     weatherManager?: WeatherManager,
+    rng: BattleRng = statusHandler?.getRng() ?? globalBattleRng,
   ): DamageResult {
     if (move.power === null || move.category === 'status') {
       return { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false };
@@ -79,7 +81,7 @@ export class DamageCalculator {
     );
 
     // Critical hit
-    let isCritical = seededRandom() < CRIT_CHANCE;
+    let isCritical = rng.chance(CRIT_CHANCE);
     // Bug #9: No critical hit on type-immune moves
     if (effectiveness === 0) {
       isCritical = false;
@@ -120,7 +122,7 @@ export class DamageCalculator {
     }
 
     // Random factor
-    damage *= randomFloat(RANDOM_MIN, RANDOM_MAX);
+    damage *= rng.next() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
     // Weather modifier
     if (weatherManager) {
@@ -147,6 +149,7 @@ export class DamageCalculator {
     attacker?: PokemonInstance,
     defender?: PokemonInstance,
     statusHandler?: StatusEffectHandler,
+    rng: BattleRng = statusHandler?.getRng() ?? globalBattleRng,
   ): boolean {
     // AUDIT-027: null accuracy means the move never misses (e.g. Swift)
     if (move.accuracy === null || move.accuracy === undefined) return true;
@@ -164,6 +167,6 @@ export class DamageCalculator {
       effectiveAccuracy = Math.floor(effectiveAccuracy * stageMultiplier);
     }
 
-    return seededRandom() * 100 < effectiveAccuracy;
+    return rng.next() * 100 < effectiveAccuracy;
   }
 }

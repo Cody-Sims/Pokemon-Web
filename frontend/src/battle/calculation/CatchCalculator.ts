@@ -1,6 +1,7 @@
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
-import { seededRandom } from '@utils/math-helpers';
+import type { BattleRng } from '../core/BattleRng';
+import { globalBattleRng } from '../core/BattleRng';
 
 interface CatchResult {
   caught: boolean;
@@ -15,7 +16,7 @@ export class CatchCalculator {
    * @param ballMultiplier - Catch rate multiplier of the ball used.
    * @returns CatchResult with number of shakes and whether caught.
    */
-  static calculate(pokemon: PokemonInstance, ballMultiplier: number): CatchResult {
+  static calculate(pokemon: PokemonInstance, ballMultiplier: number, rng: BattleRng = globalBattleRng): CatchResult {
     const data = pokemonData[pokemon.dataId];
     if (!data) return { caught: false, shakes: 0 };
 
@@ -44,7 +45,7 @@ export class CatchCalculator {
 
     let shakes = 0;
     for (let i = 0; i < 4; i++) {
-      if (seededRandom() < shakeProbability) {
+      if (rng.chance(shakeProbability)) {
         shakes++;
       } else {
         break;

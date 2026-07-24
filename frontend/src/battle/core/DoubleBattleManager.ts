@@ -8,6 +8,8 @@ import { AbilityHandler } from '../effects/AbilityHandler';
 import { HeldItemHandler } from '../effects/HeldItemHandler';
 import { AIController } from './AIController';
 import { PartnerAI } from './PartnerAI';
+import type { BattleRng } from './BattleRng';
+import { createBattleRng } from './BattleRng';
 import type { MoveTarget } from './targeting-data';
 import { SELF_TARGET_MOVES, SPREAD_MOVES } from './targeting-data';
 
@@ -43,6 +45,8 @@ export interface DoubleBattleConfig {
   enemyParty2?: PokemonInstance[];    // Second enemy trainer (optional)
   trainerId?: string;
   allyTrainerId?: string;
+  rng?: BattleRng;
+  rngSeed?: number;
 }
 
 export interface TurnAction {
@@ -76,12 +80,14 @@ export class DoubleBattleManager {
 
   private statusHandler: StatusEffectHandler;
   private weatherManager: WeatherManager;
+  private rng: BattleRng;
   private turnCount = 0;
 
   constructor(config: DoubleBattleConfig) {
     this.config = config;
     this.fsm = new BattleStateMachine();
-    this.statusHandler = new StatusEffectHandler();
+    this.rng = createBattleRng(config.rngSeed, config.rng);
+    this.statusHandler = new StatusEffectHandler(this.rng);
     this.weatherManager = new WeatherManager();
 
     // Initialize player side
@@ -260,6 +266,7 @@ export class DoubleBattleManager {
             this.statusHandler,
             this.weatherManager,
             skipPP,
+            this.rng,
           );
           ppDeducted = true;
 
@@ -518,6 +525,10 @@ export class DoubleBattleManager {
 
   getWeatherManager(): WeatherManager {
     return this.weatherManager;
+  }
+
+  getRng(): BattleRng {
+    return this.rng;
   }
 
   getTurnCount(): number {

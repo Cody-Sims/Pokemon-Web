@@ -3,30 +3,31 @@ import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { getCombinedEffectiveness } from '@battle/calculation/TypeEffectiveness';
 import { PokemonType } from '@utils/type-helpers';
-import { randomInt } from '@utils/math-helpers';
+import type { BattleRng } from './BattleRng';
+import { globalBattleRng } from './BattleRng';
 import { GameManager } from '@managers/GameManager';
 
 /** Enemy move selection logic. */
 export class AIController {
   /** Select a move for a wild/trainer Pokemon. */
-  static selectMove(pokemon: PokemonInstance, opponent: PokemonInstance, isTrainer: boolean): string {
+  static selectMove(pokemon: PokemonInstance, opponent: PokemonInstance, isTrainer: boolean, rng: BattleRng = globalBattleRng): string {
     const availableMoves = pokemon.moves.filter(m => m.currentPp > 0);
     if (availableMoves.length === 0) return 'struggle'; // Struggle fallback
 
     if (!isTrainer) {
       // Wild: mostly random
-      return availableMoves[randomInt(0, availableMoves.length - 1)].moveId;
+      return rng.pick(availableMoves).moveId;
     }
 
     const gm = GameManager.getInstance();
     const config = gm.getDifficultyConfig();
 
     if (config.smartAI) {
-      return this.selectSmartMove(pokemon, opponent, availableMoves);
+      return this.selectSmartMove(pokemon, opponent, availableMoves, rng);
     }
 
     // Standard trainer: prefer super-effective moves
-    return this.selectStandardMove(pokemon, opponent, availableMoves);
+    return this.selectStandardMove(pokemon, opponent, availableMoves, rng);
   }
 
   /** Standard trainer AI: pick highest damage super-effective move. */
@@ -34,10 +35,11 @@ export class AIController {
     _pokemon: PokemonInstance,
     opponent: PokemonInstance,
     availableMoves: { moveId: string; currentPp: number }[],
+    rng: BattleRng,
   ): string {
     const opponentData = pokemonData[opponent.dataId];
     if (!opponentData) {
-      return availableMoves[randomInt(0, availableMoves.length - 1)].moveId;
+      return rng.pick(availableMoves).moveId;
     }
 
     let bestMove = availableMoves[0].moveId;
@@ -67,11 +69,12 @@ export class AIController {
     pokemon: PokemonInstance,
     opponent: PokemonInstance,
     availableMoves: { moveId: string; currentPp: number }[],
+    rng: BattleRng,
   ): string {
     const opponentData = pokemonData[opponent.dataId];
     const selfData = pokemonData[pokemon.dataId];
     if (!opponentData || !selfData) {
-      return availableMoves[randomInt(0, availableMoves.length - 1)].moveId;
+      return rng.pick(availableMoves).moveId;
     }
 
     const opponentHpPct = opponent.currentHp / opponent.stats.hp;
