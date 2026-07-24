@@ -154,6 +154,19 @@ tests/
 |---|---|
 | `fuzz.test.ts` | 2000 seeded random keypresses (arrows, Enter, Escape, z, x) — game must not throw unhandled errors. Screenshots captured every 500 inputs for debugging. |
 
+### Agentic playtest discovery
+
+`npm run playtest:discover` complements the fixed fuzz spec with current,
+state-aware browser journeys. It verifies active Phaser scenes through a
+localhost-only read-only probe, runs two deterministic attempts by default,
+and writes JSON/Markdown findings, screenshots, seeds, action indexes, and exact
+reproduction commands under `temp/playtest-runs/`.
+
+Only findings reproduced in both attempts can enter
+`npm run loop:playtest -- --cycles 3`. Every repair still passes the normal loop
+gate, and the gate independently reruns the reported Playwright scenario before
+accepting it.
+
 ---
 
 ## Running Tests
@@ -170,6 +183,8 @@ tests/
 | `npm run test:visual` | Playwright visual regression spec | Browser run |
 | `npm run test:perf` | Playwright performance spec | Browser run |
 | `npm run test:fuzz` | Fuzz/monkey testing (Playwright) | Long browser run |
+| `npm run playtest:discover` | State-aware journeys, seeded fuzzing, and bug report generation | Long browser run |
+| `npm run loop:playtest` | Bounded discovery plus one independently gated repair per cycle | Background/overnight |
 | `npm run test:all` | Vitest + Playwright E2E combined | Full local test gate |
 
 
