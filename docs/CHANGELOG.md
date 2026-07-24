@@ -24,6 +24,11 @@ All notable changes to the Pokemon Web project.
 - Enabled the shared Vitest setup file, repaired unit and integration script filters
   for Vitest 4, made catch RNG expectations explicit, and restored frontend
   coverage reporting with scene files visible.
+### Added - Lint and editor tooling
+
+- Added report-only ESLint flat configuration, Prettier settings, EditorConfig,
+  Node 22 pinning, and lint/format npm scripts for the TypeScript frontend,
+  Node scripts, Vitest tests, and Playwright specs.
 
 ### Added - Bounded improvement loop
 
