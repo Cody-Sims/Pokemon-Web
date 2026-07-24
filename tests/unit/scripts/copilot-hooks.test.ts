@@ -44,6 +44,32 @@ describe('Copilot workflow hooks', () => {
     expect(evaluateToolUse({ toolArgs: { command } })).toEqual({});
   });
 
+  it.each([
+    'git push origin develop',
+    'git push -u origin develop',
+    'git push origin agent/iter-1',
+    'git push origin HEAD:develop',
+  ])('allows publishing a reviewable branch: %s', (command) => {
+    expect(evaluateToolUse({ toolArgs: { command } })).toEqual({});
+  });
+
+  it.each([
+    'git push origin master',
+    'git push origin develop:main',
+    'git push origin HEAD:refs/heads/main',
+    'git push --force origin develop',
+    'git push -f origin develop',
+    'git push --force-with-lease origin develop',
+    'git push origin +develop',
+    'git push origin --delete develop',
+    'git push origin :develop',
+    'npm run build && git push origin main',
+  ])('still denies unreviewable or destructive push: %s', (command) => {
+    expect(evaluateToolUse({ toolArgs: { command } })).toMatchObject({
+      hookSpecificOutput: { permissionDecision: 'deny' },
+    });
+  });
+
   it('denies tool use when the hook payload is malformed', () => {
     expect(evaluateToolUse({ __malformedHookInput: true })).toMatchObject({
       hookSpecificOutput: {

@@ -5,11 +5,44 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const GIT_COMMAND = String.raw`\bgit(?:\s+(?:(?:-C|-c)\s+\S+|(?:--git-dir|--work-tree)(?:=\S+|\s+\S+)|--(?:no-pager|bare)))*`;
+
+/** Branches that may only advance through a reviewed pull request. */
+export const PROTECTED_BRANCHES = ['main', 'master'];
+
+/**
+ * Publishing a feature or integration branch is the approved way to open a pull
+ * request, so a blanket push ban is wrong. What must stay blocked is anything
+ * that can rewrite published history or bypass review: force pushes, refspecs
+ * that force with a leading `+`, deleting a remote branch, and any push whose
+ * destination is a protected branch.
+ */
+export function evaluatePush(command) {
+  const push = new RegExp(`${GIT_COMMAND}\\s+push\\b(.*)$`, 'i').exec(command);
+  if (!push) return null;
+
+  const args = push[1].split(/[;&|]/)[0]
+    .trim()
+    .split(/\s+/)
+    .map((arg) => arg.replace(/["'`]/g, ''))
+    .filter(Boolean);
+
+  if (args.some((arg) => /^(-f|--force|--force-with-lease(=.*)?)$/i.test(arg))) {
+    return 'Force pushing can destroy published history. Open a pull request instead.';
+  }
+  if (args.some((arg) => /^(-d|--delete)$/i.test(arg) || arg.startsWith('+') || arg.startsWith(':'))) {
+    return 'Refusing to delete or force-update a remote branch.';
+  }
+  for (const arg of args) {
+    if (arg.startsWith('-')) continue;
+    const destination = arg.includes(':') ? arg.split(':').pop() : arg;
+    if (PROTECTED_BRANCHES.includes(destination.replace(/^refs\/heads\//, ''))) {
+      return 'Push to a feature or develop branch and open a pull request; main is review-only.';
+    }
+  }
+  return null;
+}
+
 const BLOCKED_COMMANDS = [
-  {
-    pattern: new RegExp(`${GIT_COMMAND}\\s+push(?:\\s|$)`, 'i'),
-    reason: 'Use the repository-approved progress or pull-request tooling instead of git push.',
-  },
   {
     pattern: new RegExp(`${GIT_COMMAND}\\s+add\\s+(?:-A|--all|\\.)(?:\\s|$)`, 'i'),
     reason: 'Stage explicit paths only; git add -A, --all, and . can include unrelated files.',
@@ -93,8 +126,9 @@ export function evaluateToolUse(input = {}) {
     };
   }
   const blocked = BLOCKED_COMMANDS.find(({ pattern }) => pattern.test(command));
+  const reason = blocked?.reason ?? evaluatePush(command);
 
-  if (!blocked) {
+  if (!reason) {
     return {};
   }
 
@@ -102,7 +136,7 @@ export function evaluateToolUse(input = {}) {
     hookSpecificOutput: {
       hookEventName: 'PreToolUse',
       permissionDecision: 'deny',
-      permissionDecisionReason: blocked.reason,
+      permissionDecisionReason: reason,
     },
   };
 }
