@@ -24,7 +24,7 @@ const MAX_CONSECUTIVE_FAILURES = 3;
 
 const DEFAULTS = {
   iterations: 3,
-  base: 'main',
+  base: 'develop',
   type: 'impl',
   deadlineMinutes: 240,
   maxCredits: 400,
@@ -146,6 +146,34 @@ function hasPendingWork() {
 }
 
 /**
+ * Rewrites one backlog row's state.
+ *
+ * The driver owns this file, not the agent. `.github/` is a protected path in
+ * the gate, so an agent that edited its own queue would fail its own iteration.
+ * More importantly, an agent able to edit its queue could quietly rewrite its
+ * own priorities.
+ */
+export function markBacklogItem(markdown, id, state) {
+  const row = new RegExp(`^(\\|\\s*${id}\\s*\\|\\s*)todo(\\s*\\|)`, 'm');
+  return markdown.replace(row, `$1${state}$2`);
+}
+
+/** Reads the backlog item ID an iteration claimed from its commit subject. */
+export function backlogItemFromSubject(subject) {
+  return String(subject ?? '').match(/^([A-Z]+-\d+)\b/)?.[1] ?? null;
+}
+
+function recordCompletedItem(worktree, base) {
+  const subject = git(['log', '-1', '--format=%s', `${base}..HEAD`], worktree).trim();
+  const id = backlogItemFromSubject(subject);
+  if (!id) return null;
+
+  const path = resolve(REPOSITORY_ROOT, '.github/loop/backlog.md');
+  writeFileSync(path, markBacklogItem(readFileSync(path, 'utf8'), id, 'done'));
+  return id;
+}
+
+/**
  * Gitignored paths a worktree needs before any npm script can run.
  *
  * `node_modules` is required: without it nothing executes. `temp/scripts` is
@@ -182,6 +210,27 @@ function linkUntrackedDependencies(worktree) {
   return linked;
 }
 
+/**
+ * Folds a passing iteration into the integration branch so a single pull request
+ * carries every accepted change, rather than leaving a reviewer to hunt through
+ * one branch per iteration.
+ *
+ * Fast-forward only, and only when that branch is the one checked out. Anything
+ * else, a diverged branch or a different checkout, leaves the iteration branch
+ * in place for a human to merge rather than guessing.
+ */
+function integrateIntoBase(branch, base) {
+  if (git(['branch', '--show-current']).trim() !== base) {
+    return { merged: false, reason: `checkout is not on ${base}` };
+  }
+  try {
+    git(['merge', '--ff-only', branch]);
+    return { merged: true };
+  } catch (error) {
+    return { merged: false, reason: error instanceof Error ? error.message.split('\n')[0] : 'merge failed' };
+  }
+}
+
 function runIteration({ index, runDirectory, options, prompt }) {
   const branch = `agent/iter-${Date.now()}-${index}`;
   const worktree = resolve(runDirectory, `worktree-${index}`);
@@ -190,6 +239,11 @@ function runIteration({ index, runDirectory, options, prompt }) {
 
   git(['worktree', 'add', '-b', branch, worktree, options.base]);
   linkUntrackedDependencies(worktree);
+
+  // Only a branch that cleared the gate survives. Keying cleanup off the gate
+  // report's existence would keep failed branches too, because the gate writes a
+  // report whether it passes or fails.
+  let keepBranch = false;
 
   try {
     // The repository guardrail hook is gated behind an opt-in in prompt mode.
@@ -234,16 +288,24 @@ function runIteration({ index, runDirectory, options, prompt }) {
     ], { cwd: REPOSITORY_ROOT, encoding: 'utf8', stdio: 'inherit' });
 
     if (gate.status === 0) {
-      console.log(`Iteration ${index}: gate passed, kept branch ${branch}.`);
-      return { index, branch, status: 'passed' };
+      keepBranch = true;
+      const item = recordCompletedItem(worktree, options.base);
+      const integration = integrateIntoBase(branch, options.integrationBranch ?? options.base);
+      keepBranch = !integration.merged;
+
+      console.log(`Iteration ${index}: gate passed.`);
+      if (item) console.log(`Iteration ${index}: marked backlog item ${item} done.`);
+      console.log(integration.merged
+        ? `Iteration ${index}: folded into ${options.base}.`
+        : `Iteration ${index}: kept branch ${branch} for manual merge (${integration.reason}).`);
+      return { index, branch, status: 'passed', item, merged: integration.merged };
     }
 
     console.log(`Iteration ${index}: gate failed, discarding ${branch}.`);
     return { index, branch, status: 'failed' };
   } finally {
-    const kept = existsSync(resolve(runDirectory, `iter-${index}-gate.json`));
     git(['worktree', 'remove', '--force', worktree]);
-    if (!kept) git(['branch', '-D', branch]);
+    if (!keepBranch) git(['branch', '-D', branch]);
   }
 }
 

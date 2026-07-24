@@ -284,9 +284,15 @@ Available skills:
 Reusable cross-repository resources live in `.github/global-agent-toolkit/` and
 install to `~/.copilot/` with `npm run agent:global:install`. Run
 `npm run agent:global:check` to detect missing, stale, or locally modified managed
-files. The global layer provides the `Workspace Researcher` agent and the
-`external-skill-review`, `repository-agent-bootstrap`, and `shadow-architecture`
-skills. Keep these resources repository-agnostic and avoid names used by local skills.
+files. The global layer now provides only the `Workspace Researcher` agent. The
+previously bundled `external-skill-review`, `repository-agent-bootstrap`, and
+`shadow-architecture` skills moved to the dedicated `Cody-Sims/agent-skills`
+repository, which installs them to `~/.copilot/skills`; get them with
+`git clone https://github.com/Cody-Sims/agent-skills && npm run install:agents` or
+`gh skill install Cody-Sims/agent-skills <skill-name>`. Keep the toolkit
+repository-agnostic. The external catalog owns `~/.copilot/skills`, so this
+repository's local skills (such as `pokemon-shadow-architecture`) must keep their
+`pokemon-` prefix and must not reuse a name shipped by the external catalog.
 
 The `.shadow/` directory is the human-reviewed architecture memory for this project.
 It is a project convention, not a ShadowRepo plugin format. Run
@@ -303,14 +309,16 @@ over the network.
 `scripts/loop/` runs bounded, unattended improvement iterations through GitHub
 Copilot CLI. Each iteration takes one item from `.github/loop/backlog.md`, works in
 a throwaway git worktree on its own `agent/iter-*` branch, and is graded by
-`scripts/loop/gate.mjs`. Passing branches are kept for human review. Nothing is
-merged and nothing is pushed.
+`scripts/loop/gate.mjs`. A passing iteration is fast-forwarded into `develop` and
+its branch removed, so one pull request carries every accepted change. An
+iteration that cannot be fast-forwarded keeps its branch for a manual merge.
+Nothing reaches `main` except through that pull request.
 
 | Command | Purpose |
 |---|---|
 | `npm run loop:dry-run` | Print the exact agent invocation without spending credits |
 | `npm run loop:run -- --iterations 3` | Run the bounded loop |
-| `npm run loop:gate -- --worktree . --base main` | Grade a worktree directly |
+| `npm run loop:gate -- --worktree . --base develop` | Grade a worktree directly |
 
 The gate is the contract, not the prompt. It restores `tests/` and every config
 file from the base ref before running checks, rejects out-of-scope and protected
@@ -333,7 +341,15 @@ files under `frontend/public/assets/`; the gate discards that churn.
 
 ## Git Workflow
 
+- Work on `develop`, never commit directly to `main`. `main` advances only by
+  merging the review pull request.
 - Stage only changed files: `git add <file1> <file2>` — never `git add -A` or `git add .`
 - Commit with imperative mood: "Add fire-type moves and update type chart"
 - Update `docs/CHANGELOG.md` after every code change
 - Run `npm run build` and `npm run test` before committing
+- Publish with `git push origin develop`. The pre-tool hook permits pushing a
+  review branch but denies force pushes, remote deletes, and any push to `main`.
+- The GitHub CLI needs a token in the environment because the stored credential
+  lacks the `read:org` scope that `gh auth login` demands. Load it per session
+  without writing a secret to disk:
+  `export GH_TOKEN="$(printf 'protocol=https\nhost=github.com\n\n' | git credential fill | sed -n 's/^password=//p')"`

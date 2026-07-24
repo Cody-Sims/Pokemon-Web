@@ -17,9 +17,11 @@ Rules:
   skipped test. If a check fails, fix the cause.
 - Run `npm run test` and `npm run build`. Show the real output.
 - Add a `docs/CHANGELOG.md` entry.
-- Set the backlog item to `done`, then make exactly one commit staging explicit
-  paths. Never use `git add -A` or `git add .`, and never push.
+- Make exactly one commit, staging explicit paths, and begin the commit subject
+  with the backlog item ID, for example `L-001: remove the unused helper`. Never
+  use `git add -A` or `git add .`, and never push.
+- Do not edit `.github/loop/backlog.md`. The loop records progress for you.
 
 If you cannot make both commands pass, revert every change with
-`git checkout -- <path>` for each file you touched, set the backlog item to
-`blocked` with a one-line reason, and stop.
+`git checkout -- <path>` for each file you touched, and stop without committing.
+Never weaken a check to make it pass.

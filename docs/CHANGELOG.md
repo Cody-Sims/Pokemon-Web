@@ -100,6 +100,25 @@ All notable changes to the Pokemon Web project.
   falling back to Viridian's starter inventory.
 - Added a data-driven registry integrity regression test covering moves, Pokémon,
   trainers, encounters, maps, shop-host maps, quests, cutscenes, and achievements.
+### Removed - Deprecated `computeGameWidth()` helper
+
+- Deleted the unused deprecated `computeGameWidth()` from
+  `frontend/src/utils/constants.ts`; `computeGameDimensions()` is the single
+  source for the responsive canvas size, and the helper had no call sites.
+- Updated the stale scale-config comment in `frontend/src/config/game-config.ts`
+  to reference `computeGameDimensions`.
+
+### Changed - Global toolkit ships only the workspace-researcher agent
+
+- Removed the `external-skill-review`, `repository-agent-bootstrap`, and
+  `shadow-architecture` skills from `.github/global-agent-toolkit/`; they now live
+  in the dedicated `Cody-Sims/agent-skills` repository, which owns
+  `~/.copilot/skills`. The toolkit now installs only the `workspace-researcher`
+  agent, so the two repositories no longer contend over `~/.copilot/skills`.
+- Bumped the toolkit manifest to `2.0.0` for the breaking content change and
+  updated the toolkit README, `AGENTS.md`, and `llms.txt` to describe the split.
+- Made the agent-workflow validator tolerate a toolkit with no bundled skills and
+  updated the toolkit manager tests to assert against the agent resource.
 
 ### Added - Bounded improvement loop
 
@@ -113,6 +132,8 @@ All notable changes to the Pokemon Web project.
 - Added a curated loop backlog derived from an audit that found 31 of the 34
   items in the improvement plan already shipped.
 - Added `loop:gate`, `loop:dry-run`, and `loop:run` commands plus VS Code tasks.
+- Fixed nondeterministic battle tests: the seeded PRNG reads `Date.now()` and the
+  suite mocked `Math.random`, which it never calls.
 
 ### Added - Global agents and decision architecture
 
