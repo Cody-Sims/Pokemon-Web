@@ -20,6 +20,14 @@ All notable changes to the Pokemon Web project.
 
 - Replaced ability, held-item, and move-effect switch dispatch with hook-based registries while preserving existing handler APIs and battle RNG ordering.
 - Added registry-level battle tests for migrated ability, held-item, and move-effect hooks.
+### Changed - Battle FSM orchestration
+
+- Added an explicit battle-state transition table that throws on illegal,
+  unregistered, or terminal-state transitions.
+- Introduced a shared battle orchestration engine with single/double format
+  strategies and double-battle targeting policy while preserving manager APIs.
+- Documented remaining scene-owned double-battle replacement flow for the next
+  engine event/command migration wave.
 
 ### Added - Shared frontend modules
 

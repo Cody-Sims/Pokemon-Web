@@ -22,6 +22,39 @@
 - **Actual:** The handler still carries a TODO noting that ability and item suppression are not distinguished.
 - **Status:** Deferred — documented during the registry refactor; not fixed because no suppression pipeline exists yet and changing it would affect battle mechanics.
 
+### Double-battle replacement flow still depends on scene orchestration
+
+- **Files:** [frontend/src/battle/core/DoubleBattleManager.ts](frontend/src/battle/core/DoubleBattleManager.ts#L119-L127), [frontend/src/battle/core/DoubleBattleManager.ts](frontend/src/battle/core/DoubleBattleManager.ts#L305-L317).
+- **Symptom:** `CHECK_FAINT` and `REPLACE` are now registered through the shared
+  battle engine, but the double manager still only returns `faintedSlots` after a
+  turn. It does not autonomously choose or prompt replacements.
+- **Suspected cause:** Replacement prompting and turn continuation are still owned
+  by the battle scene layer, so moving that behavior into the manager would change
+  scene-facing flow during this ownership wave.
+- **Status:** Open — next scene-owned wave should move replacement commands/events
+  out of `BattleUIScene` and into the battle engine.
+
+### Battle state registration did not match the declared state set
+
+- **Files:** [frontend/src/battle/core/BattleManager.ts](frontend/src/battle/core/BattleManager.ts#L36-L42), [frontend/src/battle/core/BattleEngine.ts](frontend/src/battle/core/BattleEngine.ts).
+- **Symptom:** Single battles declared `ENEMY_TURN`, `EXECUTE_MOVES`,
+  `EXECUTE_TURN`, `REPLACE`, and `EXP_GAIN`, but the manager registered only a
+  subset, making the documented happy path unreachable through the manager.
+- **Suspected cause:** Scene-side turn orchestration grew without keeping the
+  manager's FSM registration in sync.
+- **Status:** Fixed — both managers now register all declared states via the
+  shared battle engine while scene-side turn execution remains unchanged.
+
+### BattleStateMachine silently accepted invalid flow
+
+- **Files:** [frontend/src/battle/core/BattleStateMachine.ts](frontend/src/battle/core/BattleStateMachine.ts#L26-L91).
+- **Symptom:** Invalid transitions such as `INTRO → VICTORY`, transitions to
+  unregistered states, and attempts to leave terminal states were previously
+  ignored or allowed rather than failing loudly.
+- **Suspected cause:** The FSM tracked registered handlers but had no transition
+  table or terminal-state enforcement.
+- **Status:** Fixed — explicit legal transitions now guard every state change and
+  throw on illegal flow.
 
 ### Cycling has no visible sprite swap
 
