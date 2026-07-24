@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - Build purity
+
+- Removed the wall-clock timestamp from the generated asset manifest so atlas
+  generation and production builds no longer dirty the working tree.
+- Declared Phaser as a production dependency and added the missing `gh-pages`
+  development dependency used by the deploy script.
+
 ### Added - Bounded improvement loop
 
 - Added a gate-first autonomous improvement loop that runs each iteration in a
