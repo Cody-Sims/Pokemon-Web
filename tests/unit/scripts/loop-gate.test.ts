@@ -11,7 +11,9 @@ import {
   COPILOT_TOOL_FLAGS,
   LOOP_CRITICAL_PATHS,
   WORKTREE_LINKS,
+  backlogItemFromSubject,
   buildCopilotArguments,
+  markBacklogItem,
   parseArguments as parseLoopArguments,
 } from '../../../scripts/loop/run-loop.mjs';
 
@@ -213,5 +215,33 @@ describe('loop driver arguments', () => {
 
   it('guards only the loop configuration it reads from the checked-out tree', () => {
     expect(LOOP_CRITICAL_PATHS).toEqual(['.github/loop', 'scripts/loop']);
+  });
+});
+
+describe('loop backlog bookkeeping', () => {
+  const backlog = [
+    '| ID | State | Signal | Task |',
+    '|---|---|---|---|',
+    '| L-001 | todo | tsc | Delete the unused helper. |',
+    '| L-002 | todo | test | Add the missing event. |',
+  ].join('\n');
+
+  it.each([
+    ['L-001: remove the unused helper', 'L-001'],
+    ['L-012: tighten the event map', 'L-012'],
+    ['fix(loop): unrelated commit', null],
+    ['', null],
+  ])('reads the item id from commit subject %s', (subject, expected) => {
+    expect(backlogItemFromSubject(subject)).toBe(expected);
+  });
+
+  it('marks only the claimed row done', () => {
+    const updated = markBacklogItem(backlog, 'L-001', 'done');
+    expect(updated).toContain('| L-001 | done |');
+    expect(updated).toContain('| L-002 | todo |');
+  });
+
+  it('leaves the backlog untouched for an unknown id', () => {
+    expect(markBacklogItem(backlog, 'L-999', 'done')).toBe(backlog);
   });
 });

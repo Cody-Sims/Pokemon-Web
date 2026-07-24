@@ -146,6 +146,34 @@ function hasPendingWork() {
 }
 
 /**
+ * Rewrites one backlog row's state.
+ *
+ * The driver owns this file, not the agent. `.github/` is a protected path in
+ * the gate, so an agent that edited its own queue would fail its own iteration.
+ * More importantly, an agent able to edit its queue could quietly rewrite its
+ * own priorities.
+ */
+export function markBacklogItem(markdown, id, state) {
+  const row = new RegExp(`^(\\|\\s*${id}\\s*\\|\\s*)todo(\\s*\\|)`, 'm');
+  return markdown.replace(row, `$1${state}$2`);
+}
+
+/** Reads the backlog item ID an iteration claimed from its commit subject. */
+export function backlogItemFromSubject(subject) {
+  return String(subject ?? '').match(/^([A-Z]+-\d+)\b/)?.[1] ?? null;
+}
+
+function recordCompletedItem(worktree, base) {
+  const subject = git(['log', '-1', '--format=%s', `${base}..HEAD`], worktree).trim();
+  const id = backlogItemFromSubject(subject);
+  if (!id) return null;
+
+  const path = resolve(REPOSITORY_ROOT, '.github/loop/backlog.md');
+  writeFileSync(path, markBacklogItem(readFileSync(path, 'utf8'), id, 'done'));
+  return id;
+}
+
+/**
  * Gitignored paths a worktree needs before any npm script can run.
  *
  * `node_modules` is required: without it nothing executes. `temp/scripts` is
@@ -234,8 +262,10 @@ function runIteration({ index, runDirectory, options, prompt }) {
     ], { cwd: REPOSITORY_ROOT, encoding: 'utf8', stdio: 'inherit' });
 
     if (gate.status === 0) {
+      const item = recordCompletedItem(worktree, options.base);
       console.log(`Iteration ${index}: gate passed, kept branch ${branch}.`);
-      return { index, branch, status: 'passed' };
+      if (item) console.log(`Iteration ${index}: marked backlog item ${item} done.`);
+      return { index, branch, status: 'passed', item };
     }
 
     console.log(`Iteration ${index}: gate failed, discarding ${branch}.`);
