@@ -74,5 +74,5 @@ type safety, and Vite for fast bundling.
 - `npm run agent:global:check` — Verify installed global resources and hashes
 - `npm run shadow:validate` — Validate decision records, links, and feature mappings
 - `npm run loop:dry-run` — Print the exact agent invocation without spending credits
-- `npm run loop:run` — Run the bounded improvement loop
+- `npm run loop:run` — Run the bounded improvement loop and fold passes into `develop`
 - `npm run loop:gate` — Grade a worktree against the deterministic gate

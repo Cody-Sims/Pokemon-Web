@@ -307,14 +307,16 @@ over the network.
 `scripts/loop/` runs bounded, unattended improvement iterations through GitHub
 Copilot CLI. Each iteration takes one item from `.github/loop/backlog.md`, works in
 a throwaway git worktree on its own `agent/iter-*` branch, and is graded by
-`scripts/loop/gate.mjs`. Passing branches are kept for human review. Nothing is
-merged and nothing is pushed.
+`scripts/loop/gate.mjs`. A passing iteration is fast-forwarded into `develop` and
+its branch removed, so one pull request carries every accepted change. An
+iteration that cannot be fast-forwarded keeps its branch for a manual merge.
+Nothing reaches `main` except through that pull request.
 
 | Command | Purpose |
 |---|---|
 | `npm run loop:dry-run` | Print the exact agent invocation without spending credits |
 | `npm run loop:run -- --iterations 3` | Run the bounded loop |
-| `npm run loop:gate -- --worktree . --base main` | Grade a worktree directly |
+| `npm run loop:gate -- --worktree . --base develop` | Grade a worktree directly |
 
 The gate is the contract, not the prompt. It restores `tests/` and every config
 file from the base ref before running checks, rejects out-of-scope and protected
@@ -337,7 +339,11 @@ files under `frontend/public/assets/`; the gate discards that churn.
 
 ## Git Workflow
 
+- Work on `develop`, never commit directly to `main`. `main` advances only by
+  merging the review pull request.
 - Stage only changed files: `git add <file1> <file2>` — never `git add -A` or `git add .`
 - Commit with imperative mood: "Add fire-type moves and update type chart"
 - Update `docs/CHANGELOG.md` after every code change
 - Run `npm run build` and `npm run test` before committing
+- Publish with `git push origin develop`. The pre-tool hook permits pushing a
+  review branch but denies force pushes, remote deletes, and any push to `main`.

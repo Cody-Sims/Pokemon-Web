@@ -151,9 +151,9 @@ describe('loop driver arguments', () => {
     expect(parseLoopArguments(['--iterations', '5']).iterations).toBe(5);
   });
 
-  it('defaults to a small supervised run', () => {
+  it('defaults to a small supervised run on the integration branch', () => {
     const options = parseLoopArguments([]);
-    expect(options).toMatchObject({ iterations: 3, base: 'main', type: 'impl', dryRun: false });
+    expect(options).toMatchObject({ iterations: 3, base: 'develop', type: 'impl', dryRun: false });
   });
 
   it.each([

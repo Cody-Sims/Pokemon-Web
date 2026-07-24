@@ -24,7 +24,7 @@ const MAX_CONSECUTIVE_FAILURES = 3;
 
 const DEFAULTS = {
   iterations: 3,
-  base: 'main',
+  base: 'develop',
   type: 'impl',
   deadlineMinutes: 240,
   maxCredits: 400,
@@ -210,6 +210,27 @@ function linkUntrackedDependencies(worktree) {
   return linked;
 }
 
+/**
+ * Folds a passing iteration into the integration branch so a single pull request
+ * carries every accepted change, rather than leaving a reviewer to hunt through
+ * one branch per iteration.
+ *
+ * Fast-forward only, and only when that branch is the one checked out. Anything
+ * else, a diverged branch or a different checkout, leaves the iteration branch
+ * in place for a human to merge rather than guessing.
+ */
+function integrateIntoBase(branch, base) {
+  if (git(['branch', '--show-current']).trim() !== base) {
+    return { merged: false, reason: `checkout is not on ${base}` };
+  }
+  try {
+    git(['merge', '--ff-only', branch]);
+    return { merged: true };
+  } catch (error) {
+    return { merged: false, reason: error instanceof Error ? error.message.split('\n')[0] : 'merge failed' };
+  }
+}
+
 function runIteration({ index, runDirectory, options, prompt }) {
   const branch = `agent/iter-${Date.now()}-${index}`;
   const worktree = resolve(runDirectory, `worktree-${index}`);
@@ -269,9 +290,15 @@ function runIteration({ index, runDirectory, options, prompt }) {
     if (gate.status === 0) {
       keepBranch = true;
       const item = recordCompletedItem(worktree, options.base);
-      console.log(`Iteration ${index}: gate passed, kept branch ${branch}.`);
+      const integration = integrateIntoBase(branch, options.integrationBranch ?? options.base);
+      keepBranch = !integration.merged;
+
+      console.log(`Iteration ${index}: gate passed.`);
       if (item) console.log(`Iteration ${index}: marked backlog item ${item} done.`);
-      return { index, branch, status: 'passed', item };
+      console.log(integration.merged
+        ? `Iteration ${index}: folded into ${options.base}.`
+        : `Iteration ${index}: kept branch ${branch} for manual merge (${integration.reason}).`);
+      return { index, branch, status: 'passed', item, merged: integration.merged };
     }
 
     console.log(`Iteration ${index}: gate failed, discarding ${branch}.`);
