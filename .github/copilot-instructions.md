@@ -27,9 +27,10 @@ Path-specific rules in `.github/instructions/*.instructions.md` supplement this 
 6. Run the narrowest relevant checks, then `npm run test` and `npm run build`.
 7. For scene or UI changes, also run the relevant Playwright command. For map
    changes, run `npm run map:validate`.
-8. Update `docs/CHANGELOG.md` for code or workflow changes and maintain context files
+8. For agent or architecture-memory changes, run `npm run agent:validate`.
+9. Update `docs/CHANGELOG.md` for code or workflow changes and maintain context files
    according to `AGENTS.md`.
-9. Review `git diff` and stage only intended paths. Never use `git add .` or
+10. Review `git diff` and stage only intended paths. Never use `git add .` or
    `git add -A`.
 
 ## Engineering rules
@@ -45,7 +46,12 @@ Path-specific rules in `.github/instructions/*.instructions.md` supplement this 
 ## Agent resources
 
 - Skills in `.github/skills/` are AgentSkills-compatible. Load the matching
-  `SKILL.md` before a frontend, backend, validation, or tile/sprite workflow.
+  `SKILL.md` before a frontend, backend, validation, tile/sprite, or shadow workflow.
+- `.shadow/` contains the reviewed decision graph. Read its index for architectural
+  changes, but recheck every record against current source and tests.
+- `.github/global-agent-toolkit/` is versioned source for reusable user-level agents
+  and skills. It must remain repository-agnostic and is installed with explicit npm
+  commands, never from lifecycle hooks.
 - Hooks in `.github/hooks/` provide fast session guidance and guard dangerous shell
   commands. Keep hooks deterministic, offline, non-interactive, and under five
   seconds.

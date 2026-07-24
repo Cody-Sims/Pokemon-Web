@@ -4,25 +4,26 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+const GIT_COMMAND = String.raw`\bgit(?:\s+(?:(?:-C|-c)\s+\S+|(?:--git-dir|--work-tree)(?:=\S+|\s+\S+)|--(?:no-pager|bare)))*`;
 const BLOCKED_COMMANDS = [
   {
-    pattern: /(?:^|[;&|]\s*)git\s+push(?:\s|$)/i,
+    pattern: new RegExp(`${GIT_COMMAND}\\s+push(?:\\s|$)`, 'i'),
     reason: 'Use the repository-approved progress or pull-request tooling instead of git push.',
   },
   {
-    pattern: /(?:^|[;&|]\s*)git\s+add\s+(?:-A|--all|\.)(?:\s|$)/i,
+    pattern: new RegExp(`${GIT_COMMAND}\\s+add\\s+(?:-A|--all|\\.)(?:\\s|$)`, 'i'),
     reason: 'Stage explicit paths only; git add -A, --all, and . can include unrelated files.',
   },
   {
-    pattern: /(?:^|[;&|]\s*)git\s+reset\s+--hard(?:\s|$)/i,
+    pattern: new RegExp(`${GIT_COMMAND}\\s+reset\\s+--hard(?:\\s|$)`, 'i'),
     reason: 'git reset --hard can destroy uncommitted work.',
   },
   {
-    pattern: /(?:^|[;&|]\s*)git\s+clean\s+-[a-z]*f[a-z]*(?:\s|$)/i,
+    pattern: new RegExp(`${GIT_COMMAND}\\s+clean\\s+(?:-(?=[a-z]*f)[a-z]+|--force)(?:\\s|$)`, 'i'),
     reason: 'git clean with force can destroy untracked work.',
   },
   {
-    pattern: /(?:^|[;&|]\s*)rm\s+-rf\s+(?:\/|~|\$HOME)(?:\s|$)/i,
+    pattern: /\brm(?=[^;&|\n]*\s+(?:-[a-z]*r[a-z]*|--recursive)(?:\s|$))(?=[^;&|\n]*\s+(?:-[a-z]*f[a-z]*|--force)(?:\s|$))(?:\s+--?[a-z-]+)+\s+(?:\/|~|\$HOME)(?:\s|$)/i,
     reason: 'Refusing a recursive forced deletion of a root or home directory.',
   },
 ];
@@ -37,17 +38,23 @@ export function createSessionContext(input = {}, environment = {}) {
     : 'Dependencies are not present; run npm install before other npm commands.';
 
   return {
-    additionalContext: [
-      'Pokémon Web is a frontend-only Phaser + TypeScript + Vite application.',
-      'Read AGENTS.md, the nearest CONTEXT.md, and matching .github/instructions files before editing.',
-      `${setup} Required final checks are npm run test and npm run build.`,
-      `Environment: Node ${nodeVersion}; package.json ${packagePresent ? 'found' : 'not found'} in ${cwd}.`,
-      'Load a matching skill from .github/skills for frontend, backend, validation, or tile/sprite work.',
-    ].join(' '),
+    hookSpecificOutput: {
+      hookEventName: 'SessionStart',
+      additionalContext: [
+        'Pokémon Web is a frontend-only Phaser + TypeScript + Vite application.',
+        'Read AGENTS.md, the nearest CONTEXT.md, and matching .github/instructions files before editing.',
+        `${setup} Required final checks are npm run test and npm run build.`,
+        `Environment: Node ${nodeVersion}; package.json ${packagePresent ? 'found' : 'not found'} in ${cwd}.`,
+        'Load a matching skill from .github/skills for frontend, backend, validation, tile/sprite, or shadow architecture work.',
+      ].join(' '),
+    },
   };
 }
 
 export function extractCommand(input = {}) {
+  if (!input || typeof input !== 'object') {
+    return '';
+  }
   const args = input.toolArgs ?? input.tool_input;
   if (typeof args === 'string') {
     try {
@@ -61,7 +68,30 @@ export function extractCommand(input = {}) {
 }
 
 export function evaluateToolUse(input = {}) {
-  const command = extractCommand(input);
+  if (!input || typeof input !== 'object' || input.__malformedHookInput === true) {
+    return {
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'deny',
+        permissionDecisionReason: 'Refusing a tool call because the hook input was missing or malformed.',
+      },
+    };
+  }
+
+  const command = extractCommand(input).replace(/\\\r?\n/g, ' ').trim();
+  const toolName = typeof input.tool_name === 'string' ? input.tool_name : '';
+  const hasToolPayload = Object.hasOwn(input, 'toolArgs') || Object.hasOwn(input, 'tool_input');
+  const isCommandTool = /terminal|shell|bash|powershell|command/i.test(toolName)
+    || Object.hasOwn(input, 'toolArgs');
+  if (!toolName && !hasToolPayload || isCommandTool && !command) {
+    return {
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'deny',
+        permissionDecisionReason: 'Refusing a tool call because the hook input shape is invalid.',
+      },
+    };
+  }
   const blocked = BLOCKED_COMMANDS.find(({ pattern }) => pattern.test(command));
 
   if (!blocked) {
@@ -69,8 +99,11 @@ export function evaluateToolUse(input = {}) {
   }
 
   return {
-    permissionDecision: 'deny',
-    permissionDecisionReason: blocked.reason,
+    hookSpecificOutput: {
+      hookEventName: 'PreToolUse',
+      permissionDecision: 'deny',
+      permissionDecisionReason: blocked.reason,
+    },
   };
 }
 
@@ -80,12 +113,12 @@ async function readInput() {
     raw += chunk;
   }
   if (!raw.trim()) {
-    return {};
+    return { __malformedHookInput: true };
   }
   try {
     return JSON.parse(raw);
   } catch {
-    return {};
+    return { __malformedHookInput: true };
   }
 }
 

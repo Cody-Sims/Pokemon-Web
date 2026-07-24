@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "root": "F00",
+  "nodes": [
+    {
+      "id": "F00",
+      "name": "Pokemon Web",
+      "paths": [
+        "frontend/**",
+        "tests/**"
+      ],
+      "children": [
+        "F01",
+        "F02",
+        "F03",
+        "F04",
+        "F05",
+        "F06",
+        "F07",
+        "F08",
+        "F09"
+      ]
+    },
+    {
+      "id": "F01",
+      "name": "Client runtime",
+      "paths": [
+        "frontend/src/main.ts",
+        "frontend/src/config/**"
+      ],
+      "decisions": [
+        "DEC-0001",
+        "DEC-0002"
+      ]
+    },
+    {
+      "id": "F02",
+      "name": "Phaser scenes",
+      "paths": [
+        "frontend/src/scenes/**"
+      ],
+      "decisions": [
+        "DEC-0002",
+        "DEC-0004"
+      ]
+    },
+    {
+      "id": "F03",
+      "name": "State and services",
+      "paths": [
+        "frontend/src/managers/**"
+      ],
+      "decisions": [
+        "DEC-0003",
+        "DEC-0004"
+      ]
+    },
+    {
+      "id": "F04",
+      "name": "Battle",
+      "paths": [
+        "frontend/src/battle/**",
+        "frontend/src/scenes/battle/**"
+      ],
+      "decisions": [
+        "DEC-0005"
+      ]
+    },
+    {
+      "id": "F05",
+      "name": "Game data",
+      "paths": [
+        "frontend/src/data/**"
+      ],
+      "decisions": [
+        "DEC-0006"
+      ]
+    },
+    {
+      "id": "F06",
+      "name": "Maps and map tooling",
+      "paths": [
+        "frontend/src/data/maps/**",
+        "temp/scripts/map-gen/**"
+      ],
+      "decisions": [
+        "DEC-0007"
+      ]
+    },
+    {
+      "id": "F07",
+      "name": "Gameplay systems",
+      "paths": [
+        "frontend/src/systems/**",
+        "frontend/src/entities/**"
+      ]
+    },
+    {
+      "id": "F08",
+      "name": "User interface",
+      "paths": [
+        "frontend/src/ui/**"
+      ]
+    },
+    {
+      "id": "F09",
+      "name": "Verification",
+      "paths": [
+        "tests/**",
+        "scripts/**"
+      ],
+      "decisions": [
+        "DEC-0008"
+      ]
+    }
+  ]
+}

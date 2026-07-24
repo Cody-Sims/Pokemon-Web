@@ -13,8 +13,10 @@ Inspect `git status --short` and `git diff --check`. Classify changed paths befo
 running checks:
 
 - Documentation-only: review links, paths, dates, and instruction consistency.
-- Agent workflow: validate JSON, test hooks with representative stdin payloads, and
-  validate every `SKILL.md` frontmatter.
+- Agent workflow: run `npm run agent:validate`, test hooks with representative
+  stdin payloads, and run `npm run agent:global:check` when the global toolkit changed.
+- Shadow architecture: run `npm run shadow:validate`, then compare affected records
+  with their current code, documentation, and test evidence.
 - TypeScript logic or data: focused tests, then `npm run test` and `npm run build`.
 - Scene or UI: add focused Playwright coverage.
 - Map: validate and preview the affected map, then validate all maps.

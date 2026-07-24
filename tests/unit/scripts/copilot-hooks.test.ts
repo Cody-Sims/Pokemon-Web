@@ -13,14 +13,25 @@ describe('Copilot workflow hooks', () => {
 
   it.each([
     'git push origin main',
+    '  git push origin main',
+    'git -C . push origin main',
+    'git --git-dir=.git push origin main',
+    'sh -c "git push origin main"',
     'npm test && git add .',
     'git add --all',
     'git reset --hard HEAD',
     'git clean -fd',
+    'git clean --force',
     'rm -rf /',
+    'rm -fr ~',
+    'rm -r -f /',
+    'rm --recursive --force $HOME',
   ])('denies destructive or repository-unsafe command: %s', (command) => {
     expect(evaluateToolUse({ toolArgs: { command } })).toMatchObject({
-      permissionDecision: 'deny',
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'deny',
+      },
     });
   });
 
@@ -33,15 +44,44 @@ describe('Copilot workflow hooks', () => {
     expect(evaluateToolUse({ toolArgs: { command } })).toEqual({});
   });
 
+  it('denies tool use when the hook payload is malformed', () => {
+    expect(evaluateToolUse({ __malformedHookInput: true })).toMatchObject({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'deny',
+      },
+    });
+    expect(evaluateToolUse(null)).toMatchObject({
+      hookSpecificOutput: { permissionDecision: 'deny' },
+    });
+    expect(evaluateToolUse({})).toMatchObject({
+      hookSpecificOutput: { permissionDecision: 'deny' },
+    });
+    expect(evaluateToolUse({
+      tool_name: 'run_in_terminal',
+      tool_input: { explanation: 'missing command' },
+    })).toMatchObject({
+      hookSpecificOutput: { permissionDecision: 'deny' },
+    });
+  });
+
+  it('allows a valid non-command tool payload', () => {
+    expect(evaluateToolUse({
+      tool_name: 'read_file',
+      tool_input: { filePath: 'AGENTS.md' },
+    })).toEqual({});
+  });
+
   it('provides concise repository setup context', () => {
     const result = createSessionContext(
       { cwd: process.cwd() },
       { nodeVersion: 'v22.0.0' },
     );
 
-    expect(result.additionalContext).toContain('frontend-only');
-    expect(result.additionalContext).toContain('AGENTS.md');
-    expect(result.additionalContext).toContain('npm run test');
-    expect(result.additionalContext).toContain('Node v22.0.0');
+    expect(result.hookSpecificOutput.hookEventName).toBe('SessionStart');
+    expect(result.hookSpecificOutput.additionalContext).toContain('frontend-only');
+    expect(result.hookSpecificOutput.additionalContext).toContain('AGENTS.md');
+    expect(result.hookSpecificOutput.additionalContext).toContain('npm run test');
+    expect(result.hookSpecificOutput.additionalContext).toContain('Node v22.0.0');
   });
 });

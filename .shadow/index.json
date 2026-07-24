@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "allowed_statuses": [
+    "proposed",
+    "observed",
+    "accepted",
+    "superseded",
+    "rejected"
+  ],
+  "allowed_relations": [
+    "constrains",
+    "depends_on",
+    "specializes",
+    "supports",
+    "verifies",
+    "supersedes"
+  ],
+  "records": [
+    {
+      "id": "DEC-0001",
+      "title": "Frontend-only static application",
+      "path": ".shadow/decisions/DEC-0001.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0002",
+      "title": "Phaser scenes compose the runtime",
+      "path": ".shadow/decisions/DEC-0002.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0003",
+      "title": "Singleton managers own persistent state",
+      "path": ".shadow/decisions/DEC-0003.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0004",
+      "title": "EventManager mediates cross-scene communication",
+      "path": ".shadow/decisions/DEC-0004.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0005",
+      "title": "Battle flow is isolated behind an FSM",
+      "path": ".shadow/decisions/DEC-0005.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0006",
+      "title": "Game data is declarative TypeScript",
+      "path": ".shadow/decisions/DEC-0006.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0007",
+      "title": "Maps use character grids and dedicated tooling",
+      "path": ".shadow/decisions/DEC-0007.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0008",
+      "title": "Verification is layered and deterministic",
+      "path": ".shadow/decisions/DEC-0008.md",
+      "status": "observed"
+    }
+  ]
+}

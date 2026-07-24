@@ -52,6 +52,10 @@ type safety, and Vite for fast bundling.
 - `.github/skills/backend-change/SKILL.md` — Backend assessment and implementation workflow
 - `.github/skills/quality-gate/SKILL.md` — Path-based validation workflow
 - `.github/skills/tile-sprite-gen/SKILL.md` — Tile and sprite generation workflow
+- `.github/skills/pokemon-shadow-architecture/SKILL.md` — Repository decision-graph workflow
+- `.shadow/index.json` — Architecture decision index and lifecycle vocabulary
+- `.shadow/features.json` — Feature-to-path and decision mapping
+- `.github/global-agent-toolkit/README.md` — Cross-repository agent and skill distribution
 - `.github/hooks/agent-guardrails.json` — Copilot session and shell guardrails
 - `scripts/copilot-hooks.mjs` — Tested hook implementation
 
@@ -61,3 +65,7 @@ type safety, and Vite for fast bundling.
 - `npm run build` — Type-check + production build
 - `npm run test` — Unit + integration tests
 - `npm run test:e2e` — Playwright end-to-end tests
+- `npm run agent:validate` — Validate agent customizations and shadow architecture
+- `npm run agent:global:install` — Install reusable agents and skills under `~/.copilot`
+- `npm run agent:global:check` — Verify installed global resources and hashes
+- `npm run shadow:validate` — Validate decision records, links, and feature mappings

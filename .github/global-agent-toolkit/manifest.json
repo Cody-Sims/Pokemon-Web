@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "name": "pokemon-web-global-agent-toolkit",
+  "version": "1.0.0",
+  "resources": [
+    {
+      "kind": "agent",
+      "source": "agents/workspace-researcher.agent.md",
+      "destination": "agents/workspace-researcher.agent.md"
+    },
+    {
+      "kind": "skill",
+      "source": "skills/external-skill-review/SKILL.md",
+      "destination": "skills/external-skill-review/SKILL.md"
+    },
+    {
+      "kind": "skill",
+      "source": "skills/repository-agent-bootstrap/SKILL.md",
+      "destination": "skills/repository-agent-bootstrap/SKILL.md"
+    },
+    {
+      "kind": "skill",
+      "source": "skills/shadow-architecture/SKILL.md",
+      "destination": "skills/shadow-architecture/SKILL.md"
+    }
+  ]
+}

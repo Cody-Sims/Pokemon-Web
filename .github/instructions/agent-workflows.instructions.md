@@ -1,6 +1,6 @@
 ---
 description: Rules for maintaining AI instructions, skills, hooks, and discovery documents
-applyTo: 'AGENTS.md,llms.txt,.github/{copilot-instructions.md,instructions/**,skills/**,hooks/**},scripts/copilot-hooks.mjs'
+applyTo: 'AGENTS.md,llms.txt,package.json,.shadow/**,.github/{copilot-instructions.md,global-agent-toolkit/**,instructions/**,skills/**,hooks/**},scripts/{copilot-hooks.mjs,manage-global-agent-toolkit.mjs,validate-agent-workflows.mjs,validate-shadow-architecture.mjs},tests/unit/scripts/**'
 ---
 
 # Agent workflow instructions
@@ -17,5 +17,12 @@ applyTo: 'AGENTS.md,llms.txt,.github/{copilot-instructions.md,instructions/**,sk
   network calls, emit exactly one JSON result, and fail safely.
 - Keep hooks fast and deterministic. Heavy builds, full tests, installs, commits,
   and writes do not belong in lifecycle hooks.
+- Keep reusable, repository-agnostic resources in `.github/global-agent-toolkit/`
+  and project-specific resources in the normal `.github/` customization folders.
+  Do not use the same skill name at both scopes.
+- Treat the toolkit manifest as the installation allowlist. Global install and
+  uninstall must preserve user-modified or unmanaged files.
+- Treat `.shadow/decisions/` as reviewed architecture source. New desired decisions
+  start as proposed, and accepted history is superseded rather than rewritten.
 - When adding or changing a workflow resource, update `llms.txt` and the Agent
-  Workflows section of `AGENTS.md`.
+  Workflows section of `AGENTS.md`, then run `npm run agent:validate`.

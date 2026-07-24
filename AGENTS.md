@@ -254,6 +254,7 @@ files to help AI agents navigate efficiently. **These must be kept in sync with 
 | Add a new major module or directory | Update `AGENTS.md` Project Layout tree |
 | Add a new interface to `interfaces.ts` | Update `AGENTS.md` Key Interfaces table |
 | Change the dependency graph | Update `AGENTS.md` Dependency Graph |
+| Change an architectural boundary or rationale | Update the affected `.shadow/` decision and feature mapping |
 | Discover a new anti-pattern | Add to `AGENTS.md` Anti-Patterns table |
 | Add domain-specific rules | Update the matching `.instructions.md` |
 
@@ -264,7 +265,9 @@ Use progressive disclosure instead of loading every guide into context:
 1. Start with this file or `llms.txt`.
 2. Read the nearest `CONTEXT.md` and matching `.github/instructions/` file.
 3. Activate the relevant `.github/skills/<name>/SKILL.md` for a multi-step workflow.
-4. Load a skill's `references/` files only when the skill directs you to them.
+4. For architectural work, start with `.shadow/index.json` and verify the selected
+	records against current code and tests.
+5. Load a skill's `references/` files only when the skill directs you to them.
 
 Available skills:
 
@@ -274,6 +277,18 @@ Available skills:
 | `backend-change` | Explicit server, API, worker, persistence, or authentication work |
 | `quality-gate` | Selecting and running final validation |
 | `tile-sprite-gen` | Tileset and character sprite generation or repair |
+| `pokemon-shadow-architecture` | Inspecting, validating, or updating this repository's decision graph |
+
+Reusable cross-repository resources live in `.github/global-agent-toolkit/` and
+install to `~/.copilot/` with `npm run agent:global:install`. Run
+`npm run agent:global:check` to detect missing, stale, or locally modified managed
+files. The global layer provides the `Workspace Researcher` agent and the
+`external-skill-review`, `repository-agent-bootstrap`, and `shadow-architecture`
+skills. Keep these resources repository-agnostic and avoid names used by local skills.
+
+The `.shadow/` directory is the human-reviewed architecture memory for this project.
+It is a project convention, not a ShadowRepo plugin format. Run
+`npm run shadow:validate` after changing its index, feature map, or decisions.
 
 Copilot hooks in `.github/hooks/agent-guardrails.json` call
 `scripts/copilot-hooks.mjs`. The session hook reports repository setup context. The

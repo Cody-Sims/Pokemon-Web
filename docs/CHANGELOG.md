@@ -4,6 +4,21 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-07-24]
+
+### Added - Global agents and decision architecture
+
+- Added a reusable Copilot toolkit with a read-only workspace researcher, repository
+  agent bootstrap, external skill security review, and generic shadow architecture
+  workflow, plus safe user-level install, check, and uninstall commands.
+- Added a reviewed `.shadow/` decision graph covering eight current architecture
+  boundaries, a feature map, lifecycle rules, and structural drift validation.
+- Added a Pokemon-specific shadow maintenance skill and customization validation.
+- Updated Copilot hooks to the current VS Code event and output schema so session
+  context and unsafe-command denial are applied correctly.
+
+---
+
 ## [2026-07-11]
 
 ### Added — Agent workflow optimization
