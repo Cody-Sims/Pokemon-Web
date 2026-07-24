@@ -89,6 +89,8 @@ frontend/src/
 | `temp/` | Scratch work, one-off scripts, map generators (not committed) |
 | `.github/instructions/` | Copilot custom instructions (path-specific) |
 | `.github/workflows/` | CI/CD (ci.yml, deploy.yml) |
+| `.github/skills/` | AgentSkills-compatible workflows loaded on demand |
+| `.github/hooks/` | Copilot lifecycle hooks for context and command guardrails |
 
 ## Architecture Patterns
 
@@ -254,6 +256,38 @@ files to help AI agents navigate efficiently. **These must be kept in sync with 
 | Change the dependency graph | Update `AGENTS.md` Dependency Graph |
 | Discover a new anti-pattern | Add to `AGENTS.md` Anti-Patterns table |
 | Add domain-specific rules | Update the matching `.instructions.md` |
+
+## Agent Workflows
+
+Use progressive disclosure instead of loading every guide into context:
+
+1. Start with this file or `llms.txt`.
+2. Read the nearest `CONTEXT.md` and matching `.github/instructions/` file.
+3. Activate the relevant `.github/skills/<name>/SKILL.md` for a multi-step workflow.
+4. Load a skill's `references/` files only when the skill directs you to them.
+
+Available skills:
+
+| Skill | Use for |
+|---|---|
+| `frontend-change` | Phaser, TypeScript, Vite, data, UI, scenes, systems, or assets |
+| `backend-change` | Explicit server, API, worker, persistence, or authentication work |
+| `quality-gate` | Selecting and running final validation |
+| `tile-sprite-gen` | Tileset and character sprite generation or repair |
+
+Copilot hooks in `.github/hooks/agent-guardrails.json` call
+`scripts/copilot-hooks.mjs`. The session hook reports repository setup context. The
+pre-tool hook blocks destructive shell commands and unsafe staging or push patterns.
+Hooks never install dependencies, modify files, run full tests, or send session data
+over the network.
+
+### Parallel Agent Strategy
+
+- Delegate independent research, inventory, testing, and review tasks in parallel.
+- Give every worker complete scope, relevant paths, and explicit no-edit boundaries.
+- Never assign overlapping writes to multiple workers.
+- Consolidate worker findings before editing and validate the integrated diff once.
+- A completed worker's result is evidence, not permission to skip required review.
 
 ## Git Workflow
 

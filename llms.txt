@@ -32,7 +32,10 @@ type safety, and Vite for fast bundling.
 
 ## Copilot Instructions
 
-- `.github/instructions/copilot-instructions.md` — Global coding rules
+- `.github/copilot-instructions.md` — Global coding and workflow rules
+- `.github/instructions/frontend.instructions.md` — Cross-cutting frontend rules
+- `.github/instructions/backend.instructions.md` — Guardrails for an explicitly approved future backend
+- `.github/instructions/agent-workflows.instructions.md` — Instructions, skills, and hooks maintenance
 - `.github/instructions/map-generation.instructions.md` — Map toolchain and rules
 - `.github/instructions/battle.instructions.md` — Battle subsystem rules
 - `.github/instructions/data-files.instructions.md` — Data file conventions
@@ -42,6 +45,15 @@ type safety, and Vite for fast bundling.
 - `.github/instructions/systems.instructions.md` — Gameplay system rules
 - `.github/instructions/ui.instructions.md` — UI component rules
 - `.github/instructions/testing.instructions.md` — Test conventions and structure
+
+## Agent Skills and Hooks
+
+- `.github/skills/frontend-change/SKILL.md` — Frontend implementation workflow
+- `.github/skills/backend-change/SKILL.md` — Backend assessment and implementation workflow
+- `.github/skills/quality-gate/SKILL.md` — Path-based validation workflow
+- `.github/skills/tile-sprite-gen/SKILL.md` — Tile and sprite generation workflow
+- `.github/hooks/agent-guardrails.json` — Copilot session and shell guardrails
+- `scripts/copilot-hooks.mjs` — Tested hook implementation
 
 ## Commands
 
