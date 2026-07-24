@@ -3,8 +3,15 @@ import { MoveExecutor } from '../../../frontend/src/battle/execution/MoveExecuto
 import { StatusEffectHandler } from '../../../frontend/src/battle/effects/StatusEffectHandler';
 import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 import { moveData } from '../../../frontend/src/data/moves';
+import { seedRng } from '../../../frontend/src/utils/math-helpers';
 
-beforeEach(() => { vi.spyOn(Math, 'random').mockReturnValue(0.5); });
+// Battle randomness comes from the seeded Mulberry32 PRNG in math-helpers, whose
+// state defaults to Date.now(). Mocking Math.random alone leaves every secondary
+// effect roll wall-clock dependent, so seed the real generator as well.
+beforeEach(() => {
+  seedRng(20260724);
+  vi.spyOn(Math, 'random').mockReturnValue(0.5);
+});
 
 const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
   dataId: 4, level: 20, currentHp: 100,
@@ -206,7 +213,9 @@ describe('MoveExecutor — Extended Coverage', () => {
       handler.initPokemon(frozen);
 
       MoveExecutor.execute(attacker, frozen, 'ember', handler);
-      expect(frozen.status).toBeNull();
+      // Ember thaws, then its 10% burn chance may legitimately apply, so assert
+      // the freeze is gone rather than that no status remains.
+      expect(frozen.status).not.toBe('freeze');
     });
 
     it('Absorb should drain HP', () => {

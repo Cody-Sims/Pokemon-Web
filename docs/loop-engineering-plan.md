@@ -388,16 +388,22 @@ patched around, because `npm run map:validate` depends on gitignored
 
 Still open:
 
-1. Seed `Math.random` in `integration/battle/move-executor-extended.test.ts`.
-   The "fire moves should thaw frozen targets" case fails about one run in five,
-   which will discard good iterations at random. The repository's own
-   `testing.instructions.md` already requires seeding in `beforeEach`. This is
-   the highest-priority carry-over: the loop is unreliable until it is fixed.
-2. Reconcile the Node version across `AGENTS.md`, `ci.yml`, and local.
-3. Fix `npm run test:unit` and `npm run test:integration`, which pass `--include`
+1. Reconcile the Node version across `AGENTS.md`, `ci.yml`, and local.
+2. Fix `npm run test:unit` and `npm run test:integration`, which pass `--include`
    and fail on Vitest 4 with `Unknown option`.
-4. Clean up `docs/bugs.md` so `## Open` contains only genuinely open items.
-5. Mark `docs/IMPROVEMENT_PLAN.md` superseded by `docs/plan.md`.
+3. Clean up `docs/bugs.md` so `## Open` contains only genuinely open items.
+4. Mark `docs/IMPROVEMENT_PLAN.md` superseded by `docs/plan.md`.
+5. Track the map toolchain, repository plan item B4. Six npm scripts target
+   `temp/scripts/map-gen/`, which is gitignored, so a fresh clone cannot run any
+   documented `map:*` command. The loop links the directory in when it exists and
+   works without it, so this no longer blocks the loop.
+
+Resolved during phase 1 verification: the battle suite was nondeterministic.
+`frontend/src/utils/math-helpers.ts` seeds its Mulberry32 generator from
+`Date.now()`, and the battle tests mocked `Math.random`, which that generator
+never calls. One assertion also conflated "thawed" with "has no status", so
+Ember's 10 percent burn chance failed it about one run in ten. Both are fixed,
+and the file now passes 15 runs out of 15.
 
 ### Phase 1: build the gate, and attack it
 
@@ -485,8 +491,8 @@ Options, in increasing order of risk:
 | Codebase decay over months | Medium | Batch review discipline; periodic human refactor passes. HumanLayer's lights-off attempt ended in a two-week manual rewrite after roughly four months |
 | Prompt injection through fetched content | Low locally | `web_fetch` omitted from `--available-tools`; do not run fork-triggered CI variants |
 | Loop churns after the backlog is done | Medium | The driver stops when no `todo` row remains rather than letting the agent invent work |
-| A flaky test fails an otherwise good iteration | Confirmed, active | `integration/battle/move-executor-extended.test.ts` "fire moves should thaw frozen targets" fails roughly one run in five. Until it is seeded, some passing work will be discarded |
-| A worktree is missing gitignored prerequisites | Certain, mitigated | `run-loop.mjs` links `node_modules` and `temp/scripts` into every worktree. Without the second link, `.shadow/DEC-0007` anchors an absent path and the suite fails in every iteration |
+| A flaky test fails an otherwise good iteration | Resolved | The battle PRNG is seeded from `Date.now()` and the tests mocked `Math.random`, which it never calls. `move-executor-extended.test.ts` now calls `seedRng` and asserts intent rather than an incidental null |
+| A worktree is missing gitignored prerequisites | Certain, mitigated | `run-loop.mjs` links `node_modules`, which is required, and `temp/scripts`, which is optional so the loop survives repository plan item B4 |
 
 ## Honest limitations
 

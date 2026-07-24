@@ -9,6 +9,8 @@ import {
 import { parseArguments as parseGateArguments } from '../../../scripts/loop/gate.mjs';
 import {
   COPILOT_TOOL_FLAGS,
+  LOOP_CRITICAL_PATHS,
+  WORKTREE_LINKS,
   buildCopilotArguments,
   parseArguments as parseLoopArguments,
 } from '../../../scripts/loop/run-loop.mjs';
@@ -184,5 +186,21 @@ describe('loop driver arguments', () => {
     expect(args.slice(0, 2)).toEqual(['-C', '/tmp/wt']);
     expect(args).toContain('--max-ai-credits');
     expect(args[args.indexOf('--max-ai-credits') + 1]).toBe('400');
+  });
+
+  it('requires node_modules but tolerates a moved map toolchain', () => {
+    const byPath = Object.fromEntries(WORKTREE_LINKS.map((link) => [link.path, link.required]));
+    expect(byPath['node_modules']).toBe(true);
+    expect(byPath['temp/scripts']).toBe(false);
+  });
+
+  it('never links the whole temp directory into a worktree', () => {
+    // temp/loop-runs/ holds the worktrees themselves, so linking temp/ would nest
+    // a worktree inside itself.
+    expect(WORKTREE_LINKS.map((link) => link.path)).not.toContain('temp');
+  });
+
+  it('guards only the loop configuration it reads from the checked-out tree', () => {
+    expect(LOOP_CRITICAL_PATHS).toEqual(['.github/loop', 'scripts/loop']);
   });
 });

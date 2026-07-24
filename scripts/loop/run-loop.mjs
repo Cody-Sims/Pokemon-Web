@@ -98,9 +98,30 @@ function git(args, cwd = REPOSITORY_ROOT) {
   return execFileSync('git', args, { cwd, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
 }
 
-function assertCleanTree() {
-  if (git(['status', '--porcelain']).trim()) {
-    throw new Error('Working tree is dirty. Commit or stash before running the loop.');
+/**
+ * Paths the driver reads from the checked-out tree rather than from the base
+ * ref. Uncommitted edits here would mean the loop plans against one version of
+ * the queue while each worktree receives another, so they must be committed.
+ */
+export const LOOP_CRITICAL_PATHS = ['.github/loop', 'scripts/loop'];
+
+/**
+ * Guard the loop's own inputs, not the whole tree. Worktrees are built from a
+ * committed base ref, so unrelated work in progress elsewhere cannot leak into
+ * an iteration and should not block a run.
+ */
+function assertLoopInputsCommitted() {
+  const dirty = git(['status', '--porcelain', '--', ...LOOP_CRITICAL_PATHS]).trim();
+  if (dirty) {
+    throw new Error(
+      `Commit the loop's own configuration before running it:\n${dirty}`,
+    );
+  }
+
+  const elsewhere = git(['status', '--porcelain']).trim();
+  if (elsewhere) {
+    console.log('Note: uncommitted changes exist outside the loop configuration.');
+    console.log('They are ignored; every worktree is built from the base ref.');
   }
 }
 
@@ -116,29 +137,40 @@ function hasPendingWork() {
 }
 
 /**
- * A fresh worktree contains only tracked files, so two gitignored directories
- * have to be linked in or every iteration fails for reasons the agent did not
- * cause: `node_modules`, without which no npm script runs, and `temp/scripts`,
- * which the map toolchain lives in and which `.shadow/DEC-0007` anchors.
+ * Gitignored paths a worktree needs before any npm script can run.
+ *
+ * `node_modules` is required: without it nothing executes. `temp/scripts` is
+ * optional because it holds the map toolchain that `.shadow/DEC-0007` anchors,
+ * and repository plan item B4 moves it to `scripts/map-gen/`. Treating it as
+ * optional keeps the loop working both before and after that move.
  *
  * Only `temp/scripts` is linked, never `temp/` itself: run artifacts live in
  * `temp/loop-runs/`, so linking the parent would nest a worktree inside itself.
  */
-function linkUntrackedDependencies(worktree) {
-  const links = [
-    { from: 'node_modules', to: 'node_modules' },
-    { from: 'temp/scripts', to: 'temp/scripts' },
-  ];
+export const WORKTREE_LINKS = [
+  { path: 'node_modules', required: true },
+  { path: 'temp/scripts', required: false },
+];
 
-  for (const { from, to } of links) {
-    const source = resolve(REPOSITORY_ROOT, from);
+function linkUntrackedDependencies(worktree) {
+  const linked = [];
+
+  for (const { path, required } of WORKTREE_LINKS) {
+    const source = resolve(REPOSITORY_ROOT, path);
     if (!existsSync(source)) {
-      throw new Error(`${from} is missing; the loop cannot produce a runnable worktree.`);
+      if (required) {
+        throw new Error(`${path} is missing; the loop cannot produce a runnable worktree.`);
+      }
+      continue;
     }
-    const target = resolve(worktree, to);
+    const target = resolve(worktree, path);
+    if (existsSync(target)) continue;
     mkdirSync(dirname(target), { recursive: true });
     symlinkSync(source, target, 'dir');
+    linked.push(path);
   }
+
+  return linked;
 }
 
 function runIteration({ index, runDirectory, options, prompt }) {
@@ -207,7 +239,7 @@ function runIteration({ index, runDirectory, options, prompt }) {
 }
 
 export function runLoop(options) {
-  assertCleanTree();
+  assertLoopInputsCommitted();
   const prompt = readPrompt(options.type);
   // Pin the base to an immutable SHA. A symbolic ref would resolve against each
   // worktree's own HEAD, which makes the authored diff come out empty.
