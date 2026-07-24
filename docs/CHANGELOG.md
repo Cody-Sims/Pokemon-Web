@@ -6,6 +6,15 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - Battle FSM orchestration
+
+- Added an explicit battle-state transition table that throws on illegal,
+  unregistered, or terminal-state transitions.
+- Introduced a shared battle orchestration engine with single/double format
+  strategies and double-battle targeting policy while preserving manager APIs.
+- Documented remaining scene-owned double-battle replacement flow for the next
+  engine event/command migration wave.
+
 ### Added - Shared frontend modules
 
 - Added reusable grid math, display formatting, Phaser sequencing, and pure data

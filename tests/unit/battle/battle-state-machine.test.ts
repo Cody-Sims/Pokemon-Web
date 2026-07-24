@@ -1,5 +1,14 @@
 import { describe, it, expect, vi } from 'vitest';
-import { BattleStateMachine, BattleState } from '../../../frontend/src/battle/core/BattleStateMachine';
+import {
+  BATTLE_STATES,
+  BattleStateMachine,
+} from '../../../frontend/src/battle/core/BattleStateMachine';
+
+const registerAllStates = (fsm: BattleStateMachine): void => {
+  for (const state of BATTLE_STATES) {
+    fsm.registerState(state, {});
+  }
+};
 
 describe('BattleStateMachine', () => {
   it('should start in INTRO state', () => {
@@ -43,10 +52,7 @@ describe('BattleStateMachine', () => {
 
   it('should handle multiple state transitions in sequence', () => {
     const fsm = new BattleStateMachine();
-    const states: BattleState[] = ['INTRO', 'PLAYER_TURN', 'ENEMY_TURN', 'EXECUTE_MOVES', 'CHECK_FAINT', 'VICTORY'];
-    for (const state of states) {
-      fsm.registerState(state, {});
-    }
+    registerAllStates(fsm);
 
     fsm.transition('PLAYER_TURN');
     expect(fsm.getState()).toBe('PLAYER_TURN');
@@ -54,6 +60,16 @@ describe('BattleStateMachine', () => {
     expect(fsm.getState()).toBe('ENEMY_TURN');
     fsm.transition('EXECUTE_MOVES');
     expect(fsm.getState()).toBe('EXECUTE_MOVES');
+    fsm.transition('CHECK_FAINT');
+    expect(fsm.getState()).toBe('CHECK_FAINT');
+    fsm.transition('EXP_GAIN');
+    expect(fsm.getState()).toBe('EXP_GAIN');
+    fsm.transition('PLAYER_TURN');
+    expect(fsm.getState()).toBe('PLAYER_TURN');
+    fsm.transition('ENEMY_TURN');
+    expect(fsm.getState()).toBe('ENEMY_TURN');
+    fsm.transition('EXECUTE_TURN');
+    expect(fsm.getState()).toBe('EXECUTE_TURN');
     fsm.transition('CHECK_FAINT');
     expect(fsm.getState()).toBe('CHECK_FAINT');
     fsm.transition('VICTORY');
@@ -69,15 +85,41 @@ describe('BattleStateMachine', () => {
     expect(order).toEqual(['exit-intro', 'enter-player']);
   });
 
-  it('should not throw when transitioning to unregistered state', () => {
+  it('should throw when transitioning to an unregistered state', () => {
     const fsm = new BattleStateMachine();
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    expect(() => fsm.transition('VICTORY')).not.toThrow();
-    // Should stay in INTRO since VICTORY is not registered
-    expect(fsm.getState()).toBe('INTRO');
-    expect(consoleSpy).toHaveBeenCalledWith(
+    fsm.registerState('INTRO', {});
+    expect(() => fsm.transition('VICTORY')).toThrow(
       'BattleStateMachine: attempted transition to unregistered state "VICTORY"',
     );
-    consoleSpy.mockRestore();
+    expect(fsm.getState()).toBe('INTRO');
+  });
+
+  it('should reject illegal registered transitions', () => {
+    const fsm = new BattleStateMachine();
+    registerAllStates(fsm);
+
+    expect(() => fsm.transition('VICTORY')).toThrow(
+      'BattleStateMachine: illegal transition from "INTRO" to "VICTORY"',
+    );
+    expect(fsm.getState()).toBe('INTRO');
+  });
+
+  it('should reject transitions out of terminal states', () => {
+    const fsm = new BattleStateMachine();
+    registerAllStates(fsm);
+
+    fsm.transition('FLEE');
+    expect(() => fsm.transition('PLAYER_TURN')).toThrow(
+      'BattleStateMachine: cannot leave terminal state "FLEE"',
+    );
+  });
+
+  it('should expose legal transition checks without mutating state', () => {
+    const fsm = new BattleStateMachine();
+    registerAllStates(fsm);
+
+    expect(fsm.canTransition('PLAYER_TURN')).toBe(true);
+    expect(fsm.canTransition('VICTORY')).toBe(false);
+    expect(fsm.getState()).toBe('INTRO');
   });
 });
