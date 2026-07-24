@@ -6,6 +6,11 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - Battle effects registry
+
+- Replaced ability, held-item, and move-effect switch dispatch with hook-based registries while preserving existing handler APIs and battle RNG ordering.
+- Added registry-level battle tests for migrated ability, held-item, and move-effect hooks.
+
 ### Added - Shared frontend modules
 
 - Added reusable grid math, display formatting, Phaser sequencing, and pure data
