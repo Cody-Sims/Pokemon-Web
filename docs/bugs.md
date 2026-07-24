@@ -8,6 +8,23 @@
 
 ## Open
 
+### 2026-07-24 Town map / intro decomposition findings
+
+- **Files:** [frontend/src/scenes/menu/TownMapScene.ts](frontend/src/scenes/menu/TownMapScene.ts#L41-L64).
+- **Symptom:** Town map keyboard handlers were registered directly and relied on a `shutdown()` method that Phaser does not call automatically, so repeated opens could retain stale listeners.
+- **Suspected cause:** The scene predated `SceneInputRegistry` and did not subscribe its cleanup method to the Phaser shutdown event.
+- **Status:** Fixed — TownMapScene now uses `SceneInputRegistry` and registers shutdown cleanup explicitly.
+
+- **Files:** [frontend/src/ui/dom/DomTextInputAdapter.ts](frontend/src/ui/dom/DomTextInputAdapter.ts#L56-L87), [frontend/src/scenes/title/IntroScene.ts](frontend/src/scenes/title/IntroScene.ts#L113-L126), [frontend/src/scenes/pokemon/NicknameScene.ts](frontend/src/scenes/pokemon/NicknameScene.ts#L82-L99).
+- **Symptom:** IntroScene and NicknameScene duplicated hidden mobile DOM input setup and left focus-restoration timers owned by scene-local closures.
+- **Suspected cause:** The mobile keyboard bridge was copied between scenes before a shared DOM lifecycle owner existed.
+- **Status:** Fixed — both scenes now use `DomTextInputAdapter`, which owns input removal, listener detachment, blur, and timer cleanup.
+
+- **Files:** [frontend/src/scenes/menu/FlyMapScene.ts](frontend/src/scenes/menu/FlyMapScene.ts#L66-L71), [frontend/src/scenes/menu/FlyMapScene.ts](frontend/src/scenes/menu/FlyMapScene.ts#L132-L139).
+- **Symptom:** If Fly opened without any resolved destination, cursor and confirmation code could index an empty destination list and leave the player in a dead-end menu.
+- **Suspected cause:** The previous destination list assumed at least one visited flyable town or exact current-map fallback.
+- **Status:** Fixed — the scene now renders an empty-state message and confirm/cancel safely closes.
+
 ### Soundproof has no sound-move metadata to block
 
 - **Files:** [frontend/src/battle/effects/registry/abilities.ts](frontend/src/battle/effects/registry/abilities.ts#L174).
