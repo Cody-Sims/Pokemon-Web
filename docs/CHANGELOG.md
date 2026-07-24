@@ -28,6 +28,11 @@ All notable changes to the Pokemon Web project.
   and reusable inventory UI panels out of `InventoryScene`.
 - Updated inventory integration coverage to call the production item-use service
   instead of re-implementing medicine effects in the test.
+### Changed - Town map and intro scene decomposition
+
+- Moved Aurum region map data, navigation, flyable destination resolution, and rendering into shared data/system/widget modules used by TownMap and FlyMap scenes.
+- Split the professor intro flow into declarative slide data, a pure flow controller, reusable intro/name/appearance widgets, and a DOM text input adapter shared with NicknameScene.
+- Added unit coverage for region-map resolution/navigation and intro flow/name validation.
 
 ### Fixed - Scene lifecycle listener cleanup
 
