@@ -15,6 +15,7 @@ function frontmatterValue(path, key) {
 }
 
 function skillPaths(root) {
+  if (!existsSync(root)) return [];
   return readdirSync(root, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => resolve(root, entry.name, 'SKILL.md'))

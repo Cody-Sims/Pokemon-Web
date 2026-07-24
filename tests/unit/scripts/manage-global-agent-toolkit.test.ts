@@ -73,7 +73,7 @@ describe('global agent toolkit manager', () => {
     manageGlobalAgentToolkit({ mode: 'install', targetRoot, log: () => {} });
     manageGlobalAgentToolkit({ mode: 'install', targetRoot, log: () => {} });
 
-    const managedFile = resolve(targetRoot, 'skills/shadow-architecture/SKILL.md');
+    const managedFile = resolve(targetRoot, 'agents/workspace-researcher.agent.md');
     writeFileSync(managedFile, `${readFileSync(managedFile, 'utf8')}modified\n`);
 
     expect(() => manageGlobalAgentToolkit({
@@ -122,7 +122,7 @@ describe('global agent toolkit manager', () => {
   it('rejects symlinks in managed destinations', () => {
     const targetRoot = temporaryTarget();
     manageGlobalAgentToolkit({ mode: 'install', targetRoot, log: () => {} });
-    const managedFile = resolve(targetRoot, 'skills/shadow-architecture/SKILL.md');
+    const managedFile = resolve(targetRoot, 'agents/workspace-researcher.agent.md');
     const externalFile = resolve(temporaryTarget(), 'missing-external.md');
     unlinkSync(managedFile);
     symlinkSync(externalFile, managedFile);

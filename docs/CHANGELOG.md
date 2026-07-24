@@ -6,6 +6,18 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - Global toolkit ships only the workspace-researcher agent
+
+- Removed the `external-skill-review`, `repository-agent-bootstrap`, and
+  `shadow-architecture` skills from `.github/global-agent-toolkit/`; they now live
+  in the dedicated `Cody-Sims/agent-skills` repository, which owns
+  `~/.copilot/skills`. The toolkit now installs only the `workspace-researcher`
+  agent, so the two repositories no longer contend over `~/.copilot/skills`.
+- Bumped the toolkit manifest to `2.0.0` for the breaking content change and
+  updated the toolkit README, `AGENTS.md`, and `llms.txt` to describe the split.
+- Made the agent-workflow validator tolerate a toolkit with no bundled skills and
+  updated the toolkit manager tests to assert against the agent resource.
+
 ### Added - Bounded improvement loop
 
 - Added a gate-first autonomous improvement loop that runs each iteration in a

@@ -49,9 +49,10 @@ Path-specific rules in `.github/instructions/*.instructions.md` supplement this 
   `SKILL.md` before a frontend, backend, validation, tile/sprite, or shadow workflow.
 - `.shadow/` contains the reviewed decision graph. Read its index for architectural
   changes, but recheck every record against current source and tests.
-- `.github/global-agent-toolkit/` is versioned source for reusable user-level agents
-  and skills. It must remain repository-agnostic and is installed with explicit npm
-  commands, never from lifecycle hooks.
+- `.github/global-agent-toolkit/` is versioned source for the reusable user-level
+  `workspace-researcher` agent (reusable skills now live in the dedicated
+  `Cody-Sims/agent-skills` repository). It must remain repository-agnostic and is
+  installed with explicit npm commands, never from lifecycle hooks.
 - Hooks in `.github/hooks/` provide fast session guidance and guard dangerous shell
   commands. Keep hooks deterministic, offline, non-interactive, and under five
   seconds.

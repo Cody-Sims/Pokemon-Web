@@ -282,9 +282,15 @@ Available skills:
 Reusable cross-repository resources live in `.github/global-agent-toolkit/` and
 install to `~/.copilot/` with `npm run agent:global:install`. Run
 `npm run agent:global:check` to detect missing, stale, or locally modified managed
-files. The global layer provides the `Workspace Researcher` agent and the
-`external-skill-review`, `repository-agent-bootstrap`, and `shadow-architecture`
-skills. Keep these resources repository-agnostic and avoid names used by local skills.
+files. The global layer now provides only the `Workspace Researcher` agent. The
+previously bundled `external-skill-review`, `repository-agent-bootstrap`, and
+`shadow-architecture` skills moved to the dedicated `Cody-Sims/agent-skills`
+repository, which installs them to `~/.copilot/skills`; get them with
+`git clone https://github.com/Cody-Sims/agent-skills && npm run install:agents` or
+`gh skill install Cody-Sims/agent-skills <skill-name>`. Keep the toolkit
+repository-agnostic. The external catalog owns `~/.copilot/skills`, so this
+repository's local skills (such as `pokemon-shadow-architecture`) must keep their
+`pokemon-` prefix and must not reuse a name shipped by the external catalog.
 
 The `.shadow/` directory is the human-reviewed architecture memory for this project.
 It is a project convention, not a ShadowRepo plugin format. Run
