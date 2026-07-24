@@ -4,7 +4,7 @@ import { EventManager } from '@managers/EventManager';
 import { AchievementManager } from '@managers/AchievementManager';
 import { isMobile } from '@ui/theme';
 
-export interface RewardResult {
+interface RewardResult {
   messages: string[];
 }
 

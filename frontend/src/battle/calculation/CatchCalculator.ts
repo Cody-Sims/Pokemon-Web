@@ -2,7 +2,7 @@ import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { seededRandom } from '@utils/math-helpers';
 
-export interface CatchResult {
+interface CatchResult {
   caught: boolean;
   shakes: number; // 0-3 shakes before result
 }

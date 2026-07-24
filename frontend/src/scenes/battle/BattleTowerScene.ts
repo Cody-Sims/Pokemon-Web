@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX } from '@utils/audio-keys';
@@ -100,7 +100,7 @@ export class BattleTowerScene extends Phaser.Scene {
     }).setOrigin(0.5));
 
     const tiers: BattleTowerTier[] = ['normal', 'super', 'rental'];
-    const cardH = Math.round(110 * MOBILE_SCALE);
+    const cardH = Math.round(110 * mobileScale());
     const startY = 110;
     const gap = 12;
     const cardW = Math.min(layout.w - 80, 480);

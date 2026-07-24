@@ -1,5 +1,5 @@
 /** Known event names and their payload types. */
-export interface EventMap {
+interface EventMap {
   'map-entered': [mapKey: string];
   'flag-set': [flag: string];
   'trainer-defeated': [trainerId: string];

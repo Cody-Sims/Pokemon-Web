@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
-import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX } from '@utils/audio-keys';
@@ -42,7 +41,6 @@ export class FlyMapScene extends Phaser.Scene {
   private destTexts: Phaser.GameObjects.Text[] = [];
   private cursorIcon!: Phaser.GameObjects.Text;
   private descText!: Phaser.GameObjects.Text;
-  private pokemonName = '';
 
   constructor() {
     super({ key: 'FlyMapScene' });
@@ -65,7 +63,7 @@ export class FlyMapScene extends Phaser.Scene {
     }
 
     const flyUser = OverworldAbilities.getUser('fly');
-    this.pokemonName = flyUser?.nickname ?? `Pokémon`;
+    void flyUser;
 
     // Background
     const layout = ui(this);

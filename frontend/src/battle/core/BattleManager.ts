@@ -1,12 +1,9 @@
 import { PokemonInstance } from '@data/interfaces';
-import { moveData } from '@data/moves';
 import { seededRandom } from '@utils/math-helpers';
 import { BattleStateMachine } from './BattleStateMachine';
 import { StatusEffectHandler } from '../effects/StatusEffectHandler';
 import { WeatherManager } from '../effects/WeatherManager';
 import { AbilityHandler } from '../effects/AbilityHandler';
-import { HeldItemHandler } from '../effects/HeldItemHandler';
-import { AIController } from './AIController';
 
 export type BattleType = 'wild' | 'trainer';
 
@@ -139,8 +136,4 @@ export class BattleManager {
     this.weatherManager.cleanup();
   }
 
-  private getEnemyMove(): string {
-    const isTrainer = this.config.type === 'trainer';
-    return AIController.selectMove(this.enemyActive, this.playerActive, isTrainer);
-  }
 }

@@ -1,10 +1,9 @@
 import Phaser from 'phaser';
-import { MoveData } from '@data/interfaces';
 import { moveData } from '@data/moves';
 import { GameObjectPool } from './GameObjectPool';
 
 /** Animation style for a battle move — determines the visual effect used. */
-export type MoveAnimStyle =
+type MoveAnimStyle =
   | 'projectile'   // Flies from attacker to defender
   | 'contact'      // Attacker lunges into defender
   | 'beam'         // Continuous line from attacker to defender
@@ -24,7 +23,7 @@ interface ParticleConfig {
 }
 
 /** Data-driven definition for a single move's visual animation. */
-export interface MoveAnimationDef {
+interface MoveAnimationDef {
   style: MoveAnimStyle;
   particles: ParticleConfig;
   screenFlash?: { color: number; duration: number; intensity: number };
@@ -154,7 +153,7 @@ const MOVE_OVERRIDES: Record<string, Partial<MoveAnimationDef>> = {
  * Resolves the animation definition for a given move ID.
  * Falls back to type + category defaults if no override is defined.
  */
-export function getMoveAnimation(moveId: string): MoveAnimationDef {
+function getMoveAnimation(moveId: string): MoveAnimationDef {
   const move = moveData[moveId];
   if (!move) {
     return { style: 'none', particles: TYPE_PARTICLE_DEFAULTS.normal };
@@ -183,7 +182,7 @@ export function playMoveAnimation(
   moveId: string,
   attackerSprite: Phaser.GameObjects.Image,
   defenderSprite: Phaser.GameObjects.Image,
-  isPlayerAttacking: boolean,
+  _isPlayerAttacking: boolean,
 ): Promise<void> {
   const anim = getMoveAnimation(moveId);
 
@@ -192,7 +191,6 @@ export function playMoveAnimation(
   }
 
   return new Promise<void>((resolve) => {
-    const timeline: Phaser.Tweens.Tween[] = [];
     const particles: Phaser.GameObjects.Arc[] = [];
 
     // ── Screen flash ──

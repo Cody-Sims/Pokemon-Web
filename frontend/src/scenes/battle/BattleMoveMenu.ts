@@ -4,7 +4,7 @@ import { pokemonData } from '@data/pokemon';
 import { getCombinedEffectiveness } from '@data/type-chart';
 import type { PokemonType } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
-import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile, minTouchTarget } from '@ui/theme';
+import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, mobileScale, isMobile, minTouchTarget } from '@ui/theme';
 import { ui } from '@utils/ui-layout';
 import { getMoveTarget } from '@battle/core/DoubleBattleManager';
 import type { BattleUIScene } from './BattleUIScene';
@@ -39,7 +39,7 @@ export class BattleMoveMenu {
     this.moveButtons = [];
     this.scene.hideActions();
     const moves = this.scene.battle().playerPokemon.moves;
-    const moveRowH = Math.round(35 * MOBILE_SCALE);
+    const moveRowH = Math.round(35 * mobileScale());
 
     const { w: mw, h: mh, cx: mcx } = ui(this.scene);
     const compactMoves = isMobile() && (window.innerHeight < 400 || mh < 400);

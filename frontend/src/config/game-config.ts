@@ -16,6 +16,7 @@ import { TransitionScene } from '@scenes/overworld/TransitionScene';
 import { StarterSelectScene } from '@scenes/pokemon/StarterSelectScene';
 import { SettingsScene } from '@scenes/menu/SettingsScene';
 import { ShopScene } from '@scenes/minigame/ShopScene';
+import { VoltorbFlipScene } from '@scenes/minigame/VoltorbFlipScene';
 import { PCScene } from '@scenes/pokemon/PCScene';
 import { PokedexScene } from '@scenes/menu/PokedexScene';
 import { IntroScene } from '@scenes/title/IntroScene';
@@ -45,7 +46,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   scale: {
     // FIT preserves aspect ratio and gives correct touch input coordinates.
     // The game width is dynamically computed from viewport aspect ratio
-    // (see computeGameWidth) and updated on resize, so bars are minimal.
+    // (see computeGameDimensions) and updated on resize, so bars are minimal.
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
@@ -71,6 +72,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     StarterSelectScene,
     SettingsScene,
     ShopScene,
+    VoltorbFlipScene,
     PCScene,
     PokedexScene,
     IntroScene,

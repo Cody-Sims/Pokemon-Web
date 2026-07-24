@@ -6,7 +6,7 @@ import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
 import { itemData } from '@data/item-data';
 import { ExperienceCalculator, getNatureMultiplier, getNatureDescription } from '@battle/calculation/ExperienceCalculator';
-import { COLORS, FONTS, SPACING, TYPE_COLORS, CATEGORY_COLORS, drawPanel, drawTypeBadge, drawHpBar, drawButton, hpColor, mobileFontSize, mobileScale, minTouchTarget, isMobile } from '@ui/theme';
+import { COLORS, FONTS, CATEGORY_COLORS, drawPanel, drawTypeBadge, drawButton, mobileFontSize, minTouchTarget, isMobile } from '@ui/theme';
 import { TouchControls } from '@ui/controls/TouchControls';
 
 type Tab = 'INFO' | 'STATS' | 'MOVES';
@@ -383,7 +383,7 @@ export class SummaryScene extends Phaser.Scene {
       return;
     }
 
-    p.moves.forEach((m, i) => {
+    p.moves.forEach((m) => {
       const md = moveData[m.moveId];
       if (!md) return;
 

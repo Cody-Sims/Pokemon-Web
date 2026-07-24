@@ -1,13 +1,12 @@
 import { PokemonInstance, MoveData } from '@data/interfaces';
-import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { clamp, randomInt, seededRandom } from '@utils/math-helpers';
-import { Stats, StatStages, StatusCondition, VolatileStatus, MoveEffect, PokemonType } from '@utils/type-helpers';
+import { Stats, StatStages, VolatileStatus, PokemonType } from '@utils/type-helpers';
 import { HeldItemHandler } from './HeldItemHandler';
 
 // ── Result types ────────────────────────────────────────────────
 
-export interface TurnStartResult {
+interface TurnStartResult {
   canAct: boolean;
   messages: string[];
 }
@@ -19,7 +18,7 @@ export interface EffectResult {
   selfDestruct?: boolean;
 }
 
-export interface EndOfTurnResult {
+interface EndOfTurnResult {
   damage: number;
   messages: string[];
   fainted: boolean;

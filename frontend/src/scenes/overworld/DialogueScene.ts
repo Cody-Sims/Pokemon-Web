@@ -4,7 +4,7 @@ import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
-import { COLORS, FONTS, mobileFontSize, isMobile, MIN_TOUCH_TARGET } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile, minTouchTarget } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
@@ -17,7 +17,7 @@ const TEXT_SPEEDS: Record<string, number> = {
   instant: 0,
 };
 
-export interface DialogueData {
+interface DialogueData {
   dialogue: string[];
   speaker?: string;
   /** Phaser texture key for a portrait sprite shown inside the dialog box. */
@@ -387,7 +387,7 @@ export class DialogueScene extends Phaser.Scene {
     this.indicatorTween?.stop();
     this.advanceIndicator.setAlpha(0);
 
-    const choiceRowH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 30) : 30;
+    const choiceRowH = isMobile() ? Math.max(minTouchTarget(), 30) : 30;
     const choiceW = isMobile() ? 180 : 150;
     const choiceH = this.choices.length * choiceRowH + 16;
     // Apply a right inset on landscape mobile so the choice panel doesn't

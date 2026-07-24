@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mulberry32 } from '../../../frontend/src/utils/seeded-random';
+import { describe, it, expect } from 'vitest';
+import { mulberry32 } from '../../helpers/seeded-random';
 
 describe('mulberry32 Seeded Random', () => {
   it('should produce deterministic sequences from the same seed', () => {

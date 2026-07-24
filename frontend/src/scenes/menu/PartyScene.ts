@@ -4,7 +4,7 @@ import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
-import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawStatusBadge, drawHpBar, drawButton, mobileFontSize, mobileScale, minTouchTarget, isMobile } from '@ui/theme';
+import { COLORS, FONTS, SPACING, drawTypeBadge, drawStatusBadge, drawHpBar, drawButton, mobileFontSize, minTouchTarget, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';

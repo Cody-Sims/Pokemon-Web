@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale, TYPE_COLORS, isMobile } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, TYPE_COLORS, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager, HallOfFameEntry } from '@managers/GameManager';
 import { pokemonData } from '@data/pokemon';
@@ -73,7 +73,7 @@ export class HallOfFameScene extends Phaser.Scene {
 
     // Page indicator
     if (totalPages > 1) {
-      const pi = this.addTagged(
+      this.addTagged(
         this.add.text(layout.cx, layout.h - 50, `Page ${this.page + 1} / ${totalPages}`, {
           ...FONTS.caption, color: COLORS.textGray,
         }).setOrigin(0.5),

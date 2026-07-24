@@ -1,9 +1,8 @@
 import Phaser from 'phaser';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
-import { BGM, SFX } from '@utils/audio-keys';
-import { TouchControls } from '@ui/controls/TouchControls';
+import { SFX } from '@utils/audio-keys';
 import { hintText } from '@utils/hint-text';
 import { NICKNAME_CHAR_REGEX, NICKNAME_STRIP_REGEX, NICKNAME_MAX_LENGTH } from '@utils/nickname-validation';
 
@@ -202,8 +201,6 @@ export class IntroScene extends Phaser.Scene {
 
   private showNamingScreen(): void {
     this.isAnimating = true;
-    const { width, height } = this.cameras.main;
-
     // Clear intro elements
     this.tweens.add({
       targets: [this.textObject, this.professorSprite, this.pokemonSprite].filter(Boolean),
@@ -222,8 +219,6 @@ export class IntroScene extends Phaser.Scene {
 
   private buildNamingUI(): void {
     const { width, height } = this.cameras.main;
-    const fontSize = mobileFontSize(18);
-
     // "What is your name?" prompt
     this.add.text(width / 2, height * 0.15, "What is your name?", {
       ...FONTS.heading,

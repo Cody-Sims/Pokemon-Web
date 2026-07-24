@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
-import { TouchControls } from '@ui/controls/TouchControls';
 import type { PokemonInstance } from '@data/interfaces';
 import { NICKNAME_CHAR_REGEX, NICKNAME_STRIP_REGEX, NICKNAME_MAX_LENGTH } from '@utils/nickname-validation';
 

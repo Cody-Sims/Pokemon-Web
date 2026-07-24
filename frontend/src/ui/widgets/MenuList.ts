@@ -3,7 +3,6 @@ import { mobileFontSize } from '@ui/theme';
 
 /** Selectable vertical menu (cursor-driven). */
 export class MenuList {
-  private scene: Phaser.Scene;
   private items: Phaser.GameObjects.Text[] = [];
   private cursor = 0;
   private onSelect: (index: number) => void;
@@ -16,7 +15,6 @@ export class MenuList {
     onSelect: (index: number) => void,
     style?: Phaser.Types.GameObjects.Text.TextStyle
   ) {
-    this.scene = scene;
     this.onSelect = onSelect;
 
     const textStyle = style ?? { fontSize: mobileFontSize(18), color: '#ffffff' };

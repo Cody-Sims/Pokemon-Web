@@ -82,7 +82,7 @@ export class PartyQuickViewScene extends Phaser.Scene {
     this.container = this.add.container(layout.cx, yPos, children);
     this.container.setDepth(100);
 
-    // Interactive hit zone covering the full strip -- meets MIN_TOUCH_TARGET
+    // Interactive hit zone covering the full strip -- meets minimum touch target
     const hitWidth = bgWidth;
     const hitHeight = Math.max(bgHeight, minTouchTarget());
     const hitZone = this.add.zone(0, 0, hitWidth, hitHeight).setInteractive();

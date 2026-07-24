@@ -95,7 +95,7 @@ export const CATEGORY_COLORS: Record<string, number> = {
   status: 0x888899,
 };
 
-export const STATUS_COLORS: Record<string, number> = {
+const STATUS_COLORS: Record<string, number> = {
   burn: 0xf08030,
   paralysis: 0xf8d030,
   poison: 0xa040a0,
@@ -138,14 +138,6 @@ export function isTablet(): boolean {
 export function mobileScale(): number {
   return isMobile() ? 1.35 : 1.0;
 }
-/** @deprecated Use `mobileScale()` instead — kept as a live getter for existing call sites. */
-export const MOBILE_SCALE: number = /* @__PURE__ */ (() => {
-  // Return a number whose valueOf() recomputes on each access via a Proxy-like trick.
-  // For simplicity and compat, we just export the function result; call sites that
-  // read MOBILE_SCALE as a plain number will get the value at first evaluation.
-  // We patch the module export below.
-  return mobileScale();
-})();
 
 /** Get a font size string scaled for mobile and user text-scale preference. Input: base px number. */
 export function mobileFontSize(basePx: number): string {
@@ -170,8 +162,6 @@ export function mobileFontPx(basePx: number): number {
 export function minTouchTarget(): number {
   return isMobile() ? 48 : 0;
 }
-/** @deprecated Use `minTouchTarget()` instead — kept for existing call sites. */
-export const MIN_TOUCH_TARGET: number = /* @__PURE__ */ (() => minTouchTarget())();
 
 /** Get HP bar color based on percentage. */
 export function hpColor(pct: number): number {

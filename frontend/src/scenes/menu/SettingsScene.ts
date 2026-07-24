@@ -147,7 +147,7 @@ export class SettingsScene extends Phaser.Scene {
       const currentVal = gm.getSetting(def.key);
       const displayVal = this.formatValue(def, currentVal);
 
-      // Tappable left arrow — enforce MIN_TOUCH_TARGET
+      // Tappable left arrow — enforce minimum touch target
       const leftArrow = this.add.text(leftArrowX, y, '◀', {
         ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
       }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
@@ -159,7 +159,7 @@ export class SettingsScene extends Phaser.Scene {
         ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
       }).setOrigin(0.5, 0);
 
-      // Tappable right arrow — enforce MIN_TOUCH_TARGET
+      // Tappable right arrow — enforce minimum touch target
       const rightArrow = this.add.text(rightArrowX, y, '▶', {
         ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
       }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });

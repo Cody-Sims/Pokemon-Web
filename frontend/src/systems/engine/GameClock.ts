@@ -6,7 +6,7 @@
 export type TimePeriod = 'morning' | 'day' | 'evening' | 'night';
 
 /** Tint colors for each time period (applied as camera tint). */
-export const TIME_TINTS: Record<TimePeriod, number> = {
+const TIME_TINTS: Record<TimePeriod, number> = {
   morning: 0xffeedd,   // warm orange tint
   day:     0xffffff,   // neutral (no tint)
   evening: 0xffbbaa,   // orange/pink sunset

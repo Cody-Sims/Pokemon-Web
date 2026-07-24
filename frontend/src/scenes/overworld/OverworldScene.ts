@@ -21,11 +21,9 @@ import { TransitionManager } from '@managers/TransitionManager';
 import { PokemonInstance } from '@data/interfaces';
 import { trainerData } from '@data/trainer-data';
 import { pokemonData } from '@data/pokemon';
-import { moveData } from '@data/moves';
 import {
   mapRegistry,
   MapDefinition,
-  NpcSpawn,
   Tile,
   SOLID_TILES,
   LEDGE_TILES,

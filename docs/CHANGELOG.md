@@ -24,6 +24,16 @@ All notable changes to the Pokemon Web project.
   generation and production builds no longer dirty the working tree.
 - Declared Phaser as a production dependency and added the missing `gh-pages`
   development dependency used by the deploy script.
+
+### Changed - Dead code and asset cleanup
+
+- Removed unreachable systems, entities, manager/test-only dialogue code, stale
+  sprite backups/source sheets, and the non-portable root sprite extraction script.
+- Registered Voltorb Flip as an intended minigame scene, relocated seeded replay
+  randomness under tests, and dropped deprecated UI compatibility exports.
+- Reduced unused TypeScript locals/exports outside files owned by parallel agents.
+- Parsed tracked TypeScript map tooling in ESLint so lint remains warning-only.
+
 ### Changed - Tracked map toolchain
 
 - Moved the map generation, preview, region render, and validation toolchain into

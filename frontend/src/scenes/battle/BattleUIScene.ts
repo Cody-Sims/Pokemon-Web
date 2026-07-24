@@ -15,7 +15,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { AchievementManager } from '@managers/AchievementManager';
 import { SFX } from '@utils/audio-keys';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale, isMobile } from '@ui/theme';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { SynthesisHandler } from '@battle/effects/SynthesisHandler';
 import { SYNTHESIS_ELIGIBLE } from '@data/synthesis-data';
@@ -117,7 +117,7 @@ export class BattleUIScene extends Phaser.Scene {
 
     const actions = ['FIGHT', 'BAG', 'POKEMON', 'RUN'];
     const actionFontSize = mobileFontSize(compact ? 15 : 18);
-    const actionRowH = Math.round(35 * MOBILE_SCALE);
+    const actionRowH = Math.round(35 * mobileScale());
     this.actionMenu.actionTexts = actions.map((action, i) => {
       let x: number, y: number;
       if (compact) {
@@ -192,7 +192,7 @@ export class BattleUIScene extends Phaser.Scene {
         fillColor: COLORS.bgPanel, fillAlpha: 0.95, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 6,
       });
       this.actionMenu.actionMenuBg.setVisible(wasVisible);
-      const rowH = Math.round(35 * MOBILE_SCALE);
+      const rowH = Math.round(35 * mobileScale());
       this.actionMenu.actionTexts.forEach((t, i) => {
         if (cpt) {
           const sp = w / 5;
@@ -355,7 +355,7 @@ export class BattleUIScene extends Phaser.Scene {
       return;
     }
 
-    const { attacker, defender, moveId, isPlayer } = order[idx];
+    const { attacker, moveId, isPlayer } = order[idx];
     if (attacker.currentHp <= 0) {
       this.runTurnStep(order, idx + 1);
       return;
@@ -422,7 +422,7 @@ export class BattleUIScene extends Phaser.Scene {
     name: string,
     moveName: string,
   ): void {
-    const { attacker, defender, moveId, isPlayer } = order[idx];
+    const { moveId, isPlayer } = order[idx];
     const b = this.battle();
 
     this.msg(`${name} used ${moveName}!`);
@@ -621,7 +621,7 @@ export class BattleUIScene extends Phaser.Scene {
 
   // ─── End-of-turn effects ───
 
-  private runEndOfTurn(order: { attacker: PokemonInstance; defender: PokemonInstance; moveId: string; isPlayer: boolean }[]): void {
+  private runEndOfTurn(_order: { attacker: PokemonInstance; defender: PokemonInstance; moveId: string; isPlayer: boolean }[]): void {
     const b = this.battle();
     const player = b.playerPokemon;
     const enemy = b.enemyPokemon;

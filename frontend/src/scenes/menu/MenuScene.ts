@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale, minTouchTarget } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
