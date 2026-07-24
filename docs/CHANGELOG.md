@@ -37,6 +37,17 @@ All notable changes to the Pokemon Web project.
 - Added report-only ESLint flat configuration, Prettier settings, EditorConfig,
   Node 22 pinning, and lint/format npm scripts for the TypeScript frontend,
   Node scripts, Vitest tests, and Playwright specs.
+
+### Changed - CI gates
+
+- Aligned CI and deploy workflows with the repository Node 22 pin and added
+  blocking map, agent, shadow, lint, coverage, build-purity, bundle-size, and E2E
+  gates before shipping to GitHub Pages.
+- Surfaced formatting drift and high-severity npm audit advisories as
+  non-blocking workflow checks until the existing backlog is triaged.
+- Added a nightly scheduled deterministic fuzz workflow so the 2000-input fuzz
+  suite runs outside PR latency.
+
 ### Fixed - Data reference integrity
 
 - Added missing TM, tutor, reward item, and Voltara tutor definitions; repaired
