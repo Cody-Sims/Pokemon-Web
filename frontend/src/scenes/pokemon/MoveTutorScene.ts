@@ -2,9 +2,10 @@ import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
-import { moveTutorData, canLearnMove } from '@data/tm-data';
+import { moveTutorData, tmData } from '@data/tm-data';
+import { canLearnMove } from '@systems/engine/MoveLearning';
 import type { MoveTutorData } from '@data/tm-data';
-import { moveData } from '@data/moves';
+import { moveData, type MoveId } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
@@ -19,14 +20,14 @@ interface SceneData {
   tutorId?: string;
   /** When launched from inventory for TM usage */
   tmMode?: boolean;
-  tmMoveId?: string;
+  tmMoveId?: MoveId;
 }
 
 export class MoveTutorScene extends Phaser.Scene {
   private mode: TutorMode = 'move-list';
   private tutor!: MoveTutorData;
   private tmMode = false;
-  private tmMoveId = '';
+  private tmMoveId: MoveId | '' = '';
 
   // Move list state
   private moveListPanel?: NinePatchPanel;

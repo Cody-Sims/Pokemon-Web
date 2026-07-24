@@ -1,4 +1,4 @@
-import { TrainerData } from '../interfaces';
+import type { TrainerData } from './types';
 
 /**
  * Post-game rematch teams for all 8 Gym Leaders, 4 Elite Four members,

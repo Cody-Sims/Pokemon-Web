@@ -1,6 +1,6 @@
-import { MoveData } from '../interfaces';
+import type { MoveData } from './types';
 
-export const fightingMoves: Record<string, MoveData> = {
+export const fightingMoves = {
   'karate-chop':  { id: 'karate-chop', name: 'Karate Chop', type: 'fighting', category: 'physical', power: 50, accuracy: 100, pp: 25 },
   'double-kick':  { id: 'double-kick', name: 'Double Kick', type: 'fighting', category: 'physical', power: 30, accuracy: 100, pp: 30, effect: { type: 'multi-hit', target: 'enemy', hits: 2 } },
   'jump-kick':    { id: 'jump-kick', name: 'Jump Kick', type: 'fighting', category: 'physical', power: 100, accuracy: 95, pp: 10 },
@@ -15,4 +15,4 @@ export const fightingMoves: Record<string, MoveData> = {
   'cross-chop':   { id: 'cross-chop', name: 'Cross Chop', type: 'fighting', category: 'physical', power: 100, accuracy: 80, pp: 5 },
   'close-combat': { id: 'close-combat', name: 'Close Combat', type: 'fighting', category: 'physical', power: 120, accuracy: 100, pp: 5, effect: { type: 'stat-change', target: 'self', statChanges: [{ stat: 'defense', stages: -1 }, { stat: 'spDefense', stages: -1 }] } },
   'rock-smash':   { id: 'rock-smash', name: 'Rock Smash', type: 'fighting', category: 'physical', power: 40, accuracy: 100, pp: 15, effect: { type: 'stat-change', target: 'enemy', statChanges: [{ stat: 'defense', stages: -1 }], chance: 50 } },
-};
+} as const satisfies Record<string, MoveData>;

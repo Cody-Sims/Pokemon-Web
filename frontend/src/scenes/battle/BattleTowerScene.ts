@@ -7,9 +7,9 @@ import { GameManager } from '@managers/GameManager';
 import { SFX } from '@utils/audio-keys';
 import {
   battleTowerData,
-  fullClearBpReward,
   type BattleTowerTier,
 } from '@data/battle-tower-data';
+import { fullClearBpReward } from '@systems/engine/BattleTowerRewards';
 import { healParty } from '@scenes/overworld';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import {

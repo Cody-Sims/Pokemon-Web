@@ -1,6 +1,19 @@
 import { Direction } from '@utils/type-helpers';
-import { NPCBehaviorConfig } from '@systems/overworld/NPCBehavior';
-import type { TimePeriod } from '@systems/engine/GameClock';
+import type { AmbientType, OverworldWeather, TimePeriod } from './environment-types';
+
+export type NPCBehaviorType = 'stationary' | 'look-around' | 'wander' | 'pace';
+
+export interface NPCBehaviorConfig {
+  type: NPCBehaviorType;
+  /** For 'wander': max tiles to wander from origin */
+  wanderRadius?: number;
+  /** For 'pace': ordered list of directions to pace */
+  paceRoute?: Direction[];
+  /** Min ms between actions */
+  intervalMin?: number;
+  /** Max ms between actions */
+  intervalMax?: number;
+}
 
 /** Position override or 'hidden' for an NPC during a specific time period. */
 export type NpcScheduleEntry = { x: number; y: number } | 'hidden';
@@ -113,9 +126,9 @@ export interface MapDefinition {
   /** Static light source positions (torches, lamps). */
   lightSources?: Array<{ tileX: number; tileY: number; radius?: number; color?: number }>;
   /** Overworld weather effect to render on this map. Defaults to 'none'. */
-  weather?: import('@systems/rendering/WeatherRenderer').OverworldWeather;
+  weather?: OverworldWeather;
   /** Ambient sound effect type for this map. Defaults to 'none'. */
-  ambientSfx?: import('@systems/audio/AmbientSFX').AmbientType;
+  ambientSfx?: AmbientType;
   /** Cutscene to play when entering this map. Skipped if the cutscene's setFlag flags are already set. */
   onEnterCutscene?: string;
   /** Flag that must be set for the onEnterCutscene to trigger. Supports '!' prefix for negation. */

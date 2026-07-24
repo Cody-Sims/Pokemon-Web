@@ -1,7 +1,7 @@
 import { PokemonInstance } from '@data/interfaces';
 import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
-import { getCombinedEffectiveness } from '@data/type-chart';
+import { getCombinedEffectiveness } from '@battle/calculation/TypeEffectiveness';
 import { PokemonType } from '@utils/type-helpers';
 import { randomInt } from '@utils/math-helpers';
 import { GameManager } from '@managers/GameManager';

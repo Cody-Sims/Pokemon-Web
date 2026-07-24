@@ -1,4 +1,4 @@
-import { TrainerData } from '../interfaces';
+import type { TrainerData } from './types';
 import { rivalTrainers } from './rival';
 import { gymLeaderTrainers } from './gym-leaders';
 import { eliteFourTrainers } from './elite-four';
@@ -15,7 +15,7 @@ export const trainerData: Record<string, TrainerData> = {
   ...rematchTrainers,
 };
 
-export { rivalTrainers } from './rival';
+export { rivalTrainers, rivalStarterStages } from './rival';
 export { gymLeaderTrainers } from './gym-leaders';
 export { eliteFourTrainers } from './elite-four';
 export { routeTrainers } from './route-trainers';

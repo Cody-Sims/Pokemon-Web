@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getTypeEffectiveness, getCombinedEffectiveness } from '../../../frontend/src/data/type-chart';
+import { getTypeEffectiveness, getCombinedEffectiveness } from '../../../frontend/src/battle/calculation/TypeEffectiveness';
 import { PokemonType } from '../../../frontend/src/utils/type-helpers';
 
 const ALL_TYPES: PokemonType[] = [

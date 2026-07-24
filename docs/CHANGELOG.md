@@ -17,6 +17,11 @@ All notable changes to the Pokemon Web project.
 
 - Corrected verified agent, architecture, testing, scene, manager, data, and context documentation drift for current registries, commands, map rendering, and ownership policy.
 - Added `DEC-0017` to document source-of-truth ownership for repository documentation types.
+### Changed - Data layer purity
+
+- Moved starter-dependent rival party resolution and data helper logic out of
+  `frontend/src/data`, split shared interfaces by domain, and added initial
+  `MoveId`/`MapKey` derived ID types.
 
 ### Fixed - Build purity
 

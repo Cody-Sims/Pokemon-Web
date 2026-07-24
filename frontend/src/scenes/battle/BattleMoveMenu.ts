@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
-import { getCombinedEffectiveness } from '@data/type-chart';
+import { getCombinedEffectiveness } from '@battle/calculation/TypeEffectiveness';
 import type { PokemonType } from '@utils/type-helpers';
 import { GameManager } from '@managers/GameManager';
 import { COLORS, TYPE_COLORS, CATEGORY_COLORS, FONTS, mobileFontSize, mobileScale, isMobile, minTouchTarget } from '@ui/theme';

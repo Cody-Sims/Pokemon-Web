@@ -1,6 +1,6 @@
-import { MoveData } from '../interfaces';
+import type { MoveData } from './types';
 
-export const steelMoves: Record<string, MoveData> = {
+export const steelMoves = {
   'iron-tail':    { id: 'iron-tail', name: 'Iron Tail', type: 'steel', category: 'physical', power: 100, accuracy: 75, pp: 15, effect: { type: 'stat-change', target: 'enemy', stat: 'defense', stages: -1, chance: 30 } },
   'steel-wing':   { id: 'steel-wing', name: 'Steel Wing', type: 'steel', category: 'physical', power: 70, accuracy: 90, pp: 25, effect: { type: 'stat-change', target: 'self', stat: 'defense', stages: 1, chance: 10 } },
   'metal-claw':   { id: 'metal-claw', name: 'Metal Claw', type: 'steel', category: 'physical', power: 50, accuracy: 95, pp: 35, effect: { type: 'stat-change', target: 'self', stat: 'attack', stages: 1, chance: 10 } },
@@ -10,4 +10,4 @@ export const steelMoves: Record<string, MoveData> = {
   'iron-head':    { id: 'iron-head', name: 'Iron Head', type: 'steel', category: 'physical', power: 80, accuracy: 100, pp: 15, effect: { type: 'flinch', target: 'enemy', chance: 30 } },
   'gyro-ball':    { id: 'gyro-ball', name: 'Gyro Ball', type: 'steel', category: 'physical', power: 60, accuracy: 100, pp: 5 },
   'iron-defense': { id: 'iron-defense', name: 'Iron Defense', type: 'steel', category: 'status', power: null, accuracy: 100, pp: 15, effect: { type: 'stat-change', target: 'self', stat: 'defense', stages: 2 } },
-};
+} as const satisfies Record<string, MoveData>;

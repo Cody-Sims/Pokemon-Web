@@ -24,20 +24,3 @@ export const typeChart: Record<PokemonType, Partial<Record<PokemonType, number>>
   steel:    { fire: 0.5, water: 0.5, electric: 0.5, ice: 2, rock: 2, steel: 0.5, fairy: 2 },
   fairy:    { fire: 0.5, poison: 0.5, fighting: 2, dragon: 2, dark: 2, steel: 0.5 },
 };
-
-/** Get the type effectiveness multiplier for an attacking type vs a defending type. */
-export function getTypeEffectiveness(attackType: PokemonType, defendType: PokemonType): number {
-  return typeChart[attackType]?.[defendType] ?? 1;
-}
-
-/** Get combined effectiveness for dual-type defenders. */
-export function getCombinedEffectiveness(
-  attackType: PokemonType,
-  defendTypes: [PokemonType] | [PokemonType, PokemonType]
-): number {
-  let multiplier = getTypeEffectiveness(attackType, defendTypes[0]);
-  if (defendTypes.length === 2) {
-    multiplier *= getTypeEffectiveness(attackType, defendTypes[1]);
-  }
-  return multiplier;
-}

@@ -1,7 +1,7 @@
 // ─── Move Registry ───
 // Re-exports the combined moveData record from per-type files.
 
-import { MoveData } from '../interfaces';
+import type { MoveData } from './types';
 import { normalMoves } from './normal';
 import { fireMoves } from './fire';
 import { waterMoves } from './water';
@@ -21,7 +21,7 @@ import { darkMoves } from './dark';
 import { fairyMoves } from './fairy';
 import { steelMoves } from './steel';
 
-export const moveData: Record<string, MoveData> = {
+const allMoves = {
   ...normalMoves,
   ...fireMoves,
   ...waterMoves,
@@ -40,4 +40,8 @@ export const moveData: Record<string, MoveData> = {
   ...darkMoves,
   ...fairyMoves,
   ...steelMoves,
-};
+} as const satisfies Record<string, MoveData>;
+
+export type MoveId = keyof typeof allMoves;
+
+export const moveData: Record<string, MoveData> = allMoves;

@@ -1,12 +1,11 @@
-import { pokemonData } from '@data/pokemon';
-import { moveData } from '@data/moves';
-import type { PokemonType } from '@utils/type-helpers';
+import type { MoveId } from '@data/moves';
+import type { MapKey } from '@data/maps';
 
 // ─── TM Data ───────────────────────────────────────────────────────────────────
 
 export interface TMData {
   id: string;
-  moveId: string;
+  moveId: MoveId;
   name: string;
   price: number;
   location: string;
@@ -76,8 +75,8 @@ export const tmData: Record<string, TMData> = {
 export interface MoveTutorData {
   id: string;
   name: string;
-  location: string;
-  moves: { moveId: string; cost: number; costType: 'money' | 'heart-scale' }[];
+  location: MapKey | '';
+  moves: { moveId: MoveId; cost: number; costType: 'money' | 'heart-scale' }[];
 }
 
 export const moveTutorData: Record<string, MoveTutorData> = {
@@ -152,102 +151,6 @@ export const moveTutorData: Record<string, MoveTutorData> = {
     ],
   },
 };
-
-// ─── Move Compatibility ────────────────────────────────────────────────────────
-
-/** Moves any Pokemon can learn regardless of type. */
-const UNIVERSAL_MOVES = new Set<string>([
-  'toxic',
-  'protect',
-  'rest',
-  'return',
-  'double-team',
-  'facade',
-  'attract',
-  'substitute',
-  'swift',
-  'strength',
-  'roar',
-  'hyper-beam',
-]);
-
-/**
- * Per-Pokemon overrides for moves they can learn outside their own type(s).
- * Key = pokemonData id, value = array of extra moveIds they can learn.
- */
-const SPECIAL_OVERRIDES: Record<number, string[]> = {
-  // Charizard (Fire/Flying) — can learn Dragon and Fighting moves
-  6:   ['dragon-claw', 'dragon-rage', 'brick-break', 'focus-punch', 'earthquake', 'dig', 'solar-beam'],
-  // Ninetales (Fire) — can learn Psychic-type and Dark-type TMs
-  38:  ['psychic', 'calm-mind', 'dark-pulse'],
-  // Arcanine (Fire) — can learn various coverage moves
-  59:  ['dig', 'dragon-rage', 'iron-tail', 'aerial-ace'],
-  // Moltres (Fire/Flying) — can learn Solar Beam, Psychic coverage
-  146: ['solar-beam', 'psychic'],
-  // Dragonite (Dragon/Flying) — can learn many TMs across types
-  149: ['fire-punch', 'ice-punch', 'thunder-punch', 'thunderbolt', 'thunder', 'ice-beam', 'blizzard',
-        'flamethrower', 'fire-blast', 'earthquake', 'brick-break', 'surf', 'waterfall', 'iron-tail'],
-  // Blastoise-line (Water) — can learn Ice and some Fighting moves
-  7:   ['ice-beam', 'blizzard', 'ice-punch', 'earthquake', 'dig', 'brick-break', 'iron-tail'],
-  8:   ['ice-beam', 'blizzard', 'ice-punch', 'earthquake', 'dig', 'brick-break', 'iron-tail'],
-  9:   ['ice-beam', 'blizzard', 'ice-punch', 'earthquake', 'dig', 'brick-break', 'iron-tail'],
-  // Venusaur-line (Grass/Poison) — can learn Earthquake, Body Slam
-  1:   ['earthquake', 'body-slam', 'swords-dance'],
-  2:   ['earthquake', 'body-slam', 'swords-dance'],
-  3:   ['earthquake', 'body-slam', 'swords-dance'],
-  // Machamp-line (Fighting) — can learn elemental punches, Rock, Ground moves
-  66:  ['fire-punch', 'ice-punch', 'thunder-punch', 'rock-slide', 'rock-tomb', 'earthquake', 'dig'],
-  67:  ['fire-punch', 'ice-punch', 'thunder-punch', 'rock-slide', 'rock-tomb', 'earthquake', 'dig'],
-  68:  ['fire-punch', 'ice-punch', 'thunder-punch', 'rock-slide', 'rock-tomb', 'earthquake', 'dig'],
-  // Hitmonchan (Fighting) — elemental punches specialist
-  107: ['fire-punch', 'ice-punch', 'thunder-punch'],
-  // Hitmonlee (Fighting)
-  106: ['rock-slide', 'earthquake', 'brick-break'],
-  // Primeape-line (Fighting)
-  56:  ['rock-slide', 'dig', 'thunder-punch', 'ice-punch', 'fire-punch'],
-  57:  ['rock-slide', 'dig', 'thunder-punch', 'ice-punch', 'fire-punch'],
-  // Pidgeot-line (Normal/Flying) — can learn some coverage
-  16:  ['steel-wing'],
-  17:  ['steel-wing'],
-  18:  ['steel-wing', 'aerial-ace'],
-  // Fearow (Normal/Flying)
-  22:  ['aerial-ace', 'drill-peck'],
-  // Raticate (Normal)
-  20:  ['dig', 'ice-beam', 'thunderbolt', 'shadow-ball'],
-  // Jigglypuff/Wigglytuff (Normal/Fairy) — wide movepool
-  39:  ['ice-beam', 'thunderbolt', 'flamethrower', 'psychic', 'shadow-ball', 'fire-punch', 'ice-punch', 'thunder-punch'],
-  40:  ['ice-beam', 'thunderbolt', 'flamethrower', 'psychic', 'shadow-ball', 'fire-punch', 'ice-punch', 'thunder-punch'],
-  // Dratini/Dragonair (Dragon) — wide TM coverage
-  147: ['fire-punch', 'ice-punch', 'thunder-punch', 'thunderbolt', 'thunder-wave', 'ice-beam',
-        'flamethrower', 'surf', 'waterfall', 'iron-tail'],
-  148: ['fire-punch', 'ice-punch', 'thunder-punch', 'thunderbolt', 'thunder-wave', 'ice-beam',
-        'flamethrower', 'surf', 'waterfall', 'iron-tail'],
-};
-
-/**
- * Check if a specific Pokemon can learn a move via TM or tutor.
- *
- * Uses a lenient approach:
- * 1. Universal moves (Toxic, Protect, etc.) are learnable by all.
- * 2. Pokemon can learn moves matching any of their own type(s).
- * 3. Specific per-Pokemon override lists for cross-type coverage.
- */
-export function canLearnMove(pokemonId: number, moveId: string): boolean {
-  // Universal moves — every Pokemon can learn these
-  if (UNIVERSAL_MOVES.has(moveId)) return true;
-
-  // Per-Pokemon override
-  const overrides = SPECIAL_OVERRIDES[pokemonId];
-  if (overrides?.includes(moveId)) return true;
-
-  // Type-based matching: Pokemon can learn moves that match their type(s)
-  const pokemon = pokemonData[pokemonId];
-  const move = moveData[moveId];
-  if (!pokemon || !move) return false;
-
-  const pokemonTypes: readonly PokemonType[] = pokemon.types;
-  return pokemonTypes.includes(move.type);
-}
 
 // ─── Heart Scale Item ──────────────────────────────────────────────────────────
 

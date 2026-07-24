@@ -1,8 +1,8 @@
-import { trainerData } from '@data/trainer-data';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
 import { AchievementManager } from '@managers/AchievementManager';
 import { isMobile } from '@ui/theme';
+import { getTrainerData } from '@systems/engine/TrainerResolver';
 
 interface RewardResult {
   messages: string[];
@@ -14,7 +14,7 @@ export function processTrainerRewards(trainerId: string, victoryFlag?: string): 
   const gm = GameManager.getInstance();
   const am = AchievementManager.getInstance();
 
-  const tData = trainerData[trainerId];
+  const tData = getTrainerData(trainerId);
   if (tData) {
     gm.defeatTrainer(trainerId);
     EventManager.getInstance().emit('trainer-defeated', trainerId);

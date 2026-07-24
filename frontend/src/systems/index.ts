@@ -5,7 +5,7 @@ export { AmbientSFX } from './audio/AmbientSFX';
 // ── Overworld ────────────────────────────────────────────────
 export { GridMovement } from './overworld/GridMovement';
 export { NPCBehaviorController } from './overworld/NPCBehavior';
-export type { NPCBehaviorConfig } from './overworld/NPCBehavior';
+export type { NPCBehaviorConfig } from '@data/maps';
 export { EncounterSystem } from './overworld/EncounterSystem';
 export { OverworldAbilities } from './overworld/OverworldAbilities';
 
@@ -20,3 +20,6 @@ export { InputManager } from './engine/InputManager';
 export { GameClock } from './engine/GameClock';
 export { MapPreloader } from './engine/MapPreloader';
 export { CutsceneEngine } from './engine/CutsceneEngine';
+export { canLearnMove } from './engine/MoveLearning';
+export { fullClearBpReward } from './engine/BattleTowerRewards';
+export { getTrainerData } from './engine/TrainerResolver';

@@ -1,8 +1,7 @@
 import Phaser from 'phaser';
 import { particleMultiplier, maxParticleMultiplier } from '@utils/perf-profile';
 import { isReducedMotion } from '@utils/accessibility';
-
-export type OverworldWeather = 'none' | 'rain' | 'sandstorm' | 'snow' | 'fog' | 'sunshine' | 'ash' | 'drip';
+import type { OverworldWeather } from '@data/maps';
 
 /** Tint overlay colors and alpha per weather type. */
 const WEATHER_TINTS: Record<OverworldWeather, { color: number; alpha: number }> = {

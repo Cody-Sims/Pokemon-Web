@@ -1,7 +1,7 @@
 import { PokemonInstance } from '@data/interfaces';
 import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
-import { getCombinedEffectiveness } from '@data/type-chart';
+import { getCombinedEffectiveness } from '@battle/calculation/TypeEffectiveness';
 import { DamageCalculator, DamageResult } from '../calculation/DamageCalculator';
 import { StatusEffectHandler, EffectResult } from '../effects/StatusEffectHandler';
 import { AbilityHandler } from '../effects/AbilityHandler';

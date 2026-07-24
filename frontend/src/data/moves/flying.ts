@@ -1,6 +1,6 @@
-import { MoveData } from '../interfaces';
+import type { MoveData } from './types';
 
-export const flyingMoves: Record<string, MoveData> = {
+export const flyingMoves = {
   'gust':         { id: 'gust', name: 'Gust', type: 'flying', category: 'special', power: 40, accuracy: 100, pp: 35 },
   'peck':         { id: 'peck', name: 'Peck', type: 'flying', category: 'physical', power: 35, accuracy: 100, pp: 35 },
   'wing-attack':  { id: 'wing-attack', name: 'Wing Attack', type: 'flying', category: 'physical', power: 60, accuracy: 100, pp: 35 },
@@ -12,4 +12,4 @@ export const flyingMoves: Record<string, MoveData> = {
   'aerial-ace':   { id: 'aerial-ace', name: 'Aerial Ace', type: 'flying', category: 'physical', power: 60, accuracy: 100, pp: 20 },
   'brave-bird':   { id: 'brave-bird', name: 'Brave Bird', type: 'flying', category: 'physical', power: 120, accuracy: 100, pp: 15, effect: { type: 'recoil', target: 'self', amount: 33 } },
   'air-slash':    { id: 'air-slash', name: 'Air Slash', type: 'flying', category: 'special', power: 75, accuracy: 95, pp: 15, effect: { type: 'flinch', target: 'enemy', chance: 30 } },
-};
+} as const satisfies Record<string, MoveData>;
