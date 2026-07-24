@@ -1,0 +1,6 @@
+dist/
+temp/
+node_modules/
+test-results/
+tests/playwright-report/
+frontend/public/assets/

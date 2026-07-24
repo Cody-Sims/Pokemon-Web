@@ -6,6 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Added - Lint and editor tooling
+
+- Added report-only ESLint flat configuration, Prettier settings, EditorConfig,
+  Node 22 pinning, and lint/format npm scripts for the TypeScript frontend,
+  Node scripts, Vitest tests, and Playwright specs.
+
 ### Added - Bounded improvement loop
 
 - Added a gate-first autonomous improvement loop that runs each iteration in a

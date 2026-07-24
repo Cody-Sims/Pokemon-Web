@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config frontend/vite.config.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "generate-icons": "node frontend/scripts/generate-icons.js",
     "generate-atlas": "node frontend/scripts/generate-atlas.js",
     "generate-pixel-font": "node frontend/scripts/generate-pixel-font.js",
@@ -41,11 +45,20 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "22.x"
+  },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "@playwright/test": "^1.59.1",
     "@vitest/coverage-v8": "^4.1.4",
+    "eslint": "10.7.0",
+    "eslint-plugin-playwright": "2.10.5",
+    "globals": "17.7.0",
     "phaser": "^3.90.0",
+    "prettier": "3.9.6",
     "typescript": "^6.0.2",
+    "typescript-eslint": "8.65.0",
     "vite": "^8.0.8",
     "vitest": "^4.1.4"
   }
