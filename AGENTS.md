@@ -296,6 +296,31 @@ pre-tool hook blocks destructive shell commands and unsafe staging or push patte
 Hooks never install dependencies, modify files, run full tests, or send session data
 over the network.
 
+### Improvement Loop
+
+`scripts/loop/` runs bounded, unattended improvement iterations through GitHub
+Copilot CLI. Each iteration takes one item from `.github/loop/backlog.md`, works in
+a throwaway git worktree on its own `agent/iter-*` branch, and is graded by
+`scripts/loop/gate.mjs`. Passing branches are kept for human review. Nothing is
+merged and nothing is pushed.
+
+| Command | Purpose |
+|---|---|
+| `npm run loop:dry-run` | Print the exact agent invocation without spending credits |
+| `npm run loop:run -- --iterations 3` | Run the bounded loop |
+| `npm run loop:gate -- --worktree . --base main` | Grade a worktree directly |
+
+The gate is the contract, not the prompt. It restores `tests/` and every config
+file from the base ref before running checks, rejects out-of-scope and protected
+paths, rejects newly added suppressions such as `@ts-ignore` and `.skip(`, caps
+diff size, and requires a `docs/CHANGELOG.md` entry. Full design, safety rails,
+and phases are in `docs/loop-engineering-plan.md`.
+
+Two constraints govern what may enter the backlog. No Vitest test imports anything
+from `frontend/src/scenes/`, so scene changes are compile-checked only. And
+`npm run build` runs three asset generators before `tsc`, so it rewrites tracked
+files under `frontend/public/assets/`; the gate discards that churn.
+
 ### Parallel Agent Strategy
 
 - Delegate independent research, inventory, testing, and review tasks in parallel.

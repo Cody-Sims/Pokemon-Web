@@ -1,6 +1,6 @@
 ---
 description: Rules for maintaining AI instructions, skills, hooks, and discovery documents
-applyTo: 'AGENTS.md,llms.txt,package.json,.shadow/**,.github/{copilot-instructions.md,global-agent-toolkit/**,instructions/**,skills/**,hooks/**},scripts/{copilot-hooks.mjs,manage-global-agent-toolkit.mjs,validate-agent-workflows.mjs,validate-shadow-architecture.mjs},tests/unit/scripts/**'
+applyTo: 'AGENTS.md,llms.txt,package.json,.shadow/**,.github/{copilot-instructions.md,global-agent-toolkit/**,instructions/**,skills/**,hooks/**,loop/**},scripts/{copilot-hooks.mjs,manage-global-agent-toolkit.mjs,validate-agent-workflows.mjs,validate-shadow-architecture.mjs,loop/**},tests/unit/scripts/**'
 ---
 
 # Agent workflow instructions
@@ -24,5 +24,10 @@ applyTo: 'AGENTS.md,llms.txt,package.json,.shadow/**,.github/{copilot-instructio
   uninstall must preserve user-modified or unmanaged files.
 - Treat `.shadow/decisions/` as reviewed architecture source. New desired decisions
   start as proposed, and accepted history is superseded rather than rewritten.
+- Keep the improvement loop's gate strictly stronger than its prompt. Prompt text
+  is advisory; only `scripts/loop/` decides whether an iteration passes.
+- Add a loop backlog item only with a named acceptance signal that `npm run test`
+  or `npm run build` can produce. Never queue work that needs `tests/` edits, map
+  grid edits, asset regeneration, or design judgment.
 - When adding or changing a workflow resource, update `llms.txt` and the Agent
   Workflows section of `AGENTS.md`, then run `npm run agent:validate`.

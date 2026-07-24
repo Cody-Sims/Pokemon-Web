@@ -6,6 +6,19 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Added - Bounded improvement loop
+
+- Added a gate-first autonomous improvement loop that runs each iteration in a
+  throwaway git worktree on its own branch, never merging and never pushing.
+- Added a deterministic gate that restores tests and config from the base ref,
+  rejects out-of-scope and protected paths, rejects newly added suppressions such
+  as `@ts-ignore` and `.skip(`, caps diff size, and requires a changelog entry.
+- Added a least-privilege Copilot CLI invocation with no network access, no
+  subagents, and explicit denials for push, reset, clean, and install commands.
+- Added a curated loop backlog derived from an audit that found 31 of the 34
+  items in the improvement plan already shipped.
+- Added `loop:gate`, `loop:dry-run`, and `loop:run` commands plus VS Code tasks.
+
 ### Added - Global agents and decision architecture
 
 - Added a reusable Copilot toolkit with a read-only workspace researcher, repository
@@ -33,6 +46,15 @@ All notable changes to the Pokemon Web project.
   maintenance, and validation routing in `AGENTS.md` and `llms.txt`.
 
 ---
+
+## [2026-05-01]
+
+### Fixed — TransitionManager softlock on building warps
+
+- **TransitionManager.fadeTransition** no longer silently drops warps when a prior transition's `camerafadeincomplete` event didn't fire (e.g. after `scene.restart()` destroyed the camera mid-fade). Instead it force-resets and proceeds.
+- Added safety timeouts (2× duration) on both fadeOut and fadeIn to prevent permanent softlocks if Phaser camera events are lost.
+- **OverworldScene.create()** now calls `TransitionManager.forceReset()` to clear any stale singleton state surviving a scene restart.
+- Symptom: player walked onto a building door tile, got stuck in walking state, could not move or warp.
 
 ## [2026-05-01]
 
