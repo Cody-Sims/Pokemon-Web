@@ -23,6 +23,12 @@ All notable changes to the Pokemon Web project.
   catch, AI, status, ability, and move execution paths.
 - Hardened save loading/import with shared validation, v1 migration, corrupt-save
   backups, and defensive manager deserialization errors.
+### Changed - Scene contracts
+
+- Added typed scene-key and scene-data contracts plus a SceneRouter wrapper for
+  typed scene transitions.
+- Tightened EventManager event names, typed berry/dialogue/inventory events, and
+  moved priority scene transitions to the router.
 
 ### Fixed - Import cycle enforcement
 

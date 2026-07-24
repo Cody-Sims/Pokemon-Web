@@ -30,6 +30,9 @@ import { BattleBagHandler } from './BattleBagHandler';
 import { BattleSwitchHandler } from './BattleSwitchHandler';
 import { seededRandom } from '@utils/math-helpers';
 import { getTrainerData } from '@systems/engine/TrainerResolver';
+import { EventManager } from '@managers/EventManager';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 export type UIState = 'actions' | 'moves' | 'animating' | 'message' | 'target-select';
 
@@ -61,7 +64,7 @@ export class BattleUIScene extends Phaser.Scene {
   playerStatusMovesUsed = 0;
 
   constructor() {
-    super({ key: 'BattleUIScene' });
+    super({ key: SceneKey.BattleUI });
   }
 
   create(): void {
@@ -224,7 +227,7 @@ export class BattleUIScene extends Phaser.Scene {
   }
 
   // ─── Scene reference ───
-  battle(): BattleScene { return this.scene.get('BattleScene') as BattleScene; }
+  battle(): BattleScene { return SceneRouter.for(this).get(SceneKey.Battle) as BattleScene; }
 
   // ─── Delegate methods (public API for sub-modules and external callers) ───
 
@@ -762,12 +765,20 @@ export class BattleUIScene extends Phaser.Scene {
     const b = this.battle();
     const returnScene = b.returnScene;
     const returnData = b.returnData;
-    this.scene.stop();
-    this.scene.stop('BattleScene');
-    this.scene.start(returnScene, returnData);
+    EventManager.getInstance().emit('party-changed');
+    const router = SceneRouter.for(this);
+    router.stop(SceneKey.Battle);
+    if (returnScene === SceneKey.Overworld) {
+      router.transitionTo(SceneKey.Overworld, returnData);
+    } else if (returnScene === SceneKey.BattleTower) {
+      router.transitionTo(SceneKey.BattleTower, returnData);
+    } else {
+      router.transitionTo(returnScene);
+    }
   }
 
   shutdown(): void {
+    EventManager.getInstance().clearByTag(this.scene.key);
     this.input.keyboard?.removeAllListeners();
     this.input.removeAllListeners();
     this.tweens.killAll();

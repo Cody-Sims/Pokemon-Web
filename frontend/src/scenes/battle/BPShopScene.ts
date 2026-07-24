@@ -7,6 +7,9 @@ import { GameManager } from '@managers/GameManager';
 import { SFX } from '@utils/audio-keys';
 import { itemData } from '@data/item-data';
 import { battlePointShopCatalog, type BattlePointShopEntry } from '@data/bp-shop-data';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
+import type { BPShopSceneData } from '@scenes/scene-data';
 
 /**
  * A.1 Battle Tower — BP Shop.
@@ -29,13 +32,13 @@ export class BPShopScene extends Phaser.Scene {
   private readonly visibleCount = 8;
   private rebuildLayer?: Phaser.GameObjects.Container;
   private statusMsg?: Phaser.GameObjects.Text;
-  private initData?: Record<string, unknown>;
+  private initData?: BPShopSceneData;
 
   constructor() {
-    super({ key: 'BPShopScene' });
+    super({ key: SceneKey.BPShop });
   }
 
-  init(data?: Record<string, unknown>): void {
+  init(data?: BPShopSceneData): void {
     this.initData = data;
   }
 
@@ -181,7 +184,7 @@ export class BPShopScene extends Phaser.Scene {
 
   private close(): void {
     AudioManager.getInstance().playSFX(SFX.CANCEL);
-    const exit = (this.initData?.exitScene as string) ?? 'BattleTowerScene';
-    this.scene.start(exit);
+    const exit = this.initData?.exitScene ?? SceneKey.BattleTower;
+    SceneRouter.for(this).start(exit);
   }
 }

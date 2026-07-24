@@ -1,22 +1,23 @@
 /** Known event names and their payload types. */
-interface EventMap {
+export interface EventMap {
   'map-entered': [mapKey: string];
   'flag-set': [flag: string];
   'trainer-defeated': [trainerId: string];
   'quest-completed': [questId: string];
   'party-changed': [];
+  'berry-harvested': [payload: { treeId: string; berryId: string }];
+  'inventory-closed': [];
+  'dialogue-closed': [payload: { callingScene: string }];
 }
 
-type EventName = keyof EventMap | (string & {});
-type EventCallback<K extends EventName = EventName> = K extends keyof EventMap
-  ? (...args: EventMap[K]) => void
-  : (...args: unknown[]) => void;
+type EventName = keyof EventMap;
+type EventCallback<K extends EventName = EventName> = (...args: EventMap[K]) => void;
 
 /** Typed event bus for cross-scene communication. */
 export class EventManager {
   private static instance: EventManager;
-  private listeners = new Map<string, ((...args: unknown[]) => void)[]>();
-  private taggedListeners = new Map<string, { event: string; callback: (...args: unknown[]) => void }[]>();
+  private listeners = new Map<EventName, ((...args: unknown[]) => void)[]>();
+  private taggedListeners = new Map<string, { event: EventName; callback: (...args: unknown[]) => void }[]>();
 
   private constructor() {}
 
@@ -39,7 +40,7 @@ export class EventManager {
     this.listeners.set(event, list.filter(cb => cb !== callback));
   }
 
-  emit<K extends EventName>(event: K, ...args: K extends keyof EventMap ? EventMap[K] : unknown[]): void {
+  emit<K extends EventName>(event: K, ...args: EventMap[K]): void {
     const list = this.listeners.get(event);
     if (!list) return;
     for (const cb of list) {
@@ -68,7 +69,7 @@ export class EventManager {
     const tagged = this.taggedListeners.get(tag);
     if (!tagged) return;
     for (const { event, callback } of tagged) {
-      this.off(event, callback);
+      this.removeListener(event, callback);
     }
     this.taggedListeners.delete(tag);
   }
@@ -77,11 +78,11 @@ export class EventManager {
   onTagged<K extends EventName>(tag: string, event: K, callback: EventCallback<K>): void {
     this.on(event, callback);
     const list = this.taggedListeners.get(tag) ?? [];
-    list.push({ event: event as string, callback: callback as (...args: unknown[]) => void });
+    list.push({ event, callback: callback as (...args: unknown[]) => void });
     this.taggedListeners.set(tag, list);
   }
 
-  clear(event?: string): void {
+  clear(event?: EventName): void {
     if (event) {
       this.listeners.delete(event);
     } else {
@@ -94,5 +95,16 @@ export class EventManager {
   /** MED-37: Reset all listeners between sessions to prevent leaks. */
   reset(): void {
     this.clear();
+  }
+
+  private removeListener(event: EventName, callback: (...args: unknown[]) => void): void {
+    const list = this.listeners.get(event);
+    if (!list) return;
+    const filtered = list.filter(cb => cb !== callback);
+    if (filtered.length > 0) {
+      this.listeners.set(event, filtered);
+    } else {
+      this.listeners.delete(event);
+    }
   }
 }

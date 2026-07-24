@@ -1,4 +1,5 @@
 import { GameManager } from '@managers/GameManager';
+import { EventManager } from '@managers/EventManager';
 import { moveData } from '@data/moves';
 
 /** Heal all Pokémon in the party to full HP and PP, clear status. */
@@ -15,5 +16,8 @@ export function healParty(): void {
       move.currentPp = md?.pp ?? move.currentPp;
     }
     gm.adjustFriendship(i, 1);
+  }
+  if (party.length > 0) {
+    EventManager.getInstance().emit('party-changed');
   }
 }
