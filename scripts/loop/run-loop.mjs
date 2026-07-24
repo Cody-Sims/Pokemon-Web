@@ -116,17 +116,29 @@ function hasPendingWork() {
 }
 
 /**
- * A fresh worktree has no `node_modules`, so `npm run test` and `npm run build`
- * would both fail there. Symlink the repository's install rather than paying for
- * an `npm ci` per iteration. The link is relative to the worktree and is removed
- * with it.
+ * A fresh worktree contains only tracked files, so two gitignored directories
+ * have to be linked in or every iteration fails for reasons the agent did not
+ * cause: `node_modules`, without which no npm script runs, and `temp/scripts`,
+ * which the map toolchain lives in and which `.shadow/DEC-0007` anchors.
+ *
+ * Only `temp/scripts` is linked, never `temp/` itself: run artifacts live in
+ * `temp/loop-runs/`, so linking the parent would nest a worktree inside itself.
  */
-function linkDependencies(worktree) {
-  const source = resolve(REPOSITORY_ROOT, 'node_modules');
-  if (!existsSync(source)) {
-    throw new Error('node_modules is missing. Run npm install before the loop.');
+function linkUntrackedDependencies(worktree) {
+  const links = [
+    { from: 'node_modules', to: 'node_modules' },
+    { from: 'temp/scripts', to: 'temp/scripts' },
+  ];
+
+  for (const { from, to } of links) {
+    const source = resolve(REPOSITORY_ROOT, from);
+    if (!existsSync(source)) {
+      throw new Error(`${from} is missing; the loop cannot produce a runnable worktree.`);
+    }
+    const target = resolve(worktree, to);
+    mkdirSync(dirname(target), { recursive: true });
+    symlinkSync(source, target, 'dir');
   }
-  symlinkSync(source, resolve(worktree, 'node_modules'), 'dir');
 }
 
 function runIteration({ index, runDirectory, options, prompt }) {
@@ -136,7 +148,7 @@ function runIteration({ index, runDirectory, options, prompt }) {
   mkdirSync(logDirectory, { recursive: true });
 
   git(['worktree', 'add', '-b', branch, worktree, options.base]);
-  linkDependencies(worktree);
+  linkUntrackedDependencies(worktree);
 
   try {
     // The repository guardrail hook is gated behind an opt-in in prompt mode.

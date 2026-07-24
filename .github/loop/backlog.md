@@ -23,6 +23,7 @@ Verification reality check: no Vitest test imports anything from
 
 | Candidate | Why it is not queued |
 |---|---|
+| Seed `move-executor-extended.test.ts` | A `tests/` edit, so an implementation iteration may not do it. Fix this by hand first: the unseeded "fire moves should thaw frozen targets" case fails about one run in five and will discard good iterations at random. |
 | Battle Tower `levelCap` enforcement | Needs a new case in `tests/unit/battle/battle-tower.test.ts`, which an implementation iteration may not touch. Requeue as a `test` iteration paired with an implementation iteration. |
 | `TouchControls.isMobile` alignment | Changes runtime behavior on tablets with zero test coverage. |
 | `AbilityHandler` suppression TODO | Requires deciding Neutralizing Gas semantics. Design judgment, not mechanical work. |

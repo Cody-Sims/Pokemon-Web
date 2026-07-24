@@ -55,7 +55,7 @@ These were verified in this working copy, not assumed.
 | The hook file uses the VS Code schema: `SessionStart`, `PreToolUse`, a single `command`, `timeout` in seconds, and no `version` key | Copilot CLI's documented hook variant expects `"version": 1` and lowerCamelCase event names, so this file may not load in `-p` mode at all |
 | Repo hooks are additionally gated in prompt mode | `GITHUB_COPILOT_PROMPT_MODE_REPO_HOOKS=true` is necessary but not sufficient |
 | No Vitest test imports anything from `frontend/src/scenes/` | Scene and UI changes are compile-checked only. A green gate proves they build, not that they work |
-| `temp/` is gitignored, but `npm run map:validate` runs `temp/scripts/map-gen/cli.ts` | A fresh worktree has no map toolchain, so map work is excluded from the backlog entirely |
+| `temp/` is gitignored, but `npm run map:validate` runs `temp/scripts/map-gen/cli.ts` | A fresh worktree has no map toolchain, and `.shadow/DEC-0007` anchors that path, so the suite fails there. `run-loop.mjs` links `temp/scripts` into each worktree |
 | `npm run build` runs three asset generators before `tsc` | The build rewrites tracked files under `frontend/public/assets/`, which would poison any diff-size gate |
 | `npm run test:unit` passes `--include`, which Vitest 4 rejects as an unknown option | Pre-existing breakage; the loop calls `npm run test` instead |
 | `docs/IMPROVEMENT_PLAN.md` is stale: 31 of its 34 items already shipped, 3 are partial | Unusable as a queue. The loop backlog was hand-curated from residual gaps instead |
@@ -388,11 +388,16 @@ patched around, because `npm run map:validate` depends on gitignored
 
 Still open:
 
-1. Reconcile the Node version across `AGENTS.md`, `ci.yml`, and local.
-2. Fix `npm run test:unit` and `npm run test:integration`, which pass `--include`
+1. Seed `Math.random` in `integration/battle/move-executor-extended.test.ts`.
+   The "fire moves should thaw frozen targets" case fails about one run in five,
+   which will discard good iterations at random. The repository's own
+   `testing.instructions.md` already requires seeding in `beforeEach`. This is
+   the highest-priority carry-over: the loop is unreliable until it is fixed.
+2. Reconcile the Node version across `AGENTS.md`, `ci.yml`, and local.
+3. Fix `npm run test:unit` and `npm run test:integration`, which pass `--include`
    and fail on Vitest 4 with `Unknown option`.
-3. Clean up `docs/bugs.md` so `## Open` contains only genuinely open items.
-4. Mark `docs/IMPROVEMENT_PLAN.md` superseded by `docs/plan.md`.
+4. Clean up `docs/bugs.md` so `## Open` contains only genuinely open items.
+5. Mark `docs/IMPROVEMENT_PLAN.md` superseded by `docs/plan.md`.
 
 ### Phase 1: build the gate, and attack it
 
@@ -479,7 +484,9 @@ Options, in increasing order of risk:
 | Scope creep and unrequested features | Medium | Single-item selection, diff-size cap, scope allowlist |
 | Codebase decay over months | Medium | Batch review discipline; periodic human refactor passes. HumanLayer's lights-off attempt ended in a two-week manual rewrite after roughly four months |
 | Prompt injection through fetched content | Low locally | `web_fetch` omitted from `--available-tools`; do not run fork-triggered CI variants |
-| Loop churns after the backlog is done | Medium | Exit the run when no `todo` items remain, rather than letting it invent work |
+| Loop churns after the backlog is done | Medium | The driver stops when no `todo` row remains rather than letting the agent invent work |
+| A flaky test fails an otherwise good iteration | Confirmed, active | `integration/battle/move-executor-extended.test.ts` "fire moves should thaw frozen targets" fails roughly one run in five. Until it is seeded, some passing work will be discarded |
+| A worktree is missing gitignored prerequisites | Certain, mitigated | `run-loop.mjs` links `node_modules` and `temp/scripts` into every worktree. Without the second link, `.shadow/DEC-0007` anchors an absent path and the suite fails in every iteration |
 
 ## Honest limitations
 
