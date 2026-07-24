@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
-import { COLORS } from '../theme';
+import { COLORS, PANEL_PRESETS, type PanelPreset } from '../theme';
+
+export type NinePatchPanelOptions = Partial<PanelPreset>;
 
 /**
  * Nine-patch style panel using Phaser Graphics.
- * Renders a bordered panel with rounded corners, inner shadow, and configurable styling.
- * No external spritesheet needed — drawn procedurally for pixel-art consistency.
+ * Prefer `PANEL_PRESETS` from `theme.ts` for recurring menu, dialogue,
+ * speaker, choice, and overlay panels instead of ad-hoc literals.
  */
 export class NinePatchPanel {
   private outer: Phaser.GameObjects.Graphics;
@@ -15,41 +17,23 @@ export class NinePatchPanel {
     y: number,
     w: number,
     h: number,
-    options?: {
-      fillColor?: number;
-      fillAlpha?: number;
-      borderColor?: number;
-      borderWidth?: number;
-      cornerRadius?: number;
-      shadowColor?: number;
-      shadowAlpha?: number;
-    },
+    options?: NinePatchPanelOptions,
   ) {
-    const fillColor = options?.fillColor ?? COLORS.bgPanel;
-    const fillAlpha = options?.fillAlpha ?? 0.95;
-    const borderColor = options?.borderColor ?? COLORS.border;
-    const borderWidth = options?.borderWidth ?? 2;
-    const cornerRadius = options?.cornerRadius ?? 6;
-    const shadowColor = options?.shadowColor ?? 0x000000;
-    const shadowAlpha = options?.shadowAlpha ?? 0.3;
+    const preset = { ...PANEL_PRESETS.menu, ...options };
 
     this.outer = scene.add.graphics();
 
-    // Outer shadow (offset down-right)
-    this.outer.fillStyle(shadowColor, shadowAlpha);
-    this.outer.fillRoundedRect(x - w / 2 + 2, y - h / 2 + 2, w, h, cornerRadius);
+    this.outer.fillStyle(preset.shadowColor, preset.shadowAlpha);
+    this.outer.fillRoundedRect(x - w / 2 + 2, y - h / 2 + 2, w, h, preset.cornerRadius);
 
-    // Main panel fill
-    this.outer.fillStyle(fillColor, fillAlpha);
-    this.outer.fillRoundedRect(x - w / 2, y - h / 2, w, h, cornerRadius);
+    this.outer.fillStyle(preset.fillColor, preset.fillAlpha);
+    this.outer.fillRoundedRect(x - w / 2, y - h / 2, w, h, preset.cornerRadius);
 
-    // Border
-    this.outer.lineStyle(borderWidth, borderColor, 1);
-    this.outer.strokeRoundedRect(x - w / 2, y - h / 2, w, h, cornerRadius);
+    this.outer.lineStyle(preset.borderWidth, preset.borderColor, 1);
+    this.outer.strokeRoundedRect(x - w / 2, y - h / 2, w, h, preset.cornerRadius);
 
-    // Inner highlight (top edge — subtle)
-    this.outer.lineStyle(1, 0xffffff, 0.08);
-    this.outer.strokeRoundedRect(x - w / 2 + 1, y - h / 2 + 1, w - 2, h - 2, cornerRadius);
+    this.outer.lineStyle(1, COLORS.borderSubtle, 0.08);
+    this.outer.strokeRoundedRect(x - w / 2 + 1, y - h / 2 + 1, w - 2, h - 2, preset.cornerRadius);
   }
 
   setDepth(depth: number): this {

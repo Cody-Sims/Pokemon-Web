@@ -10,6 +10,13 @@ All notable changes to the Pokemon Web project.
 
 - Added reusable grid math, display formatting, Phaser sequencing, and pure data
   selector modules with unit coverage for edge cases and cancellation behavior.
+### Added - UI control consolidation
+
+- Added a reusable selectable-controller state machine for list/grid navigation,
+  disabled entries, pointer activation, and scroll-window tracking while keeping
+  `MenuController` consumers backward compatible.
+- Promoted TextBox, panel presets, HP/EXP progress bars, and shared UI tokens as
+  canonical foundations for future scene menu and dialogue migrations.
 
 ### Fixed - Import cycle enforcement
 
