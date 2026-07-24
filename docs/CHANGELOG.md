@@ -30,6 +30,8 @@ All notable changes to the Pokemon Web project.
 - Added a curated loop backlog derived from an audit that found 31 of the 34
   items in the improvement plan already shipped.
 - Added `loop:gate`, `loop:dry-run`, and `loop:run` commands plus VS Code tasks.
+- Fixed nondeterministic battle tests: the seeded PRNG reads `Date.now()` and the
+  suite mocked `Math.random`, which it never calls.
 
 ### Added - Global agents and decision architecture
 

@@ -13,7 +13,7 @@ Verification reality check: no Vitest test imports anything from
 
 | ID | State | Signal | Task |
 |---|---|---|---|
-| L-001 | todo | tsc | Delete the unused deprecated `computeGameWidth()` from `frontend/src/utils/constants.ts`. It has zero call sites; `npm run build` must stay green. |
+| L-001 | done | tsc | Delete the unused deprecated `computeGameWidth()` from `frontend/src/utils/constants.ts`. It has zero call sites; `npm run build` must stay green. |
 | L-002 | todo | test | Add `'berry-harvested': [payload: { treeId: string; berryId: string }]` to the `EventMap` interface in `frontend/src/managers/EventManager.ts`, matching the existing emit in `frontend/src/scenes/overworld/OverworldInteraction.ts`. `tests/integration/managers/event-manager.test.ts` must pass unmodified. |
 | L-003 | todo | tsc, build-only | Replace every `MOBILE_SCALE` usage with a `mobileScale()` call in `BattleMoveMenu.ts`, `BattleTowerScene.ts`, `BattleUIScene.ts`, `BPShopScene.ts`, `TownMapScene.ts`, and `TitleScene.ts`, then delete `export const MOBILE_SCALE` from `frontend/src/ui/theme.ts`. The deprecated const freezes its value at module load and ignores rotation. |
 | L-004 | todo | tsc, build-only | Replace every `MIN_TOUCH_TARGET` usage with a `minTouchTarget()` call in `DialogueScene.ts` and `MoveTutorScene.ts`, drop the unused imports in `PCScene.ts` and `StarterSelectScene.ts`, then delete `export const MIN_TOUCH_TARGET` from `frontend/src/ui/theme.ts`. Run after L-003; both edit `theme.ts`. |
