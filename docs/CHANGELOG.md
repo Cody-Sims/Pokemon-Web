@@ -12,6 +12,13 @@ All notable changes to the Pokemon Web project.
   generation and production builds no longer dirty the working tree.
 - Declared Phaser as a production dependency and added the missing `gh-pages`
   development dependency used by the deploy script.
+### Changed - Tracked map toolchain
+
+- Moved the map generation, preview, region render, and validation toolchain into
+  tracked `scripts/map-gen/` source and pointed the `map:*` npm scripts at it.
+- Declared `tsx` as a development dependency for the TypeScript map commands.
+- Updated agent, map-generation, architecture, and decision-graph references to
+  distinguish tracked toolchain source from ignored `temp/` preview outputs.
 
 ### Added - Bounded improvement loop
 

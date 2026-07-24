@@ -86,7 +86,8 @@ frontend/src/
 | `frontend/public/assets/` | Static assets: sprites, tilesets, maps, audio, UI, fonts |
 | `docs/` | Design docs, architecture, changelog, storyline, plans |
 | `tests/` | Vitest + Playwright tests |
-| `temp/` | Scratch work, one-off scripts, map generators (not committed) |
+| `scripts/map-gen/` | Tracked map generation, preview, region render, and validation toolchain |
+| `temp/` | Scratch work, generated previews, templates, and one-off experiments (not committed) |
 | `.github/instructions/` | Copilot custom instructions (path-specific) |
 | `.github/workflows/` | CI/CD (ci.yml, deploy.yml) |
 | `.github/skills/` | AgentSkills-compatible workflows loaded on demand |
@@ -109,7 +110,7 @@ Maps are defined as TypeScript files in `frontend/src/data/maps/`. Each map has:
 - NPC spawns, trainer spawns, warp definitions, wild encounter zones
 - Map metadata (name, dimensions, BGM key, lighting, weather)
 
-Use the map toolchain for generation:
+Use the tracked map toolchain (`scripts/map-gen/`) for generation:
 ```bash
 npm run map:validate                    # Validate all maps
 npm run map:validate -- --map route-1   # Validate one map

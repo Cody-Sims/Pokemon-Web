@@ -7,7 +7,7 @@ applyTo: 'frontend/src/data/maps/**'
 
 ## Overview
 
-This project has a comprehensive map generation toolchain at `temp/scripts/map-gen/`. Use these tools instead of hand-authoring character grids whenever possible.
+This project has a comprehensive tracked map generation toolchain at `scripts/map-gen/`. Use these tools instead of hand-authoring character grids whenever possible.
 
 ## Available Commands
 
@@ -127,7 +127,7 @@ Author maps in the standard biome (ASCII chars), then convert:
 
 ```bash
 # The CLI applies biome substitution automatically
-npx tsx temp/scripts/map-gen/cli.ts dungeon --width 31 --height 25 --biome volcanic
+npx tsx scripts/map-gen/cli.ts dungeon --width 31 --height 25 --biome volcanic
 ```
 
 Available biomes: `standard`, `volcanic`, `coastal`, `forest`, `ghost`, `dragon`, `mine`, `electric`, `synthesis`, `cave`

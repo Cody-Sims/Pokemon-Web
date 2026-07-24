@@ -29,6 +29,7 @@ type safety, and Vite for fast bundling.
 - `frontend/src/systems/` — Gameplay systems (GridMovement, weather, lighting, audio, encounters)
 - `frontend/src/ui/` — Reusable UI components (widgets, controls, theme)
 - `frontend/src/utils/` — Pure helper functions (constants, math, type system)
+- `scripts/map-gen/` — Tracked map generation, composition, preview, region render, and validation toolchain
 
 ## Copilot Instructions
 
@@ -76,3 +77,6 @@ type safety, and Vite for fast bundling.
 - `npm run loop:dry-run` — Print the exact agent invocation without spending credits
 - `npm run loop:run` — Run the bounded improvement loop
 - `npm run loop:gate` — Grade a worktree against the deterministic gate
+- `npm run map:validate` — Validate all map definitions
+- `npm run map:preview` — Render ignored PPM map previews under `temp/map-previews/`
+- `npm run map:region` — Render the ignored region overview to `temp/region-map.ppm`

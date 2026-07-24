@@ -190,7 +190,7 @@ Use ONLY these colors for the corresponding biome. Each tuple is (R, G, B, 255).
 ### For palette-swap NPCs:
 1. Pick base from existing 24 characters (12M + 12F)
 2. Define color mapping
-3. Run `temp/scripts/sprites/create_npc_atlases.py`
+3. Use an existing maintained sprite generator as a template; no standalone palette-swap NPC atlas script is currently tracked
 
 ### For unique characters (gym leaders, Elite Four):
 1. Define palette dict with: hair, hair_light, hair_dark, skin, skin_shadow, top, top_light, top_dark, pants, pants_dark, shoes, accent
