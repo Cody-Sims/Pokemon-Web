@@ -219,6 +219,11 @@ function runIteration({ index, runDirectory, options, prompt }) {
   git(['worktree', 'add', '-b', branch, worktree, options.base]);
   linkUntrackedDependencies(worktree);
 
+  // Only a branch that cleared the gate survives. Keying cleanup off the gate
+  // report's existence would keep failed branches too, because the gate writes a
+  // report whether it passes or fails.
+  let keepBranch = false;
+
   try {
     // The repository guardrail hook is gated behind an opt-in in prompt mode.
     // Without this the git push and git add -A blocks silently do not load.
@@ -262,6 +267,7 @@ function runIteration({ index, runDirectory, options, prompt }) {
     ], { cwd: REPOSITORY_ROOT, encoding: 'utf8', stdio: 'inherit' });
 
     if (gate.status === 0) {
+      keepBranch = true;
       const item = recordCompletedItem(worktree, options.base);
       console.log(`Iteration ${index}: gate passed, kept branch ${branch}.`);
       if (item) console.log(`Iteration ${index}: marked backlog item ${item} done.`);
@@ -271,9 +277,8 @@ function runIteration({ index, runDirectory, options, prompt }) {
     console.log(`Iteration ${index}: gate failed, discarding ${branch}.`);
     return { index, branch, status: 'failed' };
   } finally {
-    const kept = existsSync(resolve(runDirectory, `iter-${index}-gate.json`));
     git(['worktree', 'remove', '--force', worktree]);
-    if (!kept) git(['branch', '-D', branch]);
+    if (!keepBranch) git(['branch', '-D', branch]);
   }
 }
 
