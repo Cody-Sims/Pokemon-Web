@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
-import { mobileFontSize } from '@ui/theme';
+import { SelectableController } from '@ui/controls/SelectableController';
+import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 
-/** Selectable vertical menu (cursor-driven). */
+/** Selectable vertical menu view backed by SelectableController. */
 export class MenuList {
-  private items: Phaser.GameObjects.Text[] = [];
-  private cursor = 0;
-  private onSelect: (index: number) => void;
+  private readonly items: Phaser.GameObjects.Text[] = [];
+  private readonly controller: SelectableController;
+  private readonly onSelect: (index: number) => void;
 
   constructor(
     scene: Phaser.Scene,
@@ -13,51 +14,54 @@ export class MenuList {
     y: number,
     labels: string[],
     onSelect: (index: number) => void,
-    style?: Phaser.Types.GameObjects.Text.TextStyle
+    style?: Phaser.Types.GameObjects.Text.TextStyle,
   ) {
     this.onSelect = onSelect;
+    const textStyle = style ?? { ...FONTS.menuItem, fontSize: mobileFontSize(18), color: COLORS.textWhite };
 
-    const textStyle = style ?? { fontSize: mobileFontSize(18), color: '#ffffff' };
-
-    labels.forEach((label, i) => {
-      const text = scene.add.text(x, y + i * 32, label, textStyle);
-      // Touch/pointer support (BUG-068)
-      text.setInteractive({ useHandCursor: true });
-      text.on('pointerdown', () => {
-        this.cursor = i;
-        this.updateCursor();
-        this.onSelect(i);
-      });
-      this.items.push(text);
+    this.controller = new SelectableController({
+      itemCount: labels.length,
+      columns: 1,
+      wrap: true,
+      onMove: () => this.updateCursor(),
+      onConfirm: (index) => this.onSelect(index),
     });
 
+    labels.forEach((label, index) => {
+      const text = scene.add.text(x, y + index * 32, label, textStyle);
+      this.items.push(text);
+    });
+    this.controller.bindInteractive(this.items);
     this.updateCursor();
   }
 
   moveUp(): void {
-    this.cursor = (this.cursor - 1 + this.items.length) % this.items.length;
-    this.updateCursor();
+    this.controller.navigate('up');
   }
 
   moveDown(): void {
-    this.cursor = (this.cursor + 1) % this.items.length;
-    this.updateCursor();
+    this.controller.navigate('down');
   }
 
   select(): void {
-    this.onSelect(this.cursor);
+    this.controller.confirm();
   }
 
-  getCursor(): number { return this.cursor; }
+  getCursor(): number {
+    return this.controller.getCursor();
+  }
 
   private updateCursor(): void {
-    this.items.forEach((item, i) => {
-      item.setColor(i === this.cursor ? '#ffcc00' : '#ffffff');
-      item.setText(i === this.cursor ? `▶ ${item.text.replace(/^▶ /, '')}` : item.text.replace(/^▶ /, ''));
+    const cursor = this.controller.getCursor();
+    this.items.forEach((item, index) => {
+      item.setColor(index === cursor ? COLORS.textHighlight : COLORS.textWhite);
+      const base = item.text.replace(/^▶ /, '');
+      item.setText(index === cursor ? `▶ ${base}` : base);
     });
   }
 
   destroy(): void {
-    this.items.forEach(i => i.destroy());
+    this.controller.destroy();
+    this.items.forEach((item) => item.destroy());
   }
 }

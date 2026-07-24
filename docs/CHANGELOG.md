@@ -6,6 +6,14 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Added - UI control consolidation
+
+- Added a reusable selectable-controller state machine for list/grid navigation,
+  disabled entries, pointer activation, and scroll-window tracking while keeping
+  `MenuController` consumers backward compatible.
+- Promoted TextBox, panel presets, HP/EXP progress bars, and shared UI tokens as
+  canonical foundations for future scene menu and dialogue migrations.
+
 ### Fixed - Import cycle enforcement
 
 - Broke production import cycles between game/quest managers, double-battle

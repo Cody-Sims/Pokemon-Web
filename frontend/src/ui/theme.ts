@@ -4,17 +4,25 @@
 import { getTextScale } from '@utils/accessibility';
 
 export const COLORS = {
+  black: 0x000000,
+  white: 0xffffff,
+  transparent: 0x000000,
+
   // Backgrounds
   bgDark: 0x0f0f1a,
+  bgPanelDark: 0x0a0a18,
+  bgBarTrack: 0x222233,
   bgPanel: 0x1a1a2e,
   bgCard: 0x252545,
   bgInput: 0x333355,
   bgOverlay: 0x000000,
+  shadow: 0x000000,
 
   // Borders
   border: 0x4a4a6a,
   borderLight: 0x6a6aaa,
   borderHighlight: 0xffcc00,
+  borderSubtle: 0xffffff,
 
   // Text (hex strings for Phaser text)
   textWhite: '#ffffff',
@@ -32,6 +40,7 @@ export const COLORS = {
 
   // EXP bar
   expBlue: 0x4488ff,
+  progressNeutral: 0x888899,
 
   // Stat nature colors
   statUp: '#ff7766',
@@ -43,6 +52,109 @@ export const COLORS = {
   btnText: '#e8e8f0',
   btnTextHover: '#ffcc00',
 } as const;
+
+export const STROKES = {
+  hairline: 1,
+  panel: 2,
+  focus: 2,
+  focusShadow: 4,
+} as const;
+
+export const RADII = {
+  sm: 4,
+  md: 6,
+  lg: 8,
+} as const;
+
+export interface PanelPreset {
+  fillColor: number;
+  fillAlpha: number;
+  borderColor: number;
+  borderWidth: number;
+  cornerRadius: number;
+  shadowColor: number;
+  shadowAlpha: number;
+}
+
+export const PANEL_PRESETS = {
+  menu: {
+    fillColor: COLORS.bgPanel,
+    fillAlpha: 0.95,
+    borderColor: COLORS.border,
+    borderWidth: STROKES.panel,
+    cornerRadius: RADII.md,
+    shadowColor: COLORS.shadow,
+    shadowAlpha: 0.3,
+  },
+  dialogue: {
+    fillColor: COLORS.bgPanelDark,
+    fillAlpha: 0.92,
+    borderColor: COLORS.borderLight,
+    borderWidth: STROKES.panel,
+    cornerRadius: RADII.lg,
+    shadowColor: COLORS.shadow,
+    shadowAlpha: 0.4,
+  },
+  choice: {
+    fillColor: COLORS.bgPanelDark,
+    fillAlpha: 0.95,
+    borderColor: COLORS.borderLight,
+    borderWidth: STROKES.panel,
+    cornerRadius: RADII.md,
+    shadowColor: COLORS.shadow,
+    shadowAlpha: 0.3,
+  },
+  speaker: {
+    fillColor: COLORS.bgCard,
+    fillAlpha: 0.95,
+    borderColor: COLORS.borderHighlight,
+    borderWidth: STROKES.hairline,
+    cornerRadius: RADII.sm,
+    shadowColor: COLORS.shadow,
+    shadowAlpha: 0.2,
+  },
+  overlay: {
+    fillColor: COLORS.bgOverlay,
+    fillAlpha: 0.75,
+    borderColor: COLORS.border,
+    borderWidth: STROKES.hairline,
+    cornerRadius: RADII.md,
+    shadowColor: COLORS.shadow,
+    shadowAlpha: 0.25,
+  },
+} as const satisfies Record<string, PanelPreset>;
+
+export interface ProgressBarPreset {
+  trackColor: number;
+  trackAlpha: number;
+  borderColor: number;
+  borderWidth: number;
+  fillColor: number | ((pct: number) => number);
+}
+
+export const PROGRESS_BAR_PRESETS = {
+  hp: {
+    trackColor: COLORS.bgBarTrack,
+    trackAlpha: 1,
+    borderColor: COLORS.border,
+    borderWidth: STROKES.hairline,
+    fillColor: hpColor,
+  },
+  exp: {
+    trackColor: COLORS.bgBarTrack,
+    trackAlpha: 1,
+    borderColor: COLORS.border,
+    borderWidth: STROKES.hairline,
+    fillColor: COLORS.expBlue,
+  },
+  neutral: {
+    trackColor: COLORS.bgBarTrack,
+    trackAlpha: 1,
+    borderColor: COLORS.border,
+    borderWidth: STROKES.hairline,
+    fillColor: COLORS.progressNeutral,
+  },
+} as const satisfies Record<string, ProgressBarPreset>;
 
 export const FONTS = {
   title: { fontSize: '36px', color: COLORS.textWhite, fontFamily: 'monospace', fontStyle: 'bold' } as Phaser.Types.GameObjects.Text.TextStyle,
@@ -185,8 +297,8 @@ export function drawTypeBadge(scene: Phaser.Scene, x: number, y: number, type: s
     const sprite = scene.add.image(0, 0, 'type-badges', frame).setScale(2);
     container.add(sprite);
   } else {
-    const bg = scene.add.rectangle(0, 0, 64, 20, TYPE_COLORS[type] ?? 0x888888).setStrokeStyle(1, 0xffffff);
-    const text = scene.add.text(0, 0, type.toUpperCase(), { fontSize: '10px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold' }).setOrigin(0.5);
+    const bg = scene.add.rectangle(0, 0, 64, 20, TYPE_COLORS[type] ?? COLORS.progressNeutral).setStrokeStyle(STROKES.hairline, COLORS.white);
+    const text = scene.add.text(0, 0, type.toUpperCase(), { fontSize: '10px', color: COLORS.textWhite, fontFamily: 'monospace', fontStyle: 'bold' }).setOrigin(0.5);
     container.add([bg, text]);
   }
   return container;
@@ -200,10 +312,10 @@ export function drawStatusBadge(scene: Phaser.Scene, x: number, y: number, statu
     const sprite = scene.add.image(0, 0, 'status-badges', frame).setScale(2);
     container.add(sprite);
   } else {
-    const col = STATUS_COLORS[status] ?? 0x888899;
-    const bg = scene.add.rectangle(0, 0, 64, 20, col).setStrokeStyle(1, 0xffffff);
+    const col = STATUS_COLORS[status] ?? COLORS.progressNeutral;
+    const bg = scene.add.rectangle(0, 0, 64, 20, col).setStrokeStyle(STROKES.hairline, COLORS.white);
     const label = status === 'bad-poison' ? 'TOX' : status.substring(0, 3).toUpperCase();
-    const text = scene.add.text(0, 0, label, { fontSize: '10px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold' }).setOrigin(0.5);
+    const text = scene.add.text(0, 0, label, { fontSize: '10px', color: COLORS.textWhite, fontFamily: 'monospace', fontStyle: 'bold' }).setOrigin(0.5);
     container.add([bg, text]);
   }
   return container;
@@ -215,7 +327,7 @@ export function drawButton(
   onClick: () => void, width = 140, height = 36
 ): Phaser.GameObjects.Container {
   const container = scene.add.container(x, y);
-  const bg = scene.add.rectangle(0, 0, width, height, COLORS.btnBg).setStrokeStyle(1, COLORS.border);
+  const bg = scene.add.rectangle(0, 0, width, height, COLORS.btnBg).setStrokeStyle(STROKES.hairline, COLORS.border);
   const text = scene.add.text(0, 0, label, FONTS.button).setOrigin(0.5);
   container.add([bg, text]);
   container.setSize(width, height);
@@ -232,7 +344,7 @@ export function drawHpBar(
   current: number, max: number
 ): { bg: Phaser.GameObjects.Rectangle; fill: Phaser.GameObjects.Rectangle } {
   const pct = max > 0 ? current / max : 0;
-  const bg = scene.add.rectangle(x, y, width, height, 0x222233).setOrigin(0, 0.5).setStrokeStyle(1, COLORS.border);
+  const bg = scene.add.rectangle(x, y, width, height, COLORS.bgBarTrack).setOrigin(0, 0.5).setStrokeStyle(STROKES.hairline, COLORS.border);
   const fill = scene.add.rectangle(x + 1, y, (width - 2) * pct, height - 2, hpColor(pct)).setOrigin(0, 0.5);
   return { bg, fill };
 }
