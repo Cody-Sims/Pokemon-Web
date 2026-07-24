@@ -17,6 +17,12 @@ All notable changes to the Pokemon Web project.
   `MenuController` consumers backward compatible.
 - Promoted TextBox, panel presets, HP/EXP progress bars, and shared UI tokens as
   canonical foundations for future scene menu and dialogue migrations.
+### Changed - Deterministic battle RNG and save validation
+
+- Added an injectable battle RNG for battle outcomes, threaded through damage,
+  catch, AI, status, ability, and move execution paths.
+- Hardened save loading/import with shared validation, v1 migration, corrupt-save
+  backups, and defensive manager deserialization errors.
 
 ### Fixed - Import cycle enforcement
 

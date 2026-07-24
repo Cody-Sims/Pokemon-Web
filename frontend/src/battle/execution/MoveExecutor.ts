@@ -7,7 +7,8 @@ import { StatusEffectHandler, EffectResult } from '../effects/StatusEffectHandle
 import { AbilityHandler } from '../effects/AbilityHandler';
 import { HeldItemHandler } from '../effects/HeldItemHandler';
 import { WeatherManager } from '../effects/WeatherManager';
-import { seededRandom } from '@utils/math-helpers';
+import type { BattleRng } from '../core/BattleRng';
+import { globalBattleRng } from '../core/BattleRng';
 import { PokemonType } from '@utils/type-helpers';
 
 export interface MoveExecutionResult {
@@ -34,7 +35,9 @@ export class MoveExecutor {
     statusHandler?: StatusEffectHandler,
     weatherManager?: WeatherManager,
     skipPPDeduction?: boolean,
+    rng?: BattleRng,
   ): MoveExecutionResult {
+    const battleRng = rng ?? statusHandler?.getRng() ?? globalBattleRng;
     const move = moveData[moveId];
     const attackerName = attacker.nickname ?? `Pokemon #${attacker.dataId}`;
     const defenderName = defender.nickname ?? `Pokemon #${defender.dataId}`;
@@ -184,7 +187,7 @@ export class MoveExecutor {
     }
 
     // Check accuracy (AUDIT-026: pass attacker/defender for accuracy/evasion stages)
-    if (!DamageCalculator.doesMoveHit(move, attacker, defender, statusHandler)) {
+    if (!DamageCalculator.doesMoveHit(move, attacker, defender, statusHandler, battleRng)) {
       // BUG-051: Jump Kick / High Jump Kick crash damage on miss
       if (moveId === 'jump-kick' || moveId === 'high-jump-kick') {
         const crashDmg = Math.max(1, Math.floor(attacker.stats.hp / 2));
@@ -331,7 +334,7 @@ export class MoveExecutor {
 
     // ── Multi-hit moves ──
     if (move.effect?.type === 'multi-hit') {
-      const hits = move.effect.hits ?? MoveExecutor.rollMultiHit();
+      const hits = move.effect.hits ?? MoveExecutor.rollMultiHit(battleRng);
       let totalDamage = 0;
       let lastResult: DamageResult = { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false };
       const multiHitMessages: string[] = [];
@@ -339,14 +342,14 @@ export class MoveExecutor {
       for (let i = 0; i < hits; i++) {
         if (defender.currentHp <= 0) break;
         const hpBefore = defender.currentHp;
-        const dmgResult = DamageCalculator.calculate(attacker, defender, move, statusHandler, weatherManager);
+        const dmgResult = DamageCalculator.calculate(attacker, defender, move, statusHandler, weatherManager, battleRng);
         defender.currentHp = Math.max(0, defender.currentHp - dmgResult.damage);
         totalDamage += dmgResult.damage;
         lastResult = dmgResult;
 
         // Post-damage hooks per hit
         if (dmgResult.damage > 0) {
-          const abilityHit = AbilityHandler.onAfterDamage(attacker, defender, move, dmgResult.damage);
+          const abilityHit = AbilityHandler.onAfterDamage(attacker, defender, move, dmgResult.damage, battleRng);
           multiHitMessages.push(...abilityHit.messages);
           const itemHit = HeldItemHandler.onAfterDamage(defender, attacker, dmgResult.damage, hpBefore);
           multiHitMessages.push(...itemHit.messages);
@@ -390,11 +393,11 @@ export class MoveExecutor {
 
     // ── Standard damage calculation ──
     const hpBeforeHit = defender.currentHp;
-    const damage = DamageCalculator.calculate(attacker, defender, move, statusHandler, weatherManager);
+    const damage = DamageCalculator.calculate(attacker, defender, move, statusHandler, weatherManager, battleRng);
     defender.currentHp = Math.max(0, defender.currentHp - damage.damage);
 
     // ── AUDIT-011: Post-damage ability hooks (Static, Flame Body, etc.) ──
-    const abilityAfterDmg = AbilityHandler.onAfterDamage(attacker, defender, move, damage.damage);
+    const abilityAfterDmg = AbilityHandler.onAfterDamage(attacker, defender, move, damage.damage, battleRng);
 
     // ── AUDIT-011: Post-damage item hooks (Focus Sash) ──
     const itemAfterDmg = HeldItemHandler.onAfterDamage(defender, attacker, damage.damage, hpBeforeHit);
@@ -448,8 +451,8 @@ export class MoveExecutor {
   }
 
   /** Roll 2-5 hits for multi-hit moves (standard distribution). */
-  private static rollMultiHit(): number {
-    const roll = seededRandom();
+  private static rollMultiHit(rng: BattleRng): number {
+    const roll = rng.next();
     if (roll < 0.375) return 2;
     if (roll < 0.75) return 3;
     if (roll < 0.875) return 4;

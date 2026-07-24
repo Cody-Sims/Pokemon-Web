@@ -1,4 +1,5 @@
 import { PokemonInstance } from '@data/interfaces';
+import { SaveDataDeserializationError, isPokemonInstance } from './SaveCodec';
 
 /**
  * Manages the player's Pokémon party and PC box storage.
@@ -96,6 +97,18 @@ export class PartyManager {
   }
 
   deserialize(data: { party: PokemonInstance[]; boxes?: PokemonInstance[][]; boxNames?: string[] }): void {
+    if (!Array.isArray(data.party)) {
+      throw new SaveDataDeserializationError('Save party must be an array.');
+    }
+    if (!data.party.every(isPokemonInstance)) {
+      throw new SaveDataDeserializationError('Save party contains malformed Pokémon data.');
+    }
+    if (data.boxes && (!Array.isArray(data.boxes) || !data.boxes.every(box => Array.isArray(box) && box.every(isPokemonInstance)))) {
+      throw new SaveDataDeserializationError('Save boxes contain malformed Pokémon data.');
+    }
+    if (data.boxNames && (!Array.isArray(data.boxNames) || !data.boxNames.every(name => typeof name === 'string'))) {
+      throw new SaveDataDeserializationError('Save box names must be strings.');
+    }
     // Shallow-clone each instance so the runtime party holds fresh objects
     // rather than the raw JSON-parsed graph. This prevents mutations from
     // leaking back into the save data and ensures future class-based
