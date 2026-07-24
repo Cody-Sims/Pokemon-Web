@@ -6,6 +6,16 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - Bug backlog triage
+
+- Reconciled the bug tracker against the current revamp codebase, moving stale,
+  duplicate, and already-fixed audit entries out of the open backlog.
+- Hardened save loading by normalizing removed-map saves to Pallet Town, resetting
+  achievements before restore, recording save write errors, and supplying default
+  v1 box names during migration.
+- Updated trainer approach movement so `Trainer.walkToward()` can close both axes
+  toward an adjacent tile while still checking per-step collisions.
+
 ### Fixed - Scene lifecycle listener cleanup
 
 - Added a scene input registry that removes keyboard, pointer, and scene-event

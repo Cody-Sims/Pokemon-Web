@@ -26,6 +26,8 @@ export class SaveDataDeserializationError extends Error {
   }
 }
 
+const DEFAULT_BOX_NAMES = Array.from({ length: 12 }, (_, index) => `Box ${index + 1}`);
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -153,7 +155,7 @@ function migrateSaveData(data: Record<string, unknown>): Record<string, unknown>
     if (!('gameStats' in migrated)) migrated.gameStats = undefined;
     if (!('hallOfFame' in migrated)) migrated.hallOfFame = [];
     if (!('visitedMaps' in migrated)) migrated.visitedMaps = [];
-    if (!('boxNames' in migrated)) migrated.boxNames = undefined;
+    if (!('boxNames' in migrated)) migrated.boxNames = DEFAULT_BOX_NAMES;
     if (!('achievements' in migrated)) migrated.achievements = [];
   }
   migrated.achievements = Array.isArray(migrated.achievements) ? migrated.achievements : [];

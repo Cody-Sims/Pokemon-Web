@@ -87,60 +87,72 @@ export class Trainer extends NPC {
       const myTileX = Math.floor(this.x / TILE_SIZE);
       const myTileY = Math.floor(this.y / TILE_SIZE);
 
-      // Calculate how many steps to walk (stop 1 tile away from target)
-      const dx = targetTileX - myTileX;
-      const dy = targetTileY - myTileY;
-      const stepsX = Math.abs(dx) > 0 ? Math.abs(dx) - 1 : 0;
-      const stepsY = Math.abs(dy) > 0 ? Math.abs(dy) - 1 : 0;
-      const totalSteps = stepsX + stepsY;
+      const distanceToTarget = (tileX: number, tileY: number): number => (
+        Math.abs(targetTileX - tileX) + Math.abs(targetTileY - tileY)
+      );
 
-      if (totalSteps <= 0) {
+      if (distanceToTarget(myTileX, myTileY) <= 1) {
         resolve();
         return;
       }
 
-      // Walk step by step using chained tweens
-      const stepDirX = dx > 0 ? 1 : dx < 0 ? -1 : 0;
-      const stepDirY = dy > 0 ? 1 : dy < 0 ? -1 : 0;
-
-      // Walk along the facing direction only (trainer faces one direction)
-      const pixelStepX = stepDirX * TILE_SIZE;
-      const pixelStepY = stepDirY * TILE_SIZE;
-      const steps = this.facing === 'left' || this.facing === 'right' ? stepsX : stepsY;
-
-      if (steps <= 0) {
-        resolve();
-        return;
-      }
-
-      let completed = 0;
       const stepDuration = 200;
+      const preferredHorizontal = this.facing === 'left' || this.facing === 'right';
       const doStep = () => {
-        // MED-14: Check collision before each step to avoid walking through NPCs
         const currentTX = Math.floor(this.x / TILE_SIZE);
         const currentTY = Math.floor(this.y / TILE_SIZE);
-        const nextTX = currentTX + (this.facing === 'left' || this.facing === 'right' ? stepDirX : 0);
-        const nextTY = currentTY + (this.facing === 'up' || this.facing === 'down' ? stepDirY : 0);
-        if (this.collisionCheck && this.collisionCheck(nextTX, nextTY)) {
+        const currentDistance = distanceToTarget(currentTX, currentTY);
+        if (currentDistance <= 1) {
           this.stopWalkAnim();
           resolve();
           return;
         }
 
+        const stepX = Math.sign(targetTileX - currentTX);
+        const stepY = Math.sign(targetTileY - currentTY);
+        const candidates: { dx: number; dy: number; direction: Direction }[] = [];
+        const horizontal = stepX === 0 ? undefined : {
+          dx: stepX,
+          dy: 0,
+          direction: stepX > 0 ? 'right' as Direction : 'left' as Direction,
+        };
+        const vertical = stepY === 0 ? undefined : {
+          dx: 0,
+          dy: stepY,
+          direction: stepY > 0 ? 'down' as Direction : 'up' as Direction,
+        };
+
+        if (preferredHorizontal) {
+          if (horizontal) candidates.push(horizontal);
+          if (vertical) candidates.push(vertical);
+        } else {
+          if (vertical) candidates.push(vertical);
+          if (horizontal) candidates.push(horizontal);
+        }
+
+        const nextStep = candidates.find(candidate => {
+          const nextTX = currentTX + candidate.dx;
+          const nextTY = currentTY + candidate.dy;
+          if (distanceToTarget(nextTX, nextTY) >= currentDistance) return false;
+          return !this.collisionCheck?.(nextTX, nextTY);
+        });
+
+        if (!nextStep) {
+          this.stopWalkAnim();
+          resolve();
+          return;
+        }
+
+        this.faceDirection(nextStep.direction);
+
         this.playWalkAnim(stepDuration);
         this.scene.tweens.add({
           targets: this,
-          x: this.x + (this.facing === 'left' || this.facing === 'right' ? pixelStepX : 0),
-          y: this.y + (this.facing === 'up' || this.facing === 'down' ? pixelStepY : 0),
+          x: this.x + nextStep.dx * TILE_SIZE,
+          y: this.y + nextStep.dy * TILE_SIZE,
           duration: stepDuration,
           onComplete: () => {
-            completed++;
-            if (completed < steps) {
-              doStep();
-            } else {
-              this.stopWalkAnim();
-              resolve();
-            }
+            doStep();
           },
         });
       };
