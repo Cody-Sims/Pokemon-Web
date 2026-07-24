@@ -15,6 +15,13 @@ All notable changes to the Pokemon Web project.
   v1 box names during migration.
 - Updated trainer approach movement so `Trainer.walkToward()` can close both axes
   toward an adjacent tile while still checking per-step collisions.
+### Fixed - Test suite credibility
+
+- Replaced copy-pasted GridMovement, scene lifecycle, and battle state machine
+  test models with tests against the real modules.
+- Centralized duplicated Pokémon test fixtures under `tests/helpers/` and
+  strengthened move-effect, save validation, battle RNG, and listener-cleanup
+  safety nets.
 
 ### Fixed - Scene lifecycle listener cleanup
 

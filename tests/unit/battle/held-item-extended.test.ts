@@ -1,25 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { HeldItemHandler } from '../../../frontend/src/battle/effects/HeldItemHandler';
-import { PokemonInstance } from '../../../frontend/src/data/interfaces';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 
 beforeEach(() => {
   vi.spyOn(Math, 'random').mockReturnValue(0.5);
 });
 
-const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
-  dataId: 4, // Charmander
-  level: 30,
-  currentHp: 60,
-  stats: { hp: 80, attack: 40, defense: 35, spAttack: 50, spDefense: 38, speed: 45 },
-  ivs: { hp: 15, attack: 15, defense: 15, spAttack: 15, spDefense: 15, speed: 15 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy',
-  moves: [{ moveId: 'ember', currentPp: 25 }],
-  status: null,
-  exp: 0,
-  friendship: 70,
-  ...overrides,
-});
+
+const makePokemon = createPokemonFactory('held-item');
 
 describe('HeldItemHandler — weather rocks', () => {
   it('Heat Rock adds +3 turns to sun', () => {

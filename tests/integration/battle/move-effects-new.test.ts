@@ -1,28 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MoveExecutor } from '../../../frontend/src/battle/execution/MoveExecutor';
 import { StatusEffectHandler } from '../../../frontend/src/battle/effects/StatusEffectHandler';
-import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 import { moveData } from '../../../frontend/src/data/moves';
 import * as mathHelpers from '../../../frontend/src/utils/math-helpers';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 
 beforeEach(() => {
   mathHelpers.seedRng(12345);
 });
 
-const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
-  dataId: 4,
-  level: 50,
-  currentHp: 200,
-  stats: { hp: 200, attack: 80, defense: 60, spAttack: 90, spDefense: 60, speed: 70 },
-  ivs: { hp: 15, attack: 15, defense: 15, spAttack: 15, spDefense: 15, speed: 15 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy',
-  moves: [{ moveId: 'tackle', currentPp: 35 }],
-  status: null,
-  exp: 0,
-  friendship: 70,
-  ...overrides,
-});
+
+const makePokemon = createPokemonFactory('move-effects');
 
 describe('New Move Effects — Fairy / Dark / Ghost', () => {
   // ─── Fairy Moves ───────────────────────────────────────────────
