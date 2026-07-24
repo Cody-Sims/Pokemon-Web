@@ -16,6 +16,10 @@ All notable changes to the Pokemon Web project.
 
 - Recorded DEC-0009 through DEC-0016 for scene boundaries, shared UI, typed scene/event/data contracts, battle RNG determinism, GameManager facade state ownership, tracked map tooling, and canonical quality gates.
 - Refreshed stable `CONTEXT.md` coverage for runtime config, data, and UI controls/widgets without inventorying volatile scene, battle, manager, or system internals.
+### Changed - Battle effects registry
+
+- Replaced ability, held-item, and move-effect switch dispatch with hook-based registries while preserving existing handler APIs and battle RNG ordering.
+- Added registry-level battle tests for migrated ability, held-item, and move-effect hooks.
 
 ### Added - Shared frontend modules
 

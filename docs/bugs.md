@@ -8,6 +8,21 @@
 
 ## Open
 
+### Soundproof has no sound-move metadata to block
+
+- **Files:** [frontend/src/battle/effects/registry/abilities.ts](frontend/src/battle/effects/registry/abilities.ts#L174).
+- **Expected:** Pokémon with Soundproof should be immune to sound-based moves once those moves are represented in battle data.
+- **Actual:** The `soundproof` registry entry preserves the prior no-op behavior because `MoveData` has no sound-based flag for the hook to inspect.
+- **Status:** Deferred — not fixed in the registry refactor to avoid inventing new move metadata or changing battle behavior.
+
+### Ability suppression sources are conflated
+
+- **Files:** [frontend/src/battle/effects/AbilityHandler.ts](frontend/src/battle/effects/AbilityHandler.ts#L10-L13).
+- **Expected:** Ability suppression from abilities and items should be tracked independently so one source ending does not incorrectly re-enable or disable another source.
+- **Actual:** The handler still carries a TODO noting that ability and item suppression are not distinguished.
+- **Status:** Deferred — documented during the registry refactor; not fixed because no suppression pipeline exists yet and changing it would affect battle mechanics.
+
+
 ### Cycling has no visible sprite swap
 
 - **Files:** [frontend/src/scenes/overworld/OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts) (cycling toggle, animation key), [frontend/public/assets/sprites/player/](frontend/public/assets/sprites/player) (no `cycle-*` frames yet).
