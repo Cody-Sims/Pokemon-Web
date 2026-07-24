@@ -32,32 +32,41 @@ const DEFAULTS = {
 };
 
 /**
- * Least-privilege permissions for `copilot -p`.
+ * Permissions for `copilot -p`.
  *
- * `--available-tools` omits `web_fetch` and `task`, which removes network
- * access and subagent spawning. `--deny-tool` wins over every allow rule, so
- * the deny list is the durable rail even if an allow pattern is too broad.
+ * The first design used a fine-grained `--allow-tool` list. It failed in
+ * practice: shell permission patterns match a command stem, but the agent
+ * naturally writes `cd <dir> && npm run test 2>&1 | tail -20`, which matches
+ * nothing. Every command was denied and the iteration accomplished nothing.
+ *
+ * So execution permission comes from `--allow-all-tools`, which GitHub
+ * documents as required for programmatic use, and containment comes from
+ * layers that do not depend on string matching:
+ *
+ * - `--available-tools` omits `web_fetch` and `task`, removing network access
+ *   and subagent spawning at the tool level rather than the pattern level.
+ * - `--allow-all-tools` deliberately does NOT include `--allow-all-paths`, so
+ *   file path verification stays on and writes stay scoped to the worktree.
+ * - `--deny-tool` still wins over every allow rule. Stem matching makes it
+ *   unreliable against compound commands, so treat it as defense in depth.
+ * - The repository hook matches anywhere in a command string, including
+ *   compound forms, and is the robust command interceptor.
+ * - The gate is the actual contract, and runs after the agent has exited.
  */
 export const COPILOT_TOOL_FLAGS = [
   '--available-tools=bash,view,edit,create,apply_patch,grep,glob,skill',
-  '--allow-tool=shell(npm run test)',
-  '--allow-tool=shell(npm run test:unit)',
-  '--allow-tool=shell(npm run build)',
-  '--allow-tool=shell(git status)',
-  '--allow-tool=shell(git diff)',
-  '--allow-tool=shell(git add)',
-  '--allow-tool=shell(git commit)',
-  '--allow-tool=shell(git log)',
-  '--allow-tool=write',
+  '--allow-all-tools',
   '--deny-tool=shell(git push)',
   '--deny-tool=shell(git reset)',
   '--deny-tool=shell(git clean)',
   '--deny-tool=shell(git worktree)',
   '--deny-tool=shell(rm)',
+  '--deny-tool=shell(sudo)',
   '--deny-tool=shell(npm install)',
-  '--deny-tool=shell(npx)',
   '--deny-tool=shell(curl)',
   '--deny-tool=shell(wget)',
+  '--deny-tool=shell(ssh)',
+  '--disallow-temp-dir',
   '--no-ask-user',
 ];
 

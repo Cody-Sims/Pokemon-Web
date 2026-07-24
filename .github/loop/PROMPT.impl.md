@@ -5,6 +5,9 @@ Read `AGENTS.md` and the nearest `CONTEXT.md` before editing.
 Pick the single highest-priority `todo` item from `.github/loop/backlog.md`. Work
 on that item only.
 
+Your shell already starts in the repository root. Run commands bare, for example
+`npm run test`, not `cd <path> && npm run test`.
+
 Rules:
 
 - Change files under `frontend/src/` only, plus `docs/CHANGELOG.md`.

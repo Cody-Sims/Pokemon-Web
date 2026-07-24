@@ -159,6 +159,7 @@ describe('loop driver arguments', () => {
     'shell(git reset)',
     'shell(git clean)',
     'shell(rm)',
+    'shell(sudo)',
     'shell(npm install)',
     'shell(curl)',
   ])('denies %s to the agent', (tool) => {
@@ -170,6 +171,16 @@ describe('loop driver arguments', () => {
     expect(available).toBeDefined();
     expect(available).not.toContain('web_fetch');
     expect(available).not.toContain('task');
+  });
+
+  it('keeps file path verification on', () => {
+    // --allow-all-tools grants execution only. --allow-all-paths and --allow-all
+    // would additionally disable path verification, which is what keeps writes
+    // scoped to the worktree.
+    expect(COPILOT_TOOL_FLAGS).toContain('--allow-all-tools');
+    expect(COPILOT_TOOL_FLAGS).not.toContain('--allow-all-paths');
+    expect(COPILOT_TOOL_FLAGS).not.toContain('--allow-all');
+    expect(COPILOT_TOOL_FLAGS).not.toContain('--allow-all-urls');
   });
 
   it('never asks a question no human will answer', () => {
