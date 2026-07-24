@@ -12,6 +12,10 @@ All notable changes to the Pokemon Web project.
   listeners on scene shutdown/destroy.
 - Migrated leak-prone battle, menu, minigame, overworld, Pokémon, and title
   scenes to registry-owned listeners, and hardened Overworld encounter teardown.
+### Added - Shadow revamp decisions
+
+- Recorded DEC-0009 through DEC-0016 for scene boundaries, shared UI, typed scene/event/data contracts, battle RNG determinism, GameManager facade state ownership, tracked map tooling, and canonical quality gates.
+- Refreshed stable `CONTEXT.md` coverage for runtime config, data, and UI controls/widgets without inventorying volatile scene, battle, manager, or system internals.
 
 ### Added - Shared frontend modules
 

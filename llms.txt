@@ -7,7 +7,8 @@
 Client-side static web app featuring 155 Pokémon, 244 moves, 82 registered map
 entries from 66 map source files, turn-based battles, 50 achievements, and a
 complete storyline. No backend. Built on Phaser 3 for 2D rendering, TypeScript for
-type safety, and Vite for fast bundling.
+type safety, and Vite for fast bundling. Requires Node 22.x as pinned in
+`package.json` and `.nvmrc`.
 
 ## Key Documentation
 

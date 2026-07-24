@@ -97,7 +97,7 @@ frontend/src/
 ## Architecture Patterns
 
 - **Scene communication**: Via `EventManager` (custom event bus), never direct references.
-- **Game state**: `GameManager` singleton holds the party, badges, bag, flags, playtime.
+- **Game state**: `GameManager` is a singleton facade over focused state managers for party, progress, player state, statistics, and related durable data.
 - **Persistence**: `SaveManager` serializes to `localStorage`.
 - **Movement**: Grid-locked 16px tiles via `GridMovement` system.
 - **Battle flow**: `BattleStateMachine` FSM → INTRO → PLAYER_TURN → EXECUTE_TURN → …
@@ -131,7 +131,7 @@ battle/* → data/interfaces.ts, data/moves/*, data/type-chart.ts
 systems/overworld/* → entities/Player, managers/GameManager, data/maps/*
 systems/rendering/* → managers/GameManager (weather/lighting state)
 systems/engine/* → managers/* (InputManager wraps Phaser input)
-ui/* → managers/GameManager (theme, accessibility)
+ui/* → ui/theme.ts + caller-provided scene data (no direct GameManager access)
 data/maps/* → data/maps/tiles.ts, data/maps/map-parser.ts, data/maps/map-interfaces.ts
 data/moves/index.ts → data/moves/<type>.ts (barrel re-export)
 data/pokemon/index.ts → data/pokemon/<type>.ts (barrel re-export)
