@@ -6,6 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - Test harness
+
+- Enabled the shared Vitest setup file, repaired unit and integration script filters
+  for Vitest 4, made catch RNG expectations explicit, and restored frontend
+  coverage reporting with scene files visible.
+
 ### Added - Bounded improvement loop
 
 - Added a gate-first autonomous improvement loop that runs each iteration in a
