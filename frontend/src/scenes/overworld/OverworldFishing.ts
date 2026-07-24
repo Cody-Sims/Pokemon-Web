@@ -3,7 +3,7 @@ import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { AchievementManager } from '@managers/AchievementManager';
 import type { PokemonInstance } from '@data/interfaces';
 
-export type RodType = 'old' | 'good' | 'super';
+type RodType = 'old' | 'good' | 'super';
 
 /** Determine the best fishing rod the player owns. */
 export function getBestRod(): RodType | null {

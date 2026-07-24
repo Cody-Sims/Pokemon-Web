@@ -2,8 +2,8 @@ import Phaser from 'phaser';
 import { mapRegistry, MapDefinition } from '@data/maps';
 import { encounterTables, fishingTables } from '@data/encounter-tables';
 import { pokemonData } from '@data/pokemon';
-import { trainerData } from '@data/trainer-data';
 import { GameManager } from '@managers/GameManager';
+import { getTrainerData } from './TrainerResolver';
 
 /** Distance (Manhattan) at which to start preloading a warp target's assets. */
 const PROXIMITY_TILES = 8;
@@ -45,7 +45,7 @@ export class MapPreloader {
 
     // Trainer party Pokémon
     for (const t of mapDef.trainers) {
-      const td = trainerData[t.trainerId];
+      const td = getTrainerData(t.trainerId);
       if (td) for (const p of td.party) ids.add(p.pokemonId);
     }
 

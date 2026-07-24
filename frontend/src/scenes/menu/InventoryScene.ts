@@ -9,12 +9,15 @@ import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { ScrollContainer } from '@ui/widgets/ScrollContainer';
-import { COLORS, FONTS, SPACING, mobileFontSize, isMobile } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { blockReasonForItemUse } from '@systems/engine/ChallengeRules';
 import { SFX } from '@utils/audio-keys';
 import { tmData } from '@data/tm-data';
 import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
 import type { ItemData } from '@data/interfaces';
+import { EventManager } from '@managers/EventManager';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 type ItemCategory = 'medicine' | 'pokeball' | 'battle' | 'key' | 'tm';
 
@@ -32,7 +35,6 @@ export class InventoryScene extends Phaser.Scene {
   private filteredItems: { item: ItemData; qty: number }[] = [];
   private itemController?: MenuController;
   private actionController?: MenuController;
-  private quantityValue = 1;
   private itemTexts: Phaser.GameObjects.Text[] = [];
   private detailGroup!: Phaser.GameObjects.Group;
   private itemListGroup!: Phaser.GameObjects.Group;
@@ -42,8 +44,6 @@ export class InventoryScene extends Phaser.Scene {
   private mode: 'browse' | 'action' | 'quantity' | 'target' = 'browse';
   private actionTexts: Phaser.GameObjects.Text[] = [];
   private actionPanel?: NinePatchPanel;
-  private quantityText?: Phaser.GameObjects.Text;
-  private quantityPanel?: NinePatchPanel;
   private targetCursor = 0;
   private targetTexts: Phaser.GameObjects.Text[] = [];
   private targetPanel?: NinePatchPanel;
@@ -52,7 +52,7 @@ export class InventoryScene extends Phaser.Scene {
   private scrollContainer?: ScrollContainer;
 
   constructor() {
-    super({ key: 'InventoryScene' });
+    super({ key: SceneKey.Inventory });
   }
 
   create(data?: { battleMode?: boolean; savedCategoryIndex?: number; savedScrollOffset?: number }): void {
@@ -179,7 +179,8 @@ export class InventoryScene extends Phaser.Scene {
     if (this.mode === 'action') { this.closeActionMenu(); return; }
     if (this.mode === 'quantity') { this.mode = 'browse'; this.itemController?.setDisabled(false); return; }
     if (this.mode === 'target') { this.closeTargetPicker(); return; }
-    this.scene.stop();
+    EventManager.getInstance().emit('inventory-closed');
+    SceneRouter.for(this).stop();
   }
 
   private switchCategory(): void {
@@ -244,7 +245,7 @@ export class InventoryScene extends Phaser.Scene {
       wrap: true,
       onMove: (idx) => { this.ensureVisible(idx); this.highlightItem(idx); this.showItemDetail(idx); },
       onConfirm: (idx) => this.openActionMenu(idx),
-      onCancel: () => this.scene.stop(),
+      onCancel: () => this.handleEsc(),
     });
     this.highlightItem(0);
     this.showItemDetail(0);
@@ -431,10 +432,11 @@ export class InventoryScene extends Phaser.Scene {
 
     // TM items — launch MoveTutorScene in TM mode
     if (eff.type === 'teach-move' && eff.moveId) {
-      this.scene.pause();
-      this.scene.launch('MoveTutorScene', { tmMode: true, tmMoveId: eff.moveId });
-      this.scene.get('MoveTutorScene').events.once('shutdown', () => {
-        this.scene.resume();
+      const router = SceneRouter.for(this);
+      router.pause();
+      router.launch(SceneKey.MoveTutor, { tmMode: true, tmMoveId: eff.moveId });
+      router.get(SceneKey.MoveTutor).events.once('shutdown', () => {
+        router.resume();
       });
       return;
     }
@@ -443,10 +445,11 @@ export class InventoryScene extends Phaser.Scene {
     if (entry.item.category === 'tm') {
       const tm = tmData[entry.item.id];
       if (tm) {
-        this.scene.pause();
-        this.scene.launch('MoveTutorScene', { tmMode: true, tmMoveId: tm.moveId });
-        this.scene.get('MoveTutorScene').events.once('shutdown', () => {
-          this.scene.resume();
+        const router = SceneRouter.for(this);
+        router.pause();
+        router.launch(SceneKey.MoveTutor, { tmMode: true, tmMoveId: tm.moveId });
+        router.get(SceneKey.MoveTutor).events.once('shutdown', () => {
+          router.resume();
         });
         return;
       }
@@ -460,7 +463,7 @@ export class InventoryScene extends Phaser.Scene {
         const gm = GameManager.getInstance();
         gm.removeItem(entry.item.id, 1);
         this.events.emit('use-pokeball', entry.item.id);
-        this.scene.stop();
+        SceneRouter.for(this).stop();
         return;
       }
       this.showMessage('Can only be used in battle!');
@@ -626,6 +629,7 @@ export class InventoryScene extends Phaser.Scene {
 
     if (used) {
       gm.removeItem(entry.item.id, 1);
+      EventManager.getInstance().emit('party-changed');
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
       // In battle mode, signal that a turn-consuming item was used (BUG-064)
       if (this.battleMode) {

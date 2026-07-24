@@ -4,7 +4,8 @@
 
 ## Overview
 
-Client-side static web app featuring 153 Pokémon, 66 maps, turn-based battles, and a
+Client-side static web app featuring 155 Pokémon, 244 moves, 82 registered map
+entries from 66 map source files, turn-based battles, 50 achievements, and a
 complete storyline. No backend. Built on Phaser 3 for 2D rendering, TypeScript for
 type safety, and Vite for fast bundling.
 
@@ -29,6 +30,7 @@ type safety, and Vite for fast bundling.
 - `frontend/src/systems/` — Gameplay systems (GridMovement, weather, lighting, audio, encounters)
 - `frontend/src/ui/` — Reusable UI components (widgets, controls, theme)
 - `frontend/src/utils/` — Pure helper functions (constants, math, type system)
+- `scripts/map-gen/` — Tracked map generation, composition, preview, region render, and validation toolchain
 
 ## Copilot Instructions
 
@@ -66,8 +68,13 @@ type safety, and Vite for fast bundling.
 ## Commands
 
 - `npm run dev` — Development server
-- `npm run build` — Type-check + production build
-- `npm run test` — Unit + integration tests
+- `npm run build` — Deterministic asset generation, type-check, and production build
+- `npm run lint` — Report-only ESLint
+- `npm run format:check` — Prettier check
+- `npm run test` — Unit + integration + replay Vitest suite
+- `npm run test:unit` — Unit tests only
+- `npm run test:integration` — Integration tests only
+- `npm run test:coverage` — Vitest coverage with thresholds
 - `npm run test:e2e` — Playwright end-to-end tests
 - `npm run agent:validate` — Validate agent customizations and shadow architecture
 - `npm run agent:global:install` — Install the reusable workspace-researcher agent under `~/.copilot`
@@ -76,3 +83,6 @@ type safety, and Vite for fast bundling.
 - `npm run loop:dry-run` — Print the exact agent invocation without spending credits
 - `npm run loop:run` — Run the bounded improvement loop and fold passes into `develop`
 - `npm run loop:gate` — Grade a worktree against the deterministic gate
+- `npm run map:validate` — Validate all map definitions
+- `npm run map:preview` — Render ignored PPM map previews under `temp/map-previews/`
+- `npm run map:region` — Render the ignored region overview to `temp/region-map.ppm`

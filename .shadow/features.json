@@ -18,7 +18,8 @@
         "F06",
         "F07",
         "F08",
-        "F09"
+        "F09",
+        "F10"
       ]
     },
     {
@@ -81,7 +82,7 @@
       "name": "Maps and map tooling",
       "paths": [
         "frontend/src/data/maps/**",
-        "temp/scripts/map-gen/**"
+        "scripts/map-gen/**"
       ],
       "decisions": [
         "DEC-0007"
@@ -111,6 +112,27 @@
       ],
       "decisions": [
         "DEC-0008"
+      ]
+    },
+    {
+      "id": "F10",
+      "name": "Documentation and agent guidance",
+      "paths": [
+        "AGENTS.md",
+        ".github/copilot-instructions.md",
+        ".github/instructions/agent-workflows.instructions.md",
+        ".github/instructions/**",
+        ".github/skills/**",
+        ".shadow/decisions/**",
+        "docs/architecture.md",
+        "docs/plan.md",
+        "docs/CHANGELOG.md",
+        "docs/**",
+        "frontend/src/data/CONTEXT.md",
+        "frontend/src/**/CONTEXT.md"
+      ],
+      "decisions": [
+        "DEC-0017"
       ]
     }
   ]

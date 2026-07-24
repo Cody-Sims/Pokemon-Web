@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
@@ -10,6 +10,8 @@ import { mapRegistry } from '@data/maps';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { TouchControls } from '@ui/controls/TouchControls';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 // ─── Region Map Data ───
 
@@ -199,7 +201,7 @@ export class TownMapScene extends Phaser.Scene {
   private currentNodeIndex = -1;
 
   constructor() {
-    super({ key: 'TownMapScene' });
+    super({ key: SceneKey.TownMap });
   }
 
   create(): void {
@@ -306,7 +308,7 @@ export class TownMapScene extends Phaser.Scene {
     this.startPulse();
 
     // Update info for initial cursor position
-    this.updateSelection(gridArea);
+    this.updateSelection();
   }
 
   private getGridArea(layout: ReturnType<typeof ui>, panelW: number, panelH: number) {
@@ -314,9 +316,9 @@ export class TownMapScene extends Phaser.Scene {
     const maxCol = Math.max(...REGION_NODES.map(n => n.col));
     const maxRow = Math.max(...REGION_NODES.map(n => n.row));
 
-    const marginX = 60 * MOBILE_SCALE;
-    const marginTop = 50 * MOBILE_SCALE;
-    const marginBottom = 60 * MOBILE_SCALE;
+    const marginX = 60 * mobileScale();
+    const marginTop = 50 * mobileScale();
+    const marginBottom = 60 * mobileScale();
 
     const areaX = layout.cx - panelW / 2 + marginX;
     const areaY = layout.cy - panelH / 2 + marginTop;
@@ -436,10 +438,7 @@ export class TownMapScene extends Phaser.Scene {
         const selIdx = this.selectableIndices.indexOf(nodeIdx);
         if (selIdx >= 0) {
           this.cursor = selIdx;
-          const la = ui(this);
-          const pw = Math.min(la.w - 16, 700);
-          const ph = Math.min(la.h - 16, 520);
-          this.updateSelection(this.getGridArea(la, pw, ph));
+          this.updateSelection();
           AudioManager.getInstance().playSFX(SFX.CURSOR);
           // Double-tap / single-tap to fly
           if (this.canFly && REGION_NODES[nodeIdx].flyable && this.isNodeVisited(nodeIdx, GameManager.getInstance())) {
@@ -486,7 +485,7 @@ export class TownMapScene extends Phaser.Scene {
 
   // ─── Selection and cursor ───
 
-  private updateSelection(grid: ReturnType<typeof this.getGridArea>): void {
+  private updateSelection(): void {
     const selNodeIdx = this.selectableIndices[this.cursor];
     const node = REGION_NODES[selNodeIdx];
     const gm = GameManager.getInstance();
@@ -595,10 +594,7 @@ export class TownMapScene extends Phaser.Scene {
 
   private refreshSelection(): void {
     AudioManager.getInstance().playSFX(SFX.CURSOR);
-    const layout = ui(this);
-    const panelW = Math.min(layout.w - 16, 700);
-    const panelH = Math.min(layout.h - 16, 520);
-    this.updateSelection(this.getGridArea(layout, panelW, panelH));
+    this.updateSelection();
   }
 
   private handleSelect = (): void => {
@@ -637,15 +633,12 @@ export class TownMapScene extends Phaser.Scene {
 
   private flyTo(mapKey: string): void {
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
-    this.cameras.main.fadeOut(400, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.stop();
-      this.scene.stop('MenuScene');
-      this.scene.stop('OverworldScene');
-      this.scene.start('OverworldScene', {
-        flyTo: mapKey,
-        spawnId: 'default',
-      });
+    const router = SceneRouter.for(this);
+    router.stop(SceneKey.Menu);
+    router.stop(SceneKey.Overworld);
+    router.transitionTo(SceneKey.Overworld, {
+      flyTo: mapKey,
+      spawnId: 'default',
     });
   }
 

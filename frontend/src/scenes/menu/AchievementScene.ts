@@ -77,7 +77,7 @@ export class AchievementScene extends Phaser.Scene {
       wordWrap: { width: layout.w - 80 },
     }).setOrigin(0.5);
 
-    // Back button — padded to meet MIN_TOUCH_TARGET
+    // Back button — padded to meet minimum touch target
     const backBtn = this.add.text(40, layout.h - 25, '← BACK', {
       ...FONTS.menuItem, fontSize: mobileFontSize(14), color: COLORS.textGray,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });

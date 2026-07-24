@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale, minTouchTarget } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
@@ -10,6 +10,9 @@ import { SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { TouchControls } from '@ui/controls/TouchControls';
+import { EventManager } from '@managers/EventManager';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 export class MenuScene extends Phaser.Scene {
   private cursor = 0;
@@ -21,7 +24,7 @@ export class MenuScene extends Phaser.Scene {
   private moneyText!: Phaser.GameObjects.Text;
 
   constructor() {
-    super({ key: 'MenuScene' });
+    super({ key: SceneKey.Menu });
   }
 
   create(): void {
@@ -223,71 +226,70 @@ export class MenuScene extends Phaser.Scene {
 
   private selectOption(): void {
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
+    const router = SceneRouter.for(this);
     switch (this.menuLabels[this.cursor]) {
       case 'POKEDEX':
-        this.scene.sleep();
-        this.scene.launch('PokedexScene');
-        this.scene.get('PokedexScene').events.once('shutdown', () => {
-          this.scene.wake();
+        router.sleep();
+        router.launch(SceneKey.Pokedex);
+        router.get(SceneKey.Pokedex).events.once('shutdown', () => {
+          router.wake();
         });
         break;
       case 'POKEMON':
-        this.scene.sleep();
-        this.scene.launch('PartyScene');
-        this.scene.get('PartyScene').events.once('shutdown', () => {
-          this.scene.wake();
+        router.sleep();
+        router.launch(SceneKey.Party);
+        router.get(SceneKey.Party).events.once('shutdown', () => {
+          router.wake();
         });
         break;
       case 'BAG':
-        this.scene.sleep();
-        this.scene.launch('InventoryScene');
-        this.scene.get('InventoryScene').events.once('shutdown', () => {
-          this.scene.wake();
-        });
+        router.sleep();
+        router.launch(SceneKey.Inventory);
+        this.wakeOnInventoryClosed();
         break;
       case 'QUESTS':
-        this.scene.sleep();
-        this.scene.launch('QuestJournalScene');
-        this.scene.get('QuestJournalScene').events.once('shutdown', () => {
-          this.scene.wake();
+        router.sleep();
+        router.launch(SceneKey.QuestJournal);
+        router.get(SceneKey.QuestJournal).events.once('shutdown', () => {
+          router.wake();
         });
         break;
       case 'TOWN MAP':
-        this.scene.sleep();
-        this.scene.launch('TownMapScene');
-        this.scene.get('TownMapScene').events.once('shutdown', () => {
-          this.scene.wake();
+        router.sleep();
+        router.launch(SceneKey.TownMap);
+        router.get(SceneKey.TownMap).events.once('shutdown', () => {
+          router.wake();
         });
         break;
       case 'STATS':
-        this.scene.sleep();
-        this.scene.launch('StatisticsScene');
-        this.scene.get('StatisticsScene').events.once('shutdown', () => {
-          this.scene.wake();
+        router.sleep();
+        router.launch(SceneKey.Statistics);
+        router.get(SceneKey.Statistics).events.once('shutdown', () => {
+          router.wake();
         });
         break;
       case 'HALL OF FAME':
-        this.scene.sleep();
-        this.scene.launch('HallOfFameScene');
-        this.scene.get('HallOfFameScene').events.once('shutdown', () => {
-          this.scene.wake();
+        router.sleep();
+        router.launch(SceneKey.HallOfFame);
+        router.get(SceneKey.HallOfFame).events.once('shutdown', () => {
+          router.wake();
         });
         break;
       case 'FLY':
-        this.scene.sleep();
-        this.scene.launch('FlyMapScene');
-        this.scene.get('FlyMapScene').events.once('shutdown', () => {
-          this.scene.wake();
+        router.sleep();
+        router.launch(SceneKey.FlyMap);
+        router.get(SceneKey.FlyMap).events.once('shutdown', () => {
+          router.wake();
         });
         break;
       case 'SAVE':
         this.saveGame();
         break;
       case 'OPTIONS':
-        this.scene.sleep();
-        this.scene.launch('SettingsScene', { returnScene: 'MenuScene' });
-        this.scene.get('SettingsScene').events.once('shutdown', () => {
-          this.scene.wake();
+        router.sleep();
+        router.launch(SceneKey.Settings, { returnScene: SceneKey.Menu });
+        router.get(SceneKey.Settings).events.once('shutdown', () => {
+          router.wake();
         });
         break;
       case 'QUIT':
@@ -303,12 +305,23 @@ export class MenuScene extends Phaser.Scene {
 
   private closeMenu(): void {
     AudioManager.getInstance().playSFX(SFX.CANCEL);
-    this.scene.stop();
-    this.scene.resume('OverworldScene');
+    const router = SceneRouter.for(this);
+    router.stop();
+    router.resume(SceneKey.Overworld);
   }
 
   shutdown(): void {
+    EventManager.getInstance().clearByTag(this.scene.key);
     this.input.keyboard?.removeAllListeners();
+  }
+
+  private wakeOnInventoryClosed(): void {
+    const em = EventManager.getInstance();
+    const onClosed = () => {
+      em.clearByTag(this.scene.key);
+      SceneRouter.for(this).wake();
+    };
+    em.onTagged(this.scene.key, 'inventory-closed', onClosed);
   }
 
   private saveGame(): void {
@@ -345,14 +358,14 @@ export class MenuScene extends Phaser.Scene {
           // Stop overworld and every HUD overlay scene that OverworldScene
           // launches as siblings, so the title screen is not left with a
           // lingering minimap / quest tracker / party quick-view (B3).
-          this.scene.stop();
-          this.scene.stop('OverworldScene');
-          for (const hud of ['MinimapScene', 'QuestTrackerScene', 'PartyQuickViewScene']) {
-            if (this.scene.isActive(hud) || this.scene.isSleeping(hud)) {
-              this.scene.stop(hud);
+          const router = SceneRouter.for(this);
+          router.stop(SceneKey.Overworld);
+          for (const hud of [SceneKey.Minimap, SceneKey.QuestTracker, SceneKey.PartyQuickView]) {
+            if (router.isActive(hud) || router.isSleeping(hud)) {
+              router.stop(hud);
             }
           }
-          this.scene.start('TitleScene');
+          router.transitionTo(SceneKey.Title);
         }
       },
     );

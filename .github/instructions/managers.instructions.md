@@ -30,4 +30,4 @@ applyTo: 'frontend/src/managers/**'
    between tests if not reset.
 5. **No circular imports**: Managers may import from `data/` and `utils/` but must not
    import from `scenes/`, `entities/`, or `battle/`.
-6. **Barrel import**: Import managers via `import { GameManager } from '@managers'`.
+6. **Imports**: There is no `frontend/src/managers/index.ts` barrel yet, so existing code imports managers from their concrete alias paths such as `@managers/GameManager`. Treat an `@managers` barrel as a planned cleanup, not an enforceable rule.

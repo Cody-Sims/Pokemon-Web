@@ -224,18 +224,18 @@ describe('Shop & Economy', () => {
 
   describe('shop inventories', () => {
     it('viridian shop should have basic items', () => {
-      expect(shopInventories['viridian-city']).toContain('poke-ball');
-      expect(shopInventories['viridian-city']).toContain('potion');
+      expect(shopInventories['viridian-pokemart']).toContain('poke-ball');
+      expect(shopInventories['viridian-pokemart']).toContain('potion');
     });
 
     it('pewter shop should have more items than viridian', () => {
-      expect(shopInventories['pewter-city'].length).toBeGreaterThan(
-        shopInventories['viridian-city'].length
+      expect(shopInventories['pewter-pokemart'].length).toBeGreaterThan(
+        shopInventories['viridian-pokemart'].length
       );
     });
 
     it('pewter shop should include great balls', () => {
-      expect(shopInventories['pewter-city']).toContain('great-ball');
+      expect(shopInventories['pewter-pokemart']).toContain('great-ball');
     });
   });
 

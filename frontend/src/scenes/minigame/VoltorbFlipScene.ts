@@ -18,12 +18,10 @@ export class VoltorbFlipScene extends Phaser.Scene {
   private cursorX = 0;
   private cursorY = 0;
   private cursorRect!: Phaser.GameObjects.Graphics;
-  private score = 0;
   private roundScore = 1;
   private level = 1;
   private totalCoins = 0;
   private scoreText!: Phaser.GameObjects.Text;
-  private levelText!: Phaser.GameObjects.Text;
   private totalText!: Phaser.GameObjects.Text;
   private messageText!: Phaser.GameObjects.Text;
   private gameOver = false;
@@ -37,7 +35,6 @@ export class VoltorbFlipScene extends Phaser.Scene {
   create(): void {
     const layout = ui(this);
     this.gameOver = false;
-    this.score = 0;
     this.roundScore = 1;
 
     // Background
@@ -61,7 +58,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
 
     // HUD
     const hudX = Math.round(layout.w * 0.03);
-    this.levelText = this.add.text(hudX, 70, `Level: ${this.level}`, {
+    this.add.text(hudX, 70, `Level: ${this.level}`, {
       ...FONTS.body, fontSize: mobileFontSize(14),
     });
     this.scoreText = this.add.text(hudX, 95, `Round: ×${this.roundScore}`, {

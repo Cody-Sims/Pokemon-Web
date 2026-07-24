@@ -22,7 +22,7 @@ import {
 // ── Animated tile set ────────────────────────────────────────
 
 /** Tile IDs that require individual sprites (tint / frame cycling / scale tweens). */
-export const ANIMATED_TILE_IDS = new Set<number>([
+const ANIMATED_TILE_IDS = new Set<number>([
   Tile.WATER,
   Tile.TIDE_POOL,
   Tile.TALL_GRASS,

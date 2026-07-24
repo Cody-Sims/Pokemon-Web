@@ -1,4 +1,4 @@
-import { PokemonData } from '../interfaces';
+import type { PokemonData } from './types';
 
 /** Fighting-type Pokemon (Gen 1) */
 export const fightingPokemon: Record<number, PokemonData> = {

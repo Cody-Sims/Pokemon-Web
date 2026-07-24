@@ -1,4 +1,4 @@
-import { CutsceneDefinition } from '@systems/engine/CutsceneEngine';
+import type { CutsceneDefinition } from './cutscenes/types';
 
 export const cutsceneData: Record<string, CutsceneDefinition> = {
   'rival-intro': {

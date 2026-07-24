@@ -1,21 +1,24 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX } from '@utils/audio-keys';
 import {
   battleTowerData,
-  fullClearBpReward,
   type BattleTowerTier,
 } from '@data/battle-tower-data';
+import { fullClearBpReward } from '@systems/engine/BattleTowerRewards';
 import { healParty } from '@scenes/overworld';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import {
   computeStreakResume,
   type TowerStreakState,
 } from '@systems/engine/BattleTowerStreak';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
+import type { BattleTowerSceneData } from '@scenes/scene-data';
 
 /**
  * In-flight streak state passed through the BattleScene return path.
@@ -47,21 +50,21 @@ import {
  * lobby back to wherever the player came from (defaults to OverworldScene).
  */
 export class BattleTowerScene extends Phaser.Scene {
-  private initData?: Record<string, unknown>;
+  private initData?: BattleTowerSceneData;
   private statusMsg?: Phaser.GameObjects.Text;
   private rebuildLayer?: Phaser.GameObjects.Container;
 
   constructor() {
-    super({ key: 'BattleTowerScene' });
+    super({ key: SceneKey.BattleTower });
   }
 
-  init(data?: Record<string, unknown>): void {
+  init(data?: BattleTowerSceneData): void {
     this.initData = data;
   }
 
   create(): void {
     const data = this.initData ?? {};
-    const towerState = data._towerState as TowerStreakState | undefined;
+    const towerState = data._towerState;
 
     if (towerState) {
       this.handleStreakResume(towerState);
@@ -100,7 +103,7 @@ export class BattleTowerScene extends Phaser.Scene {
     }).setOrigin(0.5));
 
     const tiers: BattleTowerTier[] = ['normal', 'super', 'rental'];
-    const cardH = Math.round(110 * MOBILE_SCALE);
+    const cardH = Math.round(110 * mobileScale());
     const startY = 110;
     const gap = 12;
     const cardW = Math.min(layout.w - 80, 480);
@@ -158,7 +161,7 @@ export class BattleTowerScene extends Phaser.Scene {
     }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
     bpShopBtn.on('pointerdown', () => {
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
-      this.scene.start('BPShopScene', { exitScene: 'BattleTowerScene' });
+      SceneRouter.for(this).start(SceneKey.BPShop, { exitScene: SceneKey.BattleTower });
     });
     bpShopBtn.on('pointerover', () => bpShopBtn.setColor('#ffffff'));
     bpShopBtn.on('pointerout', () => bpShopBtn.setColor('#ffd86b'));
@@ -178,7 +181,7 @@ export class BattleTowerScene extends Phaser.Scene {
     });
     this.input.keyboard!.on('keydown-B', () => {
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
-      this.scene.start('BPShopScene', { exitScene: 'BattleTowerScene' });
+      SceneRouter.for(this).start(SceneKey.BPShop, { exitScene: SceneKey.BattleTower });
     });
   }
 
@@ -189,7 +192,7 @@ export class BattleTowerScene extends Phaser.Scene {
     const gm = GameManager.getInstance();
     if (gm.getParty().length === 0) return;
     healParty();
-    const exit = (this.initData?.exitScene as string) ?? 'OverworldScene';
+    const exit = this.initData?.exitScene ?? SceneKey.Overworld;
     const state: TowerStreakState = {
       tier,
       battleIndex: 0,
@@ -259,9 +262,9 @@ export class BattleTowerScene extends Phaser.Scene {
       }
     });
 
-    this.scene.start('TransitionScene', {
-      targetScene: 'BattleScene',
-      returnScene: 'BattleTowerScene',
+    SceneRouter.for(this).start(SceneKey.Transition, {
+      targetScene: SceneKey.Battle,
+      returnScene: SceneKey.BattleTower,
       targetData: {
         enemyPokemon: enemyParty[0],
         isTrainer: true,
@@ -284,8 +287,8 @@ export class BattleTowerScene extends Phaser.Scene {
 
   private close(): void {
     AudioManager.getInstance().playSFX(SFX.CANCEL);
-    const exit = (this.initData?.exitScene as string) ?? 'OverworldScene';
-    this.scene.start(exit);
+    const exit = this.initData?.exitScene ?? SceneKey.Overworld;
+    SceneRouter.for(this).transitionTo(exit);
   }
 }
 

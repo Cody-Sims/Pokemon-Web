@@ -1,12 +1,13 @@
+import type { TimePeriod } from '@data/maps';
+
 /**
  * Accelerated game clock for day/night cycle.
  * 1 real minute = 10 game minutes → full day/night in ~2.4 real hours.
  */
-
-export type TimePeriod = 'morning' | 'day' | 'evening' | 'night';
+export type { TimePeriod } from '@data/maps';
 
 /** Tint colors for each time period (applied as camera tint). */
-export const TIME_TINTS: Record<TimePeriod, number> = {
+const TIME_TINTS: Record<TimePeriod, number> = {
   morning: 0xffeedd,   // warm orange tint
   day:     0xffffff,   // neutral (no tint)
   evening: 0xffbbaa,   // orange/pink sunset

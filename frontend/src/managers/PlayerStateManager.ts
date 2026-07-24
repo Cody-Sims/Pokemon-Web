@@ -2,6 +2,7 @@ import { DifficultyMode, DifficultyConfig, DIFFICULTY_CONFIGS } from '@data/diff
 import { ChallengeMode } from '@data/challenge-modes';
 import { PokemonType } from '@utils/type-helpers';
 import { SpeedrunRecords } from '@systems/engine/SpeedrunRecords';
+import { seededRandom } from '@utils/math-helpers';
 import { StatsManager } from './StatsManager';
 
 /** A speed-run split — playtime snapshot at a notable event. */
@@ -83,7 +84,7 @@ export class PlayerStateManager {
     this.playerPosition = { x: 7, y: 10, direction: 'down' as string };
     this.bag = [];
     this.money = 3000;
-    this.trainerId = String(10000 + Math.floor(Math.random() * 90000));
+    this.trainerId = String(10000 + Math.floor(seededRandom() * 90000));
     this.playtime = 0;
     this.difficulty = 'classic';
     this.challengeModes = [];

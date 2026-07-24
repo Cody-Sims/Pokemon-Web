@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   battleTowerData,
-  fullClearBpReward,
   type BattleTowerTier,
 } from '../../../frontend/src/data/battle-tower-data';
+import { fullClearBpReward } from '../../../frontend/src/systems/engine/BattleTowerRewards';
 import {
   computeStreakResume,
   type TowerStreakState,

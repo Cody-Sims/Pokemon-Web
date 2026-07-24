@@ -15,7 +15,7 @@ import Phaser from 'phaser';
  * const label = new PixelText(scene, 8, 8, 'Voltara City', 14, 0xffd060);
  * ```
  */
-export const PIXEL_FONT_KEY = 'aurum-pixel';
+const PIXEL_FONT_KEY = 'aurum-pixel';
 
 export class PixelText {
   /** Underlying BitmapText — exposed so callers can chain Phaser methods. */

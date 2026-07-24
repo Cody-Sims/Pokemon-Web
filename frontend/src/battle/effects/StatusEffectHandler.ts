@@ -1,13 +1,14 @@
 import { PokemonInstance, MoveData } from '@data/interfaces';
-import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
-import { clamp, randomInt, seededRandom } from '@utils/math-helpers';
-import { Stats, StatStages, StatusCondition, VolatileStatus, MoveEffect, PokemonType } from '@utils/type-helpers';
+import { clamp } from '@utils/math-helpers';
+import { Stats, StatStages, VolatileStatus, PokemonType } from '@utils/type-helpers';
 import { HeldItemHandler } from './HeldItemHandler';
+import type { BattleRng } from '../core/BattleRng';
+import { globalBattleRng } from '../core/BattleRng';
 
 // ── Result types ────────────────────────────────────────────────
 
-export interface TurnStartResult {
+interface TurnStartResult {
   canAct: boolean;
   messages: string[];
 }
@@ -19,7 +20,7 @@ export interface EffectResult {
   selfDestruct?: boolean;
 }
 
-export interface EndOfTurnResult {
+interface EndOfTurnResult {
   damage: number;
   messages: string[];
   fainted: boolean;
@@ -65,6 +66,10 @@ function pokeName(p: PokemonInstance): string {
 
 export class StatusEffectHandler {
   private states = new Map<PokemonInstance, BattlePokemonState>();
+
+  constructor(private readonly rng: BattleRng = globalBattleRng) {}
+
+  getRng(): BattleRng { return this.rng; }
 
   // ── Lifecycle ────────────────────────────────────────────────
 
@@ -172,7 +177,7 @@ export class StatusEffectHandler {
     // ── Freeze ──
     if (pokemon.status === 'freeze') {
       // 20% chance to thaw each turn
-      if (seededRandom() < 0.2) {
+      if (this.rng.chance(0.2)) {
         pokemon.status = null;
         messages.push(`${name} thawed out!`);
       } else {
@@ -183,7 +188,7 @@ export class StatusEffectHandler {
 
     // ── Paralysis ──
     if (pokemon.status === 'paralysis') {
-      if (seededRandom() < 0.25) {
+      if (this.rng.chance(0.25)) {
         messages.push(`${name} is paralyzed! It can't move!`);
         return { canAct: false, messages };
       }
@@ -198,7 +203,7 @@ export class StatusEffectHandler {
       } else {
         messages.push(`${name} is confused!`);
         // 50% chance to hit self
-        if (seededRandom() < 0.5) {
+        if (this.rng.chance(0.5)) {
           // AUDIT-046: Use proper confusion damage formula (level-based like the games)
           const confusionPower = 40;
           const level = pokemon.level;
@@ -286,7 +291,7 @@ export class StatusEffectHandler {
 
     // Check probability
     const chance = effect.chance ?? 100;
-    if (seededRandom() * 100 >= chance) return { messages: [] };
+    if (this.rng.next() * 100 >= chance) return { messages: [] };
 
     const target = effect.target === 'self' ? attacker : defender;
     const targetName = pokeName(target);
@@ -305,7 +310,7 @@ export class StatusEffectHandler {
         let status = effect.status;
         // Support random status selection (e.g. Tri Attack)
         if (!status && effect.randomStatus && effect.randomStatus.length > 0) {
-          status = effect.randomStatus[Math.floor(seededRandom() * effect.randomStatus.length)];
+          status = effect.randomStatus[this.rng.int(0, effect.randomStatus.length - 1)];
         }
         if (!status) break;
 
@@ -314,7 +319,7 @@ export class StatusEffectHandler {
           const state = this.getState(target);
           if (!state.volatileStatuses.has('confusion')) {
             state.volatileStatuses.add('confusion');
-            state.confusionTurns = randomInt(2, 5);
+            state.confusionTurns = this.rng.int(2, 5);
             messages.push(`${targetName} became confused!`);
 
             // Berry-cures-on-apply (Persim, Lum) — undo immediately if held.
@@ -338,7 +343,7 @@ export class StatusEffectHandler {
         if (target.status) break; // already has a status
         target.status = status;
         if (status === 'sleep') {
-          target.statusTurns = randomInt(2, 4);
+          target.statusTurns = this.rng.int(2, 4);
         } else if (status === 'bad-poison') {
           target.statusTurns = 1; // toxic counter
         }
@@ -473,7 +478,7 @@ export class StatusEffectHandler {
         const defState = this.getState(defender);
         if (!defState.volatileStatuses.has('trapped')) {
           defState.volatileStatuses.add('trapped');
-          defState.trapTurns = randomInt(4, 5);
+          defState.trapTurns = this.rng.int(4, 5);
           messages.push(`${pokeName(defender)} was trapped!`);
         }
         break;
@@ -491,7 +496,7 @@ export class StatusEffectHandler {
       case 'protect': {
         const atkState = this.getState(attacker);
         // Success chance halves each consecutive use
-        if (seededRandom() < atkState.protectSuccessRate) {
+        if (this.rng.chance(atkState.protectSuccessRate)) {
           atkState.volatileStatuses.add('protect');
           atkState.protectSuccessRate *= 0.5;
           messages.push(`${pokeName(attacker)} protected itself!`);

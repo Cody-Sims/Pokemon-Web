@@ -4,10 +4,13 @@ import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
-import { COLORS, FONTS, mobileFontSize, isMobile, MIN_TOUCH_TARGET } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile, minTouchTarget } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
+import { EventManager } from '@managers/EventManager';
+import { SceneKey, type SceneKeyName } from '@scenes/scene-keys';
+import type { DialogueSceneData } from '@scenes/scene-data';
 
 /** Text speed options: delay (ms) per character. 0 = instant. */
 const TEXT_SPEEDS: Record<string, number> = {
@@ -16,16 +19,6 @@ const TEXT_SPEEDS: Record<string, number> = {
   fast: 16,
   instant: 0,
 };
-
-export interface DialogueData {
-  dialogue: string[];
-  speaker?: string;
-  /** Phaser texture key for a portrait sprite shown inside the dialog box. */
-  portraitKey?: string;
-  choices?: { text: string; value: string }[];
-  onChoice?: (value: string) => void;
-  callingScene?: string;
-}
 
 /** Base depth for all dialogue UI elements — high enough to overlay everything. */
 const DIALOGUE_DEPTH = 1000;
@@ -57,20 +50,20 @@ export class DialogueScene extends Phaser.Scene {
   private choiceTappedThisFrame = false;
   private mobileTapMenu?: MobileTapMenu;
   private lastChoiceMoveTick = 0;
-  private callingScene = 'OverworldScene';
+  private callingScene: SceneKeyName = SceneKey.Overworld;
 
   constructor() {
-    super({ key: 'DialogueScene' });
+    super({ key: SceneKey.Dialogue });
   }
 
-  init(data: DialogueData): void {
+  init(data: DialogueSceneData): void {
     this.queue = data.dialogue || ['...'];
     this.currentIndex = 0;
     this.speaker = data.speaker;
     this.portraitKey = data.portraitKey;
     this.choices = data.choices;
     this.onChoice = data.onChoice;
-    this.callingScene = data.callingScene ?? 'OverworldScene';
+    this.callingScene = data.callingScene ?? SceneKey.Overworld;
     this.inChoiceMode = false;
     this.choiceTexts = [];
 
@@ -387,7 +380,7 @@ export class DialogueScene extends Phaser.Scene {
     this.indicatorTween?.stop();
     this.advanceIndicator.setAlpha(0);
 
-    const choiceRowH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 30) : 30;
+    const choiceRowH = isMobile() ? Math.max(minTouchTarget(), 30) : 30;
     const choiceW = isMobile() ? 180 : 150;
     const choiceH = this.choices.length * choiceRowH + 16;
     // Apply a right inset on landscape mobile so the choice panel doesn't
@@ -496,6 +489,7 @@ export class DialogueScene extends Phaser.Scene {
       onComplete: () => {
         const hintsEl = document.getElementById('desktop-hints');
         if (hintsEl) hintsEl.style.display = '';
+        EventManager.getInstance().emit('dialogue-closed', { callingScene: this.callingScene });
         this.scene.stop();
         this.scene.resume(this.callingScene);
       },
@@ -530,9 +524,9 @@ export class DialogueScene extends Phaser.Scene {
    * (and the minimap-overlapping speaker name / portrait) are not occluded.
    */
   private readonly hudOverlayKeys = [
-    'MinimapScene',
-    'QuestTrackerScene',
-    'PartyQuickViewScene',
+    SceneKey.Minimap,
+    SceneKey.QuestTracker,
+    SceneKey.PartyQuickView,
   ];
 
   private hideHudOverlays(): void {

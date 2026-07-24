@@ -63,6 +63,12 @@
       "title": "Verification is layered and deterministic",
       "path": ".shadow/decisions/DEC-0008.md",
       "status": "observed"
+    },
+    {
+      "id": "DEC-0017",
+      "title": "Documentation ownership policy",
+      "path": ".shadow/decisions/DEC-0017.md",
+      "status": "accepted"
     }
   ]
 }

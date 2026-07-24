@@ -1,4 +1,5 @@
 import { PokemonInstance } from '@data/interfaces';
+import { SaveDataDeserializationError } from './SaveCodec';
 
 export interface HallOfFameEntry {
   timestamp: number;
@@ -120,6 +121,21 @@ export class ProgressManager {
     visitedMaps?: string[];
     hallOfFame?: HallOfFameEntry[];
   }): void {
+    if (!Array.isArray(data.badges) || !data.badges.every(badge => typeof badge === 'string')) {
+      throw new SaveDataDeserializationError('Save badges must be an array of strings.');
+    }
+    if (!data.flags || typeof data.flags !== 'object' || Array.isArray(data.flags)) {
+      throw new SaveDataDeserializationError('Save flags must be an object.');
+    }
+    if (!Array.isArray(data.trainersDefeated) || !data.trainersDefeated.every(id => typeof id === 'string')) {
+      throw new SaveDataDeserializationError('Save defeated trainers must be an array of strings.');
+    }
+    if (!data.pokedex || !Array.isArray(data.pokedex.seen) || !Array.isArray(data.pokedex.caught)) {
+      throw new SaveDataDeserializationError('Save Pokédex must include seen and caught arrays.');
+    }
+    if (!data.pokedex.seen.every(id => typeof id === 'number') || !data.pokedex.caught.every(id => typeof id === 'number')) {
+      throw new SaveDataDeserializationError('Save Pokédex entries must be numbers.');
+    }
     this.badges = data.badges;
     this.flags = data.flags;
     this.trainersDefeated = data.trainersDefeated;

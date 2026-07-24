@@ -10,11 +10,11 @@ to these modules for all battle mechanics.
 | `core/` | Turn orchestration and AI | `BattleManager.ts` (single), `DoubleBattleManager.ts` (2v2), `BattleStateMachine.ts` (FSM), `AIController.ts`, `PartnerAI.ts` |
 | `calculation/` | Math formulas | `DamageCalculator.ts`, `ExperienceCalculator.ts`, `CatchCalculator.ts` |
 | `effects/` | Status, abilities, items, weather | `StatusEffectHandler.ts`, `AbilityHandler.ts`, `HeldItemHandler.ts`, `WeatherManager.ts`, `SynthesisHandler.ts` |
-| `execution/` | Move application and animation | `MoveExecutor.ts`, `MoveAnimationPlayer.ts` |
+| `execution/` | Move application, animation, and pooled game objects | `MoveExecutor.ts`, `MoveAnimationPlayer.ts`, `GameObjectPool.ts` |
 
 ## FSM States (BattleStateMachine)
 
-`INTRO → PLAYER_TURN → ENEMY_TURN → EXECUTE_TURN → CHECK_FAINT → END_OF_TURN → (loop or VICTORY/DEFEAT)`
+`INTRO → PLAYER_TURN → ENEMY_TURN → EXECUTE_MOVES/EXECUTE_TURN → CHECK_FAINT → REPLACE/EXP_GAIN → (loop or VICTORY/DEFEAT/FLEE/CAPTURE)`
 
 ## Key Dependencies
 

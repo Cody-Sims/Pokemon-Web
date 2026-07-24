@@ -1,4 +1,4 @@
-import { PokemonData } from '../interfaces';
+import type { PokemonData } from './types';
 
 /** Normal-type Pokemon (Gen 1) */
 export const normalPokemon: Record<number, PokemonData> = {

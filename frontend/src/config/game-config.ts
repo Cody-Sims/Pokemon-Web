@@ -16,6 +16,7 @@ import { TransitionScene } from '@scenes/overworld/TransitionScene';
 import { StarterSelectScene } from '@scenes/pokemon/StarterSelectScene';
 import { SettingsScene } from '@scenes/menu/SettingsScene';
 import { ShopScene } from '@scenes/minigame/ShopScene';
+import { VoltorbFlipScene } from '@scenes/minigame/VoltorbFlipScene';
 import { PCScene } from '@scenes/pokemon/PCScene';
 import { PokedexScene } from '@scenes/menu/PokedexScene';
 import { IntroScene } from '@scenes/title/IntroScene';
@@ -71,6 +72,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     StarterSelectScene,
     SettingsScene,
     ShopScene,
+    VoltorbFlipScene,
     PCScene,
     PokedexScene,
     IntroScene,

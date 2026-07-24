@@ -6,35 +6,11 @@ import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
 import { SaveManager } from '@managers/SaveManager';
-
-// ─── CutsceneAction union type ──────────────────────────────
-
-export type CutsceneAction =
-  | { type: 'dialogue'; speaker?: string; portraitKey?: string; lines: string[] }
-  | { type: 'moveCameraTo'; x: number; y: number; duration?: number }
-  | { type: 'moveNPC'; npcId: string; direction: Direction; tiles: number; speed?: number }
-  | { type: 'faceNPC'; npcId: string; direction: Direction }
-  | { type: 'facePlayer'; direction: Direction }
-  | { type: 'wait'; ms: number }
-  | { type: 'fadeToBlack'; duration?: number }
-  | { type: 'fadeFromBlack'; duration?: number }
-  | { type: 'flashScreen'; color?: number; duration?: number }
-  | { type: 'playBGM'; key: string }
-  | { type: 'playSFX'; key: string }
-  | { type: 'screenShake'; intensity?: number; duration?: number }
-  | { type: 'showEmote'; targetId: string; emote: string }
-  | { type: 'setFlag'; flag: string; value?: boolean }
-  | { type: 'parallel'; actions: CutsceneAction[] }
-  | { type: 'movePlayer'; direction: Direction; tiles: number };
-
-export interface CutsceneDefinition {
-  id: string;
-  actions: CutsceneAction[];
-}
+import type { CutsceneAction, CutsceneDefinition } from '@data/cutscenes/types';
 
 // ─── Minimal interface so CutsceneEngine doesn't depend on the concrete OverworldScene class ───
 
-export interface CutsceneSceneAccess {
+interface CutsceneSceneAccess {
   npcs: { npcId: string; x: number; y: number; faceDirection(dir: Direction): void; playWalkAnim(duration: number): void; stopWalkAnim(): void; setFrame(frame: string): void; setFlipX(flip: boolean): void; texture: { key: string } }[];
   player: {
     x: number; y: number;

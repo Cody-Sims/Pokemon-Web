@@ -1,7 +1,8 @@
 import { PokemonInstance, MoveData } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { PokemonType, WeatherCondition } from '@utils/type-helpers';
-import { seededRandom } from '@utils/math-helpers';
+import type { BattleRng } from '../core/BattleRng';
+import { globalBattleRng } from '../core/BattleRng';
 import type { StatusEffectHandler } from './StatusEffectHandler';
 import { HeldItemHandler } from './HeldItemHandler';
 
@@ -96,6 +97,7 @@ export class AbilityHandler {
     defender: PokemonInstance,
     move: MoveData,
     damage: number,
+    rng: BattleRng = globalBattleRng,
   ): { messages: string[] } {
     const defAbility = AbilityHandler.getAbility(defender);
     const atkName = attacker.nickname ?? pokemonData[attacker.dataId]?.name ?? '???';
@@ -106,7 +108,7 @@ export class AbilityHandler {
     if (isContact && damage > 0) {
       switch (defAbility) {
         case 'static':
-          if (!attacker.status && seededRandom() < 0.3) {
+          if (!attacker.status && rng.chance(0.3)) {
             const atkData = pokemonData[attacker.dataId];
             if (!atkData?.types.includes('electric' as PokemonType)) {
               attacker.status = 'paralysis';
@@ -115,7 +117,7 @@ export class AbilityHandler {
           }
           break;
         case 'flame-body':
-          if (!attacker.status && seededRandom() < 0.3) {
+          if (!attacker.status && rng.chance(0.3)) {
             const atkData = pokemonData[attacker.dataId];
             if (!atkData?.types.includes('fire' as PokemonType)) {
               attacker.status = 'burn';
@@ -124,7 +126,7 @@ export class AbilityHandler {
           }
           break;
         case 'poison-point':
-          if (!attacker.status && seededRandom() < 0.3) {
+          if (!attacker.status && rng.chance(0.3)) {
             const atkData = pokemonData[attacker.dataId];
             if (!atkData?.types.includes('poison' as PokemonType) && !atkData?.types.includes('steel' as PokemonType)) {
               attacker.status = 'poison';

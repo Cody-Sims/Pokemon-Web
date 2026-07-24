@@ -1,12 +1,10 @@
 import { PokemonInstance } from '@data/interfaces';
-import { moveData } from '@data/moves';
-import { seededRandom } from '@utils/math-helpers';
 import { BattleStateMachine } from './BattleStateMachine';
 import { StatusEffectHandler } from '../effects/StatusEffectHandler';
 import { WeatherManager } from '../effects/WeatherManager';
 import { AbilityHandler } from '../effects/AbilityHandler';
-import { HeldItemHandler } from '../effects/HeldItemHandler';
-import { AIController } from './AIController';
+import type { BattleRng } from './BattleRng';
+import { createBattleRng } from './BattleRng';
 
 export type BattleType = 'wild' | 'trainer';
 
@@ -18,6 +16,8 @@ export interface BattleConfig {
   isDouble?: boolean;  // If true, use DoubleBattleManager instead
   allyParty?: PokemonInstance[];  // Partner party for tag battles
   allyTrainerId?: string;
+  rng?: BattleRng;
+  rngSeed?: number;
 }
 
 /** Orchestrates the battle: turn order, win/loss conditions, party management. */
@@ -30,13 +30,15 @@ export class BattleManager {
   private enemyActiveIndex = 0;
   private statusHandler: StatusEffectHandler;
   private weatherManager: WeatherManager;
+  private rng: BattleRng;
 
   constructor(config: BattleConfig) {
     this.config = config;
     this.playerActive = config.playerParty[0];
     this.enemyActive = config.enemyParty[0];
     this.fsm = new BattleStateMachine();
-    this.statusHandler = new StatusEffectHandler();
+    this.rng = createBattleRng(config.rngSeed, config.rng);
+    this.statusHandler = new StatusEffectHandler(this.rng);
     this.weatherManager = new WeatherManager();
     this.statusHandler.initPokemon(this.playerActive);
     this.statusHandler.initPokemon(this.enemyActive);
@@ -110,12 +112,13 @@ export class BattleManager {
   getBattleType() { return this.config.type; }
   getStatusHandler() { return this.statusHandler; }
   getWeatherManager() { return this.weatherManager; }
+  getRng() { return this.rng; }
 
   /** Attempt to flee from a wild battle. */
   attemptFlee(): boolean {
     if (this.config.type === 'trainer') return false;
     const escapeChance = this.playerActive.stats.speed >= this.enemyActive.stats.speed ? 1 : 0.5;
-    if (seededRandom() < escapeChance) {
+    if (this.rng.chance(escapeChance)) {
       this.fsm.transition('FLEE');
       return true;
     }
@@ -139,8 +142,4 @@ export class BattleManager {
     this.weatherManager.cleanup();
   }
 
-  private getEnemyMove(): string {
-    const isTrainer = this.config.type === 'trainer';
-    return AIController.selectMove(this.enemyActive, this.playerActive, isTrainer);
-  }
 }

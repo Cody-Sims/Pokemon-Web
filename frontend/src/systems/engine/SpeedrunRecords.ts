@@ -8,7 +8,7 @@
  * Only `recordIfBetter` mutates state; everything else is read-only.
  */
 
-export interface SpeedrunRecord {
+interface SpeedrunRecord {
   /** Stable split id (e.g. badge id, 'champion'). */
   id: string;
   /** Human-readable label captured at the time the PB was set. */

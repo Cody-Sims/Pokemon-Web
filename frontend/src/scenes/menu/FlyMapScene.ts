@@ -1,12 +1,13 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
-import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX } from '@utils/audio-keys';
 import { mapRegistry } from '@data/maps';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 /**
  * Town destinations for Fly. Each entry maps a badge count requirement
@@ -42,10 +43,9 @@ export class FlyMapScene extends Phaser.Scene {
   private destTexts: Phaser.GameObjects.Text[] = [];
   private cursorIcon!: Phaser.GameObjects.Text;
   private descText!: Phaser.GameObjects.Text;
-  private pokemonName = '';
 
   constructor() {
-    super({ key: 'FlyMapScene' });
+    super({ key: SceneKey.FlyMap });
   }
 
   create(): void {
@@ -65,7 +65,7 @@ export class FlyMapScene extends Phaser.Scene {
     }
 
     const flyUser = OverworldAbilities.getUser('fly');
-    this.pokemonName = flyUser?.nickname ?? `Pokémon`;
+    void flyUser;
 
     // Background
     const layout = ui(this);
@@ -161,16 +161,12 @@ export class FlyMapScene extends Phaser.Scene {
 
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
 
-    // Flash screen and transition to destination
-    this.cameras.main.fadeOut(400, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.stop();
-      this.scene.stop('MenuScene');
-      this.scene.stop('OverworldScene');
-      this.scene.start('OverworldScene', {
-        flyTo: dest.mapKey,
-        spawnId: 'default',
-      });
+    const router = SceneRouter.for(this);
+    router.stop(SceneKey.Menu);
+    router.stop(SceneKey.Overworld);
+    router.transitionTo(SceneKey.Overworld, {
+      flyTo: dest.mapKey,
+      spawnId: 'default',
     });
   }
 

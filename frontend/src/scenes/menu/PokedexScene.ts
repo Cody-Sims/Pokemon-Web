@@ -7,12 +7,10 @@ import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { ScrollContainer } from '@ui/widgets/ScrollContainer';
-import { COLORS, FONTS, TYPE_COLORS, drawTypeBadge, mobileFontSize, isMobile } from '@ui/theme';
+import { COLORS, FONTS, drawTypeBadge, mobileFontSize, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
-import { SFX } from '@utils/audio-keys';
 
 export class PokedexScene extends Phaser.Scene {
-  private cursor = 0;
   private scrollOffset = 0;
   private readonly maxVisible = 10;
   private speciesList: number[] = [];
@@ -21,7 +19,6 @@ export class PokedexScene extends Phaser.Scene {
   private detailGroup!: Phaser.GameObjects.Group;
   private seenCount = 0;
   private caughtCount = 0;
-  private countText?: Phaser.GameObjects.Text;
   private scrollContainer?: ScrollContainer;
   /** BUG-016: debounce the Pokémon cry so scrolling doesn't spam audio. */
   private cryTimer?: Phaser.Time.TimerEvent;
@@ -60,7 +57,7 @@ export class PokedexScene extends Phaser.Scene {
     this.add.rectangle(layout.cx, 42, 160, 2, COLORS.borderHighlight, 0.4);
 
     // Counters
-    this.countText = this.add.text(layout.cx, 56, `Seen: ${this.seenCount}   Caught: ${this.caughtCount}`, {
+    this.add.text(layout.cx, 56, `Seen: ${this.seenCount}   Caught: ${this.caughtCount}`, {
       ...FONTS.bodySmall, fontSize: mobileFontSize(13),
     }).setOrigin(0.5);
 
@@ -90,7 +87,6 @@ export class PokedexScene extends Phaser.Scene {
     }
 
     this.scrollOffset = 0;
-    this.cursor = 0;
     this.renderList();
 
     // Touch drag-to-scroll for the Pokédex list area
@@ -113,7 +109,6 @@ export class PokedexScene extends Phaser.Scene {
       itemCount: this.speciesList.length,
       wrap: false,
       onMove: (idx) => {
-        this.cursor = idx;
         this.ensureVisible(idx);
         this.highlightItem(idx);
         this.showDetail(idx);
@@ -201,7 +196,7 @@ export class PokedexScene extends Phaser.Scene {
     }
   }
 
-  private highlightItem(idx: number): void {
+  private highlightItem(_idx: number): void {
     // Re-render updates visual; the controller handles cursor color externally
     // For simplicity, re-render on every move to show highlight
     this.renderList();

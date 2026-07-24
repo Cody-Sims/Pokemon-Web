@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
-import { BGM, SFX } from '@utils/audio-keys';
-import { TouchControls } from '@ui/controls/TouchControls';
+import { SFX } from '@utils/audio-keys';
 import { hintText } from '@utils/hint-text';
 import { NICKNAME_CHAR_REGEX, NICKNAME_STRIP_REGEX, NICKNAME_MAX_LENGTH } from '@utils/nickname-validation';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
+import type { IntroSceneData } from '@scenes/scene-data';
 
 /**
  * IntroScene — "Welcome to the world of Pokémon!" professor intro,
@@ -70,15 +72,15 @@ export class IntroScene extends Phaser.Scene {
   ];
 
   constructor() {
-    super({ key: 'IntroScene' });
+    super({ key: SceneKey.Intro });
   }
 
-  init(data?: Record<string, unknown>): void {
+  init(data?: IntroSceneData): void {
     if (data?.difficulty) {
-      this.difficultyMode = data.difficulty as import('@data/difficulty').DifficultyMode;
+      this.difficultyMode = data.difficulty;
     }
     if (Array.isArray(data?.challengeModes)) {
-      this.challengeModes = data.challengeModes as import('@data/challenge-modes').ChallengeMode[];
+      this.challengeModes = data.challengeModes;
     }
   }
 
@@ -202,8 +204,6 @@ export class IntroScene extends Phaser.Scene {
 
   private showNamingScreen(): void {
     this.isAnimating = true;
-    const { width, height } = this.cameras.main;
-
     // Clear intro elements
     this.tweens.add({
       targets: [this.textObject, this.professorSprite, this.pokemonSprite].filter(Boolean),
@@ -222,8 +222,6 @@ export class IntroScene extends Phaser.Scene {
 
   private buildNamingUI(): void {
     const { width, height } = this.cameras.main;
-    const fontSize = mobileFontSize(18);
-
     // "What is your name?" prompt
     this.add.text(width / 2, height * 0.15, "What is your name?", {
       ...FONTS.heading,
@@ -622,7 +620,7 @@ export class IntroScene extends Phaser.Scene {
     this.cameras.main.fadeOut(800, 0, 0, 0);
 
     this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.start('OverworldScene');
+      SceneRouter.for(this).transitionTo(SceneKey.Overworld);
     });
   }
 

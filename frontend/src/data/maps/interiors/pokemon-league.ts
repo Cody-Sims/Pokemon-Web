@@ -32,6 +32,9 @@ export const pokemonLeague: MapDefinition = {
     { id: 'tutor-league', name: 'Move Tutor', tileX: 8, tileY: 9, textureKey: 'npc-male-3', facing: 'left',
       dialogue: ['League Tutor: Only the strongest moves are taught here.', 'League Tutor: Are you ready to pay the price?'],
       interactionType: 'move-tutor', interactionData: 'tutor-league' },
+    { id: 'league-clerk', name: 'League Clerk', tileX: 9, tileY: 4, textureKey: 'npc-clerk', facing: 'down',
+      dialogue: ['League Clerk: Stock up before challenging the Elite Four!'],
+      interactionType: 'shop' },
     // ─── A.1 Battle Tower Attendant ───
     // Unlocks the Battle Tower lobby. Visible from the moment the player
     // enters the league hall — the tower itself is a side activity, but

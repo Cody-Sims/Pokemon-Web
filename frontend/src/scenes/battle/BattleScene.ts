@@ -19,6 +19,9 @@ import {
   PLATFORM_PALETTE_VOLCANIC,
   PLATFORM_PALETTE_TECH,
 } from '@ui/widgets/BattlePlatform';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey, isSceneKey, type SceneKeyName } from '@scenes/scene-keys';
+import type { BattleSceneData } from '@scenes/scene-data';
 
 /**
  * BattleScene — turn-based Pokémon battle.
@@ -47,7 +50,7 @@ export class BattleScene extends Phaser.Scene {
   public playerHpBg!: Phaser.GameObjects.Rectangle;
   public enemyHpText!: Phaser.GameObjects.Text;
   public playerHpText!: Phaser.GameObjects.Text;
-  public returnScene = 'OverworldScene';
+  public returnScene: SceneKeyName = SceneKey.Overworld;
   public returnData: Record<string, unknown> = {};
   public isTrainerBattle = false;
   public trainerId = '';
@@ -86,14 +89,14 @@ export class BattleScene extends Phaser.Scene {
   public enemySpriteBaseX = 0;
   public enemySpriteBaseY = 0;
 
-  private initData?: Record<string, unknown>;
+  private initData?: BattleSceneData;
 
   constructor() {
-    super({ key: 'BattleScene' });
+    super({ key: SceneKey.Battle });
   }
 
   /** Capture scene data early so preload() can queue missing sprites. */
-  init(data?: Record<string, unknown>): void {
+  init(data?: BattleSceneData): void {
     this.initData = data;
   }
 
@@ -134,17 +137,17 @@ export class BattleScene extends Phaser.Scene {
     this.hideOverworldHud();
 
     // Store return info passed through from TransitionScene
-    this.returnScene = (data?._returnScene as string) ?? 'OverworldScene';
-    this.returnData = (data?._returnData as Record<string, unknown>) ?? {};
-    this.isTrainerBattle = (data?.isTrainer as boolean) ?? false;
-    this.trainerId = (data?.trainerId as string) ?? '';
-    this.isDouble = (data?.isDouble as boolean) ?? false;
-    this.victoryFlag = (data?.victoryFlag as string) ?? '';
+    this.returnScene = data?._returnScene && isSceneKey(data._returnScene) ? data._returnScene : SceneKey.Overworld;
+    this.returnData = data?._returnData ?? {};
+    this.isTrainerBattle = data?.isTrainer ?? false;
+    this.trainerId = data?.trainerId ?? '';
+    this.isDouble = data?.isDouble ?? false;
+    this.victoryFlag = data?.victoryFlag ?? '';
 
     // Guard: cannot battle without Pokemon
     if (gm.getParty().length === 0) {
       console.error('[BattleScene] Cannot start battle with empty party!');
-      this.scene.start('OverworldScene');
+      SceneRouter.for(this).transitionTo(SceneKey.Overworld);
       return;
     }
 
@@ -183,7 +186,7 @@ export class BattleScene extends Phaser.Scene {
     const platformYOffset = Math.round(h * 0.05); // platform sits slightly below sprite
 
     // ── Draw battle scene background ──
-    const battleBg = data?.battleBg as string | undefined;
+    const battleBg = data?.battleBg;
     if (battleBg && this.textures.exists(battleBg)) {
       // Use image-based battle background
       const bg = this.add.image(cx, cy, battleBg);
@@ -213,7 +216,7 @@ export class BattleScene extends Phaser.Scene {
     playerPlatform.setDepth(0);
 
     // ── Trainer sprites behind Pokémon (trainer battles only) ──
-    const trainerSpriteKey = data?.trainerSpriteKey as string | undefined;
+    const trainerSpriteKey = data?.trainerSpriteKey;
     if (this.isTrainerBattle && trainerSpriteKey && this.textures.exists(trainerSpriteKey)) {
       // Enemy trainer stands behind their Pokémon (further right, behind enemy)
       const trainerX = Math.round(w * 0.78);
@@ -410,7 +413,7 @@ export class BattleScene extends Phaser.Scene {
     });
 
     // Launch battle UI overlay
-    this.scene.launch('BattleUIScene');
+    SceneRouter.for(this).launch(SceneKey.BattleUI);
 
     // Shiny sparkle effect on intro
     if (this.enemyPokemon.isShiny) {
@@ -848,9 +851,9 @@ export class BattleScene extends Phaser.Scene {
 
   /** Overworld HUD scenes that render above the canvas — sleep during battle. */
   private readonly hudOverlayKeys = [
-    'MinimapScene',
-    'QuestTrackerScene',
-    'PartyQuickViewScene',
+    SceneKey.Minimap,
+    SceneKey.QuestTracker,
+    SceneKey.PartyQuickView,
   ];
 
   private hideOverworldHud(): void {

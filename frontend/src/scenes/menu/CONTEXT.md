@@ -1,6 +1,6 @@
 # Menu Scenes
 
-Pause menu system with 14 self-contained scenes. Accessed from the overworld
+Pause menu system with 16 self-contained scenes. Accessed from the overworld
 via the pause menu.
 
 ## Files
@@ -19,6 +19,8 @@ via the pause menu.
 | `TrainerCardScene.ts` | `TrainerCardScene` | Trainer card: name, badges, playtime, stats |
 | `AchievementScene.ts` | `AchievementScene` | Achievement gallery with 5 category tabs |
 | `FlyMapScene.ts` | `FlyMapScene` | Fly fast-travel destination picker |
+| `TownMapScene.ts` | `TownMapScene` | Full-region town map and location browser |
+| `MinimapScene.ts` | `MinimapScene` | HUD minimap overlay for nearby map context |
 | `StatisticsScene.ts` | `StatisticsScene` | Game stats viewer: battles, catches, steps, etc. |
 | `HallOfFameScene.ts` | `HallOfFameScene` | Hall of Fame champion records browser |
 

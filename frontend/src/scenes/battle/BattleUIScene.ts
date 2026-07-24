@@ -15,11 +15,10 @@ import { AudioManager } from '@managers/AudioManager';
 import { AchievementManager } from '@managers/AchievementManager';
 import { SFX } from '@utils/audio-keys';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale, isMobile } from '@ui/theme';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { SynthesisHandler } from '@battle/effects/SynthesisHandler';
 import { SYNTHESIS_ELIGIBLE } from '@data/synthesis-data';
-import { trainerData } from '@data/trainers';
 import { pickEnemyMove as pickEnemy, calculateTurnOrder } from './BattleTurnRunner';
 import { collectEndOfTurnEffects } from './BattleEndOfTurn';
 import { resetBallThrowCount, cleanupBallGraphics } from './BattleCatchHandler';
@@ -30,6 +29,10 @@ import { BattleMoveMenu } from './BattleMoveMenu';
 import { BattleBagHandler } from './BattleBagHandler';
 import { BattleSwitchHandler } from './BattleSwitchHandler';
 import { seededRandom } from '@utils/math-helpers';
+import { getTrainerData } from '@systems/engine/TrainerResolver';
+import { EventManager } from '@managers/EventManager';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 export type UIState = 'actions' | 'moves' | 'animating' | 'message' | 'target-select';
 
@@ -61,7 +64,7 @@ export class BattleUIScene extends Phaser.Scene {
   playerStatusMovesUsed = 0;
 
   constructor() {
-    super({ key: 'BattleUIScene' });
+    super({ key: SceneKey.BattleUI });
   }
 
   create(): void {
@@ -117,7 +120,7 @@ export class BattleUIScene extends Phaser.Scene {
 
     const actions = ['FIGHT', 'BAG', 'POKEMON', 'RUN'];
     const actionFontSize = mobileFontSize(compact ? 15 : 18);
-    const actionRowH = Math.round(35 * MOBILE_SCALE);
+    const actionRowH = Math.round(35 * mobileScale());
     this.actionMenu.actionTexts = actions.map((action, i) => {
       let x: number, y: number;
       if (compact) {
@@ -192,7 +195,7 @@ export class BattleUIScene extends Phaser.Scene {
         fillColor: COLORS.bgPanel, fillAlpha: 0.95, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 6,
       });
       this.actionMenu.actionMenuBg.setVisible(wasVisible);
-      const rowH = Math.round(35 * MOBILE_SCALE);
+      const rowH = Math.round(35 * mobileScale());
       this.actionMenu.actionTexts.forEach((t, i) => {
         if (cpt) {
           const sp = w / 5;
@@ -224,7 +227,7 @@ export class BattleUIScene extends Phaser.Scene {
   }
 
   // ─── Scene reference ───
-  battle(): BattleScene { return this.scene.get('BattleScene') as BattleScene; }
+  battle(): BattleScene { return SceneRouter.for(this).get(SceneKey.Battle) as BattleScene; }
 
   // ─── Delegate methods (public API for sub-modules and external callers) ───
 
@@ -310,7 +313,7 @@ export class BattleUIScene extends Phaser.Scene {
 
     // Boss Synthesis: trigger on first turn if trainer data says so
     if (!this.bossSynthesisTriggered && b.isTrainerBattle) {
-      const tData = b.trainerId ? trainerData[b.trainerId] : null;
+      const tData = b.trainerId ? getTrainerData(b.trainerId) : null;
       if (tData && tData.useSynthesis && enemy.dataId in SYNTHESIS_ELIGIBLE) {
         this.bossSynthesisTriggered = true;
         this.state = 'animating';
@@ -355,7 +358,7 @@ export class BattleUIScene extends Phaser.Scene {
       return;
     }
 
-    const { attacker, defender, moveId, isPlayer } = order[idx];
+    const { attacker, moveId, isPlayer } = order[idx];
     if (attacker.currentHp <= 0) {
       this.runTurnStep(order, idx + 1);
       return;
@@ -422,7 +425,7 @@ export class BattleUIScene extends Phaser.Scene {
     name: string,
     moveName: string,
   ): void {
-    const { attacker, defender, moveId, isPlayer } = order[idx];
+    const { moveId, isPlayer } = order[idx];
     const b = this.battle();
 
     this.msg(`${name} used ${moveName}!`);
@@ -621,7 +624,7 @@ export class BattleUIScene extends Phaser.Scene {
 
   // ─── End-of-turn effects ───
 
-  private runEndOfTurn(order: { attacker: PokemonInstance; defender: PokemonInstance; moveId: string; isPlayer: boolean }[]): void {
+  private runEndOfTurn(_order: { attacker: PokemonInstance; defender: PokemonInstance; moveId: string; isPlayer: boolean }[]): void {
     const b = this.battle();
     const player = b.playerPokemon;
     const enemy = b.enemyPokemon;
@@ -762,12 +765,20 @@ export class BattleUIScene extends Phaser.Scene {
     const b = this.battle();
     const returnScene = b.returnScene;
     const returnData = b.returnData;
-    this.scene.stop();
-    this.scene.stop('BattleScene');
-    this.scene.start(returnScene, returnData);
+    EventManager.getInstance().emit('party-changed');
+    const router = SceneRouter.for(this);
+    router.stop(SceneKey.Battle);
+    if (returnScene === SceneKey.Overworld) {
+      router.transitionTo(SceneKey.Overworld, returnData);
+    } else if (returnScene === SceneKey.BattleTower) {
+      router.transitionTo(SceneKey.BattleTower, returnData);
+    } else {
+      router.transitionTo(returnScene);
+    }
   }
 
   shutdown(): void {
+    EventManager.getInstance().clearByTag(this.scene.key);
     this.input.keyboard?.removeAllListeners();
     this.input.removeAllListeners();
     this.tweens.killAll();

@@ -3,13 +3,13 @@ import { Trainer } from '@entities/Trainer';
 import { InteractableObject } from '@entities/InteractableObject';
 import { GameManager } from '@managers/GameManager';
 import { NPCBehaviorController } from '@systems/overworld/NPCBehavior';
-import { trainerData } from '@data/trainer-data';
 import { SOLID_TILES } from '@data/maps';
-import type { MapDefinition, NpcSpawn, ObjectSpawn } from '@data/maps';
+import type { MapDefinition, NpcSpawn } from '@data/maps';
 import { TILE_SIZE } from '@utils/constants';
 import type { TimePeriod } from '@systems/engine/GameClock';
+import { getTrainerData } from '@systems/engine/TrainerResolver';
 
-export interface SpawnedNPCs {
+interface SpawnedNPCs {
   npcs: NPC[];
   behaviors: NPCBehaviorController[];
 }
@@ -89,7 +89,7 @@ export function spawnTrainers(
 
   for (const def of mapDef.trainers) {
     if (gm.isTrainerDefeated(def.trainerId)) continue;
-    const tData = trainerData[def.trainerId];
+    const tData = getTrainerData(def.trainerId);
     const trainer = new Trainer(
       scene, def.tileX, def.tileY,
       def.textureKey, def.id, def.trainerId,

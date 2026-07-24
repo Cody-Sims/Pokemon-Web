@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, mobileFontSize, mobileScale, isMobile, minTouchTarget } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';

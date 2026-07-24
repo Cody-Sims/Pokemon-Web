@@ -18,31 +18,7 @@
 - **Status:** Deferred — needs new sprite art. Tracked under
   [docs/IMPROVEMENT_PLAN.md](docs/IMPROVEMENT_PLAN.md) Tier 4.4.
 
-### Item-balls / signs cannot be walked onto
 
-- **Files:** [frontend/src/scenes/overworld/OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts) — `rebuildNpcOccupiedTiles()`.
-- **Symptom:** All entries from `mapDef.objects` (signs, item-balls, PCs,
-  doors) are added to `npcOccupiedTiles`, blocking the player from stepping
-  onto an item-ball to collect it. Today the player must stand adjacent and
-  press the interact key.
-- **Status:** Fixed — `rebuildNpcOccupiedTiles` now skips `item-ball`
-  objects so the player can walk onto them to collect. Signs, PCs, and
-  doors remain blocking.
-
-### Catch shake graphic drifts when enemy sprite is mid-tween
-
-- **Files:** [frontend/src/scenes/battle/BattleCatchHandler.ts](frontend/src/scenes/battle/BattleCatchHandler.ts) — `runShakeSequence()`.
-- **Symptom:** Each shake creates a new graphic at
-  `(enemySprite.x, enemySprite.y + 20)`. If the enemy sprite is still
-  mid-intro tween (rare, requires opening BAG and throwing a ball before
-  the slide-in completes) the ball icon hops between shakes.
-- **Status:** Fixed — cosmetic edge case. The throw-origin and orphan-
-  highlight issues that made the drift obvious were resolved in the
-  round 1 audit pass; this one only triggers if the player races the
-  intro animation. Fix would capture the slot anchor once at throw time
-  and reuse it for every shake.
-
----
 
 ## 2026-05-02 audit cycle — round 3
 

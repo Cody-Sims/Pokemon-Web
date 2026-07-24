@@ -1,6 +1,6 @@
 # Pokemon Web
 
-> A browser-based Pokémon-style RPG built with Phaser 3 + TypeScript + Vite. Fully client-side static web app with 153 Pokémon, 66 maps, turn-based battles, and a complete storyline. No backend.
+> A browser-based Pokémon-style RPG built with Phaser 3 + TypeScript + Vite. Fully client-side static web app with 155 Pokémon, 244 moves, 82 registered map entries from 66 map source files, turn-based battles, 50 achievements, and a complete storyline. No backend.
 
 ## Quick Reference
 
@@ -10,7 +10,7 @@
 | Framework       | Phaser 3.90+                                         |
 | Bundler         | Vite 8.x                                             |
 | Test Runner     | Vitest 4.x + Playwright                              |
-| Node Version    | 22+                                                  |
+| Node Version    | 22.x (pinned in `package.json`)                     |
 | Package Manager | npm                                                  |
 | Entry Point     | `frontend/src/main.ts`                               |
 | Game Config     | `frontend/src/config/game-config.ts`                 |
@@ -20,18 +20,19 @@
 
 - Run `npm install` before any other command.
 - Run `npm run dev` to start the Vite dev server with HMR.
-- Run `npm run build` to type-check (`tsc --noEmit`) then build for production. **Always run before committing.**
+- Run `npm run build` to generate deterministic assets, type-check (`tsc --noEmit`), then build for production. **Always run before committing.**
+- Run `npm run lint` and `npm run format:check` for report-only ESLint and Prettier checks.
 - Run `npm run preview` to preview the production build locally.
 - Path aliases are configured in `frontend/tsconfig.json` and `frontend/vite.config.ts`: `@scenes/*`, `@entities/*`, `@data/*`, `@managers/*`, `@systems/*`, `@ui/*`, `@utils/*`, `@config/*`, `@battle/*`.
 
 ## Testing
 
-- `npm run test` — All unit + integration tests (< 2s)
+- `npm run test` — Unit, integration, and replay Vitest suite
 - `npm run test:unit` — Unit tests only
 - `npm run test:integration` — Integration tests only
-- `npm run test:e2e` — Playwright E2E tests (needs dev server running)
-- `npm run test:coverage` — Tests with V8 coverage report
-- Tests live in `tests/unit/`, `tests/integration/`, `tests/e2e/`.
+- `npm run test:e2e` — Playwright E2E tests; the config starts Vite automatically
+- `npm run test:coverage` — Tests with V8 coverage report and configured thresholds
+- Tests live in `tests/unit/`, `tests/integration/`, `tests/replay/`, `tests/e2e/`, and `tests/fuzz/`.
 - Seed `Math.random` in `beforeEach` for determinism. Reset singletons between tests.
 
 ## Project Layout
@@ -56,9 +57,9 @@ frontend/src/
 │   └── execution/          # Move executor, animation player
 ├── data/                   # Pure data files (no game logic)
 │   ├── interfaces.ts       # All TypeScript interfaces
-│   ├── maps/               # 66 map definitions in cities/, routes/, interiors/, dungeons/
-│   ├── moves/              # Per-type move data files (16 types)
-│   ├── pokemon/            # Per-type Pokémon data files (153 species)
+│   ├── maps/               # 66 map source files; mapRegistry exposes 82 map entries
+│   ├── moves/              # Per-type move data files (18 types, 244 moves)
+│   ├── pokemon/            # Per-type Pokémon data files (155 species)
 │   ├── trainers/           # Trainer data by category (rival, gym, elite four, etc.)
 │   ├── type-chart.ts       # 18×18 type effectiveness matrix
 │   ├── item-data.ts        # Items (potions, balls, key items)
@@ -86,7 +87,8 @@ frontend/src/
 | `frontend/public/assets/` | Static assets: sprites, tilesets, maps, audio, UI, fonts |
 | `docs/` | Design docs, architecture, changelog, storyline, plans |
 | `tests/` | Vitest + Playwright tests |
-| `temp/` | Scratch work, one-off scripts, map generators (not committed) |
+| `scripts/map-gen/` | Tracked map generation, preview, region render, and validation toolchain |
+| `temp/` | Scratch work, generated previews, templates, and one-off experiments (not committed) |
 | `.github/instructions/` | Copilot custom instructions (path-specific) |
 | `.github/workflows/` | CI/CD (ci.yml, deploy.yml) |
 | `.github/skills/` | AgentSkills-compatible workflows loaded on demand |
@@ -109,7 +111,7 @@ Maps are defined as TypeScript files in `frontend/src/data/maps/`. Each map has:
 - NPC spawns, trainer spawns, warp definitions, wild encounter zones
 - Map metadata (name, dimensions, BGM key, lighting, weather)
 
-Use the map toolchain for generation:
+Use the tracked map toolchain (`scripts/map-gen/`) for generation:
 ```bash
 npm run map:validate                    # Validate all maps
 npm run map:validate -- --map route-1   # Validate one map
@@ -136,18 +138,18 @@ data/pokemon/index.ts → data/pokemon/<type>.ts (barrel re-export)
 data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 ```
 
-## Key Interfaces (from `data/interfaces.ts`)
+## Key Interfaces and Type Sources
 
-| Interface | Used For | Key Fields |
-|---|---|---|
-| `PokemonData` | Species definitions | `id`, `name`, `types`, `baseStats`, `learnset`, `catchRate` |
-| `MoveData` | Move definitions | `id`, `name`, `type`, `category`, `power`, `accuracy`, `pp`, `effect` |
-| `ItemData` | Item definitions | `id`, `name`, `category`, `buyPrice`, `effect` |
-| `TrainerData` | Trainer definitions | `id`, `name`, `party[]`, `dialogue`, `rewardMoney` |
-| `PokemonInstance` | Runtime Pokémon state | `dataId`, `level`, `currentHp`, `stats`, `moves`, `nature`, `ivs` |
-| `MapDefinition` | Map structure | `key`, `name`, `width`, `height`, `grid`, `npcs`, `objects`, `warps`, `encounters` |
-| `ObjectSpawn` | Object placement | `id`, `tileX`, `tileY`, `textureKey`, `objectType`, `dialogue` |
-| `SaveData` | Serialized game state | `player`, `flags`, `trainersDefeated`, `boxes` |
+| Interface | Source | Used For | Key Fields |
+|---|---|---|---|
+| `PokemonData` | `frontend/src/data/interfaces.ts` | Species definitions | `id`, `name`, `types`, `baseStats`, `learnset`, `catchRate` |
+| `MoveData` | `frontend/src/data/interfaces.ts` | Move definitions | `id`, `name`, `type`, `category`, `power`, `accuracy`, `pp`, `effect` |
+| `ItemData` | `frontend/src/data/interfaces.ts` | Item definitions | `id`, `name`, `category`, `buyPrice`, `effect` |
+| `TrainerData` | `frontend/src/data/interfaces.ts` | Trainer definitions | `id`, `name`, `party[]`, `dialogue`, `rewardMoney` |
+| `PokemonInstance` | `frontend/src/data/interfaces.ts` | Runtime Pokémon state | `dataId`, `level`, `currentHp`, `stats`, `moves`, `nature`, `ivs` |
+| `MapDefinition` | `frontend/src/data/maps/map-interfaces.ts` | Map structure | `key`, `width`, `height`, `ground`, `npcs`, `objects`, `warps`, `spawnPoints` |
+| `ObjectSpawn` | `frontend/src/data/maps/map-interfaces.ts` | Object placement | `id`, `tileX`, `tileY`, `textureKey`, `objectType`, `dialogue` |
+| `SaveData` | `frontend/src/data/interfaces.ts` | Serialized game state | `player`, `flags`, `trainersDefeated`, `boxes` |
 
 ## File-Finding Shortcuts
 
@@ -155,7 +157,7 @@ data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 |---|---|
 | Type effectiveness | `frontend/src/data/type-chart.ts` |
 | All interfaces/types | `frontend/src/data/interfaces.ts` |
-| Type helper enums (`PokemonType`, `Stats`) | `frontend/src/utils/type-helpers.ts` |
+| Type helpers (`PokemonType` union, `Stats` interface) | `frontend/src/utils/type-helpers.ts` |
 | Damage formula | `frontend/src/battle/calculation/DamageCalculator.ts` |
 | EXP/level-up formula | `frontend/src/battle/calculation/ExperienceCalculator.ts` |
 | Catch rate formula | `frontend/src/battle/calculation/CatchCalculator.ts` |

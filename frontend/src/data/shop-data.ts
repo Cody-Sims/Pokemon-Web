@@ -1,6 +1,6 @@
-/** Per-town mart inventories. Each entry is an item ID from itemData. */
+/** Per-Poké Mart map inventories. Each entry is an item ID from itemData. */
 export const shopInventories: Record<string, string[]> = {
-  'viridian-city': [
+  'viridian-pokemart': [
     'poke-ball',
     'potion',
     'antidote',
@@ -8,7 +8,7 @@ export const shopInventories: Record<string, string[]> = {
     'awakening',
     'repel',
   ],
-  'pewter-city': [
+  'pewter-pokemart': [
     'poke-ball',
     'great-ball',
     'potion',
@@ -22,7 +22,7 @@ export const shopInventories: Record<string, string[]> = {
     'revive',
     'repel',
   ],
-  'coral-harbor': [
+  'coral-pokemart': [
     'poke-ball',
     'great-ball',
     'super-potion',
@@ -32,7 +32,7 @@ export const shopInventories: Record<string, string[]> = {
     'repel',
     'revive',
   ],
-  'ironvale-city': [
+  'ironvale-pokemart': [
     'great-ball',
     'ultra-ball',
     'super-potion',
@@ -41,7 +41,7 @@ export const shopInventories: Record<string, string[]> = {
     'revive',
     'repel',
   ],
-  'verdantia': [
+  'verdantia-pokemart': [
     'great-ball',
     'ultra-ball',
     'super-potion',
@@ -50,7 +50,7 @@ export const shopInventories: Record<string, string[]> = {
     'revive',
     'repel',
   ],
-  'voltara-city': [
+  'voltara-pokemart': [
     'great-ball',
     'ultra-ball',
     'hyper-potion',
@@ -58,7 +58,7 @@ export const shopInventories: Record<string, string[]> = {
     'revive',
     'repel',
   ],
-  'wraithmoor': [
+  'wraithmoor-pokemart': [
     'ultra-ball',
     'hyper-potion',
     'max-potion',
@@ -66,7 +66,7 @@ export const shopInventories: Record<string, string[]> = {
     'revive',
     'repel',
   ],
-  'cinderfall': [
+  'cinderfall-pokemart': [
     'ultra-ball',
     'hyper-potion',
     'max-potion',
@@ -75,7 +75,7 @@ export const shopInventories: Record<string, string[]> = {
     'revive',
     'repel',
   ],
-  'dragonspine': [
+  'scalecrest-pokemart': [
     'ultra-ball',
     'max-potion',
     'full-restore',

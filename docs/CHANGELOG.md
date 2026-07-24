@@ -6,6 +6,100 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Added - Shared frontend modules
+
+- Added reusable grid math, display formatting, Phaser sequencing, and pure data
+  selector modules with unit coverage for edge cases and cancellation behavior.
+### Added - UI control consolidation
+
+- Added a reusable selectable-controller state machine for list/grid navigation,
+  disabled entries, pointer activation, and scroll-window tracking while keeping
+  `MenuController` consumers backward compatible.
+- Promoted TextBox, panel presets, HP/EXP progress bars, and shared UI tokens as
+  canonical foundations for future scene menu and dialogue migrations.
+### Changed - Deterministic battle RNG and save validation
+
+- Added an injectable battle RNG for battle outcomes, threaded through damage,
+  catch, AI, status, ability, and move execution paths.
+- Hardened save loading/import with shared validation, v1 migration, corrupt-save
+  backups, and defensive manager deserialization errors.
+### Changed - Scene contracts
+
+- Added typed scene-key and scene-data contracts plus a SceneRouter wrapper for
+  typed scene transitions.
+- Tightened EventManager event names, typed berry/dialogue/inventory events, and
+  moved priority scene transitions to the router.
+
+### Fixed - Import cycle enforcement
+
+- Broke production import cycles between game/quest managers, double-battle
+  targeting, and achievement data by moving shared contracts to lower-level
+  modules.
+- Added a Vitest production import-cycle regression check that resolves frontend
+  TypeScript path aliases and reports the full cycle path on failure.
+### Fixed - Documentation drift
+
+- Corrected verified agent, architecture, testing, scene, manager, data, and context documentation drift for current registries, commands, map rendering, and ownership policy.
+- Added `DEC-0017` to document source-of-truth ownership for repository documentation types.
+### Changed - Data layer purity
+
+- Moved starter-dependent rival party resolution and data helper logic out of
+  `frontend/src/data`, split shared interfaces by domain, and added initial
+  `MoveId`/`MapKey` derived ID types.
+
+### Fixed - Build purity
+
+- Removed the wall-clock timestamp from the generated asset manifest so atlas
+  generation and production builds no longer dirty the working tree.
+- Declared Phaser as a production dependency and added the missing `gh-pages`
+  development dependency used by the deploy script.
+
+### Changed - Dead code and asset cleanup
+
+- Removed unreachable systems, entities, manager/test-only dialogue code, stale
+  sprite backups/source sheets, and the non-portable root sprite extraction script.
+- Registered Voltorb Flip as an intended minigame scene, relocated seeded replay
+  randomness under tests, and dropped deprecated UI compatibility exports.
+- Reduced unused TypeScript locals/exports outside files owned by parallel agents.
+- Parsed tracked TypeScript map tooling in ESLint so lint remains warning-only.
+
+### Changed - Tracked map toolchain
+
+- Moved the map generation, preview, region render, and validation toolchain into
+  tracked `scripts/map-gen/` source and pointed the `map:*` npm scripts at it.
+- Declared `tsx` as a development dependency for the TypeScript map commands.
+- Updated agent, map-generation, architecture, and decision-graph references to
+  distinguish tracked toolchain source from ignored `temp/` preview outputs.
+### Fixed - Test harness
+
+- Enabled the shared Vitest setup file, repaired unit and integration script filters
+  for Vitest 4, made catch RNG expectations explicit, and restored frontend
+  coverage reporting with scene files visible.
+### Added - Lint and editor tooling
+
+- Added report-only ESLint flat configuration, Prettier settings, EditorConfig,
+  Node 22 pinning, and lint/format npm scripts for the TypeScript frontend,
+  Node scripts, Vitest tests, and Playwright specs.
+
+### Changed - CI gates
+
+- Aligned CI and deploy workflows with the repository Node 22 pin and added
+  blocking map, agent, shadow, lint, coverage, build-purity, bundle-size, and E2E
+  gates before shipping to GitHub Pages.
+- Surfaced formatting drift and high-severity npm audit advisories as
+  non-blocking workflow checks until the existing backlog is triaged.
+- Added a nightly scheduled deterministic fuzz workflow so the 2000-input fuzz
+  suite runs outside PR latency.
+
+### Fixed - Data reference integrity
+
+- Added missing TM, tutor, reward item, and Voltara tutor definitions; repaired
+  the Pallet generic-house return warp and renamed stale shop inventory keys.
+- Re-keyed Poké Mart inventories to the interior maps that actually host shop
+  clerks, added the missing League clerk, and stopped missing shops from silently
+  falling back to Viridian's starter inventory.
+- Added a data-driven registry integrity regression test covering moves, Pokémon,
+  trainers, encounters, maps, shop-host maps, quests, cutscenes, and achievements.
 ### Removed - Deprecated `computeGameWidth()` helper
 
 - Deleted the unused deprecated `computeGameWidth()` from

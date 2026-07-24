@@ -1,15 +1,15 @@
 import { GameManager } from '@managers/GameManager';
 import { PokemonInstance } from '@data/interfaces';
 
-export type FieldAbility = 'cut' | 'surf' | 'strength' | 'flash' | 'fly' | 'rock-smash';
+type FieldAbility = 'cut' | 'surf' | 'strength' | 'flash' | 'fly' | 'rock-smash';
 
-export interface FieldAbilityConfig {
+interface FieldAbilityConfig {
   moveId: string;
   badgeRequired: number;
   description: string;
 }
 
-export const FIELD_ABILITIES: Record<FieldAbility, FieldAbilityConfig> = {
+const FIELD_ABILITIES: Record<FieldAbility, FieldAbilityConfig> = {
   'cut':        { moveId: 'cut',        badgeRequired: 1, description: 'Cut down small trees' },
   'surf':       { moveId: 'surf',       badgeRequired: 3, description: 'Travel across water' },
   'strength':   { moveId: 'strength',   badgeRequired: 4, description: 'Push heavy boulders' },

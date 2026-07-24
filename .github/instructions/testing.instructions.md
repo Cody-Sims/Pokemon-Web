@@ -55,7 +55,7 @@ npm run test:unit         # Unit tests only
 npm run test:integration  # Integration tests only
 npm run test:watch        # Watch mode for development
 npm run test:coverage     # With V8 coverage report
-npm run test:e2e          # Playwright E2E (needs dev server)
+npm run test:e2e          # Playwright E2E (starts Vite automatically)
 npm run test:fuzz         # Fuzz/monkey testing
 npm run test:all          # All Vitest + Playwright
 ```

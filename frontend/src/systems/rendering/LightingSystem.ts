@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-export interface LightSource {
+interface LightSource {
   x: number;
   y: number;
   radius: number;

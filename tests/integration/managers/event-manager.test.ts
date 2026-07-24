@@ -16,37 +16,37 @@ describe('EventManager', () => {
 
   it('should register and emit events', () => {
     const handler = vi.fn();
-    em.on('test-event', handler);
-    em.emit('test-event', 'arg1', 42);
-    expect(handler).toHaveBeenCalledWith('arg1', 42);
+    em.on('flag-set', handler);
+    em.emit('flag-set', 'receivedStarter');
+    expect(handler).toHaveBeenCalledWith('receivedStarter');
   });
 
   it('should support multiple listeners', () => {
     const h1 = vi.fn();
     const h2 = vi.fn();
-    em.on('test', h1);
-    em.on('test', h2);
-    em.emit('test');
+    em.on('party-changed', h1);
+    em.on('party-changed', h2);
+    em.emit('party-changed');
     expect(h1).toHaveBeenCalledOnce();
     expect(h2).toHaveBeenCalledOnce();
   });
 
   it('should remove specific listener', () => {
     const handler = vi.fn();
-    em.on('test', handler);
-    em.off('test', handler);
-    em.emit('test');
+    em.on('party-changed', handler);
+    em.off('party-changed', handler);
+    em.emit('party-changed');
     expect(handler).not.toHaveBeenCalled();
   });
 
   it('should clear specific event', () => {
     const h1 = vi.fn();
     const h2 = vi.fn();
-    em.on('test1', h1);
-    em.on('test2', h2);
-    em.clear('test1');
-    em.emit('test1');
-    em.emit('test2');
+    em.on('party-changed', h1);
+    em.on('inventory-closed', h2);
+    em.clear('party-changed');
+    em.emit('party-changed');
+    em.emit('inventory-closed');
     expect(h1).not.toHaveBeenCalled();
     expect(h2).toHaveBeenCalledOnce();
   });
@@ -54,16 +54,24 @@ describe('EventManager', () => {
   it('should clear all events', () => {
     const h1 = vi.fn();
     const h2 = vi.fn();
-    em.on('test1', h1);
-    em.on('test2', h2);
+    em.on('party-changed', h1);
+    em.on('inventory-closed', h2);
     em.clear();
-    em.emit('test1');
-    em.emit('test2');
+    em.emit('party-changed');
+    em.emit('inventory-closed');
     expect(h1).not.toHaveBeenCalled();
     expect(h2).not.toHaveBeenCalled();
   });
 
   it('should not throw when emitting unregistered event', () => {
-    expect(() => em.emit('nonexistent')).not.toThrow();
+    expect(() => em.emit('berry-harvested', { treeId: 'route-1:tree-1', berryId: 'oran-berry' })).not.toThrow();
+  });
+
+  it('should clear tagged listeners', () => {
+    const handler = vi.fn();
+    em.onTagged('PartyQuickViewScene', 'party-changed', handler);
+    em.clearByTag('PartyQuickViewScene');
+    em.emit('party-changed');
+    expect(handler).not.toHaveBeenCalled();
   });
 });

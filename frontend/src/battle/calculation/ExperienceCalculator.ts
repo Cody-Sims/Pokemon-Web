@@ -44,7 +44,7 @@ export function getNatureDescription(nature: string): string {
   return `+${statNames[mod.up]} / -${statNames[mod.down]}`;
 }
 
-export interface LevelUpResult {
+interface LevelUpResult {
   levelsGained: number;
   newLevel: number;
   newMoves: string[]; // moveIds learned
