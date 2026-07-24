@@ -3,12 +3,14 @@ import { MAX_PARTY_SIZE } from '@utils/constants';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
+import { EventManager } from '@managers/EventManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { COLORS, FONTS, TYPE_COLORS, mobileFontSize, isMobile } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { PokemonInstance } from '@data/interfaces';
+import { SceneKey } from '@scenes/scene-keys';
 
 const BOXES_COUNT = 12;
 const BOX_CAPACITY = 30;
@@ -37,7 +39,7 @@ export class PCScene extends Phaser.Scene {
   private modeText!: Phaser.GameObjects.Text;
 
   constructor() {
-    super({ key: 'PCScene' });
+    super({ key: SceneKey.PC });
   }
 
   create(): void {
@@ -199,6 +201,7 @@ export class PCScene extends Phaser.Scene {
       if (this.boxCursor < box.length) {
         const pokemon = gm.withdrawPokemon(this.currentBox, this.boxCursor);
         if (pokemon) {
+          EventManager.getInstance().emit('party-changed');
           this.heldPokemon = { pokemon, source: 'box', boxIndex: this.currentBox, slotIndex: this.boxCursor };
           this.mode = 'moving';
           AudioManager.getInstance().playSFX(SFX.CONFIRM);
@@ -212,6 +215,7 @@ export class PCScene extends Phaser.Scene {
       if (this.partyCursor < party.length && party.length > 1) {
         const pokemon = gm.removeFromParty(this.partyCursor);
         if (pokemon) {
+          EventManager.getInstance().emit('party-changed');
           this.heldPokemon = { pokemon, source: 'party', slotIndex: this.partyCursor };
           this.mode = 'moving';
           AudioManager.getInstance().playSFX(SFX.CONFIRM);
@@ -242,6 +246,7 @@ export class PCScene extends Phaser.Scene {
         return;
       }
       gm.depositPokemon(this.currentBox, this.heldPokemon.pokemon);
+      EventManager.getInstance().emit('party-changed');
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
     } else {
       // Place into party
@@ -250,6 +255,7 @@ export class PCScene extends Phaser.Scene {
         return;
       }
       gm.addToParty(this.heldPokemon.pokemon);
+      EventManager.getInstance().emit('party-changed');
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
     }
 
@@ -269,6 +275,7 @@ export class PCScene extends Phaser.Scene {
       } else {
         gm.addToParty(this.heldPokemon.pokemon);
       }
+      EventManager.getInstance().emit('party-changed');
       this.heldPokemon = null;
       this.mode = 'box';
       AudioManager.getInstance().playSFX(SFX.CANCEL);

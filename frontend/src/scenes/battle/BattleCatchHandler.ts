@@ -6,6 +6,7 @@ import { pokemonData } from '@data/pokemon';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { AchievementManager } from '@managers/AchievementManager';
+import { EventManager } from '@managers/EventManager';
 import { blockReasonForCatch } from '@systems/engine/ChallengeRules';
 import { SFX, BGM } from '@utils/audio-keys';
 import { FONTS, COLORS, isMobile, mobileFontSize } from '@ui/theme';
@@ -204,6 +205,9 @@ function onCatchSuccess(ctx: CatchContext): void {
   ctx.scene.time.delayedCall(1800, () => {
     const partyLengthBefore = gm.getParty().length;
     const added = gm.addToParty(enemy);
+    if (added) {
+      EventManager.getInstance().emit('party-changed');
+    }
     gm.markSeen(enemy.dataId);
     gm.markCaught(enemy.dataId);
 

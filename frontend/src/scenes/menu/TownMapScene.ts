@@ -10,6 +10,8 @@ import { mapRegistry } from '@data/maps';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { TouchControls } from '@ui/controls/TouchControls';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 // ─── Region Map Data ───
 
@@ -199,7 +201,7 @@ export class TownMapScene extends Phaser.Scene {
   private currentNodeIndex = -1;
 
   constructor() {
-    super({ key: 'TownMapScene' });
+    super({ key: SceneKey.TownMap });
   }
 
   create(): void {
@@ -631,15 +633,12 @@ export class TownMapScene extends Phaser.Scene {
 
   private flyTo(mapKey: string): void {
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
-    this.cameras.main.fadeOut(400, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.stop();
-      this.scene.stop('MenuScene');
-      this.scene.stop('OverworldScene');
-      this.scene.start('OverworldScene', {
-        flyTo: mapKey,
-        spawnId: 'default',
-      });
+    const router = SceneRouter.for(this);
+    router.stop(SceneKey.Menu);
+    router.stop(SceneKey.Overworld);
+    router.transitionTo(SceneKey.Overworld, {
+      flyTo: mapKey,
+      spawnId: 'default',
     });
   }
 

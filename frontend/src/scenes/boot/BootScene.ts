@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'BootScene' });
+    super({ key: SceneKey.Boot });
   }
 
   preload(): void {
@@ -14,6 +16,6 @@ export class BootScene extends Phaser.Scene {
 
   create(): void {
     const manifest = this.cache.json.get('asset-manifest') ?? null;
-    this.scene.start('PreloadScene', { manifest });
+    SceneRouter.for(this).start(SceneKey.Preload, { manifest });
   }
 }

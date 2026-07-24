@@ -9,6 +9,8 @@ import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
 import { DifficultyMode, DIFFICULTY_CONFIGS } from '@data/difficulty';
 import { CHALLENGE_CONFIGS, ChallengeMode } from '@data/challenge-modes';
 import { layoutOn } from '@utils/layout-on';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 export class TitleScene extends Phaser.Scene {
   private cursor!: number;
@@ -17,7 +19,7 @@ export class TitleScene extends Phaser.Scene {
   private mobileTap?: MobileTapMenu;
 
   constructor() {
-    super({ key: 'TitleScene' });
+    super({ key: SceneKey.Title });
   }
 
   create(): void {
@@ -203,15 +205,15 @@ export class TitleScene extends Phaser.Scene {
         // The `resume: true` flag tells OverworldScene to spawn the
         // player at the saved position instead of the map default.
         if (SaveManager.getInstance().loadAndApply()) {
-          this.scene.start('OverworldScene', { resume: true });
+          SceneRouter.for(this).transitionTo(SceneKey.Overworld, { resume: true });
         }
         break;
       }
       case 'Options':
-        this.scene.sleep();
-        this.scene.launch('SettingsScene', { returnScene: 'TitleScene' });
-        this.scene.get('SettingsScene').events.once('shutdown', () => {
-          this.scene.wake();
+        SceneRouter.for(this).sleep();
+        SceneRouter.for(this).launch(SceneKey.Settings, { returnScene: SceneKey.Title });
+        SceneRouter.for(this).get(SceneKey.Settings).events.once('shutdown', () => {
+          SceneRouter.for(this).wake();
         });
         break;
       case 'Delete Save':
@@ -229,10 +231,10 @@ export class TitleScene extends Phaser.Scene {
         );
         break;
       case 'Hall of Fame':
-        this.scene.sleep();
-        this.scene.launch('HallOfFameScene');
-        this.scene.get('HallOfFameScene').events.once('shutdown', () => {
-          this.scene.wake();
+        SceneRouter.for(this).sleep();
+        SceneRouter.for(this).launch(SceneKey.HallOfFame);
+        SceneRouter.for(this).get(SceneKey.HallOfFame).events.once('shutdown', () => {
+          SceneRouter.for(this).wake();
         });
         break;
     }
@@ -487,14 +489,18 @@ export class TitleScene extends Phaser.Scene {
     const begin = () => {
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
       cleanup();
-      this.scene.start('IntroScene', { difficulty, challengeModes: Array.from(enabled) });
+      SceneRouter.for(this).transitionTo(SceneKey.Intro, { difficulty, challengeModes: Array.from(enabled) });
     };
     beginBtn.on('pointerdown', begin);
 
     const onUp = () => { cursor = (cursor - 1 + modes.length) % modes.length; AudioManager.getInstance().playSFX(SFX.CURSOR); updateUI(); };
     const onDown = () => { cursor = (cursor + 1) % modes.length; AudioManager.getInstance().playSFX(SFX.CURSOR); updateUI(); };
     const onEnter = () => begin();
-    const onEsc = () => { AudioManager.getInstance().playSFX(SFX.CANCEL); cleanup(); this.scene.start('IntroScene', { difficulty, challengeModes: [] }); };
+    const onEsc = () => {
+      AudioManager.getInstance().playSFX(SFX.CANCEL);
+      cleanup();
+      SceneRouter.for(this).transitionTo(SceneKey.Intro, { difficulty, challengeModes: [] });
+    };
 
     this.input.keyboard!.on('keydown-UP', onUp);
     this.input.keyboard!.on('keydown-DOWN', onDown);

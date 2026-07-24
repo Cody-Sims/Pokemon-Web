@@ -5,6 +5,9 @@ import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
 import { hintText } from '@utils/hint-text';
 import { NICKNAME_CHAR_REGEX, NICKNAME_STRIP_REGEX, NICKNAME_MAX_LENGTH } from '@utils/nickname-validation';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
+import type { IntroSceneData } from '@scenes/scene-data';
 
 /**
  * IntroScene — "Welcome to the world of Pokémon!" professor intro,
@@ -69,15 +72,15 @@ export class IntroScene extends Phaser.Scene {
   ];
 
   constructor() {
-    super({ key: 'IntroScene' });
+    super({ key: SceneKey.Intro });
   }
 
-  init(data?: Record<string, unknown>): void {
+  init(data?: IntroSceneData): void {
     if (data?.difficulty) {
-      this.difficultyMode = data.difficulty as import('@data/difficulty').DifficultyMode;
+      this.difficultyMode = data.difficulty;
     }
     if (Array.isArray(data?.challengeModes)) {
-      this.challengeModes = data.challengeModes as import('@data/challenge-modes').ChallengeMode[];
+      this.challengeModes = data.challengeModes;
     }
   }
 
@@ -617,7 +620,7 @@ export class IntroScene extends Phaser.Scene {
     this.cameras.main.fadeOut(800, 0, 0, 0);
 
     this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.start('OverworldScene');
+      SceneRouter.for(this).transitionTo(SceneKey.Overworld);
     });
   }
 

@@ -36,6 +36,9 @@ import { EmoteBubble } from '@systems/rendering/EmoteBubble';
 import { hintText } from '@utils/hint-text';
 import { MapPreloader } from '@systems/engine/MapPreloader';
 import { EventManager } from '@managers/EventManager';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
+import type { OverworldSceneData } from '@scenes/scene-data';
 import { QuestManager } from '@managers/QuestManager';
 import { NPCBehaviorController } from '@systems/overworld/NPCBehavior';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
@@ -113,10 +116,10 @@ export class OverworldScene extends Phaser.Scene {
   private followerPrevPos = { x: 0, y: 0 };
 
   constructor() {
-    super({ key: 'OverworldScene' });
+    super({ key: SceneKey.Overworld });
   }
 
-  init(data?: { mapKey?: string; spawnId?: string; flyTo?: string; resume?: boolean }): void {
+  init(data?: OverworldSceneData): void {
     // NOTE: Continue from save is handled by SaveManager.loadAndApply()
     // before this scene starts (see TitleScene). The previous saveData
     // branch routed through GameManager.loadFromSave which expected a
@@ -151,22 +154,23 @@ export class OverworldScene extends Phaser.Scene {
 
   create(): void {
     const gm = GameManager.getInstance();
+    const router = SceneRouter.for(this);
 
     QuestManager.getInstance().initAutomation();
 
     // Launch quest tracker HUD overlay
-    if (!this.scene.isActive('QuestTrackerScene') && !this.scene.isSleeping('QuestTrackerScene')) {
-      this.scene.launch('QuestTrackerScene');
+    if (!router.isActive(SceneKey.QuestTracker) && !router.isSleeping(SceneKey.QuestTracker)) {
+      router.launch(SceneKey.QuestTracker);
     }
 
     // Launch party quick-view HUD overlay
-    if (!this.scene.isActive('PartyQuickViewScene') && !this.scene.isSleeping('PartyQuickViewScene')) {
-      this.scene.launch('PartyQuickViewScene');
+    if (!router.isActive(SceneKey.PartyQuickView) && !router.isSleeping(SceneKey.PartyQuickView)) {
+      router.launch(SceneKey.PartyQuickView);
     }
 
     // Launch minimap HUD overlay
-    if (!this.scene.isActive('MinimapScene') && !this.scene.isSleeping('MinimapScene')) {
-      this.scene.launch('MinimapScene');
+    if (!router.isActive(SceneKey.Minimap) && !router.isSleeping(SceneKey.Minimap)) {
+      router.launch(SceneKey.Minimap);
     }
 
     // Ensure player has a starter Pokemon (fallback — normally received from Oak)
@@ -174,6 +178,7 @@ export class OverworldScene extends Phaser.Scene {
       const starter = EncounterSystem.createWildPokemon(1, 5);
       starter.nickname = 'Bulbasaur';
       gm.addToParty(starter);
+      EventManager.getInstance().emit('party-changed');
     }
 
     // Load map definition
@@ -731,6 +736,7 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     // Warps
+    const router = SceneRouter.for(this);
     for (const warp of this.mapDef.warps) {
       if (warp.tileX === tx && warp.tileY === ty) {
         // Check flag gate
@@ -740,12 +746,12 @@ export class OverworldScene extends Phaser.Scene {
           const flagValue = gm.getFlag(flagName);
           if (negated ? flagValue : !flagValue) {
             this.scene.pause();
-            this.scene.launch('DialogueScene', {
+            router.launch(SceneKey.Dialogue, {
               dialogue: ['The way ahead is blocked...'],
             });
             // AUDIT-014: Resume when dialogue ends to prevent softlock
-            this.scene.get('DialogueScene').events.once('shutdown', () => {
-              this.scene.resume();
+            router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+              router.resume();
             });
             return;
           }
@@ -759,12 +765,12 @@ export class OverworldScene extends Phaser.Scene {
         const isInteriorTransition = this.mapDef.isInterior || targetDef?.isInterior;
         if (gm.getParty().length === 0 && !isInteriorTransition) {
           this.scene.pause();
-          this.scene.launch('DialogueScene', {
+          router.launch(SceneKey.Dialogue, {
             dialogue: ['You should go see Prof. Willow first!'],
           });
           // AUDIT-015: Resume when dialogue ends to prevent softlock
-          this.scene.get('DialogueScene').events.once('shutdown', () => {
-            this.scene.resume();
+          router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+            router.resume();
           });
           return;
         }
@@ -843,9 +849,9 @@ export class OverworldScene extends Phaser.Scene {
     AudioManager.getInstance().playSFX(SFX.ENCOUNTER);
     this.cameras.main.flash(500, 255, 255, 255);
     this.time.delayedCall(500, () => {
-      this.scene.start('TransitionScene', {
-        targetScene: 'BattleScene',
-        returnScene: 'OverworldScene',
+      SceneRouter.for(this).start(SceneKey.Transition, {
+        targetScene: SceneKey.Battle,
+        returnScene: SceneKey.Overworld,
         targetData: { enemyPokemon: pokemon, battleBg: this.mapDef.battleBg },
         returnData: { mapKey: this.mapKey, spawnId: '__resume' },
         style: 'stripes',
@@ -885,20 +891,20 @@ export class OverworldScene extends Phaser.Scene {
 
         // Show pre-battle dialogue
         this.scene.pause();
-        this.scene.launch('DialogueScene', {
+        SceneRouter.for(this).launch(SceneKey.Dialogue, {
           dialogue: tData?.dialogue?.before ?? ['...'],
           speaker: tData?.name,
           portraitKey: tData?.spriteKey,
         });
 
-        this.scene.get('DialogueScene').events.once('shutdown', () => {
-          this.scene.resume();
+        SceneRouter.for(this).get(SceneKey.Dialogue).events.once('shutdown', () => {
+          SceneRouter.for(this).resume();
           const enemyParty = tData.party.map(p =>
             EncounterSystem.createWildPokemon(p.pokemonId, p.level),
           );
-          this.scene.start('TransitionScene', {
-            targetScene: 'BattleScene',
-            returnScene: 'OverworldScene',
+          SceneRouter.for(this).start(SceneKey.Transition, {
+            targetScene: SceneKey.Battle,
+            returnScene: SceneKey.Overworld,
             targetData: {
               enemyPokemon: enemyParty[0],
               isTrainer: true,
@@ -975,24 +981,25 @@ export class OverworldScene extends Phaser.Scene {
 
   /** Attempt to fish at the water tile the player is facing. */
   private tryFishing(): void {
-    if (this.scene.isActive('DialogueScene')) return;
+    const router = SceneRouter.for(this);
+    if (router.isActive(SceneKey.Dialogue)) return;
     const rod = getBestRod();
     if (!rod) {
-      this.scene.pause();
-      this.scene.launch('DialogueScene', { dialogue: ['The water is calm...'] });
-      this.scene.get('DialogueScene').events.once('shutdown', () => this.scene.resume());
+      router.pause();
+      router.launch(SceneKey.Dialogue, { dialogue: ['The water is calm...'] });
+      router.get(SceneKey.Dialogue).events.once('shutdown', () => router.resume());
       return;
     }
 
-    this.scene.pause();
-    this.scene.launch('DialogueScene', { dialogue: ['...', '...!'], callingScene: 'OverworldScene' });
-    this.scene.get('DialogueScene').events.once('shutdown', () => {
+    router.pause();
+    router.launch(SceneKey.Dialogue, { dialogue: ['...', '...!'], callingScene: SceneKey.Overworld });
+    router.get(SceneKey.Dialogue).events.once('shutdown', () => {
       const pokemon = attemptFish(this.mapKey, rod);
       if (pokemon) {
-        this.scene.resume();
+        router.resume();
         this.triggerWildEncounter(pokemon);
       } else {
-        this.scene.launch('DialogueScene', { dialogue: ['Not even a nibble...'], callingScene: 'OverworldScene' });
+        router.launch(SceneKey.Dialogue, { dialogue: ['Not even a nibble...'], callingScene: SceneKey.Overworld });
         // NEW-008: Don't add extra resume — DialogueScene handles it via callingScene
       }
     });
@@ -1007,19 +1014,21 @@ export class OverworldScene extends Phaser.Scene {
 
   /** Launch the starter Pokémon selection UI. */
   private launchStarterSelection(): void {
-    this.scene.pause();
-    this.scene.launch('StarterSelectScene');
+    const router = SceneRouter.for(this);
+    router.pause();
+    router.launch(SceneKey.StarterSelect);
     // After starter selection completes, re-spawn NPCs so flag-gated ones update
-    this.scene.get('StarterSelectScene').events.once('shutdown', () => {
+    router.get(SceneKey.StarterSelect).events.once('shutdown', () => {
       this.respawnNPCs();
-      this.scene.resume();
+      router.resume();
     });
   }
 
   /** Launch a nickname input overlay for a Pokémon. Calls callback when done. */
   private launchNicknameInput(pokemon: PokemonInstance, speciesName: string, callback: () => void): void {
-    this.scene.launch('NicknameScene', { pokemon, speciesName });
-    this.scene.get('NicknameScene').events.once('shutdown', () => {
+    const router = SceneRouter.for(this);
+    router.launch(SceneKey.Nickname, { pokemon, speciesName });
+    router.get(SceneKey.Nickname).events.once('shutdown', () => {
       callback();
     });
   }
@@ -1171,8 +1180,9 @@ export class OverworldScene extends Phaser.Scene {
 
     // Menu
     if (input.menu) {
-      this.scene.pause();
-      this.scene.launch('MenuScene');
+      const router = SceneRouter.for(this);
+      router.pause();
+      router.launch(SceneKey.Menu);
       return;
     }
 
@@ -1319,6 +1329,7 @@ export class OverworldScene extends Phaser.Scene {
   }
 
   shutdown(): void {
+    EventManager.getInstance().clearByTag(`${this.scene.key}:dialogue-closed`);
     // Persist repel steps so they survive map transitions and battle returns
     if (this.encounterSystem) {
       GameManager.getInstance().setRepelSteps(this.encounterSystem.getRepelSteps());

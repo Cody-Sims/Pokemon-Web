@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - Scene contracts
+
+- Added typed scene-key and scene-data contracts plus a SceneRouter wrapper for
+  typed scene transitions.
+- Tightened EventManager event names, typed berry/dialogue/inventory events, and
+  moved priority scene transitions to the router.
+
 ### Fixed - Import cycle enforcement
 
 - Broke production import cycles between game/quest managers, double-battle
