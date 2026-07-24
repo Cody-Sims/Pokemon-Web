@@ -6,6 +6,11 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Added - Shared frontend modules
+
+- Added reusable grid math, display formatting, Phaser sequencing, and pure data
+  selector modules with unit coverage for edge cases and cancellation behavior.
+
 ### Fixed - Import cycle enforcement
 
 - Broke production import cycles between game/quest managers, double-battle
