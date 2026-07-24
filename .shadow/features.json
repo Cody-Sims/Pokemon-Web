@@ -81,7 +81,7 @@
       "name": "Maps and map tooling",
       "paths": [
         "frontend/src/data/maps/**",
-        "temp/scripts/map-gen/**"
+        "scripts/map-gen/**"
       ],
       "decisions": [
         "DEC-0007"

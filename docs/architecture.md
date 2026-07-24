@@ -469,11 +469,12 @@ SaveManager (on explicit Save → localStorage)
 
 ## Map Generation Toolchain
 
-A comprehensive map creation pipeline located at `temp/scripts/map-gen/`:
+A comprehensive tracked map creation pipeline located at `scripts/map-gen/`.
+Generated previews and region renders are written under ignored `temp/` paths:
 
 | Component | Path | Purpose |
 |-----------|------|---------|
-| CLI | `temp/scripts/map-gen/cli.ts` | Unified entry point for all map tools |
+| CLI | `scripts/map-gen/cli.ts` | Unified entry point for all map tools |
 | Grid | `core/grid.ts` | Bounds-safe 2D grid with stamp, fill, neighbor ops |
 | Flood Fill | `core/flood-fill.ts` | Connectivity checking, region labeling |
 | Pathfinding | `core/pathfind.ts` | A* pathfinding and path carving |

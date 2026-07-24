@@ -6,6 +6,14 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - Tracked map toolchain
+
+- Moved the map generation, preview, region render, and validation toolchain into
+  tracked `scripts/map-gen/` source and pointed the `map:*` npm scripts at it.
+- Declared `tsx` as a development dependency for the TypeScript map commands.
+- Updated agent, map-generation, architecture, and decision-graph references to
+  distinguish tracked toolchain source from ignored `temp/` preview outputs.
+
 ### Added - Bounded improvement loop
 
 - Added a gate-first autonomous improvement loop that runs each iteration in a
