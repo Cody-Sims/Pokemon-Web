@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { moveData } from '@data/moves';
@@ -63,11 +64,14 @@ export class BattleUIScene extends Phaser.Scene {
   /** Per-battle counter: status player moves used (used for status-master achievement). */
   playerStatusMovesUsed = 0;
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
     super({ key: SceneKey.BattleUI });
   }
 
   create(): void {
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
     this.state = 'actions';
     this.bossSynthesisTriggered = false;
     this.playerDamagingMovesUsed = 0;
@@ -163,17 +167,17 @@ export class BattleUIScene extends Phaser.Scene {
     ).setDepth(50).setVisible(false);
 
     // Keyboard
-    this.input.keyboard!.on('keydown-LEFT', () => this.nav('left'));
-    this.input.keyboard!.on('keydown-RIGHT', () => this.nav('right'));
-    this.input.keyboard!.on('keydown-UP', () => this.nav('up'));
-    this.input.keyboard!.on('keydown-DOWN', () => this.nav('down'));
-    this.input.keyboard!.on('keydown-ENTER', () => this.confirm());
-    this.input.keyboard!.on('keydown-SPACE', () => this.confirm());
-    this.input.keyboard!.on('keydown-ESC', () => this.cancel());
+    this.inputRegistry.bindKey('keydown-LEFT', () => this.nav('left'));
+    this.inputRegistry.bindKey('keydown-RIGHT', () => this.nav('right'));
+    this.inputRegistry.bindKey('keydown-UP', () => this.nav('up'));
+    this.inputRegistry.bindKey('keydown-DOWN', () => this.nav('down'));
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.confirm());
+    this.inputRegistry.bindKey('keydown-SPACE', () => this.confirm());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.cancel());
 
     // HIGH-11: Disable keyboard when scene is paused, re-enable on resume
-    this.events.on('pause', () => { if (this.input.keyboard) this.input.keyboard.enabled = false; });
-    this.events.on('resume', () => { if (this.input.keyboard) { this.input.keyboard.enabled = true; this.input.keyboard.resetKeys(); } });
+    this.inputRegistry.bindSceneEvent('pause', () => { if (this.input.keyboard) this.input.keyboard.enabled = false; });
+    this.inputRegistry.bindSceneEvent('resume', () => { if (this.input.keyboard) { this.input.keyboard.enabled = true; this.input.keyboard.resetKeys(); } });
 
     // Re-layout on resize / orientation change
     layoutOn(this, () => {
@@ -779,8 +783,7 @@ export class BattleUIScene extends Phaser.Scene {
 
   shutdown(): void {
     EventManager.getInstance().clearByTag(this.scene.key);
-    this.input.keyboard?.removeAllListeners();
-    this.input.removeAllListeners();
+    this.inputRegistry.clear();
     this.tweens.killAll();
     this.time.removeAllEvents();
     cleanupBallGraphics();

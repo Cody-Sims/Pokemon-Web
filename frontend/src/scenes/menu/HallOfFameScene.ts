@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, TYPE_COLORS, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
@@ -15,6 +16,8 @@ export class HallOfFameScene extends Phaser.Scene {
   private entries: HallOfFameEntry[] = [];
   private page = 0;
   private readonly entriesPerPage = 3;
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: 'HallOfFameScene' });
@@ -55,10 +58,10 @@ export class HallOfFameScene extends Phaser.Scene {
     closeBtn.on('pointerdown', () => this.close());
 
     // Input (BUG-085: removed global pointerdown close)
-    this.input.keyboard!.on('keydown-ESC', () => this.close());
-    this.input.keyboard!.on('keydown-ENTER', () => this.close());
-    this.input.keyboard!.on('keydown-LEFT', () => this.prevPage());
-    this.input.keyboard!.on('keydown-RIGHT', () => this.nextPage());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.close());
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.close());
+    this.inputRegistry.bindKey('keydown-LEFT', () => this.prevPage());
+    this.inputRegistry.bindKey('keydown-RIGHT', () => this.nextPage());
   }
 
   private drawPage(): void {

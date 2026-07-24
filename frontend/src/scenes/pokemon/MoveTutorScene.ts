@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
@@ -54,6 +55,8 @@ export class MoveTutorScene extends Phaser.Scene {
   private replaceGroup!: Phaser.GameObjects.Group;
   private moveScrollContainer?: ScrollContainer;
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
     super({ key: 'MoveTutorScene' });
   }
@@ -99,7 +102,7 @@ export class MoveTutorScene extends Phaser.Scene {
     this.add.text(layout.cx, 52, 'Which move would you like to teach?', FONTS.bodySmall).setOrigin(0.5);
 
     this.showMoveList();
-    this.input.keyboard!.on('keydown-ESC', () => this.handleCancel());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.handleCancel());
   }
 
   private drawBackground(): void {
@@ -497,10 +500,10 @@ export class MoveTutorScene extends Phaser.Scene {
       }
     };
 
-    this.input.keyboard!.once('keydown-ENTER', dismiss);
-    this.input.keyboard!.once('keydown-SPACE', dismiss);
-    this.input.keyboard!.once('keydown-ESC', dismiss);
-    this.input.once('pointerdown', dismiss);
+    this.inputRegistry.bindKeyOnce('keydown-ENTER', dismiss);
+    this.inputRegistry.bindKeyOnce('keydown-SPACE', dismiss);
+    this.inputRegistry.bindKeyOnce('keydown-ESC', dismiss);
+    this.inputRegistry.bindPointerOnce(this.input, 'pointerdown', dismiss);
   }
 
   private handleCancel(): void {

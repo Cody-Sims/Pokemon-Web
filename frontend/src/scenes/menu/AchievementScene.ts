@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize, mobileScale } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
@@ -20,6 +21,8 @@ export class AchievementScene extends Phaser.Scene {
   private tabTexts: Phaser.GameObjects.Text[] = [];
   private readonly COLS = 5;
   private readonly VISIBLE_ROWS = 5;
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: 'AchievementScene' });
@@ -85,12 +88,12 @@ export class AchievementScene extends Phaser.Scene {
     backBtn.on('pointerdown', () => this.closeScene());
 
     // Input
-    this.input.keyboard!.on('keydown-LEFT', () => this.navigate(-1, 0));
-    this.input.keyboard!.on('keydown-RIGHT', () => this.navigate(1, 0));
-    this.input.keyboard!.on('keydown-UP', () => this.navigate(0, -1));
-    this.input.keyboard!.on('keydown-DOWN', () => this.navigate(0, 1));
-    this.input.keyboard!.on('keydown-ESC', () => this.closeScene());
-    this.input.keyboard!.on('keydown-TAB', () => this.cycleCategory());
+    this.inputRegistry.bindKey('keydown-LEFT', () => this.navigate(-1, 0));
+    this.inputRegistry.bindKey('keydown-RIGHT', () => this.navigate(1, 0));
+    this.inputRegistry.bindKey('keydown-UP', () => this.navigate(0, -1));
+    this.inputRegistry.bindKey('keydown-DOWN', () => this.navigate(0, 1));
+    this.inputRegistry.bindKey('keydown-ESC', () => this.closeScene());
+    this.inputRegistry.bindKey('keydown-TAB', () => this.cycleCategory());
 
     this.refreshGrid();
   }

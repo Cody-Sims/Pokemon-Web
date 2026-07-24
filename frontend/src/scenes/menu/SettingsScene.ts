@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
@@ -56,6 +57,8 @@ export class SettingsScene extends Phaser.Scene {
   /** Cursor index preserved across re-layouts. */
   private savedCursor = 0;
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
     super({ key: SceneKey.Settings });
   }
@@ -74,8 +77,8 @@ export class SettingsScene extends Phaser.Scene {
 
     // LEFT/RIGHT to adjust value (registered once so the controller persists
     // across re-layouts).
-    this.input.keyboard!.on('keydown-LEFT', () => this.adjustValue(-1));
-    this.input.keyboard!.on('keydown-RIGHT', () => this.adjustValue(1));
+    this.inputRegistry.bindKey('keydown-LEFT', () => this.adjustValue(-1));
+    this.inputRegistry.bindKey('keydown-RIGHT', () => this.adjustValue(1));
 
     // Sync accessibility settings on scene create
     syncAccessibilitySettings({

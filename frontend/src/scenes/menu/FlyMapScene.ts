@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
@@ -43,6 +44,8 @@ export class FlyMapScene extends Phaser.Scene {
   private destTexts: Phaser.GameObjects.Text[] = [];
   private cursorIcon!: Phaser.GameObjects.Text;
   private descText!: Phaser.GameObjects.Text;
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: SceneKey.FlyMap });
@@ -113,19 +116,19 @@ export class FlyMapScene extends Phaser.Scene {
     backBtn.on('pointerdown', () => this.close());
 
     // Keyboard navigation
-    this.input.keyboard!.on('keydown-UP', () => {
+    this.inputRegistry.bindKey('keydown-UP', () => {
       this.cursor = (this.cursor - 1 + this.destinations.length) % this.destinations.length;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-DOWN', () => {
+    this.inputRegistry.bindKey('keydown-DOWN', () => {
       this.cursor = (this.cursor + 1) % this.destinations.length;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-ENTER', () => this.confirmFly());
-    this.input.keyboard!.on('keydown-SPACE', () => this.confirmFly());
-    this.input.keyboard!.on('keydown-ESC', () => this.close());
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.confirmFly());
+    this.inputRegistry.bindKey('keydown-SPACE', () => this.confirmFly());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.close());
   }
 
   update(): void {

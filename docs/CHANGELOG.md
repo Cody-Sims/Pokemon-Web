@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - Scene lifecycle listener cleanup
+
+- Added a scene input registry that removes keyboard, pointer, and scene-event
+  listeners on scene shutdown/destroy.
+- Migrated leak-prone battle, menu, minigame, overworld, Pokémon, and title
+  scenes to registry-owned listeners, and hardened Overworld encounter teardown.
+
 ### Added - Shared frontend modules
 
 - Added reusable grid math, display formatting, Phaser sequencing, and pure data

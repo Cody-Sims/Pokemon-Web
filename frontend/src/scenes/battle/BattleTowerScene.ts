@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
@@ -53,6 +54,8 @@ export class BattleTowerScene extends Phaser.Scene {
   private initData?: BattleTowerSceneData;
   private statusMsg?: Phaser.GameObjects.Text;
   private rebuildLayer?: Phaser.GameObjects.Container;
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: SceneKey.BattleTower });
@@ -173,13 +176,13 @@ export class BattleTowerScene extends Phaser.Scene {
       layer.add(this.statusMsg);
     }
 
-    this.input.keyboard?.removeAllListeners();
-    this.input.keyboard!.on('keydown-ESC', () => this.close());
-    this.input.keyboard!.on('keydown-N', () => this.beginStreak('normal'));
-    this.input.keyboard!.on('keydown-S', () => {
+    this.inputRegistry.clear();
+    this.inputRegistry.bindKey('keydown-ESC', () => this.close());
+    this.inputRegistry.bindKey('keydown-N', () => this.beginStreak('normal'));
+    this.inputRegistry.bindKey('keydown-S', () => {
       if (battleTowerData.super.trainers.length > 0) this.beginStreak('super');
     });
-    this.input.keyboard!.on('keydown-B', () => {
+    this.inputRegistry.bindKey('keydown-B', () => {
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
       SceneRouter.for(this).start(SceneKey.BPShop, { exitScene: SceneKey.BattleTower });
     });

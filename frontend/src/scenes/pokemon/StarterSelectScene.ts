@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { FONTS, mobileFontSize, isMobile } from '@ui/theme';
@@ -21,6 +22,8 @@ export class StarterSelectScene extends Phaser.Scene {
     { id: 7, name: 'Squirtle', type: 'Water', color: 0x6890f0 },
   ];
   private cards: Phaser.GameObjects.Container[] = [];
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: SceneKey.StarterSelect });
@@ -177,31 +180,31 @@ export class StarterSelectScene extends Phaser.Scene {
     this.updateCursor();
 
     // Keyboard input
-    this.input.keyboard!.on('keydown-LEFT', () => {
+    this.inputRegistry.bindKey('keydown-LEFT', () => {
       this.cursor = (this.cursor - 1 + 3) % 3;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-RIGHT', () => {
+    this.inputRegistry.bindKey('keydown-RIGHT', () => {
       this.cursor = (this.cursor + 1) % 3;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
     // Portrait stack — also wire UP/DOWN so arrow keys feel natural.
-    this.input.keyboard!.on('keydown-UP', () => {
+    this.inputRegistry.bindKey('keydown-UP', () => {
       this.cursor = (this.cursor - 1 + 3) % 3;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-DOWN', () => {
+    this.inputRegistry.bindKey('keydown-DOWN', () => {
       this.cursor = (this.cursor + 1) % 3;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-ENTER', () => this.selectStarter());
-    this.input.keyboard!.on('keydown-SPACE', () => this.selectStarter());
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.selectStarter());
+    this.inputRegistry.bindKey('keydown-SPACE', () => this.selectStarter());
     // BUG-079: Add back/cancel handler
-    this.input.keyboard!.on('keydown-ESC', () => this.goBack());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.goBack());
 
     // Re-layout on resize / orientation change
     let resizeInit = false;

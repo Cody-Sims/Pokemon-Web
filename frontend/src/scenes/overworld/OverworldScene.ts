@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { TILE_SIZE } from '@utils/constants';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
@@ -115,6 +116,8 @@ export class OverworldScene extends Phaser.Scene {
   private follower?: FollowerPokemon;
   private followerPrevPos = { x: 0, y: 0 };
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
     super({ key: SceneKey.Overworld });
   }
@@ -159,6 +162,7 @@ export class OverworldScene extends Phaser.Scene {
   create(): void {
     const gm = GameManager.getInstance();
     const router = SceneRouter.for(this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
 
     QuestManager.getInstance().initAutomation();
 
@@ -198,6 +202,7 @@ export class OverworldScene extends Phaser.Scene {
 
     // Wire AchievementToast to show on any achievement unlock
     AchievementManager.getInstance().setOnUnlock((ach) => {
+      if (!this.scene.isActive()) return;
       AchievementToast.show(this, ach);
     });
 
@@ -394,7 +399,7 @@ export class OverworldScene extends Phaser.Scene {
     this.inputManager = new InputManager(this);
 
     // Drain pending touch input when resuming to prevent re-triggering interactions
-    this.events.on('resume', () => {
+    this.inputRegistry.bindSceneEvent('resume', () => {
       this.inputManager.getTouchControls()?.drain();
       this.resumeCooldown = 2;
       // Show the touch controls again — they were hidden when this scene
@@ -404,7 +409,7 @@ export class OverworldScene extends Phaser.Scene {
     // Hide the touch controls (joystick + A/B + hamburger) while the scene
     // is paused so they don't sit on top of the pause menu / dialogue /
     // sub-menu UI.
-    this.events.on('pause', () => {
+    this.inputRegistry.bindSceneEvent('pause', () => {
       this.inputManager.getTouchControls()?.setVisible(false);
     });
 
@@ -853,6 +858,9 @@ export class OverworldScene extends Phaser.Scene {
     AudioManager.getInstance().playSFX(SFX.ENCOUNTER);
     this.cameras.main.flash(500, 255, 255, 255);
     this.time.delayedCall(500, () => {
+      if (!this.scene.isActive()) {
+        return;
+      }
       SceneRouter.for(this).start(SceneKey.Transition, {
         targetScene: SceneKey.Battle,
         returnScene: SceneKey.Overworld,
@@ -1334,11 +1342,14 @@ export class OverworldScene extends Phaser.Scene {
 
   shutdown(): void {
     EventManager.getInstance().clearByTag(`${this.scene.key}:dialogue-closed`);
+    AchievementManager.getInstance().setOnUnlock(() => undefined);
     // Persist repel steps so they survive map transitions and battle returns
     if (this.encounterSystem) {
       GameManager.getInstance().setRepelSteps(this.encounterSystem.getRepelSteps());
     }
-    this.input.keyboard?.removeAllListeners();
+    this.inputRegistry.clear();
+    this.time.removeAllEvents();
+    this.tweens.killAll();
     this.inputManager?.destroy();
     this.lightingSystem?.destroy();
     this.ambientSFX?.destroy();

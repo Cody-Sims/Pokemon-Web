@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, isMobile, minTouchTarget } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
@@ -46,11 +47,14 @@ export class PartyQuickViewScene extends Phaser.Scene {
   private balls: Phaser.GameObjects.Arc[] = [];
   private bg!: Phaser.GameObjects.Rectangle;
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
     super({ key: SceneKey.PartyQuickView });
   }
 
   create(): void {
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
     const layout = ui(this);
     const BALL_RADIUS = ballRadius();
     const BALL_SPACING = ballSpacing();
@@ -90,7 +94,7 @@ export class PartyQuickViewScene extends Phaser.Scene {
     const hitZone = this.add.zone(0, 0, hitWidth, hitHeight).setInteractive();
     this.container.add(hitZone);
 
-    hitZone.on('pointerdown', () => {
+    this.inputRegistry.bindPointer(hitZone, 'pointerdown', () => {
       // Guard: don't open if PartyScene or MenuScene is already up
       const router = SceneRouter.for(this);
       if (router.isActive(SceneKey.Party) || router.isActive(SceneKey.Menu)) return;
@@ -104,8 +108,8 @@ export class PartyQuickViewScene extends Phaser.Scene {
     em.onTagged(this.scene.key, 'flag-set', updateHandler);
 
     // Refresh when scene resumes (returning from menus / battles)
-    this.events.on('wake', () => this.refresh());
-    this.events.on('resume', () => this.refresh());
+    this.inputRegistry.bindSceneEvent('wake', () => this.refresh());
+    this.inputRegistry.bindSceneEvent('resume', () => this.refresh());
 
     // Clean up listeners on shutdown
     this.events.once('shutdown', () => {
@@ -154,6 +158,6 @@ export class PartyQuickViewScene extends Phaser.Scene {
   }
 
   shutdown(): void {
-    this.input.removeAllListeners();
+    this.inputRegistry.clear();
   }
 }

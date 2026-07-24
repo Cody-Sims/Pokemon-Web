@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
@@ -19,6 +20,8 @@ export class NicknameScene extends Phaser.Scene {
   private nameDisplay!: Phaser.GameObjects.Text;
   private nameCursor!: Phaser.GameObjects.Rectangle;
   private hiddenInput?: HTMLInputElement;
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: 'NicknameScene' });
@@ -137,7 +140,7 @@ export class NicknameScene extends Phaser.Scene {
 
     // Keyboard input — suppress when the hidden DOM input is focused to
     // avoid double-firing on Bluetooth keyboards paired to mobile devices.
-    this.input.keyboard!.on('keydown', (event: KeyboardEvent) => {
+    this.inputRegistry.bindKey('keydown', (event: KeyboardEvent) => {
       if (this.hiddenInput && document.activeElement === this.hiddenInput) return;
       if (event.key === 'Enter') {
         this.confirmNickname();

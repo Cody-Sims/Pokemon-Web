@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { COLORS, FONTS, mobileFontSize, mobileScale } from '@ui/theme';
@@ -23,11 +24,14 @@ export class MenuScene extends Phaser.Scene {
   private menuPanel!: NinePatchPanel;
   private moneyText!: Phaser.GameObjects.Text;
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
     super({ key: SceneKey.Menu });
   }
 
   create(): void {
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
     // Drain any stale confirm/cancel flags left by the previous scene
     // so MenuScene's first update() doesn't immediately act on them.
     TouchControls.getInstance()?.drain();
@@ -101,18 +105,18 @@ export class MenuScene extends Phaser.Scene {
     this.cursor = 0;
     this.updateCursor();
 
-    this.input.keyboard!.on('keydown-UP', () => {
+    this.inputRegistry.bindKey('keydown-UP', () => {
       this.cursor = (this.cursor - 1 + this.menuItems.length) % this.menuItems.length;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-DOWN', () => {
+    this.inputRegistry.bindKey('keydown-DOWN', () => {
       this.cursor = (this.cursor + 1) % this.menuItems.length;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-ENTER', () => this.selectOption());
-    this.input.keyboard!.on('keydown-ESC', () => this.closeMenu());
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.selectOption());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.closeMenu());
 
     // Re-layout on resize / orientation change
     layoutOn(this, () => {
@@ -142,7 +146,7 @@ export class MenuScene extends Phaser.Scene {
     });
 
     // Drain stale confirm/cancel when returning from a child scene
-    this.events.on('wake', () => {
+    this.inputRegistry.bindSceneEvent('wake', () => {
       TouchControls.getInstance()?.drain();
     });
   }
@@ -312,7 +316,7 @@ export class MenuScene extends Phaser.Scene {
 
   shutdown(): void {
     EventManager.getInstance().clearByTag(this.scene.key);
-    this.input.keyboard?.removeAllListeners();
+    this.inputRegistry.clear();
   }
 
   private wakeOnInventoryClosed(): void {

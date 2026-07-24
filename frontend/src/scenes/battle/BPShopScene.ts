@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
@@ -33,6 +34,8 @@ export class BPShopScene extends Phaser.Scene {
   private rebuildLayer?: Phaser.GameObjects.Container;
   private statusMsg?: Phaser.GameObjects.Text;
   private initData?: BPShopSceneData;
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: SceneKey.BPShop });
@@ -141,12 +144,12 @@ export class BPShopScene extends Phaser.Scene {
   }
 
   private bindInput(): void {
-    this.input.keyboard?.removeAllListeners();
-    this.input.keyboard!.on('keydown-UP', () => this.move(-1));
-    this.input.keyboard!.on('keydown-DOWN', () => this.move(1));
-    this.input.keyboard!.on('keydown-ENTER', () => this.buy());
-    this.input.keyboard!.on('keydown-SPACE', () => this.buy());
-    this.input.keyboard!.on('keydown-ESC', () => this.close());
+    this.inputRegistry.clear();
+    this.inputRegistry.bindKey('keydown-UP', () => this.move(-1));
+    this.inputRegistry.bindKey('keydown-DOWN', () => this.move(1));
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.buy());
+    this.inputRegistry.bindKey('keydown-SPACE', () => this.buy());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.close());
   }
 
   private move(delta: number): void {
