@@ -31,7 +31,7 @@ export class AIController {
 
   /** Standard trainer AI: pick highest damage super-effective move. */
   private static selectStandardMove(
-    pokemon: PokemonInstance,
+    _pokemon: PokemonInstance,
     opponent: PokemonInstance,
     availableMoves: { moveId: string; currentPp: number }[],
   ): string {

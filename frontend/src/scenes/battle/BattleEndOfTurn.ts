@@ -6,7 +6,7 @@ import type { StatusEffectHandler } from '@battle/effects/StatusEffectHandler';
 import type { WeatherManager } from '@battle/effects/WeatherManager';
 import { seededRandom } from '@utils/math-helpers';
 
-export interface EndOfTurnEffects {
+interface EndOfTurnEffects {
   messages: string[];
 }
 

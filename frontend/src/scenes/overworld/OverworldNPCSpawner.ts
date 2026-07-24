@@ -5,11 +5,11 @@ import { GameManager } from '@managers/GameManager';
 import { NPCBehaviorController } from '@systems/overworld/NPCBehavior';
 import { trainerData } from '@data/trainer-data';
 import { SOLID_TILES } from '@data/maps';
-import type { MapDefinition, NpcSpawn, ObjectSpawn } from '@data/maps';
+import type { MapDefinition, NpcSpawn } from '@data/maps';
 import { TILE_SIZE } from '@utils/constants';
 import type { TimePeriod } from '@systems/engine/GameClock';
 
-export interface SpawnedNPCs {
+interface SpawnedNPCs {
   npcs: NPC[];
   behaviors: NPCBehaviorController[];
 }

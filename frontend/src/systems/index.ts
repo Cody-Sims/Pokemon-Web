@@ -1,5 +1,4 @@
 // ── Audio ────────────────────────────────────────────────────
-export { ProceduralAudio } from './audio/ProceduralAudio';
 export { CryGenerator } from './audio/CryGenerator';
 export { AmbientSFX } from './audio/AmbientSFX';
 
@@ -9,9 +8,6 @@ export { NPCBehaviorController } from './overworld/NPCBehavior';
 export type { NPCBehaviorConfig } from './overworld/NPCBehavior';
 export { EncounterSystem } from './overworld/EncounterSystem';
 export { OverworldAbilities } from './overworld/OverworldAbilities';
-export { BerryGarden } from './overworld/BerryGarden';
-export { hiddenItemData, getHiddenItemAt, scanHiddenItems } from './overworld/HiddenItems';
-export type { HiddenItem } from './overworld/HiddenItems';
 
 // ── Rendering ────────────────────────────────────────────────
 export { WeatherRenderer } from './rendering/WeatherRenderer';

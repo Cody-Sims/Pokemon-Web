@@ -69,10 +69,6 @@ export class TrainerCardScene extends Phaser.Scene {
     }).setOrigin(0, 0.5);
 
     const badges = gm.getBadges();
-    const badgeNames = [
-      'Aster', 'Terra', 'Coral', 'Voltara',
-      'Ember', 'Iron', 'Wraith', 'Drake',
-    ];
     const badgeStartX = leftX + 80;
     for (let i = 0; i < 8; i++) {
       const bx = badgeStartX + i * 52;

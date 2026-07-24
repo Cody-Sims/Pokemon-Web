@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { mulberry32 } from '../../frontend/src/utils/seeded-random';
+import { mulberry32 } from '../helpers/seeded-random';
 
 describe('Replay System - Seeded Random', () => {
   it('mulberry32 should produce deterministic sequence', () => {

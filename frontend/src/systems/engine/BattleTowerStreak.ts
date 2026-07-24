@@ -21,9 +21,9 @@ export interface TowerStreakState {
   startedPartySize: number;
 }
 
-export type StreakOutcome = 'wipeout' | 'continue' | 'cleared';
+type StreakOutcome = 'wipeout' | 'continue' | 'cleared';
 
-export interface StreakResumeResult {
+interface StreakResumeResult {
   /** New state to drive the next battle, or `null` once the streak ends. */
   nextState: TowerStreakState | null;
   outcome: StreakOutcome;

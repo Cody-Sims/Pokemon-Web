@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX } from '@utils/audio-keys';
@@ -71,7 +71,7 @@ export class BPShopScene extends Phaser.Scene {
 
     // ── Item list ──
     const listTop = 78;
-    const rowH = Math.round(28 * MOBILE_SCALE);
+    const rowH = Math.round(28 * mobileScale());
     const fontSize = mobileFontSize(14);
     const visible = battlePointShopCatalog.slice(this.scroll, this.scroll + this.visibleCount);
 

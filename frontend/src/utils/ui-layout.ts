@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-export interface UILayout {
+interface UILayout {
   /** Full viewport width. */
   w: number;
   /** Full viewport height. */

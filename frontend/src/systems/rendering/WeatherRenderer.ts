@@ -150,7 +150,7 @@ export class WeatherRenderer {
       g.fillRect(3, 0, 2, 8);
     });
 
-    const { width: w, height: h } = this.scene.cameras.main;
+    const { width: w } = this.scene.cameras.main;
     this.emitter = this.scene.add.particles(0, 0, key, {
       x: { min: -50, max: w + 50 },
       y: -10,
@@ -175,7 +175,7 @@ export class WeatherRenderer {
       g.fillCircle(4, 4, 2);
     });
 
-    const { width: w, height: h } = this.scene.cameras.main;
+    const { height: h } = this.scene.cameras.main;
     this.emitter = this.scene.add.particles(0, 0, key, {
       x: -20,
       y: { min: 0, max: h },
@@ -200,7 +200,7 @@ export class WeatherRenderer {
       g.fillCircle(4, 4, 3);
     });
 
-    const { width: w, height: h } = this.scene.cameras.main;
+    const { width: w } = this.scene.cameras.main;
     this.emitter = this.scene.add.particles(0, 0, key, {
       x: { min: -20, max: w + 20 },
       y: -10,
@@ -272,7 +272,7 @@ export class WeatherRenderer {
       g.fillCircle(4, 4, 2);
     });
 
-    const { width: w, height: h } = this.scene.cameras.main;
+    const { width: w } = this.scene.cameras.main;
     this.emitter = this.scene.add.particles(0, 0, key, {
       x: { min: -20, max: w + 20 },
       y: -10,

@@ -8,11 +8,6 @@ import { COLORS } from '../theme';
  */
 export class NinePatchPanel {
   private outer: Phaser.GameObjects.Graphics;
-  private x: number;
-  private y: number;
-  private w: number;
-  private h: number;
-  private scene: Phaser.Scene;
 
   constructor(
     scene: Phaser.Scene,
@@ -30,12 +25,6 @@ export class NinePatchPanel {
       shadowAlpha?: number;
     },
   ) {
-    this.scene = scene;
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
-
     const fillColor = options?.fillColor ?? COLORS.bgPanel;
     const fillAlpha = options?.fillAlpha ?? 0.95;
     const borderColor = options?.borderColor ?? COLORS.border;

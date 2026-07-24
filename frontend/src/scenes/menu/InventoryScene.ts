@@ -9,7 +9,7 @@ import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { ScrollContainer } from '@ui/widgets/ScrollContainer';
-import { COLORS, FONTS, SPACING, mobileFontSize, isMobile } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { blockReasonForItemUse } from '@systems/engine/ChallengeRules';
 import { SFX } from '@utils/audio-keys';
 import { tmData } from '@data/tm-data';
@@ -32,7 +32,6 @@ export class InventoryScene extends Phaser.Scene {
   private filteredItems: { item: ItemData; qty: number }[] = [];
   private itemController?: MenuController;
   private actionController?: MenuController;
-  private quantityValue = 1;
   private itemTexts: Phaser.GameObjects.Text[] = [];
   private detailGroup!: Phaser.GameObjects.Group;
   private itemListGroup!: Phaser.GameObjects.Group;
@@ -42,8 +41,6 @@ export class InventoryScene extends Phaser.Scene {
   private mode: 'browse' | 'action' | 'quantity' | 'target' = 'browse';
   private actionTexts: Phaser.GameObjects.Text[] = [];
   private actionPanel?: NinePatchPanel;
-  private quantityText?: Phaser.GameObjects.Text;
-  private quantityPanel?: NinePatchPanel;
   private targetCursor = 0;
   private targetTexts: Phaser.GameObjects.Text[] = [];
   private targetPanel?: NinePatchPanel;

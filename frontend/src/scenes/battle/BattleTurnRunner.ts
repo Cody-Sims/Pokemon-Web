@@ -14,7 +14,7 @@ export function pickEnemyMove(enemy: PokemonInstance, opponent?: PokemonInstance
   return avail[randomInt(0, avail.length - 1)].moveId;
 }
 
-export interface TurnOrder {
+interface TurnOrder {
   attacker: PokemonInstance;
   defender: PokemonInstance;
   moveId: string;

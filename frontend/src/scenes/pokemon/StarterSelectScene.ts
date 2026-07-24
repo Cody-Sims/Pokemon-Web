@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
+import { FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { AchievementManager } from '@managers/AchievementManager';
@@ -109,7 +109,7 @@ export class StarterSelectScene extends Phaser.Scene {
       const data = pokemonData[s.id];
       if (isPortrait) {
         // Sprite zone width — capped so wide cards don't push the text
-        // column off the right edge once `MOBILE_SCALE` (1.35) inflates
+        // column off the right edge once `mobileScale()` inflates
         // the font sizes on mobile.
         const spriteZone = Math.min(cardH, 84);
         const spriteX = -cardW / 2 + spriteZone / 2;

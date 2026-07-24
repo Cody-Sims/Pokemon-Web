@@ -10,7 +10,6 @@ import { SFX, BGM } from '@utils/audio-keys';
 import { isMobile, mobileFontSize } from '@ui/theme';
 import { processTrainerRewards, getContinueMessage } from './BattleRewardHandler';
 import { EventManager } from '@managers/EventManager';
-import type { PokemonInstance } from '@data/interfaces';
 import type { BattleScene } from './BattleScene';
 
 export interface VictoryContext {

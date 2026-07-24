@@ -4,22 +4,21 @@ export type AmbientType = 'ocean' | 'forest' | 'cave' | 'city' | 'wind' | 'rain'
 
 /**
  * Manages ambient environmental sound effects based on the current map's biome.
- * Tracks the active ambient type and provides hooks for ProceduralAudio
- * to generate looping ambient sounds in the future.
+ * Tracks the active ambient type so a future audio loop system can crossfade
+ * biome-specific ambience.
  */
 export class AmbientSFX {
-  private scene: Phaser.Scene;
   private currentAmbient: AmbientType = 'none';
 
   constructor(scene: Phaser.Scene) {
-    this.scene = scene;
+    void scene;
   }
 
   /** Set the ambient sound type for the current map. */
   setAmbient(type: AmbientType): void {
     if (type === this.currentAmbient) return;
     this.currentAmbient = type;
-    // Future: trigger ProceduralAudio ambient loop start/crossfade here
+    // Future: trigger ambient loop start/crossfade here.
   }
 
   /** Get the current ambient type. */

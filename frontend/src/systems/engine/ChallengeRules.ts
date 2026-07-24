@@ -9,7 +9,7 @@ import { pokemonData } from '@data/pokemon';
 import { MINIMAL_CATCHES_LIMIT } from '@data/challenge-modes';
 
 /** Reason a rule blocked the action (`null` when allowed). */
-export type ChallengeBlock = string | null;
+type ChallengeBlock = string | null;
 
 /**
  * Should this Pokémon be allowed into the player's party (or storage)?

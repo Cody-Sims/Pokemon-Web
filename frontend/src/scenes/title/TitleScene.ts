@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { SaveManager } from '@managers/SaveManager';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale } from '@ui/theme';
 import { BGM, SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
@@ -98,7 +98,7 @@ export class TitleScene extends Phaser.Scene {
 
     this.cursor = 0;
     const menuStartY = height * 0.54;
-    const menuSpacing = Math.round(44 * MOBILE_SCALE);
+    const menuSpacing = Math.round(44 * mobileScale());
     const menuFontSize = mobileFontSize(22);
     this.menuItems = options.map((label, i) => {
       const item = this.add.text(width / 2 + 16, menuStartY + i * menuSpacing, label, {

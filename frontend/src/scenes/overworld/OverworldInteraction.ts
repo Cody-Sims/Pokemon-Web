@@ -7,7 +7,7 @@ import { AchievementManager } from '@managers/AchievementManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { Tile } from '@data/maps';
-import type { MapDefinition, NpcSpawn, ObjectSpawn } from '@data/maps';
+import type { MapDefinition, NpcSpawn } from '@data/maps';
 import { trainerData } from '@data/trainer-data';
 import { pokemonData } from '@data/pokemon';
 import { cutsceneData } from '@data/cutscene-data';
@@ -165,6 +165,18 @@ export function tryInteract(ctx: InteractionContext): void {
         sm.get('DialogueScene').events.once('shutdown', () => {
           sm.launch('ShopScene', { shopId: gm.getCurrentMap() });
           sm.get('ShopScene').events.once('shutdown', () => {
+            sm.resume();
+          });
+        });
+        return;
+      }
+
+      if ((spawnDef as { interactionType?: string } | undefined)?.interactionType === 'voltorb-flip') {
+        sm.pause();
+        sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+        sm.get('DialogueScene').events.once('shutdown', () => {
+          sm.launch('VoltorbFlipScene');
+          sm.get('VoltorbFlipScene').events.once('shutdown', () => {
             sm.resume();
           });
         });

@@ -6,13 +6,11 @@ export class HealthBar {
   private bg: Phaser.GameObjects.Rectangle;
   private fill: Phaser.GameObjects.Rectangle;
   private width: number;
-  private height: number;
   private maxValue: number;
   private currentValue: number;
 
   constructor(scene: Phaser.Scene, x: number, y: number, width: number, height: number, maxValue: number) {
     this.width = width;
-    this.height = height;
     this.maxValue = maxValue;
     this.currentValue = maxValue;
 

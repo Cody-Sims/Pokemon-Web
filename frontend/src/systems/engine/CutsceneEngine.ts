@@ -9,7 +9,7 @@ import { SaveManager } from '@managers/SaveManager';
 
 // ─── CutsceneAction union type ──────────────────────────────
 
-export type CutsceneAction =
+type CutsceneAction =
   | { type: 'dialogue'; speaker?: string; portraitKey?: string; lines: string[] }
   | { type: 'moveCameraTo'; x: number; y: number; duration?: number }
   | { type: 'moveNPC'; npcId: string; direction: Direction; tiles: number; speed?: number }
@@ -34,7 +34,7 @@ export interface CutsceneDefinition {
 
 // ─── Minimal interface so CutsceneEngine doesn't depend on the concrete OverworldScene class ───
 
-export interface CutsceneSceneAccess {
+interface CutsceneSceneAccess {
   npcs: { npcId: string; x: number; y: number; faceDirection(dir: Direction): void; playWalkAnim(duration: number): void; stopWalkAnim(): void; setFrame(frame: string): void; setFlipX(flip: boolean): void; texture: { key: string } }[];
   player: {
     x: number; y: number;

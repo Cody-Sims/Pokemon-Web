@@ -11,6 +11,7 @@ export { TextBox } from './widgets/TextBox';
 export { MenuList } from './widgets/MenuList';
 export { ConfirmBox } from './widgets/ConfirmBox';
 export { NinePatchPanel } from './widgets/NinePatchPanel';
+export { PixelText } from './widgets/PixelText';
 export { AchievementToast } from './widgets/AchievementToast';
 
 // ── Theme ────────────────────────────────────────────────────

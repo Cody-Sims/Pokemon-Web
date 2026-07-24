@@ -1,6 +1,5 @@
 import { PokemonInstance, MoveData } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
-import { itemData } from '@data/item-data';
 import { WeatherCondition } from '@utils/type-helpers';
 
 /**
@@ -20,11 +19,6 @@ export class HeldItemHandler {
   /** Consume a held item (berry). */
   private static consumeItem(pokemon: PokemonInstance): void {
     pokemon.heldItem = null;
-  }
-
-  /** Check if the item is a berry (consumed on use). */
-  private static isBerry(itemId: string): boolean {
-    return itemId.endsWith('-berry');
   }
 
   private static isChoiceItem(itemId: string): boolean {
@@ -323,7 +317,7 @@ export class HeldItemHandler {
   /** Modify damage output. Returns a multiplier for the attacker's held item. */
   static modifyDamage(
     attacker: PokemonInstance,
-    defender: PokemonInstance,
+    _defender: PokemonInstance,
     move: MoveData,
   ): number {
     const item = HeldItemHandler.getHeldItem(attacker);

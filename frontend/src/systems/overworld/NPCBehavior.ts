@@ -3,7 +3,7 @@ import { Direction } from '@utils/type-helpers';
 import { TILE_SIZE, WALK_DURATION } from '@utils/constants';
 import { NPC } from '@entities/NPC';
 
-export type NPCBehaviorType = 'stationary' | 'look-around' | 'wander' | 'pace';
+type NPCBehaviorType = 'stationary' | 'look-around' | 'wander' | 'pace';
 
 export interface NPCBehaviorConfig {
   type: NPCBehaviorType;

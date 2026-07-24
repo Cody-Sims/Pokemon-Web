@@ -7,7 +7,7 @@ import { StatusEffectHandler, EffectResult } from '../effects/StatusEffectHandle
 import { AbilityHandler } from '../effects/AbilityHandler';
 import { HeldItemHandler } from '../effects/HeldItemHandler';
 import { WeatherManager } from '../effects/WeatherManager';
-import { randomInt, seededRandom } from '@utils/math-helpers';
+import { seededRandom } from '@utils/math-helpers';
 import { PokemonType } from '@utils/type-helpers';
 
 export interface MoveExecutionResult {

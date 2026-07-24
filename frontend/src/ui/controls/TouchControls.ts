@@ -66,7 +66,6 @@ export class TouchControls {
   private readonly DOUBLE_TAP_THRESHOLD = 400;
 
   // DOM controls state
-  private domActive = false;
   private domDirection: Direction | null = null;
   private domJoystickPointerId: number | null = null;
   private domJoystickOriginX = 0;
@@ -348,19 +347,16 @@ export class TouchControls {
       controlsEl.style.top = '';
       controlsEl.style.height = '';
       controlsEl.style.display = 'flex';
-      this.domActive = true;
       this.container.setVisible(false);
     } else if (bottomSpace > 100) {
       // Portrait with space below canvas — show DOM controls below
       controlsEl.style.top = rect.bottom + 'px';
       controlsEl.style.height = bottomSpace + 'px';
       controlsEl.style.display = 'flex';
-      this.domActive = true;
       this.container.setVisible(false);
     } else {
       // Not enough space — hide DOM controls, show in-canvas
       controlsEl.style.display = 'none';
-      this.domActive = false;
       this.container.setVisible(true);
     }
 

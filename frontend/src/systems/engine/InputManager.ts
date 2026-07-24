@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
 import { TouchControls } from '@ui/controls/TouchControls';
 
-export interface InputState {
+interface InputState {
   direction: Direction | null;
   confirm: boolean;
   cancel: boolean;
