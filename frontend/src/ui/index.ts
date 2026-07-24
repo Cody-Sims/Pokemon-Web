@@ -21,6 +21,11 @@ export { ConfirmBox } from './widgets/ConfirmBox';
 export { NinePatchPanel, type NinePatchPanelOptions } from './widgets/NinePatchPanel';
 export { PixelText } from './widgets/PixelText';
 export { AchievementToast } from './widgets/AchievementToast';
+export { InventoryPanel, type InventoryPanelConfig } from './widgets/InventoryPanel';
+export { InventoryItemList, type InventoryItemListConfig, type InventoryItemListRenderState } from './widgets/InventoryItemList';
+export { ItemDetailPanel } from './widgets/ItemDetailPanel';
+export { TargetPickerPanel, type TargetPickerEntry, type TargetPickerPanelConfig } from './widgets/TargetPickerPanel';
+export { InventoryActionMenu, type InventoryActionMenuConfig } from './widgets/InventoryActionMenu';
 
 // ── Theme ────────────────────────────────────────────────────
 export {

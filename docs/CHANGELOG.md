@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - Inventory scene decomposition
+
+- Split bag filtering/windowing, item-use planning, battle item event bridging,
+  and reusable inventory UI panels out of `InventoryScene`.
+- Updated inventory integration coverage to call the production item-use service
+  instead of re-implementing medicine effects in the test.
+
 ### Fixed - Scene lifecycle listener cleanup
 
 - Added a scene input registry that removes keyboard, pointer, and scene-event
