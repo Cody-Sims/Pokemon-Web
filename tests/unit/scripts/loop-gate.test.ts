@@ -6,19 +6,30 @@ import {
   findSuppressions,
   measureDiff,
 } from '../../../scripts/loop/diff-hygiene.mjs';
-import { parseArguments as parseGateArguments } from '../../../scripts/loop/gate.mjs';
+import {
+  GATE_PROTECTED_RESTORE_PATHS,
+  ignoredPathsFromStatus,
+  parseArguments as parseGateArguments,
+} from '../../../scripts/loop/gate.mjs';
 import {
   COPILOT_TOOL_FLAGS,
   LOOP_CRITICAL_PATHS,
-  WORKTREE_LINKS,
+  WORKTREE_DEPENDENCIES,
   backlogItemFromSubject,
   buildCopilotArguments,
+  buildFindingPrompt,
+  worktreePathForIteration,
   markBacklogItem,
   parseArguments as parseLoopArguments,
 } from '../../../scripts/loop/run-loop.mjs';
 
 function diffWith(file: string, addedLines: string[]): string {
-  return [`--- a/${file}`, `+++ b/${file}`, '@@ -1,0 +1,1 @@', ...addedLines.map((line) => `+${line}`)].join('\n');
+  return [
+    `--- a/${file}`,
+    `+++ b/${file}`,
+    '@@ -1,0 +1,1 @@',
+    ...addedLines.map((line) => `+${line}`),
+  ].join('\n');
 }
 
 describe('loop diff hygiene', () => {
@@ -28,10 +39,10 @@ describe('loop diff hygiene', () => {
     ['/* eslint-disable no-console */', 'eslint-disable'],
     ['const value = payload as any;', 'cast-any'],
     ['const value = payload as unknown as Foo;', 'cast-unknown'],
-    ['  it.skip(\'is broken\', () => {', 'skipped-test'],
-    ['  describe.only(\'focus\', () => {', 'focused-test'],
-    ['  test.todo(\'later\');', 'todo-test'],
-    ['  xit(\'legacy skip\', () => {', 'legacy-skipped-test'],
+    ["  it.skip('is broken', () => {", 'skipped-test'],
+    ["  describe.only('focus', () => {", 'focused-test'],
+    ["  test.todo('later');", 'todo-test'],
+    ["  xit('legacy skip', () => {", 'legacy-skipped-test'],
   ])('flags %s as a suppression', (line, rule) => {
     const findings = findSuppressions(diffWith('frontend/src/managers/GameManager.ts', [line]));
     expect(findings.map((finding) => finding.rule)).toContain(rule);
@@ -55,8 +66,14 @@ describe('loop diff hygiene', () => {
     'tests/vitest.config.ts',
     'frontend/public/assets/asset-manifest.json',
   ])('treats %s as protected for every iteration type', (path) => {
-    expect(classifyPaths([path], 'impl').violations[0]).toMatchObject({ path, reason: 'protected' });
-    expect(classifyPaths([path], 'test').violations[0]).toMatchObject({ path, reason: 'protected' });
+    expect(classifyPaths([path], 'impl').violations[0]).toMatchObject({
+      path,
+      reason: 'protected',
+    });
+    expect(classifyPaths([path], 'test').violations[0]).toMatchObject({
+      path,
+      reason: 'protected',
+    });
   });
 
   it('refuses test edits during an implementation iteration', () => {
@@ -80,7 +97,9 @@ describe('loop diff hygiene', () => {
 
   it('inverts ownership for a test iteration', () => {
     expect(classifyPaths(['tests/unit/battle/tower.test.ts'], 'test').violations).toEqual([]);
-    expect(classifyPaths(['frontend/src/managers/GameManager.ts'], 'test').violations[0]).toMatchObject({
+    expect(
+      classifyPaths(['frontend/src/managers/GameManager.ts'], 'test').violations[0],
+    ).toMatchObject({
       reason: 'out-of-scope',
     });
   });
@@ -135,12 +154,41 @@ describe('loop gate arguments', () => {
   });
 
   it('rejects an unknown iteration type', () => {
-    expect(() => parseGateArguments(['--worktree', '/tmp/wt', '--base', 'main', '--type', 'yolo']))
-      .toThrow(/Unknown iteration type/);
+    expect(() =>
+      parseGateArguments(['--worktree', '/tmp/wt', '--base', 'main', '--type', 'yolo']),
+    ).toThrow(/Unknown iteration type/);
   });
 
   it('rejects HEAD as a base because it self-resolves inside a worktree', () => {
-    expect(() => parseGateArguments(['--worktree', '/tmp/wt', '--base', 'HEAD'])).toThrow(/ambiguous/);
+    expect(() => parseGateArguments(['--worktree', '/tmp/wt', '--base', 'HEAD'])).toThrow(
+      /ambiguous/,
+    );
+  });
+
+  it('accepts a playtest finding for post-fix verification', () => {
+    expect(
+      parseGateArguments([
+        '--worktree',
+        '/tmp/wt',
+        '--base',
+        'main',
+        '--playtest-case',
+        '/tmp/finding.json',
+      ]),
+    ).toMatchObject({ playtestCase: '/tmp/finding.json' });
+  });
+
+  it('restores every protected workflow input before executing checks', () => {
+    expect(GATE_PROTECTED_RESTORE_PATHS).toEqual(
+      expect.arrayContaining(['.github', 'scripts', 'package.json', 'frontend/public/assets']),
+    );
+  });
+
+  it('parses ignored artifacts for removal before verification', () => {
+    expect(ignoredPathsFromStatus('!! node_modules/\0!! temp/helper.ts\0 M tracked.ts\0')).toEqual([
+      'node_modules/',
+      'temp/helper.ts',
+    ]);
   });
 });
 
@@ -154,6 +202,13 @@ describe('loop driver arguments', () => {
   it('defaults to a small supervised run on the integration branch', () => {
     const options = parseLoopArguments([]);
     expect(options).toMatchObject({ iterations: 3, base: 'develop', type: 'impl', dryRun: false });
+  });
+
+  it('accepts one external playtest finding as the iteration task', () => {
+    expect(parseLoopArguments(['--finding-file', 'temp/finding.json'])).toMatchObject({
+      findingFile: 'temp/finding.json',
+      iterations: 1,
+    });
   });
 
   it.each([
@@ -201,20 +256,39 @@ describe('loop driver arguments', () => {
     expect(args[args.indexOf('--max-ai-credits') + 1]).toBe('400');
   });
 
-  it('requires node_modules but tolerates a moved map toolchain', () => {
-    const byPath = Object.fromEntries(WORKTREE_LINKS.map((link) => [link.path, link.required]));
-    expect(byPath['node_modules']).toBe(true);
-    expect(byPath['temp/scripts']).toBe(false);
+  it('builds a focused playtest repair prompt with the exact reproduction', () => {
+    const prompt = buildFindingPrompt('base prompt', {
+      id: 'PT-ABC12345',
+      kind: 'pageerror',
+      message: 'Cannot read properties of undefined',
+      scenario: 'overworld-fuzz',
+      seed: 42,
+      actionIndex: 17,
+      reproductionCommand: 'npm run playtest:discover -- --scenario overworld-fuzz --seed 42',
+    });
+
+    expect(prompt).toContain('PT-ABC12345');
+    expect(prompt).toContain('Cannot read properties of undefined');
+    expect(prompt).toContain('npm run playtest:discover');
+    expect(prompt).toContain('Fix this finding only');
   });
 
-  it('never links the whole temp directory into a worktree', () => {
-    // temp/loop-runs/ holds the worktrees themselves, so linking temp/ would nest
-    // a worktree inside itself.
-    expect(WORKTREE_LINKS.map((link) => link.path)).not.toContain('temp');
+  it('resolves dependencies from the repository without a writable worktree link', () => {
+    expect(WORKTREE_DEPENDENCIES.installArguments).toEqual(
+      expect.arrayContaining(['ci', '--ignore-scripts']),
+    );
+    expect(WORKTREE_DEPENDENCIES.isolated).toBe(true);
+    expect(WORKTREE_DEPENDENCIES.linkedIntoWorktree).toBe(false);
+  });
+
+  it('places agent worktrees outside repository dependency ancestry', () => {
+    const path = worktreePathForIteration('run-123', 2);
+    expect(path).not.toContain('/Pokemon-Web/temp/');
+    expect(path).toMatch(/pokemon-web-loop-run-123-2$/);
   });
 
   it('guards only the loop configuration it reads from the checked-out tree', () => {
-    expect(LOOP_CRITICAL_PATHS).toEqual(['.github/loop', 'scripts/loop']);
+    expect(LOOP_CRITICAL_PATHS).toEqual(['.github/loop', 'scripts/loop', 'scripts/playtest']);
   });
 });
 
@@ -229,6 +303,7 @@ describe('loop backlog bookkeeping', () => {
   it.each([
     ['L-001: remove the unused helper', 'L-001'],
     ['L-012: tighten the event map', 'L-012'],
+    ['PT-ABC12345: prevent the overworld crash', 'PT-ABC12345'],
     ['fix(loop): unrelated commit', null],
     ['', null],
   ])('reads the item id from commit subject %s', (subject, expected) => {

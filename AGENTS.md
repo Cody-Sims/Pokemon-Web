@@ -278,6 +278,7 @@ Available skills:
 | `frontend-change` | Phaser, TypeScript, Vite, data, UI, scenes, systems, or assets |
 | `backend-change` | Explicit server, API, worker, persistence, or authentication work |
 | `quality-gate` | Selecting and running final validation |
+| `playtest-discovery` | Deterministic Playwright journeys, seeded fuzzing, bug reports, and bounded autonomous repairs |
 | `tile-sprite-gen` | Tileset and character sprite generation or repair |
 | `pokemon-shadow-architecture` | Inspecting, validating, or updating this repository's decision graph |
 
@@ -318,6 +319,8 @@ Nothing reaches `main` except through that pull request.
 |---|---|
 | `npm run loop:dry-run` | Print the exact agent invocation without spending credits |
 | `npm run loop:run -- --iterations 3` | Run the bounded loop |
+| `npm run playtest:discover` | Produce JSON/Markdown bug reports from browser journeys and seeded fuzzing |
+| `npm run loop:playtest -- --cycles 3` | Repeatedly discover and independently gate one reproducible repair per cycle |
 | `npm run loop:gate -- --worktree . --base develop` | Grade a worktree directly |
 
 The gate is the contract, not the prompt. It restores `tests/` and every config
@@ -325,6 +328,11 @@ file from the base ref before running checks, rejects out-of-scope and protected
 paths, rejects newly added suppressions such as `@ts-ignore` and `.skip(`, caps
 diff size, and requires a `docs/CHANGELOG.md` entry. Full design, safety rails,
 and phases are in `docs/loop-engineering-plan.md`.
+
+The playtest extension runs a read-only localhost probe plus deterministic
+Playwright journeys. It writes ignored evidence under `temp/playtest-runs/`, sends
+only findings reproduced across both attempts into the repair loop, and makes the
+gate replay that exact scenario before accepting the implementation.
 
 Two constraints govern what may enter the backlog. No Vitest test imports anything
 from `frontend/src/scenes/`, so scene changes are compile-checked only. And

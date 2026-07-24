@@ -53,6 +53,7 @@ type safety, and Vite for fast bundling.
 - `.github/skills/frontend-change/SKILL.md` — Frontend implementation workflow
 - `.github/skills/backend-change/SKILL.md` — Backend assessment and implementation workflow
 - `.github/skills/quality-gate/SKILL.md` — Path-based validation workflow
+- `.github/skills/playtest-discovery/SKILL.md` — Browser playtesting, seeded fuzzing, bug reports, and autonomous repair workflow
 - `.github/skills/tile-sprite-gen/SKILL.md` — Tile and sprite generation workflow
 - `.github/skills/pokemon-shadow-architecture/SKILL.md` — Repository decision-graph workflow
 - `.shadow/index.json` — Architecture decision index and lifecycle vocabulary
@@ -63,6 +64,8 @@ type safety, and Vite for fast bundling.
 - `.github/loop/backlog.md` — Curated queue for the autonomous improvement loop
 - `.github/loop/PROMPT.impl.md` — Instruction given to each implementation iteration
 - `scripts/loop/gate.mjs` — Deterministic gate that grades an iteration
+- `scripts/playtest/discover.mjs` — Deterministic Playwright discovery and evidence runner
+- `scripts/loop/run-playtest-loop.mjs` — Bounded discover-and-repair loop
 - `docs/loop-engineering-plan.md` — Loop design, safety rails, and phases
 
 ## Commands
@@ -76,12 +79,14 @@ type safety, and Vite for fast bundling.
 - `npm run test:integration` — Integration tests only
 - `npm run test:coverage` — Vitest coverage with thresholds
 - `npm run test:e2e` — Playwright end-to-end tests
+- `npm run playtest:discover` — Generate reproducible browser bug reports
 - `npm run agent:validate` — Validate agent customizations and shadow architecture
 - `npm run agent:global:install` — Install the reusable workspace-researcher agent under `~/.copilot`
 - `npm run agent:global:check` — Verify installed global resources and hashes
 - `npm run shadow:validate` — Validate decision records, links, and feature mappings
 - `npm run loop:dry-run` — Print the exact agent invocation without spending credits
 - `npm run loop:run` — Run the bounded improvement loop and fold passes into `develop`
+- `npm run loop:playtest` — Discover and repair reproducible playtest bugs in bounded cycles
 - `npm run loop:gate` — Grade a worktree against the deterministic gate
 - `npm run map:validate` — Validate all map definitions
 - `npm run map:preview` — Render ignored PPM map previews under `temp/map-previews/`

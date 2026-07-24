@@ -8,6 +8,32 @@ import { isMobile } from '@ui/theme';
 
 const game = new Phaser.Game(gameConfig);
 
+declare global {
+  interface Window {
+    __pokemonPlaytest?: Readonly<{
+      snapshot: () => {
+        activeScenes: string[];
+        loadedScenes: string[];
+        canvas: { width: number; height: number };
+      };
+    }>;
+  }
+}
+
+const isLocalPlaytest = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+if (isLocalPlaytest) {
+  Object.defineProperty(window, '__pokemonPlaytest', {
+    configurable: true,
+    value: Object.freeze({
+      snapshot: () => ({
+        activeScenes: game.scene.getScenes(true).map((scene) => scene.scene.key),
+        loadedScenes: game.scene.getScenes(false).map((scene) => scene.scene.key),
+        canvas: { width: game.canvas.width, height: game.canvas.height },
+      }),
+    }),
+  });
+}
+
 // ── Sync accessibility settings from saved preferences on boot ──
 try {
   const raw = localStorage.getItem('pokemon-web-settings');

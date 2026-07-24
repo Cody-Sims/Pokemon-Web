@@ -3,8 +3,9 @@
 Plan for running safe, bounded, continuous-improvement agent loops against this
 repository, driven by GitHub Copilot CLI and controlled from VS Code.
 
-Status: phases 0 through 4 implemented on 2026-07-24. Phase 5 remains optional and
-unstarted. See the Implementation status section for what actually shipped.
+Status: phases 0 through 4 and deterministic playtest discovery implemented on
+2026-07-24. Phase 5 remains optional and unstarted. See the Implementation
+status section for what actually shipped.
 Research date: 2026-07-24. Copilot CLI version verified locally: 1.0.74.
 
 ## Goal and non-goals
@@ -110,6 +111,11 @@ scripts/loop/
 .vscode/tasks.json     # Loop: gate | dry run | single iteration | bounded run | review
 temp/loop-runs/<ts>/   # transcripts, gate reports, summary (gitignored)
 ```
+
+The transient git worktrees themselves live under the operating system's
+temporary directory, outside the repository ancestry. This prevents Node from
+falling back to the developer checkout's ignored `node_modules`; each worktree
+gets its own lockfile-derived install.
 
 The scripts are Node rather than shell. `scripts/` already holds `.mjs` tooling
 validated by `npm run agent:validate`, the pure rules become unit-testable under
@@ -356,6 +362,33 @@ Instruct it to flag correctness and requirements gaps only.
 Review order should be by risk, not chronology: largest diffs first, then any
 iteration that touched a protected path, then gate near-misses.
 
+## Playtest discovery extension
+
+`scripts/playtest/discover.mjs` adds a browser oracle in front of the existing
+implementation loop. It starts Vite locally, drives current title and new-game
+flows through a read-only localhost probe, applies seeded overworld input, and
+records page errors, console errors, failed requests, HTTP failures, scene
+checkpoint failures, screenshots, and exact replay commands.
+
+The combined loop performs discovery in a clean external worktree pinned to the
+selected base ref, with dependencies installed from that ref's lockfile. The
+gate removes every ignored artifact (including agent-created `temp/` helpers)
+before reinstalling dependencies and executing verification.
+
+Standard discovery runs each journey twice. A fingerprint is repairable only
+when it appears in both attempts; intermittent observations remain in the report
+but never enter autonomous repair. `scripts/loop/run-playtest-loop.mjs` selects
+one repairable finding per cycle, injects its evidence into a fresh worktree
+agent, then asks the normal gate to run tests, build, and that exact Playwright
+reproduction. Verification permits other findings recorded in the same baseline
+scenario, but rejects the target if it remains and rejects newly introduced
+browser failures. The outer loop rediscovers after every accepted fix, so stale
+findings do not become a long-lived self-authored backlog.
+
+Reports and screenshots live under `temp/playtest-runs/` or
+`temp/playtest-loop-runs/`. The loop remains bounded by cycle count, deadline,
+credit cap, failure cap, branch isolation, and the existing no-push policy.
+
 ## Implementation status
 
 Shipped on 2026-07-24.
@@ -365,11 +398,15 @@ Shipped on 2026-07-24.
 | `scripts/loop/diff-hygiene.mjs` | Done. Pure scope, suppression, and size rules |
 | `scripts/loop/gate.mjs` | Done. Restores protected paths, runs test and build, writes a JSON report |
 | `scripts/loop/run-loop.mjs` | Done. Worktree per iteration, bounded, dry-run mode, never pushes |
+| `scripts/playtest/discover.mjs` | Done. Deterministic journeys, seeded fuzzing, evidence reports, exact verification |
+| `scripts/loop/run-playtest-loop.mjs` | Done. Rediscovers and repairs one reproducible finding per bounded cycle |
 | `.github/loop/PROMPT.impl.md` | Done. 130 words |
+| `.github/loop/PROMPT.playtest.md` | Done. Least-privilege repair prompt for one external finding |
 | `.github/loop/backlog.md` | Done. Five curated items plus a held-back list |
-| `.vscode/tasks.json` | Done. Five loop tasks |
+| `.vscode/tasks.json` | Done. Loop, discovery, repair, and review tasks |
 | `tests/unit/scripts/loop-gate.test.ts` | Done. Encodes the adversarial cases as assertions |
-| `npm run loop:gate`, `loop:dry-run`, `loop:run` | Done |
+| `tests/unit/scripts/playtest-discovery.test.ts` | Done. Encodes report and repair-queue behavior |
+| `npm run loop:gate`, `loop:dry-run`, `loop:run`, `playtest:discover`, `loop:playtest` | Done |
 | First real agent iteration | Passed on 2026-07-24, branch kept for review |
 
 The adversarial validation from phase 1 lives in the unit test rather than in
@@ -497,7 +534,7 @@ Options, in increasing order of risk:
 | `--deny-tool` fails open on compound commands | Likely | Stem matching broke the allow list the same way. The repository hook matches anywhere in a command string and is the robust interceptor |
 | Loop churns after the backlog is done | Medium | The driver stops when no `todo` row remains rather than letting the agent invent work |
 | A flaky test fails an otherwise good iteration | Resolved | The battle PRNG is seeded from `Date.now()` and the tests mocked `Math.random`, which it never calls. `move-executor-extended.test.ts` now calls `seedRng` and asserts intent rather than an incidental null |
-| A worktree is missing gitignored prerequisites | Certain, mitigated | `run-loop.mjs` links `node_modules`, which is required, and `temp/scripts`, which is optional so the loop survives repository plan item B4 |
+| A worktree is missing or tampers with gitignored prerequisites | Certain, mitigated | The driver runs `npm ci` in each worktree before the agent; the gate deletes that tree and reinstalls it from the restored lockfile before verification |
 
 ## Honest limitations
 

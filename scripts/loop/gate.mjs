@@ -10,21 +10,38 @@
  *
  * Usage:
  *   node scripts/loop/gate.mjs --worktree <path> --base <ref> [--type impl|test]
- *                              [--report <path>] [--skip-build]
+ *                              [--report <path>] [--playtest-case <path>]
+ *                              [--skip-build]
  *
  * Exits 0 when every blocker check passes, 1 otherwise.
  */
 
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { dirname, resolve, sep } from 'node:path';
 import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
 
-import { ITERATION_SCOPES, evaluateDiff } from './diff-hygiene.mjs';
+import {
+  ITERATION_SCOPES,
+  PROTECTED_PATHS,
+  evaluateDiff,
+} from './diff-hygiene.mjs';
+import { prepareWorktreeDependencies } from './dependencies.mjs';
 
 const COMMAND_TIMEOUT_MS = 15 * 60 * 1000;
 const MAX_BUFFER_BYTES = 32 * 1024 * 1024;
+
+export const GATE_PROTECTED_RESTORE_PATHS = PROTECTED_PATHS.map((path) =>
+  path.endsWith('/') ? path.slice(0, -1) : path,
+);
+
+export function ignoredPathsFromStatus(status) {
+  return String(status)
+    .split('\0')
+    .filter((entry) => entry.startsWith('!! '))
+    .map((entry) => entry.slice(3));
+}
 
 export function parseArguments(argv) {
   const options = { type: 'impl', skipBuild: false };
@@ -35,6 +52,7 @@ export function parseArguments(argv) {
     else if (flag === '--base') options.base = argv[index += 1];
     else if (flag === '--type') options.type = argv[index += 1];
     else if (flag === '--report') options.report = argv[index += 1];
+    else if (flag === '--playtest-case') options.playtestCase = argv[index += 1];
     else throw new Error(`Unknown gate argument: ${flag}`);
   }
   if (!options.worktree) throw new Error('Gate requires --worktree.');
@@ -94,10 +112,23 @@ function countTests(worktree) {
 }
 
 export function runGate(options) {
-  const { worktree, base, type, skipBuild } = options;
+  const { worktree, base, type, skipBuild, playtestCase } = options;
   const scope = ITERATION_SCOPES[type];
   const blockers = [];
   const checks = [];
+
+  const worktreeStatus = run(
+    'git',
+    ['status', '--porcelain', '--untracked-files=all'],
+    worktree,
+  ).trim();
+  const worktreeClean = worktreeStatus.length === 0;
+  if (!worktreeClean) blockers.push('agent left uncommitted or untracked changes');
+  checks.push({
+    name: 'worktree-clean',
+    passed: worktreeClean,
+    detail: worktreeClean ? 'all authored changes are committed' : tail(worktreeStatus, 20),
+  });
 
   const range = `${base}..HEAD`;
   const paths = run('git', ['diff', '--name-only', range], worktree)
@@ -114,9 +145,84 @@ export function runGate(options) {
     detail: diff.blockers.join('; ') || 'scope, suppressions, and size within limits',
   });
 
+  if (diff.blockers.length > 0) {
+    return {
+      passed: false,
+      base,
+      type,
+      changedFiles: diff.allowed,
+      violations: diff.violations,
+      suppressions: diff.suppressions,
+      size: diff.size,
+      blockers,
+      checks,
+    };
+  }
+
+  if (!worktreeClean) {
+    return {
+      passed: false,
+      base,
+      type,
+      changedFiles: diff.allowed,
+      violations: diff.violations,
+      suppressions: diff.suppressions,
+      size: diff.size,
+      blockers,
+      checks,
+    };
+  }
+
   // Defense in depth. Even if a path slipped past classification, the checks
   // below must run against a pristine copy of everything the agent may not own.
-  run('git', ['checkout', base, '--', ...scope.restore], worktree);
+  const restorePaths = [...new Set([...scope.restore, ...GATE_PROTECTED_RESTORE_PATHS])];
+  run('git', ['checkout', base, '--', ...restorePaths], worktree);
+
+  const ignoredPaths = ignoredPathsFromStatus(
+    run('git', ['status', '--porcelain=v1', '--ignored', '-z'], worktree),
+  );
+  for (const path of ignoredPaths) {
+    const target = resolve(worktree, path);
+    if (target !== resolve(worktree) && !target.startsWith(`${resolve(worktree)}${sep}`)) {
+      throw new Error(`Ignored path resolves outside worktree: ${path}`);
+    }
+    rmSync(target, { recursive: true, force: true });
+  }
+  checks.push({
+    name: 'ignored-artifacts',
+    passed: true,
+    detail: `removed ${ignoredPaths.length} ignored path(s) before verification`,
+  });
+
+  let dependencyOutput = '';
+  try {
+    dependencyOutput = prepareWorktreeDependencies(worktree, { reset: true });
+    checks.push({
+      name: 'dependencies',
+      passed: true,
+      detail: 'reinstalled from the restored lockfile',
+    });
+  } catch (error) {
+    const output = [error?.stdout, error?.stderr, error?.message].filter(Boolean).join('\n');
+    blockers.push('isolated dependency installation failed');
+    checks.push({
+      name: 'dependencies',
+      passed: false,
+      detail: 'npm ci failed',
+      output: tail(output || dependencyOutput),
+    });
+    return {
+      passed: false,
+      base,
+      type,
+      changedFiles: diff.allowed,
+      violations: diff.violations,
+      suppressions: diff.suppressions,
+      size: diff.size,
+      blockers,
+      checks,
+    };
+  }
 
   const tests = countTests(worktree);
   if (!tests.ok) blockers.push('npm run test failed');
@@ -141,6 +247,23 @@ export function runGate(options) {
     // files under frontend/public/assets/. Discard that churn so it can never
     // reach a commit or distort the next iteration's diff.
     tryRun('git', ['checkout', '--', 'frontend/public/assets'], worktree);
+  }
+
+  if (playtestCase) {
+    const playtest = tryRun(process.execPath, [
+      'scripts/playtest/discover.mjs',
+      '--verify',
+      resolve(playtestCase),
+      '--output',
+      resolve(worktree, 'temp/playtest-verification'),
+    ], worktree);
+    if (!playtest.ok) blockers.push('playtest reproduction still fails');
+    checks.push({
+      name: 'playtest reproduction',
+      passed: playtest.ok,
+      detail: playtest.ok ? 'reported finding is no longer observable' : 'see output',
+      output: playtest.ok ? undefined : tail(playtest.output),
+    });
   }
 
   const changelogTouched = diff.allowed.includes('docs/CHANGELOG.md');

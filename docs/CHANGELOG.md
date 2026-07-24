@@ -6,6 +6,23 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Added - Agentic playtest discovery
+
+- Added deterministic Playwright journeys, seeded overworld fuzzing, a read-only
+  localhost probe, and JSON/Markdown bug reports with screenshots and exact
+  reproduction commands.
+- Extended the bounded improvement loop to discover one reproducible finding at
+  a time, repair it in an isolated worktree, and replay the reported browser
+  scenario in the independent gate before integration.
+- Replaced writable dependency symlinks with lockfile-derived worktree installs;
+  the gate discards and reinstalls dependencies before verification and rejects
+  any uncommitted or untracked agent output.
+- Pinned discovery to a clean external worktree from the selected base and purge
+  ignored artifacts before gate execution so local or agent-only files cannot
+  influence findings or accepted repairs.
+- Added the `playtest-discovery` skill, npm commands, VS Code tasks, and unit
+  contracts for unattended playtest and repair workflows.
+
 ### Added - Shared frontend modules
 
 - Added reusable grid math, display formatting, Phaser sequencing, and pure data

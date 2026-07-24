@@ -12,7 +12,8 @@ Rules:
 
 - Change files under `frontend/src/` only, plus `docs/CHANGELOG.md`.
 - Never edit `tests/`, `.github/`, `scripts/`, `.shadow/`, any config file, or
-  anything under `frontend/public/assets/` or `frontend/src/data/maps/`.
+  anything under `node_modules/`, `frontend/public/assets/`, or
+  `frontend/src/data/maps/`.
 - Never add `@ts-ignore`, `@ts-expect-error`, `eslint-disable`, `as any`, or a
   skipped test. If a check fails, fix the cause.
 - Run `npm run test` and `npm run build`. Show the real output.
