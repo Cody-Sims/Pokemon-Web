@@ -24,8 +24,7 @@ describe('PC Box Storage', () => {
   let gm: GameManager;
 
   beforeEach(() => {
-    // @ts-expect-error accessing private for test reset
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     gm = GameManager.getInstance();
   });
 
@@ -174,8 +173,7 @@ describe('PC Box Storage', () => {
       const saved = gm.serialize();
 
       // Reset and restore
-      // @ts-expect-error accessing private for test reset
-      GameManager.instance = undefined;
+      GameManager.resetInstance();
       const gm2 = GameManager.getInstance();
       gm2.deserialize(saved);
 
@@ -192,8 +190,7 @@ describe('Shop & Economy', () => {
   let gm: GameManager;
 
   beforeEach(() => {
-    // @ts-expect-error accessing private for test reset
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     gm = GameManager.getInstance();
   });
 

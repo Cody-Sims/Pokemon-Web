@@ -50,9 +50,9 @@ function writeValidSave(): Record<string, unknown> {
 describe('SaveManager validation and corrupt-save handling', () => {
   beforeEach(() => {
     // @ts-expect-error reset singleton for tests
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     // @ts-expect-error reset singleton for tests
-    SaveManager.instance = undefined;
+    SaveManager.resetInstance();
     vi.stubGlobal('localStorage', createLocalStorageMock());
   });
 

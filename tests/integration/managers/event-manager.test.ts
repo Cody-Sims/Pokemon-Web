@@ -5,8 +5,7 @@ describe('EventManager', () => {
   let em: EventManager;
 
   beforeEach(() => {
-    // @ts-expect-error private access for test reset
-    EventManager.instance = undefined;
+    EventManager.resetInstance();
     em = EventManager.getInstance();
   });
 

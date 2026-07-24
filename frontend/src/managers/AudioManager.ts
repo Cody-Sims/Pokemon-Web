@@ -1,11 +1,17 @@
-import Phaser from 'phaser';
+import type Phaser from 'phaser';
 import { CryGenerator } from '@systems/audio/CryGenerator';
+
+const SCENE_SHUTDOWN_EVENT = 'shutdown';
+const SCENE_DESTROY_EVENT = 'destroy';
+const SCENE_SHUTDOWN_STATUS = 8;
+const SCENE_DESTROYED_STATUS = 9;
 
 /** Singleton that wraps Phaser SoundManager for BGM crossfade and SFX.
  *  Handles browser autoplay policies gracefully. */
 export class AudioManager {
-  private static instance: AudioManager;
+  private static instance: AudioManager | undefined;
   private scene?: Phaser.Scene;
+  private detachSceneLifecycle: () => void = () => undefined;
   private currentBGM?: Phaser.Sound.BaseSound;
   private currentBGMKey = '';
   private bgmVolume = 0.5;
@@ -42,14 +48,25 @@ export class AudioManager {
     return AudioManager.instance;
   }
 
+  static resetInstance(): void {
+    AudioManager.instance?.reset();
+    AudioManager.instance = undefined;
+  }
+
   /** Bind to the active scene's sound manager. Call when entering a new scene. */
   setScene(scene: Phaser.Scene): void {
     // AUDIT-038: Only kill audio-related tweens, not all scene tweens
     if (this.scene && this.scene.tweens && this.currentBGM) {
       try { this.scene.tweens.killTweensOf(this.currentBGM); } catch { /* scene may already be destroyed */ }
     }
+    this.detachSceneLifecycle();
     this.stopLowHpWarning(); // clean up old timer before switching scenes
+    if (!this.isSceneUsable(scene)) {
+      this.scene = undefined;
+      return;
+    }
     this.scene = scene;
+    this.bindSceneLifecycle(scene);
     this.handleAutoplayPolicy();
   }
 
@@ -72,12 +89,38 @@ export class AudioManager {
 
   /** Check if the bound scene is still usable. */
   private isSceneActive(): boolean {
-    return !!this.scene && !!this.scene.sys && this.scene.sys.isActive();
+    return this.isSceneUsable(this.scene) && this.scene!.sys.isActive();
+  }
+
+  private isSceneUsable(scene: Phaser.Scene | undefined): scene is Phaser.Scene {
+    if (!scene?.sys) return false;
+    const status = scene.sys.settings?.status;
+    return status !== SCENE_SHUTDOWN_STATUS && status !== SCENE_DESTROYED_STATUS;
+  }
+
+  private bindSceneLifecycle(scene: Phaser.Scene): void {
+    const clearIfCurrent = () => {
+      detach();
+      if (this.scene === scene) {
+        this.stopLowHpWarning();
+        this.scene = undefined;
+      }
+    };
+    const detach = () => {
+      scene.events.off(SCENE_SHUTDOWN_EVENT, clearIfCurrent);
+      scene.events.off(SCENE_DESTROY_EVENT, clearIfCurrent);
+      if (this.detachSceneLifecycle === detach) {
+        this.detachSceneLifecycle = () => undefined;
+      }
+    };
+    scene.events.once(SCENE_SHUTDOWN_EVENT, clearIfCurrent);
+    scene.events.once(SCENE_DESTROY_EVENT, clearIfCurrent);
+    this.detachSceneLifecycle = detach;
   }
 
   /** Check if an audio key is loaded in the cache. */
   private hasAudio(key: string): boolean {
-    if (!this.scene) return false;
+    if (!this.isSceneUsable(this.scene)) return false;
     return this.scene.cache.audio.exists(key);
   }
 
@@ -278,7 +321,7 @@ export class AudioManager {
 
   /** Initialize the cry generator with the current scene. Call once after first setScene. */
   initCryGenerator(): void {
-    if (this.scene) {
+    if (this.isSceneUsable(this.scene)) {
       CryGenerator.getInstance().init(this.scene);
     }
   }
@@ -473,6 +516,8 @@ export class AudioManager {
   reset(): void {
     this.stopBGM();
     this.stopLowHpWarning();
+    this.detachSceneLifecycle();
+    this.scene = undefined;
     this.pendingBGM = undefined;
     this.bgmPaused = false;
     this.previousBGMKey = '';

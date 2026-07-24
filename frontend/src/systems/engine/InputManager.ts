@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
-import { TouchControls } from '@ui/controls/TouchControls';
 
 interface InputState {
   direction: Direction | null;
@@ -11,6 +10,24 @@ interface InputState {
   _escRaw?: boolean; // Raw ESC key state for disambiguation
 }
 
+export interface TouchControlsAdapter {
+  getDirection(): Direction | null;
+  consumeConfirm(): boolean;
+  consumeCancel(): boolean;
+  drain(): void;
+  setVisible(visible: boolean): void;
+  destroy(): void;
+}
+
+export interface InputManagerOptions {
+  isTouchDevice?: () => boolean;
+  touchControlsFactory?: (scene: Phaser.Scene) => TouchControlsAdapter;
+}
+
+function defaultIsTouchDevice(): boolean {
+  return typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
+}
+
 /** Unified input manager: WASD/Arrow keys + touch controls. */
 export class InputManager {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -19,9 +36,10 @@ export class InputManager {
   private spaceKey!: Phaser.Input.Keyboard.Key;
   private cancelKey!: Phaser.Input.Keyboard.Key;
   private bicycleKey!: Phaser.Input.Keyboard.Key;
-  private touchControls?: TouchControls;
+  private touchControls?: TouchControlsAdapter;
+  private destroyed = false;
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, options: InputManagerOptions = {}) {
     const kb = scene.input.keyboard!;
     this.cursors = kb.createCursorKeys();
     this.wasd = {
@@ -31,12 +49,24 @@ export class InputManager {
       D: kb.addKey(Phaser.Input.Keyboard.KeyCodes.D),
     };
     this.confirmKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-    this.spaceKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-    this.bicycleKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.B);;
+    this.spaceKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.bicycleKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.B);
     this.cancelKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
     // Create touch controls on touch-capable devices
-    if (TouchControls.isTouchDevice()) {
+    const isTouchDevice = options.isTouchDevice ?? defaultIsTouchDevice;
+    if (isTouchDevice()) {
+      if (options.touchControlsFactory) {
+        this.touchControls = options.touchControlsFactory(scene);
+      } else {
+        void this.createDefaultTouchControls(scene);
+      }
+    }
+  }
+
+  private async createDefaultTouchControls(scene: Phaser.Scene): Promise<void> {
+    const { TouchControls } = await import('@ui/controls/TouchControls');
+    if (!this.destroyed && TouchControls.isTouchDevice()) {
       this.touchControls = new TouchControls(scene);
     }
   }
@@ -77,12 +107,13 @@ export class InputManager {
   }
 
   /** Get the touch controls instance (or undefined on desktop). */
-  getTouchControls(): TouchControls | undefined {
+  getTouchControls(): TouchControlsAdapter | undefined {
     return this.touchControls;
   }
 
   /** Clean up touch controls. Call from scene shutdown. */
   destroy(): void {
+    this.destroyed = true;
     this.touchControls?.destroy();
     this.touchControls = undefined;
   }

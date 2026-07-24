@@ -25,7 +25,7 @@ const makePokemon = (dataId: number, overrides?: Partial<PokemonInstance>): Poke
 describe('ChallengeRules', () => {
   beforeEach(() => {
     // @ts-expect-error reset singleton for isolation
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
   });
 
   describe('Solo Run', () => {
@@ -119,7 +119,7 @@ describe('ChallengeRules', () => {
       gm.setMonotypeLock('water');
       const serialized = gm.serialize();
       // @ts-expect-error reset singleton
-      GameManager.instance = undefined;
+      GameManager.resetInstance();
       const fresh = GameManager.getInstance();
       fresh.deserialize(serialized);
       expect(fresh.getChallengeModes().sort()).toEqual(['monotype', 'noItems'].sort());

@@ -22,8 +22,7 @@ describe('GameManager', () => {
 
   beforeEach(() => {
     // Reset singleton by accessing constructor via prototype trick
-    // @ts-expect-error accessing private for test reset
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     gm = GameManager.getInstance();
   });
 
@@ -192,8 +191,7 @@ describe('GameManager', () => {
       const serialized = gm.serialize();
 
       // Create fresh instance
-      // @ts-expect-error accessing private for test reset
-      GameManager.instance = undefined;
+      GameManager.resetInstance();
       const gm2 = GameManager.getInstance();
       gm2.deserialize(serialized);
 

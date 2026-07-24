@@ -50,6 +50,7 @@ export class PlayerStateManager {
   /** Remaining repel steps — persisted so map transitions and battle returns don't discard them. */
   private repelSteps = 0;
   private speedrunSplits: SpeedrunSplit[] = [];
+  private settingsInitialized = false;
   private settings: Record<string, string | number | boolean> = {
     textSpeed: 'medium',
     musicVolume: 0.5,
@@ -63,8 +64,9 @@ export class PlayerStateManager {
     speedrunTimer: false,
   };
 
-  constructor() {
-    // Load persisted settings from localStorage
+  initializeSettingsFromStorage(): void {
+    if (this.settingsInitialized) return;
+    this.settingsInitialized = true;
     try {
       const stored = localStorage.getItem('pokemon-web-settings');
       if (stored) {
@@ -180,9 +182,18 @@ export class PlayerStateManager {
 
   // ── Settings ───────────────────────────────────────────
 
-  getSettings(): Record<string, string | number | boolean> { return this.settings; }
-  getSetting(key: string): string | number | boolean | undefined { return this.settings[key]; }
-  setSetting(key: string, value: string | number | boolean): void { this.settings[key] = value; }
+  getSettings(): Record<string, string | number | boolean> {
+    this.initializeSettingsFromStorage();
+    return this.settings;
+  }
+  getSetting(key: string): string | number | boolean | undefined {
+    this.initializeSettingsFromStorage();
+    return this.settings[key];
+  }
+  setSetting(key: string, value: string | number | boolean): void {
+    this.initializeSettingsFromStorage();
+    this.settings[key] = value;
+  }
 
   // ── Berry Plots ────────────────────────────────────────
 
@@ -269,6 +280,7 @@ export class PlayerStateManager {
   // ── Serialization helpers ──────────────────────────────
 
   serialize() {
+    this.initializeSettingsFromStorage();
     return {
       playerName: this.playerName,
       playerGender: this.playerGender,
@@ -326,7 +338,10 @@ export class PlayerStateManager {
     if (data.difficulty) this.difficulty = data.difficulty as DifficultyMode;
     if (data.challengeModes) this.challengeModes = data.challengeModes;
     if (data.monotypeLock !== undefined) this.monotypeLock = data.monotypeLock;
-    if (data.settings) this.settings = { ...this.settings, ...data.settings };
+    if (data.settings) {
+      this.initializeSettingsFromStorage();
+      this.settings = { ...this.settings, ...data.settings };
+    }
     if (data.berryPlots) this.berryPlots = data.berryPlots;
     if (data.berryHarvests) this.berryHarvests = data.berryHarvests;
     if (typeof data.repelSteps === 'number') this.repelSteps = data.repelSteps;

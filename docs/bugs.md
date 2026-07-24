@@ -8,6 +8,60 @@
 
 ## Open
 
+### 2026-07-24 manager/systems reset audit findings
+
+- **Files:** [frontend/src/managers/index.ts](frontend/src/managers/index.ts#L10-L43), [tests/integration/managers/save-load.test.ts](tests/integration/managers/save-load.test.ts#L25-L29).
+- **Symptom:** Manager tests reset singleton state by assigning private
+  `instance` fields, and the documented `@managers` barrel was missing.
+- **Suspected cause:** Singleton reset APIs were added piecemeal, so tests
+  coupled to implementation details and future barrel imports had no public
+  module to target.
+- **Status:** Fixed — added the manager barrel and public `resetInstance()` /
+  `resetManagerSingletons()` APIs.
+
+- **Files:** [frontend/src/managers/AudioManager.ts](frontend/src/managers/AudioManager.ts#L13-L14), [frontend/src/managers/AudioManager.ts](frontend/src/managers/AudioManager.ts#L56-L70).
+- **Symptom:** `AudioManager` could retain a `Phaser.Scene` after shutdown or
+  destroy, leaving timers/listeners and future audio calls pointed at stale
+  scene infrastructure.
+- **Suspected cause:** `setScene()` replaced the reference but did not subscribe
+  to scene lifecycle teardown or clear the scene on reset.
+- **Status:** Fixed — scene usability is guarded, lifecycle listeners clear the
+  reference, and reset detaches the manager from the scene.
+
+- **Files:** [frontend/src/managers/PlayerStateManager.ts](frontend/src/managers/PlayerStateManager.ts#L67-L79).
+- **Symptom:** Constructing `PlayerStateManager` depended on `localStorage`,
+  making singleton creation environment-dependent and harder to isolate in
+  tests.
+- **Suspected cause:** persisted settings were loaded in the constructor instead
+  of at the first settings access.
+- **Status:** Fixed — settings initialization is explicit/lazy and safe when
+  storage is unavailable.
+
+- **Files:** [frontend/src/systems/overworld/EncounterSystem.ts](frontend/src/systems/overworld/EncounterSystem.ts#L46-L79), [frontend/src/systems/overworld/EncounterSystem.ts](frontend/src/systems/overworld/EncounterSystem.ts#L139-L151).
+- **Symptom:** `EncounterSystem.setRng()` only controlled the trigger roll;
+  table selection, levels, IVs, nature, fishing, and shiny rolls still used the
+  module-global PRNG.
+- **Suspected cause:** helper functions captured the global seeded RNG and the
+  injected RNG was not threaded into encounter creation.
+- **Status:** Fixed — encounter and fishing creation now consume the injected
+  RNG in the same order as the previous global flow.
+
+- **Files:** [frontend/src/systems/engine/CutsceneEngine.ts](frontend/src/systems/engine/CutsceneEngine.ts#L32-L49), [frontend/src/systems/engine/CutsceneEngine.ts](frontend/src/systems/engine/CutsceneEngine.ts#L142-L143).
+- **Symptom:** Cutscene dialogue directly launched `DialogueScene` by hardcoded
+  string from the reusable systems layer.
+- **Suspected cause:** dialogue presentation was embedded before the scene-key
+  router/contract work existed.
+- **Status:** Fixed — `CutsceneEngine` now accepts an injected dialogue
+  launcher while keeping the legacy Phaser launcher as its default adapter.
+
+- **Files:** [frontend/src/systems/engine/InputManager.ts](frontend/src/systems/engine/InputManager.ts#L13-L25), [frontend/src/systems/engine/InputManager.ts](frontend/src/systems/engine/InputManager.ts#L56-L72).
+- **Symptom:** `InputManager` had a static runtime import of UI touch controls,
+  coupling reusable engine input to the UI layer.
+- **Suspected cause:** touch-control creation lived directly in the system
+  constructor.
+- **Status:** Fixed — touch controls are behind an adapter/factory interface
+  with the legacy UI implementation loaded lazily by default.
+
 ### Cycling has no visible sprite swap
 
 - **Files:** [frontend/src/scenes/overworld/OverworldScene.ts](frontend/src/scenes/overworld/OverworldScene.ts) (cycling toggle, animation key), [frontend/public/assets/sprites/player/](frontend/public/assets/sprites/player) (no `cycle-*` frames yet).

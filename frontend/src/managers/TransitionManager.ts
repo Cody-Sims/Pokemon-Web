@@ -1,10 +1,10 @@
-import Phaser from 'phaser';
+import type Phaser from 'phaser';
 import { isReducedMotion } from '@utils/accessibility';
 import { SaveManager } from './SaveManager';
 
 /** Helper for screen wipe/fade transitions between scenes. */
 export class TransitionManager {
-  private static instance: TransitionManager;
+  private static instance: TransitionManager | undefined;
   /** MED-36: Prevent overlapping transitions. */
   private transitioning = false;
 
@@ -15,6 +15,15 @@ export class TransitionManager {
       TransitionManager.instance = new TransitionManager();
     }
     return TransitionManager.instance;
+  }
+
+  static resetInstance(): void {
+    TransitionManager.instance?.reset();
+    TransitionManager.instance = undefined;
+  }
+
+  reset(): void {
+    this.forceReset();
   }
 
   /** Force-reset transition state. Call from scene create() to clear stale

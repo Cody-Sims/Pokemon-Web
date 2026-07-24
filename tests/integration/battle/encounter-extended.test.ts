@@ -4,7 +4,7 @@ import { encounterTables } from '../../../frontend/src/data/encounter-tables';
 import { pokemonData } from '../../../frontend/src/data/pokemon';
 import { moveData } from '../../../frontend/src/data/moves';
 import { ExperienceCalculator } from '../../../frontend/src/battle/calculation/ExperienceCalculator';
-import { seedRng } from '../../../frontend/src/utils/math-helpers';
+import { seedRng, seededRandom } from '../../../frontend/src/utils/math-helpers';
 
 describe('EncounterSystem — Extended', () => {
   describe('createWildPokemon — all registered species', () => {
@@ -124,7 +124,14 @@ describe('EncounterSystem — Extended', () => {
       for (let i = 0; i < n; i++) {
         seedRng(i * 1000);
         const es = new EncounterSystem();
-        es.setRng(() => 0.01);
+        let firstRoll = true;
+        es.setRng(() => {
+          if (firstRoll) {
+            firstRoll = false;
+            return 0.01;
+          }
+          return seededRandom();
+        });
         const pokemon = es.checkEncounter('route-1');
         if (pokemon) {
           counts[pokemon.dataId] = (counts[pokemon.dataId] ?? 0) + 1;

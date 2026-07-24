@@ -17,10 +17,8 @@ describe('Save/Load — Extended Round-Trip Tests', () => {
   let mockStorage: ReturnType<typeof createLocalStorageMock>;
 
   beforeEach(() => {
-    // @ts-expect-error private access
-    GameManager.instance = undefined;
-    // @ts-expect-error private access
-    SaveManager.instance = undefined;
+    GameManager.resetInstance();
+    SaveManager.resetInstance();
     mockStorage = createLocalStorageMock();
     vi.stubGlobal('localStorage', mockStorage);
   });
@@ -41,8 +39,7 @@ describe('Save/Load — Extended Round-Trip Tests', () => {
 
     SaveManager.getInstance().save();
 
-    // @ts-expect-error private access
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     const gm2 = GameManager.getInstance();
     const data = SaveManager.getInstance().load()!;
     gm2.deserialize(data as any);
@@ -65,8 +62,7 @@ describe('Save/Load — Extended Round-Trip Tests', () => {
 
     SaveManager.getInstance().save();
 
-    // @ts-expect-error private access
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     const data = SaveManager.getInstance().load()!;
     expect(data.bag).toHaveLength(4);
     expect(data.bag.find((e: any) => e.itemId === 'potion')?.quantity).toBe(10);
@@ -82,8 +78,7 @@ describe('Save/Load — Extended Round-Trip Tests', () => {
 
     SaveManager.getInstance().save();
 
-    // @ts-expect-error private access
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     const data = SaveManager.getInstance().load()!;
     expect(data.pokedex.seen).toContain(1);
     expect(data.pokedex.seen).toContain(4);

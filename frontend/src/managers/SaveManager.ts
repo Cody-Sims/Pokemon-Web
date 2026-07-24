@@ -20,7 +20,7 @@ export type SaveManagerError =
 
 /** Serialize/deserialize game state to localStorage. */
 export class SaveManager {
-  private static instance: SaveManager;
+  private static instance: SaveManager | undefined;
   /** CRIT-2 / MED-21 / MED-22: Block saves during transitions, battles, and cutscenes. */
   private static blocked = false;
   private lastError: SaveManagerError | null = null;
@@ -32,6 +32,11 @@ export class SaveManager {
       SaveManager.instance = new SaveManager();
     }
     return SaveManager.instance;
+  }
+
+  static resetInstance(): void {
+    SaveManager.instance = undefined;
+    SaveManager.blocked = false;
   }
 
   static blockSaves(): void { SaveManager.blocked = true; }

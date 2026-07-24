@@ -4,8 +4,7 @@ import { itemData } from '../../../frontend/src/data/item-data';
 import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 
 beforeEach(() => {
-  // @ts-expect-error private access for test
-  GameManager.instance = undefined;
+  GameManager.resetInstance();
 });
 
 const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
