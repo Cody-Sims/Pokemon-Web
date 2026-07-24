@@ -18,19 +18,6 @@
 
 ## Open
 
-### Haze does not reset battle stat stages
-
-- **Files:** [frontend/src/data/moves/ice.ts](frontend/src/data/moves/ice.ts#L9), [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L155-L166), [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts#L415-L419), [tests/integration/battle/move-executor-extended.test.ts](tests/integration/battle/move-executor-extended.test.ts#L186).
-- **Expected:** Using Haze should reset every active Pokémon's stat stages to
-  zero and report that stat changes were eliminated.
-- **Actual:** Haze has no move `effect`, so `MoveExecutor` returns through the
-  generic status-move-without-effect branch with `But nothing happened!` before
-  the later Haze reset branch can run. The strengthened test fails against this
-  production behavior and is marked as an expected failure until the battle data
-  or execution path is fixed.
-- **Type:** Production bug.
-- **Status:** Open — not fixed in this test-only worktree because production
-  `frontend/src/**` files are owned by another task.
 ### 2026-07-24 inventory decomposition findings
 
 - **Files:** [frontend/src/scenes/menu/InventoryScene.ts](frontend/src/scenes/menu/InventoryScene.ts) (pre-refactor lines 545-642), [tests/integration/systems/inventory.test.ts](tests/integration/systems/inventory.test.ts) (pre-refactor lines 27-49).
@@ -98,6 +85,21 @@
 ---
 
 ## Resolved
+
+### Haze does not reset battle stat stages — FIXED 2026-07-24
+
+- **Files:** [frontend/src/battle/execution/MoveExecutor.ts](frontend/src/battle/execution/MoveExecutor.ts)
+- **Symptom:** Haze reported `But nothing happened!` and left every stat stage
+  untouched.
+- **Cause:** `haze` declares no move `effect`, so execution returned through the
+  generic "status move without effect" catch-all before reaching the Haze reset
+  branch further down. The old test only asserted hit/name, so it passed.
+- **Fix:** Handle Haze explicitly before the no-effect catch-all: deduct PP,
+  call `resetAllStages()`, and report the reset. The strengthened test
+  (previously `it.fails`) now runs and passes, and fails again if the branch is
+  removed.
+
+
 
 | Entry | Verdict | Evidence |
 |---|---|---|

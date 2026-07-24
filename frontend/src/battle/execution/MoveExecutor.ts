@@ -152,6 +152,22 @@ export class MoveExecutor {
       };
     }
 
+    // Haze declares no `effect`, but it is not a no-op: it clears every stat
+    // stage. It must be handled before the no-effect catch-all below.
+    if (moveId === 'haze' && statusHandler) {
+      const hazeInstance = attacker.moves.find(m => m.moveId === moveId);
+      if (hazeInstance && hazeInstance.currentPp > 0) hazeInstance.currentPp--;
+      statusHandler.resetAllStages();
+      return {
+        damage: { damage: 0, effectiveness: 1, isCritical: false, isSTAB: false },
+        moveHit: true,
+        moveName: move.name,
+        attackerName,
+        defenderName,
+        effectMessages: ['All stat changes were eliminated!'],
+      };
+    }
+
     // BUG-052: Status moves with no effect implementation
     if (move.category === 'status' && !move.effect) {
       const moveInstance = attacker.moves.find(m => m.moveId === moveId);
@@ -411,12 +427,6 @@ export class MoveExecutor {
     let effectResult: EffectResult = { messages: [] };
     if (statusHandler && move.effect && damage.effectiveness > 0) {
       effectResult = statusHandler.applyMoveEffect(attacker, defender, move, damage.damage);
-
-      // Haze resets all stat stages
-      if (moveId === 'haze') {
-        statusHandler.resetAllStages();
-        effectResult.messages.push('All stat changes were eliminated!');
-      }
     }
 
     // MED-5: Don't apply drain healing to a fainted attacker

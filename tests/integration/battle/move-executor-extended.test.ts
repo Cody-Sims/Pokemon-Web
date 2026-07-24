@@ -183,7 +183,7 @@ describe('MoveExecutor — Extended Coverage', () => {
       expect(handler.getState(defender).statStages.attack).toBeLessThan(0);
     });
 
-    it.fails('Haze should reset all stat stages', () => {
+    it('Haze should reset all stat stages', () => {
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'haze', currentPp: 30 }] });
       const defender = makePokemon({ dataId: 19 });
