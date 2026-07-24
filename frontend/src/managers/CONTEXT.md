@@ -15,6 +15,10 @@ methods or `getInstance()`.
 | `QuestManager.ts` | `QuestManager` | Quest state tracking, objective progress, completion checks. |
 | `AchievementManager.ts` | `AchievementManager` | Achievement unlock tracking and toast notifications. |
 | `TransitionManager.ts` | `TransitionManager` | Scene transition animations (fade, wipe, etc.). |
+| `PartyManager.ts` | `PartyManager` | Party membership, active Pokémon, and party-level helpers. |
+| `PlayerStateManager.ts` | `PlayerStateManager` | Player position, facing, map, cycling/surfing, and transient overworld state. |
+| `ProgressManager.ts` | `ProgressManager` | Story flags, defeated trainers, badges, and progression helpers. |
+| `StatsManager.ts` | `StatsManager` | Game statistics counters and serialization helpers. |
 
 ## Conventions
 

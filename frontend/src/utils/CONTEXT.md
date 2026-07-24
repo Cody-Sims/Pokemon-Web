@@ -8,7 +8,7 @@ import anywhere without creating circular dependencies.
 | File | Purpose |
 |---|---|
 | `constants.ts` | Game-wide constants: tile size (16px), screen dimensions, speeds, timing values |
-| `type-helpers.ts` | `PokemonType` enum, `Stats` interface, `MoveEffect` type, type utility functions |
+| `type-helpers.ts` | `PokemonType` union type, `Stats` interface, `MoveEffect` type, type utility functions |
 | `math-helpers.ts` | Clamping, random ranges, weighted random selection |
 | `seeded-random.ts` | Deterministic PRNG for reproducible test/generation results |
 | `audio-keys.ts` | Registry of all audio asset keys (BGM and SFX) |
@@ -19,6 +19,7 @@ import anywhere without creating circular dependencies.
 | `ui-layout.ts` | UI positioning and scaling calculations |
 | `safe-area.ts` | Mobile safe area inset calculations |
 | `perf-profile.ts` | Performance profiling utilities |
+| `nickname-validation.ts` | Shared nickname validation constants and helpers |
 
 ## Conventions
 

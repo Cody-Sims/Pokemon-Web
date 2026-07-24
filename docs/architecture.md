@@ -7,7 +7,7 @@
 | Language | TypeScript 6.x | Type safety, interfaces for game data, IDE autocomplete |
 | Game Engine | Phaser 3.x | 2D rendering (WebGL/Canvas), physics, input, audio, scene management |
 | Bundler | Vite 8.x | HMR dev server, tree-shaking, static asset copying, fast builds |
-| Map Editor | Tiled (external) | Visual tilemap creation, exported as JSON for Phaser to consume |
+| Map Source | TypeScript character grids + map toolchain | `MapDefinition` objects parsed by `map-parser.ts` and rendered by `TilemapBuilder` |
 | Art Format | 16×16 or 32×32 pixel-art tilesets & spritesheets | Classic Pokémon aesthetic |
 | Sprite Source (Battle) | PokéAPI sprites | Front/back/shiny/icon sprites via API URLs or downloaded |
 | Sprite Source (Overworld) | The Spriters Resource + community collections | Walking spritesheets (player, NPCs, follower Pokémon) |
@@ -36,9 +36,8 @@ pokemon-web/
 │   │
 │   ├── public/                         # Static assets copied verbatim to dist/
 │   │   └── assets/
-│   │       ├── tilesets/               # Tileset PNGs used by Tiled maps
+│   │       ├── tilesets/               # Tileset PNGs used by TilemapBuilder
 │   │       │   └── overworld.png
-│   │       ├── maps/                   # Tiled JSON exports
 │   │       ├── sprites/
 │   │       │   ├── player/             # Player walk-cycle spritesheet + atlas JSON
 │   │       │   │   ├── player-walk.png
@@ -48,7 +47,7 @@ pokemon-web/
 │   │       │       ├── bulbasaur-front.png
 │   │       │       ├── bulbasaur-back.png
 │   │       │       ├── bulbasaur-icon.png
-│   │       │       └── ... (all 151)
+│   │       │       └── ... (Pokémon sprite assets used by battle/menu rendering)
 │   │       ├── ui/                     # UI element images
 │   │       ├── audio/
 │   │       │   ├── bgm/               # Background music (ogg/mp3)
@@ -82,6 +81,13 @@ pokemon-web/
 │       │   ├── battle/
 │       │   │   ├── BattleScene.ts          # Turn-based battle — sprites, HP/EXP bars
 │       │   │   ├── BattleUIScene.ts        # Battle overlay — action menu, move menu, messages
+│       │   │   ├── BattleTowerScene.ts     # Battle Tower lobby + streak driver
+│       │   │   ├── BPShopScene.ts          # Battle Point shop
+│       │   │   ├── BattleActionMenu.ts     # Fight/Bag/Pokémon/Run action menu
+│       │   │   ├── BattleMoveMenu.ts       # Move selector and PP/type display
+│       │   │   ├── BattleBagHandler.ts     # Battle item selection and use
+│       │   │   ├── BattleSwitchHandler.ts  # Party switching and forced replacement
+│       │   │   ├── BattleMessageHandler.ts # Common battle message flows
 │       │   │   ├── BattleTurnRunner.ts     # Turn execution pipeline
 │       │   │   ├── BattleMessageQueue.ts   # Message queue management
 │       │   │   ├── BattleDamageNumbers.ts  # Floating damage numbers
@@ -102,6 +108,9 @@ pokemon-web/
 │       │   │   ├── TrainerCardScene.ts     # Trainer card display
 │       │   │   ├── AchievementScene.ts     # Achievement gallery with category tabs
 │       │   │   ├── FlyMapScene.ts          # Fly fast-travel destination picker
+│       │   │   ├── TownMapScene.ts         # Full-region town map
+│       │   │   ├── MinimapScene.ts         # HUD minimap overlay
+│       │   │   ├── PartyQuickViewScene.ts  # HUD party summary overlay
 │       │   │   ├── StatisticsScene.ts      # GameStats viewer (battles, catches, steps, etc.)
 │       │   │   └── HallOfFameScene.ts      # Hall of Fame champion records browser
 │       │   ├── pokemon/
@@ -184,7 +193,7 @@ pokemon-web/
 │       │   │   ├── ghost.ts           # Ghost-type moves
 │       │   │   ├── dragon.ts          # Dragon-type moves
 │       │   │   └── dark.ts            # Dark-type moves
-│       │   ├── pokemon/               # Per-type Pokemon definitions (all 151)
+│       │   ├── pokemon/               # Per-type Pokemon definitions (155 registered species)
 │       │   │   ├── index.ts           # Re-exports combined pokemonData record
 │       │   │   ├── normal.ts          # Normal-type Pokemon (22)
 │       │   │   ├── fire.ts            # Fire-type Pokemon (12)
@@ -277,8 +286,6 @@ pokemon-web/
 │           ├── layout-on.ts           # Resize-safe layout utility (runs callback on create + resize)
 │           └── hint-text.ts           # Input-mode-aware hint strings (mobile/desktop)
 │
-├── tiled/                              # Tiled source files (NOT shipped)
-│
 └── docs/                               # Documentation
 ```
 
@@ -339,9 +346,10 @@ pokemon-web/
 - Transitions → `OverworldScene`.
 
 ### OverworldScene
-- Parses Tiled JSON, creates tilemap layers (`ground`, `world`, `above-player`).
+- Loads a TypeScript `MapDefinition`, whose character-grid rows are parsed by `parseMap()` into numeric tiles.
+- Uses `TilemapBuilder` to create Phaser tilemap layers (`ground`, `decoration`, `foreground`) from the parsed grid.
 - Spawns `Player` entity and enables `GridMovement`.
-- Spawns NPCs / Trainers from Tiled object layers.
+- Spawns NPCs / Trainers from typed arrays on the map definition.
 - Runs `EncounterSystem` on grass tiles.
 - Launches overlay scenes (`DialogueScene`, `MenuScene`) without stopping itself.
 - On encounter or trainer line-of-sight → launches `BattleScene`.
@@ -349,7 +357,7 @@ pokemon-web/
 ### BattleScene + BattleUIScene
 - `BattleScene` manages the background and Pokémon sprites/animations.
 - `BattleUIScene` runs as a parallel overlay for the HUD, move menu, and text log.
-- `BattleStateMachine` drives the flow: `INTRO → PLAYER_TURN → ENEMY_TURN → CHECK_FAINT → VICTORY/DEFEAT`.
+- `BattleStateMachine` drives the flow: `INTRO → PLAYER_TURN → ENEMY_TURN → EXECUTE_MOVES/EXECUTE_TURN → CHECK_FAINT → REPLACE/EXP_GAIN → VICTORY/DEFEAT/FLEE/CAPTURE`.
 - On battle end → resumes `OverworldScene`.
 
 ### MenuScene (Pause Menu)
@@ -506,18 +514,21 @@ Template library at `temp/map-templates/` with 17 reusable fragments (buildings,
 
 ---
 
-## Tilemap Layer Convention (Tiled)
+## Runtime Tilemap Layer Convention
 
-Each Tiled map should have these layers (bottom → top):
+Maps are authored as TypeScript `MapDefinition` objects with character-grid
+sources that `parseMap()` converts through `CHAR_TO_TILE`.
+`TilemapBuilder` then renders the numeric `ground` grid into Phaser layers:
 
-| Layer Name | Type | Purpose |
-|-----------|------|---------|
-| `Ground` | Tile Layer | Base terrain (grass, dirt, water) |
-| `World` | Tile Layer | Buildings, trees, fences — **collision enabled** |
-| `Above Player` | Tile Layer | Rooftops, treetops — rendered above the player |
-| `Encounters` | Object Layer | Rectangles marking tall-grass encounter zones |
-| `Spawns` | Object Layer | Player spawn point, NPC positions, door warps |
-| `Warps` | Object Layer | Rectangles with custom properties (target map, target spawn) |
+| Layer Name | Purpose |
+|-----------|---------|
+| `ground` | Base terrain tiles such as grass, paths, water bases, and floors |
+| `decoration` | Non-foreground overlays such as flowers, signs, doors, and other mid-depth tiles |
+| `foreground` | Tiles rendered above the player, such as tree canopies and tall-grass overlays |
+
+Encounter zones, spawn points, NPCs, trainers, objects, and warps live as typed
+arrays/properties on `MapDefinition` in `frontend/src/data/maps/map-interfaces.ts`.
+
 
 ---
 

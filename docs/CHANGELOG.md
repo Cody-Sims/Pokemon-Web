@@ -6,6 +6,11 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - Documentation drift
+
+- Corrected verified agent, architecture, testing, scene, manager, data, and context documentation drift for current registries, commands, map rendering, and ownership policy.
+- Added `DEC-0017` to document source-of-truth ownership for repository documentation types.
+
 ### Fixed - Build purity
 
 - Removed the wall-clock timestamp from the generated asset manifest so atlas
