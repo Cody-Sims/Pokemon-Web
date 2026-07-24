@@ -6,6 +6,11 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Added - Shadow revamp decisions
+
+- Recorded DEC-0009 through DEC-0016 for scene boundaries, shared UI, typed scene/event/data contracts, battle RNG determinism, GameManager facade state ownership, tracked map tooling, and canonical quality gates.
+- Refreshed stable `CONTEXT.md` coverage for runtime config, data, and UI controls/widgets without inventorying volatile scene, battle, manager, or system internals.
+
 ### Added - Shared frontend modules
 
 - Added reusable grid math, display formatting, Phaser sequencing, and pure data

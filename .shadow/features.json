@@ -42,7 +42,9 @@
       ],
       "decisions": [
         "DEC-0002",
-        "DEC-0004"
+        "DEC-0004",
+        "DEC-0009",
+        "DEC-0011"
       ]
     },
     {
@@ -53,7 +55,9 @@
       ],
       "decisions": [
         "DEC-0003",
-        "DEC-0004"
+        "DEC-0004",
+        "DEC-0011",
+        "DEC-0014"
       ]
     },
     {
@@ -64,7 +68,8 @@
         "frontend/src/scenes/battle/**"
       ],
       "decisions": [
-        "DEC-0005"
+        "DEC-0005",
+        "DEC-0013"
       ]
     },
     {
@@ -74,7 +79,8 @@
         "frontend/src/data/**"
       ],
       "decisions": [
-        "DEC-0006"
+        "DEC-0006",
+        "DEC-0012"
       ]
     },
     {
@@ -85,7 +91,8 @@
         "scripts/map-gen/**"
       ],
       "decisions": [
-        "DEC-0007"
+        "DEC-0007",
+        "DEC-0015"
       ]
     },
     {
@@ -94,6 +101,10 @@
       "paths": [
         "frontend/src/systems/**",
         "frontend/src/entities/**"
+      ],
+      "decisions": [
+        "DEC-0009",
+        "DEC-0014"
       ]
     },
     {
@@ -101,6 +112,9 @@
       "name": "User interface",
       "paths": [
         "frontend/src/ui/**"
+      ],
+      "decisions": [
+        "DEC-0010"
       ]
     },
     {
@@ -108,10 +122,13 @@
       "name": "Verification",
       "paths": [
         "tests/**",
-        "scripts/**"
+        "scripts/**",
+        ".github/workflows/**",
+        "package.json"
       ],
       "decisions": [
-        "DEC-0008"
+        "DEC-0008",
+        "DEC-0016"
       ]
     },
     {
@@ -132,7 +149,15 @@
         "frontend/src/**/CONTEXT.md"
       ],
       "decisions": [
-        "DEC-0017"
+        "DEC-0017",
+        "DEC-0009",
+        "DEC-0010",
+        "DEC-0011",
+        "DEC-0012",
+        "DEC-0013",
+        "DEC-0014",
+        "DEC-0015",
+        "DEC-0016"
       ]
     }
   ]
