@@ -23,3 +23,6 @@ export { CutsceneEngine } from './engine/CutsceneEngine';
 export { canLearnMove } from './engine/MoveLearning';
 export { fullClearBpReward } from './engine/BattleTowerRewards';
 export { getTrainerData } from './engine/TrainerResolver';
+
+// ── Inventory ────────────────────────────────────────────────
+export * from './inventory';

@@ -22,6 +22,12 @@ All notable changes to the Pokemon Web project.
 - Centralized duplicated Pokémon test fixtures under `tests/helpers/` and
   strengthened move-effect, save validation, battle RNG, and listener-cleanup
   safety nets.
+### Changed - Inventory scene decomposition
+
+- Split bag filtering/windowing, item-use planning, battle item event bridging,
+  and reusable inventory UI panels out of `InventoryScene`.
+- Updated inventory integration coverage to call the production item-use service
+  instead of re-implementing medicine effects in the test.
 
 ### Fixed - Scene lifecycle listener cleanup
 

@@ -31,6 +31,34 @@
 - **Type:** Production bug.
 - **Status:** Open — not fixed in this test-only worktree because production
   `frontend/src/**` files are owned by another task.
+### 2026-07-24 inventory decomposition findings
+
+- **Files:** [frontend/src/scenes/menu/InventoryScene.ts](frontend/src/scenes/menu/InventoryScene.ts) (pre-refactor lines 545-642), [tests/integration/systems/inventory.test.ts](tests/integration/systems/inventory.test.ts) (pre-refactor lines 27-49).
+- **Symptom:** Inventory medicine behavior was implemented inline in the scene
+  and re-implemented in the integration test, so tests could pass while real item
+  use regressed.
+- **Cause:** Business logic directly mutated `PokemonInstance` fields instead of
+  going through an importable service.
+- **Status:** Fixed — `ItemUseService` now plans item effects, callers apply the
+  result, and the integration test calls the service.
+
+- **Files:** [frontend/src/scenes/menu/InventoryScene.ts](frontend/src/scenes/menu/InventoryScene.ts) (pre-refactor lines 473-543).
+- **Symptom:** Target-picker keyboard handlers could survive cancel/close and
+  stack with later picker openings.
+- **Cause:** `closeTargetPicker()` destroyed text/panel objects but did not clear
+  the ad-hoc `pickerHandlers` array; cleanup only happened on confirm or
+  shutdown.
+- **Status:** Fixed — the target picker owns registry-backed key bindings and
+  clears them on cancel, confirm, and shutdown.
+
+- **Files:** [frontend/src/scenes/menu/InventoryScene.ts](frontend/src/scenes/menu/InventoryScene.ts) (pre-refactor lines 561-632).
+- **Symptom:** Audit looked for healing past max HP, failed-use item consumption,
+  and Rare Candy level overflow.
+- **Cause:** These checks were embedded in scene branches, making them easy to
+  miss during review.
+- **Status:** No defect found in current behavior — healing was capped, failed
+  use did not consume items, and Rare Candy was blocked at level 100; the checks
+  now live in `ItemUseService` tests/service logic.
 
 ### Soundproof has no sound-move metadata to block
 
