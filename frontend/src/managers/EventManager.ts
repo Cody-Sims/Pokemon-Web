@@ -15,7 +15,7 @@ type EventCallback<K extends EventName = EventName> = (...args: EventMap[K]) => 
 
 /** Typed event bus for cross-scene communication. */
 export class EventManager {
-  private static instance: EventManager;
+  private static instance: EventManager | undefined;
   private listeners = new Map<EventName, ((...args: unknown[]) => void)[]>();
   private taggedListeners = new Map<string, { event: EventName; callback: (...args: unknown[]) => void }[]>();
 
@@ -26,6 +26,11 @@ export class EventManager {
       EventManager.instance = new EventManager();
     }
     return EventManager.instance;
+  }
+
+  static resetInstance(): void {
+    EventManager.instance?.reset();
+    EventManager.instance = undefined;
   }
 
   on<K extends EventName>(event: K, callback: EventCallback<K>): void {

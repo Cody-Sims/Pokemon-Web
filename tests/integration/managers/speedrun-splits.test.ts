@@ -4,7 +4,7 @@ import { GameManager } from '../../../frontend/src/managers/GameManager';
 describe('GameManager — speed-run splits', () => {
   beforeEach(() => {
     // @ts-expect-error reset singleton for isolation
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
   });
 
   it('records a split the first time a badge is added and ignores duplicates', () => {

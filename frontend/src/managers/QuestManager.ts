@@ -14,7 +14,7 @@ interface QuestStateAccess {
  * No separate state: everything is derived from persistent game flags.
  */
 export class QuestManager {
-  private static instance: QuestManager;
+  private static instance: QuestManager | undefined;
   private static stateAccess?: QuestStateAccess;
 
   private constructor() {}
@@ -120,7 +120,8 @@ export class QuestManager {
 
   /** Reset singleton (for testing). */
   static resetInstance(): void {
-    QuestManager.instance = undefined as unknown as QuestManager;
+    QuestManager.instance = undefined;
+    QuestManager.stateAccess = undefined;
   }
 
   private automationInitialized = false;

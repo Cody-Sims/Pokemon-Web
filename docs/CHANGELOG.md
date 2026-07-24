@@ -28,6 +28,13 @@ All notable changes to the Pokemon Web project.
   strategies and double-battle targeting policy while preserving manager APIs.
 - Documented remaining scene-owned double-battle replacement flow for the next
   engine event/command migration wave.
+### Changed - Manager reset and system determinism
+
+- Added a public `@managers` barrel with reset helpers for manager singletons,
+  replacing private-field test resets with supported APIs.
+- Hardened `AudioManager` scene teardown, lazy-loaded player settings, injected
+  cutscene dialogue launching, decoupled touch-control construction, and made
+  encounter RNG injection cover table, level, IV, nature, and shiny rolls.
 
 ### Added - Shared frontend modules
 

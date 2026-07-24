@@ -24,10 +24,8 @@ describe('SaveManager', () => {
 
   beforeEach(() => {
     // Reset singletons
-    // @ts-expect-error private access for test
-    GameManager.instance = undefined;
-    // @ts-expect-error private access for test
-    SaveManager.instance = undefined;
+    GameManager.resetInstance();
+    SaveManager.resetInstance();
 
     mockStorage = createLocalStorageMock();
     vi.stubGlobal('localStorage', mockStorage);
@@ -123,8 +121,7 @@ describe('SaveManager', () => {
     sm.save();
 
     // Reset GameManager
-    // @ts-expect-error private
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     const gm2 = GameManager.getInstance();
 
     // Load and restore

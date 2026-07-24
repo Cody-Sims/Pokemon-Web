@@ -22,7 +22,7 @@ export { defaultStats };
  * (e.g. `GameManager.getInstance().partyMgr`) for clarity.
  */
 export class GameManager {
-  private static instance: GameManager;
+  private static instance: GameManager | undefined;
 
   // ── Sub-managers ───────────────────────────────────────
   private readonly _party = new PartyManager();
@@ -44,6 +44,14 @@ export class GameManager {
       GameManager.instance = new GameManager();
     }
     return GameManager.instance;
+  }
+
+  static resetInstance(): void {
+    GameManager.instance?.reset();
+    GameManager.instance = undefined;
+    EventManager.resetInstance();
+    StatsManager.resetInstance();
+    QuestManager.resetInstance();
   }
 
   /** Direct access to the party / PC-box sub-manager. */
