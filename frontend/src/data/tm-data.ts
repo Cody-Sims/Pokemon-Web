@@ -116,6 +116,18 @@ export const moveTutorData: Record<string, MoveTutorData> = {
       { moveId: 'dragon-rage',   cost: 1, costType: 'heart-scale' },
     ],
   },
+  'tutor-voltara': {
+    id: 'tutor-voltara',
+    name: 'Voltara Circuit Tutor',
+    location: 'voltara-city',
+    moves: [
+      { moveId: 'thunderbolt',    cost: 5000, costType: 'money' },
+      { moveId: 'thunder-wave',   cost: 3000, costType: 'money' },
+      { moveId: 'thunder-punch',  cost: 4000, costType: 'money' },
+      { moveId: 'wild-charge',    cost: 2, costType: 'heart-scale' },
+      { moveId: 'charge-beam',    cost: 1, costType: 'heart-scale' },
+    ],
+  },
   'tutor-league': {
     id: 'tutor-league',
     name: 'Pokemon League Tutor',

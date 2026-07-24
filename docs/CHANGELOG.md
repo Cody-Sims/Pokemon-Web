@@ -29,6 +29,15 @@ All notable changes to the Pokemon Web project.
 - Added report-only ESLint flat configuration, Prettier settings, EditorConfig,
   Node 22 pinning, and lint/format npm scripts for the TypeScript frontend,
   Node scripts, Vitest tests, and Playwright specs.
+### Fixed - Data reference integrity
+
+- Added missing TM, tutor, reward item, and Voltara tutor definitions; repaired
+  the Pallet generic-house return warp and renamed stale shop inventory keys.
+- Re-keyed Poké Mart inventories to the interior maps that actually host shop
+  clerks, added the missing League clerk, and stopped missing shops from silently
+  falling back to Viridian's starter inventory.
+- Added a data-driven registry integrity regression test covering moves, Pokémon,
+  trainers, encounters, maps, shop-host maps, quests, cutscenes, and achievements.
 
 ### Added - Bounded improvement loop
 
