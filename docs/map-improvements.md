@@ -737,9 +737,9 @@ tested, and documented in the changelog.
 | Phase | Status | PR / commit |
 |---|---|---|
 | 0 — Tooling & shared tiles | ✅ Complete (2026-04-30) | parser chars + validator checks + 17 unit tests |
-| 1 — Littoral arc | ☐ Not started | — |
-| 2 — Viridian arc | ☐ Not started | — |
-| 3 — Pewter & Tide Pools | ☐ Not started | — |
+| 1 — Littoral arc | ✅ Complete (2026-05-01) | Crescent bay, S-curve route, fences, surf island |
+| 2 — Viridian arc | ✅ Complete (2026-05-01) | River city, L-shaped route, Y-fork forest |
+| 3 — Pewter & Tide Pools | ✅ Complete (2026-05-01) | Two-tier city, coastal cliffs, rope bridge |
 | 4 — Coral Harbor & Route 4 | ☐ Not started | — |
 | 5 — Ironvale & Ember Mines | ☐ Not started | — |
 | 6 — Verdantia & the Canopy | ☐ Not started | — |

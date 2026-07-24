@@ -135,6 +135,10 @@ export class OverworldScene extends Phaser.Scene {
       this.spawnId = data?.spawnId ?? 'default';
     }
     this.transitioning = false;
+    // Clear any stale TransitionManager state from a prior scene.restart()
+    // that left the singleton's transitioning flag stuck (e.g. camera fade
+    // event never fired because the camera was destroyed mid-transition).
+    TransitionManager.getInstance().forceReset();
     this.surfing = false;
     this.isCycling = false;
     this.npcs = [];
