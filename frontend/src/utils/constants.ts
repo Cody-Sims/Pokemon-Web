@@ -77,11 +77,6 @@ export function computeGameDimensions(): { width: number; height: number } {
   return { width: w, height: LANDSCAPE_HEIGHT };
 }
 
-/** @deprecated Use computeGameDimensions() instead — kept for backward compat. */
-export function computeGameWidth(): number {
-  return computeGameDimensions().width;
-}
-
 const _dims = computeGameDimensions();
 export const GAME_WIDTH = _dims.width;
 export const GAME_HEIGHT = _dims.height;
