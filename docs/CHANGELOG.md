@@ -19,6 +19,11 @@ All notable changes to the Pokemon Web project.
 - Declared `tsx` as a development dependency for the TypeScript map commands.
 - Updated agent, map-generation, architecture, and decision-graph references to
   distinguish tracked toolchain source from ignored `temp/` preview outputs.
+### Fixed - Test harness
+
+- Enabled the shared Vitest setup file, repaired unit and integration script filters
+  for Vitest 4, made catch RNG expectations explicit, and restored frontend
+  coverage reporting with scene files visible.
 
 ### Added - Bounded improvement loop
 
