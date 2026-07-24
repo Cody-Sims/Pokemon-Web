@@ -6,6 +6,7 @@ import { StatusEffectHandler } from '../../../frontend/src/battle/effects/Status
 import type { BattleRng } from '../../../frontend/src/battle/core/BattleRng';
 import type { MoveData, PokemonInstance } from '../../../frontend/src/data/interfaces';
 import type { WeatherCondition } from '../../../frontend/src/utils/type-helpers';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 
 class FixedRng implements BattleRng {
   private index = 0;
@@ -35,20 +36,8 @@ const physicalMove: MoveData = {
   id: 'tackle', name: 'Tackle', type: 'normal', category: 'physical', power: 40, accuracy: 100, pp: 35,
 };
 
-const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
-  dataId: 19,
-  level: 30,
-  currentHp: 80,
-  stats: { hp: 100, attack: 50, defense: 45, spAttack: 55, spDefense: 50, speed: 60 },
-  ivs: { hp: 15, attack: 15, defense: 15, spAttack: 15, spDefense: 15, speed: 15 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy',
-  moves: [{ moveId: 'tackle', currentPp: 35 }],
-  status: null,
-  exp: 0,
-  friendship: 70,
-  ...overrides,
-});
+
+const makePokemon = createPokemonFactory('effects-registry');
 
 describe('effect registry — abilities', () => {
   it('registers every migrated ability', () => {

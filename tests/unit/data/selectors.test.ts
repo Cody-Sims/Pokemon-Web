@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { PokemonInstance } from '@data/interfaces';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 import {
   aliveParty,
   getItemData,
@@ -12,22 +12,8 @@ import {
   pokemonDisplayName,
 } from '@data/selectors';
 
-function makePokemon(overrides: Partial<PokemonInstance> = {}): PokemonInstance {
-  return {
-    dataId: 1,
-    level: 5,
-    currentHp: 20,
-    stats: { hp: 20, attack: 10, defense: 10, spAttack: 10, spDefense: 10, speed: 10 },
-    ivs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-    evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-    nature: 'hardy',
-    moves: [{ moveId: 'tackle', currentPp: 35 }],
-    status: null,
-    exp: 0,
-    friendship: 70,
-    ...overrides,
-  };
-}
+
+const makePokemon = createPokemonFactory('small-tackle');
 
 describe('data selectors', () => {
   it('returns registry entries for valid Pokémon, move, and item IDs', () => {

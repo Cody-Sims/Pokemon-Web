@@ -6,6 +6,14 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - Test suite credibility
+
+- Replaced copy-pasted GridMovement, scene lifecycle, and battle state machine
+  test models with tests against the real modules.
+- Centralized duplicated Pokémon test fixtures under `tests/helpers/` and
+  strengthened move-effect, save validation, battle RNG, and listener-cleanup
+  safety nets.
+
 ### Fixed - Scene lifecycle listener cleanup
 
 - Added a scene input registry that removes keyboard, pointer, and scene-event

@@ -3,18 +3,12 @@ import { BattleManager, BattleConfig } from '../../../frontend/src/battle/core/B
 import { MoveExecutor } from '../../../frontend/src/battle/execution/MoveExecutor';
 import { ExperienceCalculator } from '../../../frontend/src/battle/calculation/ExperienceCalculator';
 import { CatchCalculator } from '../../../frontend/src/battle/calculation/CatchCalculator';
-import { PokemonInstance } from '../../../frontend/src/data/interfaces';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 
 beforeEach(() => { vi.spyOn(Math, 'random').mockReturnValue(0.5); });
 
-const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
-  dataId: 4, level: 10, currentHp: 100,
-  stats: { hp: 100, attack: 50, defense: 40, spAttack: 60, spDefense: 45, speed: 55 },
-  ivs: { hp: 15, attack: 15, defense: 15, spAttack: 15, spDefense: 15, speed: 15 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy', moves: [{ moveId: 'ember', currentPp: 25 }, { moveId: 'scratch', currentPp: 35 }],
-  status: null, exp: 1000, friendship: 70, ...overrides,
-});
+
+const makePokemon = createPokemonFactory('battle-scenario');
 
 describe('Full Battle Scenarios', () => {
   describe('multi-turn battle to victory', () => {

@@ -1,177 +1,143 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Direction } from '../../../frontend/src/utils/type-helpers';
+import { describe, expect, it, vi } from 'vitest';
+import type Phaser from 'phaser';
+import { SceneInputRegistry } from '../../../frontend/src/scenes/SceneInputRegistry';
 
-/**
- * Tests the scene lifecycle and input gating rules across the game.
- * Validates that:
- * - Scenes properly pause/resume/stop
- * - Input is properly gated during transitions
- * - Sub-scenes don't leak input back to parent
- */
+type EventName = string | symbol;
+type Listener = (...args: unknown[]) => void;
 
-// ─── Scene state model ───
+class TestEmitter {
+  private readonly listeners = new Map<EventName, Set<Listener>>();
+  private readonly onceWrappers = new Map<Listener, Set<Listener>>();
 
-type SceneName = 'OverworldScene' | 'BattleScene' | 'BattleUIScene' | 'MenuScene' |
-  'DialogueScene' | 'PartyScene' | 'InventoryScene' | 'StarterSelectScene';
-
-interface SceneState {
-  active: Set<SceneName>;   // Running and updating
-  paused: Set<SceneName>;   // Running but not updating
-}
-
-/** Check if a scene should accept input based on overall scene state. */
-function shouldAcceptInput(sceneName: SceneName, state: SceneState): boolean {
-  // A scene should only accept input if it's active (not paused)
-  if (!state.active.has(sceneName)) return false;
-  if (state.paused.has(sceneName)) return false;
-
-  // When MenuScene is active, OverworldScene is paused → no overworld input
-  if (sceneName === 'OverworldScene' && state.active.has('MenuScene')) return false;
-
-  // When DialogueScene is active, parent scene is paused
-  if (sceneName === 'OverworldScene' && state.active.has('DialogueScene')) return false;
-
-  // When BattleUIScene is active, BattleScene should not process input
-  if (sceneName === 'BattleScene' && state.active.has('BattleUIScene')) return true; // BattleScene has no input handler
-
-  return true;
-}
-
-describe('Scene Lifecycle — Input Gating', () => {
-  describe('overworld → menu transition', () => {
-    it('OverworldScene should not accept input when MenuScene is open', () => {
-      const state: SceneState = {
-        active: new Set(['OverworldScene', 'MenuScene']),
-        paused: new Set(['OverworldScene']),
-      };
-      expect(shouldAcceptInput('OverworldScene', state)).toBe(false);
-      expect(shouldAcceptInput('MenuScene', state)).toBe(true);
-    });
-
-    it('OverworldScene should accept input after MenuScene closes', () => {
-      const state: SceneState = {
-        active: new Set(['OverworldScene']),
-        paused: new Set(),
-      };
-      expect(shouldAcceptInput('OverworldScene', state)).toBe(true);
-    });
-  });
-
-  describe('overworld → dialogue transition', () => {
-    it('OverworldScene should not accept input during dialogue', () => {
-      const state: SceneState = {
-        active: new Set(['OverworldScene', 'DialogueScene']),
-        paused: new Set(['OverworldScene']),
-      };
-      expect(shouldAcceptInput('OverworldScene', state)).toBe(false);
-      expect(shouldAcceptInput('DialogueScene', state)).toBe(true);
-    });
-  });
-
-  describe('battle scene input isolation', () => {
-    it('BattleUIScene should be the only input-handling scene during battle', () => {
-      const state: SceneState = {
-        active: new Set(['BattleScene', 'BattleUIScene']),
-        paused: new Set(),
-      };
-      expect(shouldAcceptInput('BattleUIScene', state)).toBe(true);
-    });
-
-    it('OverworldScene should not exist during battle', () => {
-      const state: SceneState = {
-        active: new Set(['BattleScene', 'BattleUIScene']),
-        paused: new Set(),
-      };
-      expect(shouldAcceptInput('OverworldScene', state)).toBe(false);
-    });
-  });
-
-  describe('battle sub-scene overlays', () => {
-    it('when InventoryScene launches from battle, BattleUIScene input should be blocked', () => {
-      // BattleUIScene now sleeps itself before launching InventoryScene,
-      // so it is no longer in the active set and should not accept input.
-      const state: SceneState = {
-        active: new Set(['BattleScene', 'InventoryScene']),
-        paused: new Set(),
-      };
-      expect(shouldAcceptInput('BattleUIScene', state)).toBe(false);
-      expect(shouldAcceptInput('InventoryScene', state)).toBe(true);
-    });
-  });
-});
-
-describe('Scene Lifecycle — Transition Guards', () => {
-  /** Model of the OverworldScene.transitioning flag */
-  interface OverworldState {
-    transitioning: boolean;
-    playerMoving: boolean;
+  on(event: EventName, listener: Listener, _context?: unknown): this {
+    this.add(event, listener);
+    return this;
   }
 
-  function canProcessOverworldInput(state: OverworldState): boolean {
-    if (state.transitioning) return false;
-    if (state.playerMoving) return false;
-    return true;
+  once(event: EventName, listener: Listener, context?: unknown): this {
+    const wrapped: Listener = (...args) => {
+      this.off(event, wrapped, context);
+      this.onceWrappers.delete(listener);
+      listener(...args);
+    };
+    const wrappers = this.onceWrappers.get(listener) ?? new Set<Listener>();
+    wrappers.add(wrapped);
+    this.onceWrappers.set(listener, wrappers);
+    this.add(event, wrapped);
+    return this;
   }
 
-  it('should block input during map transitions', () => {
-    expect(canProcessOverworldInput({ transitioning: true, playerMoving: false })).toBe(false);
+  off(event: EventName, listener?: Listener, _context?: unknown): this {
+    if (!listener) {
+      this.listeners.delete(event);
+      return this;
+    }
+    const wrappers = this.onceWrappers.get(listener);
+    this.listeners.get(event)?.delete(listener);
+    if (wrappers) {
+      wrappers.forEach(wrapped => this.listeners.forEach(eventListeners => eventListeners.delete(wrapped)));
+      this.onceWrappers.delete(listener);
+    }
+    return this;
+  }
+
+  emit(event: EventName, ...args: unknown[]): void {
+    [...(this.listeners.get(event) ?? [])].forEach(listener => listener(...args));
+  }
+
+  listenerCount(event: EventName): number {
+    return this.listeners.get(event)?.size ?? 0;
+  }
+
+  private add(event: EventName, listener: Listener): void {
+    const eventListeners = this.listeners.get(event) ?? new Set<Listener>();
+    eventListeners.add(listener);
+    this.listeners.set(event, eventListeners);
+  }
+}
+
+function createScene(keyboard: TestEmitter | null = new TestEmitter()) {
+  const events = new TestEmitter();
+  const scene = {
+    input: { keyboard },
+    events,
+  } as unknown as Phaser.Scene;
+
+  return { scene, events, keyboard };
+}
+
+describe('Scene lifecycle listener cleanup', () => {
+  it('removes keyboard listeners when the scene shuts down', () => {
+    const { scene, events, keyboard } = createScene();
+    const registry = new SceneInputRegistry(scene);
+
+    registry.bindKey('keydown-ESC', () => undefined);
+    registry.bindKey('keydown-ENTER', () => undefined);
+
+    expect(keyboard?.listenerCount('keydown-ESC')).toBe(1);
+    expect(keyboard?.listenerCount('keydown-ENTER')).toBe(1);
+
+    events.emit('shutdown');
+
+    expect(keyboard?.listenerCount('keydown-ESC')).toBe(0);
+    expect(keyboard?.listenerCount('keydown-ENTER')).toBe(0);
   });
 
-  it('should block input during player movement tween', () => {
-    expect(canProcessOverworldInput({ transitioning: false, playerMoving: true })).toBe(false);
+  it('removes pointer and scene-event listeners when the scene is destroyed', () => {
+    const { scene, events } = createScene();
+    const pointer = new TestEmitter();
+    const registry = new SceneInputRegistry(scene);
+
+    registry.bindPointer(pointer, 'pointerdown', () => undefined);
+    registry.bindSceneEvent('resume', () => undefined);
+
+    expect(pointer.listenerCount('pointerdown')).toBe(1);
+    expect(events.listenerCount('resume')).toBe(1);
+
+    events.emit('destroy');
+
+    expect(pointer.listenerCount('pointerdown')).toBe(0);
+    expect(events.listenerCount('resume')).toBe(0);
   });
 
-  it('should allow input when idle and not transitioning', () => {
-    expect(canProcessOverworldInput({ transitioning: false, playerMoving: false })).toBe(true);
+  it('unregisters once listeners after their first invocation', () => {
+    const { scene, keyboard } = createScene();
+    const pointer = new TestEmitter();
+    const registry = new SceneInputRegistry(scene);
+    const onKey = vi.fn();
+    const onPointer = vi.fn();
+
+    registry.bindKeyOnce('keydown-SPACE', onKey);
+    registry.bindPointerOnce(pointer, 'pointerup', onPointer);
+    keyboard?.emit('keydown-SPACE', 'first');
+    keyboard?.emit('keydown-SPACE', 'second');
+    pointer.emit('pointerup');
+    pointer.emit('pointerup');
+
+    expect(onKey).toHaveBeenCalledOnce();
+    expect(onPointer).toHaveBeenCalledOnce();
+    expect(keyboard?.listenerCount('keydown-SPACE')).toBe(0);
+    expect(pointer.listenerCount('pointerup')).toBe(0);
   });
 
-  it('should block input during simultaneous transition and movement', () => {
-    expect(canProcessOverworldInput({ transitioning: true, playerMoving: true })).toBe(false);
+  it('is safe for Phaser scenes without a keyboard plugin', () => {
+    const { scene, events } = createScene(null);
+    const registry = new SceneInputRegistry(scene);
+
+    expect(() => registry.bindKey('keydown-ESC', () => undefined)).not.toThrow();
+    events.emit('shutdown');
   });
-});
 
-describe('Menu Close → Resume Flow', () => {
-  it('MenuScene close should resume OverworldScene (not start a new one)', () => {
-    // The MenuScene.closeMenu() calls:
-    //   this.scene.stop();
-    //   this.scene.resume('OverworldScene');
-    // This is correct — it resumes instead of starting, preserving state.
-    const operations: string[] = [];
-    const mockScene = {
-      stop: () => operations.push('stop-menu'),
-      resume: (key: string) => operations.push(`resume-${key}`),
-    };
+  it('can be cleared repeatedly without leaking lifecycle hooks', () => {
+    const { scene, events, keyboard } = createScene();
+    const registry = new SceneInputRegistry(scene);
 
-    // Simulate closeMenu
-    mockScene.stop();
-    mockScene.resume('OverworldScene');
+    registry.bindKey('keydown-X', () => undefined);
+    registry.clear();
+    registry.clear();
 
-    expect(operations).toEqual(['stop-menu', 'resume-OverworldScene']);
-    expect(operations).not.toContain('start-OverworldScene'); // Must not restart
-  });
-});
-
-describe('Battle End → Overworld Return Flow', () => {
-  it('endBattle should stop both battle scenes before starting return scene', () => {
-    const operations: string[] = [];
-    const mockScene = {
-      stop: (key?: string) => operations.push(key ? `stop-${key}` : 'stop-self'),
-      start: (key: string, data?: unknown) => operations.push(`start-${key}`),
-    };
-
-    // Simulate endBattle from BattleUIScene
-    // battleManager.cleanup();  (not scene-related)
-    mockScene.stop();              // stop BattleUIScene
-    mockScene.stop('BattleScene'); // stop BattleScene
-    mockScene.start('OverworldScene');
-
-    expect(operations).toContain('stop-self');
-    expect(operations).toContain('stop-BattleScene');
-    expect(operations).toContain('start-OverworldScene');
-
-    // Ensure stops happen before start
-    const stopIdx = operations.indexOf('stop-BattleScene');
-    const startIdx = operations.indexOf('start-OverworldScene');
-    expect(stopIdx).toBeLessThan(startIdx);
+    expect(keyboard?.listenerCount('keydown-X')).toBe(0);
+    expect(events.listenerCount('shutdown')).toBe(0);
+    expect(events.listenerCount('destroy')).toBe(0);
   });
 });

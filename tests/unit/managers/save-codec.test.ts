@@ -1,27 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 import { GameManager } from '../../../frontend/src/managers/GameManager';
 import { SaveManager } from '../../../frontend/src/managers/SaveManager';
 import { SaveData } from '../../../frontend/src/managers/save-types';
+import { validateSaveData } from '../../../frontend/src/managers/SaveCodec';
 import { createLocalStorageMock } from '../../mocks/local-storage-mock';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 
 const SAVE_KEY = 'pokemon-web-save';
 const CORRUPT_SAVE_KEY = `${SAVE_KEY}-corrupt`;
 
-const makePokemon = (overrides: Partial<PokemonInstance> = {}): PokemonInstance => ({
-  dataId: 4,
-  level: 10,
-  currentHp: 30,
-  stats: { hp: 30, attack: 15, defense: 12, spAttack: 18, spDefense: 14, speed: 16 },
-  ivs: { hp: 15, attack: 15, defense: 15, spAttack: 15, spDefense: 15, speed: 15 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy',
-  moves: [{ moveId: 'ember', currentPp: 25 }],
-  status: null,
-  exp: 0,
-  friendship: 70,
-  ...overrides,
-});
+
+const makePokemon = createPokemonFactory('standard');
 
 function parseRecord(raw: string | null): Record<string, unknown> {
   if (!raw) throw new Error('Expected saved JSON');
@@ -80,6 +69,22 @@ describe('SaveManager validation and corrupt-save handling', () => {
     expect(sm.load()).toBeNull();
     expect(localStorage.getItem(CORRUPT_SAVE_KEY)).toBe(raw);
     expect(sm.getLastError()).toMatchObject({ type: 'validation' });
+  });
+
+  it('reports exact SaveCodec paths for missing and wrong-typed fields', () => {
+    const save = writeValidSave();
+    delete save.party;
+    save.money = 'many';
+
+    const result = validateSaveData(save);
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors).toEqual(expect.arrayContaining([
+        expect.objectContaining({ path: 'party', code: 'missing-field' }),
+        expect.objectContaining({ path: 'money', code: 'wrong-type' }),
+      ]));
+    }
   });
 
   it('rejects wrong field types before deserialization can throw TypeError', () => {

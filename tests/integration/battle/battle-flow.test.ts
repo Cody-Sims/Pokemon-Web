@@ -2,29 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BattleManager, BattleConfig } from '../../../frontend/src/battle/core/BattleManager';
 import { MoveExecutor } from '../../../frontend/src/battle/execution/MoveExecutor';
 import { ExperienceCalculator } from '../../../frontend/src/battle/calculation/ExperienceCalculator';
-import { PokemonInstance } from '../../../frontend/src/data/interfaces';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 
 beforeEach(() => {
   vi.spyOn(Math, 'random').mockReturnValue(0.5);
 });
 
-const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
-  dataId: 4, // Charmander
-  level: 10,
-  currentHp: 30,
-  stats: { hp: 30, attack: 15, defense: 12, spAttack: 18, spDefense: 14, speed: 16 },
-  ivs: { hp: 15, attack: 15, defense: 15, spAttack: 15, spDefense: 15, speed: 15 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy',
-  moves: [
-    { moveId: 'ember', currentPp: 25 },
-    { moveId: 'scratch', currentPp: 35 },
-  ],
-  status: null,
-  exp: 1000,
-  friendship: 70,
-  ...overrides,
-});
+
+const makePokemon = createPokemonFactory('battle-flow');
 
 describe('Battle Flow Integration', () => {
   describe('BattleManager initialization', () => {

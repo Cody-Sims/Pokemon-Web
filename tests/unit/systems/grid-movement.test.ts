@@ -1,222 +1,210 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Direction } from '../../../frontend/src/utils/type-helpers';
-import { TILE_SIZE } from '../../../frontend/src/utils/constants';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-/**
- * Tests GridMovement logic without Phaser rendering.
- * Validates collision checks, facing, and movement state.
- */
+vi.mock('phaser', () => {
+  class Sprite {
+    public body?: unknown;
+    public texture: { key: string };
 
-interface MockGridState {
-  tileX: number;
-  tileY: number;
-  facing: Direction;
-  isMoving: boolean;
-}
+    constructor(
+      public scene: unknown,
+      public x: number,
+      public y: number,
+      textureKey: string,
+    ) {
+      this.texture = { key: textureKey };
+    }
 
-/** Pure-logic simulation of GridMovement.move() */
-function tryMove(
-  state: MockGridState,
-  direction: Direction,
-  isBlocked: (tx: number, ty: number) => boolean,
-): boolean {
-  if (state.isMoving) return false;
-
-  state.facing = direction;
-
-  let targetX = state.tileX;
-  let targetY = state.tileY;
-
-  switch (direction) {
-    case 'up':    targetY--; break;
-    case 'down':  targetY++; break;
-    case 'left':  targetX--; break;
-    case 'right': targetX++; break;
+    setFlipX(): this { return this; }
+    setFrame(): this { return this; }
   }
 
-  if (isBlocked(targetX, targetY)) return false;
+  return {
+    default: {
+      GameObjects: { Sprite },
+      Math: { Linear: (start: number, end: number, amount: number) => start + (end - start) * amount },
+    },
+  };
+});
 
-  state.isMoving = true;
-  state.tileX = targetX;
-  state.tileY = targetY;
-  return true;
+import { NPC } from '../../../frontend/src/entities/NPC';
+import { Trainer } from '../../../frontend/src/entities/Trainer';
+import { GridMovement } from '../../../frontend/src/systems/overworld/GridMovement';
+import { TILE_SIZE, WALK_DURATION } from '../../../frontend/src/utils/constants';
+import type { Direction } from '../../../frontend/src/utils/type-helpers';
+
+interface TweenConfig {
+  x?: number;
+  y?: number;
+  duration: number;
+  onComplete?: () => void;
+  onStop?: () => void;
 }
 
-describe('GridMovement — Pure Logic', () => {
-  let state: MockGridState;
+function createMovement() {
+  let lastTween: TweenConfig | null = null;
+  const scene = {
+    tweens: {
+      add: vi.fn((config: TweenConfig) => {
+        lastTween = config;
+        return config;
+      }),
+    },
+  };
+  const sprite = { x: 5 * TILE_SIZE + TILE_SIZE / 2, y: 5 * TILE_SIZE + TILE_SIZE / 2 };
+  const movement = new GridMovement(scene as never, sprite as never, 5, 5);
+  movement.setMapBounds(20, 20);
+
+  return {
+    movement,
+    sprite,
+    scene,
+    completeTween: () => {
+      if (!lastTween?.onComplete) throw new Error('Expected a pending tween');
+      lastTween.onComplete();
+    },
+    stopTween: () => {
+      if (!lastTween?.onStop) throw new Error('Expected a pending tween');
+      lastTween.onStop();
+    },
+    getLastTween: () => lastTween,
+  };
+}
+
+function createTrainer(facing: Direction, defeated = false): Trainer {
+  return Object.assign(Object.create(Trainer.prototype), {
+    x: 5 * TILE_SIZE + TILE_SIZE / 2,
+    y: 5 * TILE_SIZE + TILE_SIZE / 2,
+    facing,
+    lineOfSight: 4,
+    defeated,
+    mapGround: Array.from({ length: 12 }, () => Array(12).fill(0)),
+    npcOccupiedTiles: new Set<string>(),
+  }) as Trainer;
+}
+
+describe('GridMovement', () => {
+  let harness: ReturnType<typeof createMovement>;
 
   beforeEach(() => {
-    state = { tileX: 5, tileY: 5, facing: 'down', isMoving: false };
+    harness = createMovement();
   });
 
-  const noCollision = () => false;
+  it.each([
+    ['up', 5, 4],
+    ['down', 5, 6],
+    ['left', 4, 5],
+    ['right', 6, 5],
+  ] as [Direction, number, number][])('moves %s after the tween completes', (direction, tileX, tileY) => {
+    expect(harness.movement.move(direction)).toBe(true);
+    expect(harness.movement.getIsMoving()).toBe(true);
+    expect(harness.movement.getTileX()).toBe(5);
+    expect(harness.movement.getTileY()).toBe(5);
 
-  describe('basic movement', () => {
-    it('should move up', () => {
-      expect(tryMove(state, 'up', noCollision)).toBe(true);
-      expect(state.tileY).toBe(4);
-      expect(state.facing).toBe('up');
-    });
+    harness.completeTween();
 
-    it('should move down', () => {
-      expect(tryMove(state, 'down', noCollision)).toBe(true);
-      expect(state.tileY).toBe(6);
-    });
-
-    it('should move left', () => {
-      expect(tryMove(state, 'left', noCollision)).toBe(true);
-      expect(state.tileX).toBe(4);
-    });
-
-    it('should move right', () => {
-      expect(tryMove(state, 'right', noCollision)).toBe(true);
-      expect(state.tileX).toBe(6);
-    });
+    expect(harness.movement.getTileX()).toBe(tileX);
+    expect(harness.movement.getTileY()).toBe(tileY);
+    expect(harness.movement.getFacing()).toBe(direction);
+    expect(harness.movement.getIsMoving()).toBe(false);
   });
 
-  describe('collision blocking', () => {
-    it('should not move into blocked tile', () => {
-      const blocked = (tx: number, ty: number) => tx === 5 && ty === 4; // Up is blocked
-      expect(tryMove(state, 'up', blocked)).toBe(false);
-      expect(state.tileX).toBe(5);
-      expect(state.tileY).toBe(5); // Didn't move
-    });
+  it('does not move into blocked tiles but still updates facing', () => {
+    harness.movement.setCollisionCheck((tileX, tileY) => tileX === 5 && tileY === 4);
 
-    it('should still update facing when blocked', () => {
-      const blocked = () => true;
-      tryMove(state, 'left', blocked);
-      expect(state.facing).toBe('left'); // Facing updated even though blocked
-      expect(state.tileX).toBe(5); // Position unchanged
-    });
+    expect(harness.movement.move('up')).toBe(false);
 
-    it('should block out-of-bounds movement', () => {
-      state.tileX = 0;
-      const oob = (tx: number, ty: number) => tx < 0 || ty < 0;
-      expect(tryMove(state, 'left', oob)).toBe(false);
-    });
+    expect(harness.movement.getFacing()).toBe('up');
+    expect(harness.movement.getTileX()).toBe(5);
+    expect(harness.movement.getTileY()).toBe(5);
+    expect(harness.scene.tweens.add).not.toHaveBeenCalled();
   });
 
-  describe('movement locking', () => {
-    it('should not allow movement while already moving', () => {
-      state.isMoving = true;
-      expect(tryMove(state, 'up', noCollision)).toBe(false);
-      expect(state.tileY).toBe(5); // Didn't move
-    });
+  it('checks map bounds before collision callbacks', () => {
+    const collision = vi.fn(() => false);
+    harness.movement.setTilePosition(0, 5);
+    harness.movement.setCollisionCheck(collision);
 
-    it('should allow movement after tween completes (isMoving reset)', () => {
-      tryMove(state, 'up', noCollision);
-      expect(state.isMoving).toBe(true);
+    expect(harness.movement.move('left')).toBe(false);
 
-      // Simulate tween completion
-      state.isMoving = false;
-
-      expect(tryMove(state, 'left', noCollision)).toBe(true);
-      expect(state.tileX).toBe(4);
-    });
+    expect(collision).not.toHaveBeenCalled();
+    expect(harness.movement.getTileX()).toBe(0);
   });
 
-  describe('multi-step paths', () => {
-    it('should traverse a path correctly', () => {
-      const path: Direction[] = ['up', 'up', 'right', 'right', 'down'];
-      for (const dir of path) {
-        state.isMoving = false; // Simulate tween completion
-        tryMove(state, dir, noCollision);
-      }
-      // Start: (5,5) → up(5,4) → up(5,3) → right(6,3) → right(7,3) → down(7,4)
-      expect(state.tileX).toBe(7);
-      expect(state.tileY).toBe(4);
-    });
+  it('locks movement until the current tween completes', () => {
+    expect(harness.movement.move('up')).toBe(true);
+    expect(harness.movement.move('left')).toBe(false);
+    expect(harness.movement.getFacing()).toBe('up');
+
+    harness.completeTween();
+
+    expect(harness.movement.move('left')).toBe(true);
   });
 
-  describe('NPC collision', () => {
-    it('should block movement into NPC tile', () => {
-      const npcPositions = [{ x: 5, y: 4 }, { x: 6, y: 5 }];
-      const hasNpc = (tx: number, ty: number) => npcPositions.some(n => n.x === tx && n.y === ty);
+  it('uses faster tween durations when running or cycling', () => {
+    harness.movement.setRunning(true);
+    harness.movement.move('right');
+    expect(harness.getLastTween()?.duration).toBe(Math.round(WALK_DURATION * 0.55));
+    harness.completeTween();
 
-      expect(tryMove(state, 'up', hasNpc)).toBe(false); // NPC at (5,4)
-      expect(tryMove(state, 'right', hasNpc)).toBe(false); // NPC at (6,5)
-      state.isMoving = false;
-      expect(tryMove(state, 'down', hasNpc)).toBe(true); // No NPC at (5,6)
-    });
+    harness.movement.setCycling(true);
+    harness.movement.move('right');
+    expect(harness.getLastTween()?.duration).toBe(Math.round(WALK_DURATION * 0.35));
+  });
+
+  it('snaps to the nearest tile if a tween is stopped externally', () => {
+    harness.movement.move('right');
+    harness.sprite.x = 7 * TILE_SIZE + TILE_SIZE / 2;
+    harness.sprite.y = 5 * TILE_SIZE + TILE_SIZE / 2;
+
+    harness.stopTween();
+
+    expect(harness.movement.getIsMoving()).toBe(false);
+    expect(harness.movement.getTileX()).toBe(7);
+    expect(harness.movement.getTileY()).toBe(5);
+    expect(harness.sprite.x).toBe(7 * TILE_SIZE + TILE_SIZE / 2);
   });
 });
 
-describe('Trainer Line-of-Sight', () => {
-  interface TrainerState {
-    tileX: number;
-    tileY: number;
-    facing: Direction;
-    lineOfSight: number;
-    defeated: boolean;
-  }
+describe('Trainer line of sight', () => {
+  it('detects players in front within range using the real Trainer method', () => {
+    const trainer = createTrainer('down');
 
-  function isInLineOfSight(trainer: TrainerState, playerX: number, playerY: number): boolean {
-    if (trainer.defeated) return false;
-    const { tileX, tileY, facing, lineOfSight } = trainer;
-
-    switch (facing) {
-      case 'up':
-        return playerX === tileX && playerY < tileY && playerY >= tileY - lineOfSight;
-      case 'down':
-        return playerX === tileX && playerY > tileY && playerY <= tileY + lineOfSight;
-      case 'left':
-        return playerY === tileY && playerX < tileX && playerX >= tileX - lineOfSight;
-      case 'right':
-        return playerY === tileY && playerX > tileX && playerX <= tileX + lineOfSight;
-    }
-  }
-
-  it('should detect player in front within range', () => {
-    const trainer: TrainerState = { tileX: 5, tileY: 5, facing: 'down', lineOfSight: 4, defeated: false };
-    expect(isInLineOfSight(trainer, 5, 6)).toBe(true);
-    expect(isInLineOfSight(trainer, 5, 9)).toBe(true);  // Edge of range
-    expect(isInLineOfSight(trainer, 5, 10)).toBe(false); // Out of range
+    expect(trainer.isInLineOfSight(5, 6)).toBe(true);
+    expect(trainer.isInLineOfSight(5, 9)).toBe(true);
+    expect(trainer.isInLineOfSight(5, 10)).toBe(false);
   });
 
-  it('should not detect player behind', () => {
-    const trainer: TrainerState = { tileX: 5, tileY: 5, facing: 'down', lineOfSight: 4, defeated: false };
-    expect(isInLineOfSight(trainer, 5, 4)).toBe(false);
+  it('does not detect players behind, to the side, on the same tile, or after defeat', () => {
+    expect(createTrainer('down').isInLineOfSight(5, 4)).toBe(false);
+    expect(createTrainer('down').isInLineOfSight(4, 7)).toBe(false);
+    expect(createTrainer('down').isInLineOfSight(5, 5)).toBe(false);
+    expect(createTrainer('down', true).isInLineOfSight(5, 6)).toBe(false);
   });
 
-  it('should not detect player to the side', () => {
-    const trainer: TrainerState = { tileX: 5, tileY: 5, facing: 'down', lineOfSight: 4, defeated: false };
-    expect(isInLineOfSight(trainer, 4, 7)).toBe(false);
+  it.each([
+    ['up', 5, 3],
+    ['down', 5, 7],
+    ['left', 3, 5],
+    ['right', 7, 5],
+  ] as [Direction, number, number][])('detects line of sight while facing %s', (facing, tileX, tileY) => {
+    expect(createTrainer(facing).isInLineOfSight(tileX, tileY)).toBe(true);
   });
 
-  it('should not detect player when defeated', () => {
-    const trainer: TrainerState = { tileX: 5, tileY: 5, facing: 'down', lineOfSight: 4, defeated: true };
-    expect(isInLineOfSight(trainer, 5, 6)).toBe(false);
-  });
+  it('blocks line of sight through occupied tiles', () => {
+    const trainer = createTrainer('down');
+    trainer.npcOccupiedTiles = new Set(['5,6']);
 
-  it('all 4 facing directions should work', () => {
-    expect(isInLineOfSight({ tileX: 5, tileY: 5, facing: 'up', lineOfSight: 3, defeated: false }, 5, 3)).toBe(true);
-    expect(isInLineOfSight({ tileX: 5, tileY: 5, facing: 'down', lineOfSight: 3, defeated: false }, 5, 7)).toBe(true);
-    expect(isInLineOfSight({ tileX: 5, tileY: 5, facing: 'left', lineOfSight: 3, defeated: false }, 3, 5)).toBe(true);
-    expect(isInLineOfSight({ tileX: 5, tileY: 5, facing: 'right', lineOfSight: 3, defeated: false }, 7, 5)).toBe(true);
-  });
-
-  it('player on same tile should not be in LoS', () => {
-    const trainer: TrainerState = { tileX: 5, tileY: 5, facing: 'down', lineOfSight: 4, defeated: false };
-    expect(isInLineOfSight(trainer, 5, 5)).toBe(false);
+    expect(trainer.isInLineOfSight(5, 7)).toBe(false);
   });
 });
 
-describe('NPC Facing — Opposite Direction', () => {
-  function getOpposite(dir: Direction): Direction {
-    switch (dir) {
-      case 'up': return 'down';
-      case 'down': return 'up';
-      case 'left': return 'right';
-      case 'right': return 'left';
-    }
-  }
-
+describe('NPC.getOpposite', () => {
   it.each([
     ['up', 'down'],
     ['down', 'up'],
     ['left', 'right'],
     ['right', 'left'],
   ] as [Direction, Direction][])('opposite of %s is %s', (input, expected) => {
-    expect(getOpposite(input)).toBe(expected);
+    expect(NPC.getOpposite(input)).toBe(expected);
   });
 });

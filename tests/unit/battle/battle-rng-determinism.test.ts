@@ -1,22 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 import { BattleManager } from '../../../frontend/src/battle/core/BattleManager';
 import { MoveExecutor } from '../../../frontend/src/battle/execution/MoveExecutor';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 
-const makePokemon = (overrides: Partial<PokemonInstance> = {}): PokemonInstance => ({
-  dataId: 4,
-  level: 30,
-  currentHp: 95,
-  stats: { hp: 95, attack: 65, defense: 55, spAttack: 70, spDefense: 60, speed: 70 },
-  ivs: { hp: 15, attack: 15, defense: 15, spAttack: 15, spDefense: 15, speed: 15 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy',
-  moves: [{ moveId: 'fury-swipes', currentPp: 15 }],
-  status: null,
-  exp: 0,
-  friendship: 70,
-  ...overrides,
-});
+
+const makePokemon = createPokemonFactory('battle-rng');
 
 interface BattleSnapshot {
   attackerHp: number;
@@ -70,6 +58,9 @@ describe('BattleRng deterministic battle sequences', () => {
     const second = runSequence(20260724);
     const different = runSequence(20260725);
 
+    expect(first.turns).toHaveLength(3);
+    expect(first.pp).toBe(12);
+    expect(first.turns.some(turn => turn.hit || turn.damage > 0 || turn.totalHits !== null)).toBe(true);
     expect(second).toEqual(first);
     expect(different).not.toEqual(first);
   });
