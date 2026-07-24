@@ -48,7 +48,7 @@ const hauntedGround = parseMap([
 ]);
 
 /** Builds a house MapDefinition from the given ground layout. */
-function buildHouse(cityKey: string, houseIndex: number, npcDialogue: string[], ground: number[][]): MapDefinition {
+function buildHouse(cityKey: string, houseIndex: number, npcDialogue: string[], ground: number[][], targetSpawnId = `from-house-${houseIndex}`): MapDefinition {
   const key = `${cityKey}-house-${houseIndex}`;
   return {
     key,
@@ -73,8 +73,8 @@ function buildHouse(cityKey: string, houseIndex: number, npcDialogue: string[], 
     trainers: [],
     objects: [],
     warps: [
-      { tileX: 2, tileY: 7, targetMap: cityKey, targetSpawnId: `from-house-${houseIndex}` },
-      { tileX: 4, tileY: 7, targetMap: cityKey, targetSpawnId: `from-house-${houseIndex}` },
+      { tileX: 2, tileY: 7, targetMap: cityKey, targetSpawnId },
+      { tileX: 4, tileY: 7, targetMap: cityKey, targetSpawnId },
     ],
     spawnPoints: {
       'default': { x: 3, y: 6, direction: 'up' },
@@ -83,8 +83,8 @@ function buildHouse(cityKey: string, houseIndex: number, npcDialogue: string[], 
 }
 
 /** Standard layout — Pallet, Viridian, Pewter, Verdantia. */
-export function createStandardHouse(cityKey: string, houseIndex: number, npcDialogue: string[]): MapDefinition {
-  return buildHouse(cityKey, houseIndex, npcDialogue, standardGround);
+export function createStandardHouse(cityKey: string, houseIndex: number, npcDialogue: string[], targetSpawnId?: string): MapDefinition {
+  return buildHouse(cityKey, houseIndex, npcDialogue, standardGround, targetSpawnId);
 }
 
 /** Coastal layout — Coral Harbor. Broader windows, open feel. */
@@ -112,7 +112,7 @@ export const palletHouse1 = createStandardHouse('pallet-town', 1, [
   'This is our home in Littoral Town.',
   'Mom always said this region is special.',
   'Be careful on your journey!',
-]);
+], 'from-player-house');
 
 export const viridianHouse1 = createStandardHouse('viridian-city', 1, [
   'Viridian City used to be so quiet before the Collective showed up.',

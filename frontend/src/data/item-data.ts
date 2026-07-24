@@ -100,6 +100,12 @@ export const itemData: Record<string, ItemData> = {
     buyPrice: 1200,
     effect: { type: 'capture', catchRateMultiplier: 2 },
   },
+  'net-ball': {
+    id: 'net-ball', name: 'Net Ball', category: 'pokeball',
+    description: 'A Poké Ball that works especially well in forests and near water.',
+    buyPrice: 1000,
+    effect: { type: 'capture', catchRateMultiplier: 1.5 },
+  },
 
   // ─── Battle items ───
   'repel': {
@@ -294,6 +300,16 @@ export const itemData: Record<string, ItemData> = {
     description: 'Extends hail set by the holder by 3 turns.',
     effect: { type: 'held-passive', held: 'icy-rock' },
   },
+  'scope-lens': {
+    id: 'scope-lens', name: 'Scope Lens', category: 'battle',
+    description: 'A lens that boosts the holder\u2019s chance of landing critical hits.',
+    effect: { type: 'held-passive', held: 'scope-lens' },
+  },
+  'hard-stone': {
+    id: 'hard-stone', name: 'Hard Stone', category: 'battle',
+    description: 'Boosts the power of Rock-type moves when held.',
+    effect: { type: 'held-passive', held: 'hard-stone' },
+  },
 
   // ─── Evolution Stones ───
   'fire-stone': {
@@ -326,6 +342,11 @@ export const itemData: Record<string, ItemData> = {
   'heart-scale': {
     id: 'heart-scale', name: 'Heart Scale', category: 'key',
     description: 'A pretty heart-shaped scale. Needed by certain Move Tutors.',
+    effect: { type: 'key' },
+  },
+  'stardust': {
+    id: 'stardust', name: 'Stardust', category: 'key',
+    description: 'Lovely red sand with a loose, silky feel. Popular with collectors.',
     effect: { type: 'key' },
   },
 

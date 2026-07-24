@@ -3,6 +3,7 @@ import { MoveData } from '../interfaces';
 export const waterMoves: Record<string, MoveData> = {
   'water-gun':    { id: 'water-gun', name: 'Water Gun', type: 'water', category: 'special', power: 40, accuracy: 100, pp: 25 },
   'hydro-pump':   { id: 'hydro-pump', name: 'Hydro Pump', type: 'water', category: 'special', power: 110, accuracy: 80, pp: 5 },
+  'hydro-cannon': { id: 'hydro-cannon', name: 'Hydro Cannon', type: 'water', category: 'special', power: 150, accuracy: 90, pp: 5, effect: { type: 'two-turn', target: 'enemy', twoTurnMove: 'hydro-cannon', rechargeOnly: true } },
   'surf':         { id: 'surf', name: 'Surf', type: 'water', category: 'special', power: 90, accuracy: 100, pp: 15 },
   'bubble':       { id: 'bubble', name: 'Bubble', type: 'water', category: 'special', power: 40, accuracy: 100, pp: 30, effect: { type: 'stat-change', target: 'enemy', stat: 'speed', stages: -1, chance: 10 } },
   'bubble-beam':  { id: 'bubble-beam', name: 'Bubble Beam', type: 'water', category: 'special', power: 65, accuracy: 100, pp: 20, effect: { type: 'stat-change', target: 'enemy', stat: 'speed', stages: -1, chance: 10 } },

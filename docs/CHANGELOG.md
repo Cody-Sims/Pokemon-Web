@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - Data reference integrity
+
+- Added missing TM, tutor, reward item, and Voltara tutor definitions; repaired
+  the Pallet generic-house return warp and renamed stale shop inventory keys.
+- Added a data-driven registry integrity regression test covering moves, Pokémon,
+  trainers, encounters, maps, shops, quests, cutscenes, and achievements.
+
 ### Added - Bounded improvement loop
 
 - Added a gate-first autonomous improvement loop that runs each iteration in a

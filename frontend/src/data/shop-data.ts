@@ -41,7 +41,7 @@ export const shopInventories: Record<string, string[]> = {
     'revive',
     'repel',
   ],
-  'verdantia': [
+  'verdantia-village': [
     'great-ball',
     'ultra-ball',
     'super-potion',
@@ -58,7 +58,7 @@ export const shopInventories: Record<string, string[]> = {
     'revive',
     'repel',
   ],
-  'wraithmoor': [
+  'wraithmoor-town': [
     'ultra-ball',
     'hyper-potion',
     'max-potion',
@@ -66,7 +66,7 @@ export const shopInventories: Record<string, string[]> = {
     'revive',
     'repel',
   ],
-  'cinderfall': [
+  'cinderfall-town': [
     'ultra-ball',
     'hyper-potion',
     'max-potion',
@@ -75,7 +75,7 @@ export const shopInventories: Record<string, string[]> = {
     'revive',
     'repel',
   ],
-  'dragonspine': [
+  'scalecrest-citadel': [
     'ultra-ball',
     'max-potion',
     'full-restore',
