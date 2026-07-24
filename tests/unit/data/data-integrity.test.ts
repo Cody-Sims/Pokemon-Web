@@ -58,6 +58,11 @@ describe('Data reference integrity', () => {
     const mapKeys = new Set(Object.keys(mapRegistry));
     const cutsceneIds = new Set(Object.keys(cutsceneData));
     const achievementIds = new Set<string>();
+    const shopMapKeys = new Set(
+      Object.entries(mapRegistry)
+        .filter(([, map]) => [...map.npcs, ...map.objects].some(spawn => spawn.interactionType === 'shop'))
+        .map(([mapKey]) => mapKey),
+    );
 
     for (const [pokemonId, pokemon] of Object.entries(pokemonData)) {
       for (const entry of pokemon.learnset) {
@@ -191,9 +196,14 @@ describe('Data reference integrity', () => {
 
     for (const [shopKey, inventory] of Object.entries(shopInventories)) {
       assertKnown(issues, `frontend/src/data/shop-data.ts shopInventories['${shopKey}']`, mapKeys, 'mapRegistry key', shopKey);
+      assertKnown(issues, `frontend/src/data/shop-data.ts shopInventories['${shopKey}']`, shopMapKeys, 'map containing a shop interaction', shopKey);
       for (const [itemIndex, itemId] of inventory.entries()) {
         assertKnown(issues, `frontend/src/data/shop-data.ts shopInventories['${shopKey}'][${itemIndex}]`, validItemOrTmIds, 'itemData/tmData id', itemId);
       }
+    }
+
+    for (const shopMapKey of shopMapKeys) {
+      assertKnown(issues, `frontend/src/data/maps mapRegistry['${shopMapKey}'] shop interaction`, new Set(Object.keys(shopInventories)), 'shopInventories key', shopMapKey);
     }
 
     for (const [itemKey, item] of Object.entries(itemData)) {

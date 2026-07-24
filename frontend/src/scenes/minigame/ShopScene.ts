@@ -49,7 +49,11 @@ export class ShopScene extends Phaser.Scene {
     const shopId = this.shopId;
     // Dynamically import shop data
     import('@data/shop-data').then(mod => {
-      this.shopItems = mod.shopInventories[shopId] ?? mod.shopInventories['viridian-city'] ?? [];
+      const inventory = mod.shopInventories[shopId];
+      if (!inventory) {
+        console.warn(`[ShopScene] No inventory configured for shop map '${shopId}'.`);
+      }
+      this.shopItems = inventory ?? [];
       this.buildUI();
     });
   }
