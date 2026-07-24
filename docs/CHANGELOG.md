@@ -6,6 +6,14 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Removed - Deprecated `computeGameWidth()` helper
+
+- Deleted the unused deprecated `computeGameWidth()` from
+  `frontend/src/utils/constants.ts`; `computeGameDimensions()` is the single
+  source for the responsive canvas size, and the helper had no call sites.
+- Updated the stale scale-config comment in `frontend/src/config/game-config.ts`
+  to reference `computeGameDimensions`.
+
 ### Changed - Global toolkit ships only the workspace-researcher agent
 
 - Removed the `external-skill-review`, `repository-agent-bootstrap`, and
