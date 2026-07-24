@@ -1,12 +1,7 @@
 import { ACHIEVEMENTS } from '@data/achievement-data';
+import type { AchievementDef } from '@data/achievement-types';
 
-export interface AchievementDef {
-  id: string;
-  name: string;
-  description: string;
-  category: 'story' | 'collection' | 'battle' | 'exploration' | 'challenge';
-  icon?: string;
-}
+export type { AchievementDef };
 
 /** Singleton manager for tracking unlocked achievements. */
 export class AchievementManager {

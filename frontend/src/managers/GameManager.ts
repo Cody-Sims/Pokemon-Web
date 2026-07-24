@@ -30,7 +30,14 @@ export class GameManager {
   private readonly _player = new PlayerStateManager();
   private readonly _stats = StatsManager.getInstance();
 
-  private constructor() { /* sub-manager constructors handle init */ }
+  private constructor() {
+    QuestManager.configureStateAccess({
+      getFlag: (flag) => this.getFlag(flag),
+      setFlag: (flag, value) => this.setFlag(flag, value),
+      addItem: (itemId, qty) => this.addItem(itemId, qty),
+      addMoney: (amount) => this.addMoney(amount),
+    });
+  }
 
   static getInstance(): GameManager {
     if (!GameManager.instance) {

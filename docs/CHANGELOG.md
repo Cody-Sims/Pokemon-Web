@@ -6,6 +6,14 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - Import cycle enforcement
+
+- Broke production import cycles between game/quest managers, double-battle
+  targeting, and achievement data by moving shared contracts to lower-level
+  modules.
+- Added a Vitest production import-cycle regression check that resolves frontend
+  TypeScript path aliases and reports the full cycle path on failure.
+
 ### Fixed - Build purity
 
 - Removed the wall-clock timestamp from the generated asset manifest so atlas

@@ -137,6 +137,27 @@ export default [
     },
   },
   {
+    files: ['scripts/**/*.ts'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: tsParserOptions,
+      globals: {
+        ...globals.node,
+        ...globals.es2024,
+      },
+      sourceType: 'module',
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+    },
+    rules: {
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      'prefer-const': 'warn',
+      '@typescript-eslint/no-unused-vars': noUnusedVars,
+    },
+  },
+  {
     files: ['tests/**/*.ts'],
     languageOptions: {
       parser: tseslint.parser,
