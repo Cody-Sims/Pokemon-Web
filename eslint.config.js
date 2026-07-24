@@ -111,7 +111,7 @@ export default [
     },
   },
   {
-    files: ['frontend/vite.config.ts'],
+    files: ['frontend/vite.config.ts', 'scripts/**/*.ts'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: tsParserOptions,
