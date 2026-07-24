@@ -11,6 +11,7 @@ export { DamageCalculator } from './calculation/DamageCalculator';
 export type { DamageResult } from './calculation/DamageCalculator';
 export { ExperienceCalculator, getNatureMultiplier, getNatureDescription } from './calculation/ExperienceCalculator';
 export { CatchCalculator } from './calculation/CatchCalculator';
+export { getTypeEffectiveness, getCombinedEffectiveness } from './calculation/TypeEffectiveness';
 
 // ── Effects ──────────────────────────────────────────────────
 export { StatusEffectHandler } from './effects/StatusEffectHandler';

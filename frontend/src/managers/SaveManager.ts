@@ -1,4 +1,4 @@
-import { SaveData } from '@data/interfaces';
+import type { SaveData } from './save-types';
 import { GameManager } from './GameManager';
 import { AchievementManager } from './AchievementManager';
 

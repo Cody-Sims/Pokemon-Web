@@ -1,7 +1,7 @@
 // ─── Pokemon Registry ───
 // Re-exports the combined pokemonData record from per-type files.
 
-import { PokemonData } from '../interfaces';
+import type { PokemonData } from './types';
 import { grassPokemon } from './grass';
 import { firePokemon } from './fire';
 import { waterPokemon } from './water';

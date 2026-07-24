@@ -1,6 +1,6 @@
-import { MoveData } from '../interfaces';
+import type { MoveData } from './types';
 
-export const psychicMoves: Record<string, MoveData> = {
+export const psychicMoves = {
   'confusion':    { id: 'confusion', name: 'Confusion', type: 'psychic', category: 'special', power: 50, accuracy: 100, pp: 25, effect: { type: 'status', target: 'enemy', status: 'confusion', chance: 10 } },
   'psybeam':      { id: 'psybeam', name: 'Psybeam', type: 'psychic', category: 'special', power: 65, accuracy: 100, pp: 20, effect: { type: 'status', target: 'enemy', status: 'confusion', chance: 10 } },
   'psychic':      { id: 'psychic', name: 'Psychic', type: 'psychic', category: 'special', power: 90, accuracy: 100, pp: 10, effect: { type: 'stat-change', target: 'enemy', stat: 'spDefense', stages: -1, chance: 10 } },
@@ -17,4 +17,4 @@ export const psychicMoves: Record<string, MoveData> = {
   'rest':         { id: 'rest', name: 'Rest', type: 'psychic', category: 'status', power: null, accuracy: 100, pp: 10, effect: { type: 'heal', target: 'self', amount: 100 } },
   'teleport':     { id: 'teleport', name: 'Teleport', type: 'psychic', category: 'status', power: null, accuracy: 100, pp: 20 },
   'kinesis':      { id: 'kinesis', name: 'Kinesis', type: 'psychic', category: 'status', power: null, accuracy: 80, pp: 15, effect: { type: 'stat-change', target: 'enemy', stat: 'accuracy', stages: -1 } },
-};
+} as const satisfies Record<string, MoveData>;

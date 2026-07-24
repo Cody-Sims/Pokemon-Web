@@ -1,4 +1,4 @@
-import { EncounterEntry } from './interfaces';
+import type { EncounterEntry } from './encounters/types';
 
 /** Per-route encounter tables. */
 export const encounterTables: Record<string, EncounterEntry[]> = {

@@ -6,6 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - Data layer purity
+
+- Moved starter-dependent rival party resolution and data helper logic out of
+  `frontend/src/data`, split shared interfaces by domain, and added initial
+  `MoveId`/`MapKey` derived ID types.
+
 ### Fixed - Build purity
 
 - Removed the wall-clock timestamp from the generated asset manifest so atlas

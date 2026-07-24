@@ -1,4 +1,4 @@
-import { TrainerData } from '../interfaces';
+import type { TrainerData } from './types';
 
 export const gymLeaderTrainers: Record<string, TrainerData> = {
   // ─── Gym 1: Brock (Rock-type Gym Leader) ───

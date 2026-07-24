@@ -4,7 +4,8 @@
 export { Tile, LEDGE_TILES } from './tiles';
 export { TILE_COLORS, SOLID_TILES, OVERLAY_BASE, FOREGROUND_TILES } from './tile-metadata';
 export { parseMap } from './map-parser';
-export type { NpcSpawn, NpcScheduleEntry, TrainerSpawn, ObjectSpawn, ObjectType, WarpDefinition, SpawnPoint, MapDefinition } from './map-interfaces';
+export type { NpcSpawn, NpcScheduleEntry, NPCBehaviorConfig, NPCBehaviorType, TrainerSpawn, ObjectSpawn, ObjectType, WarpDefinition, SpawnPoint, MapDefinition } from './map-interfaces';
+export type { AmbientType, OverworldWeather, TimePeriod } from './environment-types';
 
 import type { MapDefinition } from './map-interfaces';
 
@@ -93,7 +94,7 @@ import {
   wraithmoorHouse1, scalecrestHouse1, cinderfallHouse1,
 } from './interiors/generic-house';
 
-export const mapRegistry: Record<string, MapDefinition> = {
+const maps = {
   'pallet-town': palletTown,
   'route-1': route1,
   'viridian-city': viridianCity,
@@ -185,4 +186,8 @@ export const mapRegistry: Record<string, MapDefinition> = {
   'wraithmoor-town-house-1': wraithmoorHouse1,
   'scalecrest-citadel-house-1': scalecrestHouse1,
   'cinderfall-town-house-1': cinderfallHouse1,
-};
+} as const satisfies Record<string, MapDefinition>;
+
+export type MapKey = keyof typeof maps;
+
+export const mapRegistry: Record<string, MapDefinition> = maps;

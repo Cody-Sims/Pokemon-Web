@@ -1,6 +1,6 @@
-import { MoveData } from '../interfaces';
+import type { MoveData } from './types';
 
-export const normalMoves: Record<string, MoveData> = {
+export const normalMoves = {
   // ─── Normal – Physical ───
   'pound':        { id: 'pound', name: 'Pound', type: 'normal', category: 'physical', power: 40, accuracy: 100, pp: 35 },
   'scratch':      { id: 'scratch', name: 'Scratch', type: 'normal', category: 'physical', power: 40, accuracy: 100, pp: 35 },
@@ -88,4 +88,4 @@ export const normalMoves: Record<string, MoveData> = {
 
   // ─── Struggle (fallback when out of PP) ───
   'struggle':     { id: 'struggle', name: 'Struggle', type: 'normal', category: 'physical', power: 50, accuracy: 100, pp: 1, effect: { type: 'recoil', target: 'self', amount: 25 } },
-};
+} as const satisfies Record<string, MoveData>;

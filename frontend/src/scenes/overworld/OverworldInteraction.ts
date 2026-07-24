@@ -8,13 +8,13 @@ import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { Tile } from '@data/maps';
 import type { MapDefinition, NpcSpawn, ObjectSpawn } from '@data/maps';
-import { trainerData } from '@data/trainer-data';
 import { pokemonData } from '@data/pokemon';
 import { cutsceneData } from '@data/cutscene-data';
 import { TILE_SIZE } from '@utils/constants';
 import type { Direction } from '@utils/type-helpers';
 import type { PokemonInstance } from '@data/interfaces';
-import type { CutsceneDefinition } from '@systems/engine/CutsceneEngine';
+import type { CutsceneDefinition } from '@data/cutscenes/types';
+import { getTrainerData } from '@systems/engine/TrainerResolver';
 
 /** Shared mutable overworld state — passed by reference so handlers can write through. */
 export interface OverworldState {
@@ -239,9 +239,9 @@ export function tryInteract(ctx: InteractionContext): void {
         if (wonFlag && gm.getFlag(wonFlag)) {
           // Already completed – show regular dialogue
         } else {
-          const allyData = trainerData[allyId];
-          const e1Data = trainerData[enemy1Id];
-          const e2Data = trainerData[enemy2Id];
+          const allyData = getTrainerData(allyId);
+          const e1Data = getTrainerData(enemy1Id);
+          const e2Data = getTrainerData(enemy2Id);
           if (allyData && e1Data && e2Data) {
             const allyParty = allyData.party.map(p => EncounterSystem.createWildPokemon(p.pokemonId, p.level));
             const enemyParty1 = e1Data.party.map(p => EncounterSystem.createWildPokemon(p.pokemonId, p.level));

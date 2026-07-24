@@ -19,9 +19,9 @@ import { GameClock, TimePeriod } from '@systems/engine/GameClock';
 import { WeatherRenderer } from '@systems/rendering/WeatherRenderer';
 import { TransitionManager } from '@managers/TransitionManager';
 import { PokemonInstance } from '@data/interfaces';
-import { trainerData } from '@data/trainer-data';
 import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
+import { getTrainerData } from '@systems/engine/TrainerResolver';
 import {
   mapRegistry,
   MapDefinition,
@@ -881,7 +881,8 @@ export class OverworldScene extends Phaser.Scene {
         else if (py < trainerTY) faceDir = 'up';
         trainer.faceDirection(faceDir);
 
-        const tData = trainerData[trainer.trainerId];
+        const tData = getTrainerData(trainer.trainerId);
+        if (!tData) return;
 
         // Show pre-battle dialogue
         this.scene.pause();

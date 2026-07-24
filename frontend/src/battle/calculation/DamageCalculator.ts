@@ -2,7 +2,7 @@ import { PokemonInstance, MoveInstance } from '@data/interfaces';
 import { MoveData } from '@data/interfaces';
 import { moveData } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
-import { getCombinedEffectiveness } from '@data/type-chart';
+import { getCombinedEffectiveness } from '@battle/calculation/TypeEffectiveness';
 import { STAB_MULTIPLIER, CRIT_CHANCE, CRIT_MULTIPLIER, RANDOM_MIN, RANDOM_MAX } from '@utils/constants';
 import { randomFloat, seededRandom } from '@utils/math-helpers';
 import { PokemonType } from '@utils/type-helpers';

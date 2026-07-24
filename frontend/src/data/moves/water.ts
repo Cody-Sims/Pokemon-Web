@@ -1,6 +1,6 @@
-import { MoveData } from '../interfaces';
+import type { MoveData } from './types';
 
-export const waterMoves: Record<string, MoveData> = {
+export const waterMoves = {
   'water-gun':    { id: 'water-gun', name: 'Water Gun', type: 'water', category: 'special', power: 40, accuracy: 100, pp: 25 },
   'hydro-pump':   { id: 'hydro-pump', name: 'Hydro Pump', type: 'water', category: 'special', power: 110, accuracy: 80, pp: 5 },
   'hydro-cannon': { id: 'hydro-cannon', name: 'Hydro Cannon', type: 'water', category: 'special', power: 150, accuracy: 90, pp: 5, effect: { type: 'two-turn', target: 'enemy', twoTurnMove: 'hydro-cannon', rechargeOnly: true } },
@@ -13,4 +13,4 @@ export const waterMoves: Record<string, MoveData> = {
   'withdraw':     { id: 'withdraw', name: 'Withdraw', type: 'water', category: 'status', power: null, accuracy: 100, pp: 40, effect: { type: 'stat-change', target: 'self', stat: 'defense', stages: 1 } },
   'water-pulse':  { id: 'water-pulse', name: 'Water Pulse', type: 'water', category: 'special', power: 60, accuracy: 100, pp: 20, effect: { type: 'status', target: 'enemy', status: 'confusion', chance: 20 } },
   'rain-dance':   { id: 'rain-dance', name: 'Rain Dance', type: 'water', category: 'status', power: null, accuracy: 100, pp: 5, effect: { type: 'weather', target: 'self', weather: 'rain' } },
-};
+} as const satisfies Record<string, MoveData>;

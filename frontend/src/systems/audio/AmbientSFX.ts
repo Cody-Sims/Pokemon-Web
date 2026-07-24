@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
-
-export type AmbientType = 'ocean' | 'forest' | 'cave' | 'city' | 'wind' | 'rain' | 'none';
+import type { AmbientType } from '@data/maps';
 
 /**
  * Manages ambient environmental sound effects based on the current map's biome.

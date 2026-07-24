@@ -19,7 +19,6 @@ import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, isMobile } from '@ui/theme
 import { TouchControls } from '@ui/controls/TouchControls';
 import { SynthesisHandler } from '@battle/effects/SynthesisHandler';
 import { SYNTHESIS_ELIGIBLE } from '@data/synthesis-data';
-import { trainerData } from '@data/trainers';
 import { pickEnemyMove as pickEnemy, calculateTurnOrder } from './BattleTurnRunner';
 import { collectEndOfTurnEffects } from './BattleEndOfTurn';
 import { resetBallThrowCount, cleanupBallGraphics } from './BattleCatchHandler';
@@ -30,6 +29,7 @@ import { BattleMoveMenu } from './BattleMoveMenu';
 import { BattleBagHandler } from './BattleBagHandler';
 import { BattleSwitchHandler } from './BattleSwitchHandler';
 import { seededRandom } from '@utils/math-helpers';
+import { getTrainerData } from '@systems/engine/TrainerResolver';
 
 export type UIState = 'actions' | 'moves' | 'animating' | 'message' | 'target-select';
 
@@ -310,7 +310,7 @@ export class BattleUIScene extends Phaser.Scene {
 
     // Boss Synthesis: trigger on first turn if trainer data says so
     if (!this.bossSynthesisTriggered && b.isTrainerBattle) {
-      const tData = b.trainerId ? trainerData[b.trainerId] : null;
+      const tData = b.trainerId ? getTrainerData(b.trainerId) : null;
       if (tData && tData.useSynthesis && enemy.dataId in SYNTHESIS_ELIGIBLE) {
         this.bossSynthesisTriggered = true;
         this.state = 'animating';

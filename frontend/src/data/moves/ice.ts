@@ -1,6 +1,6 @@
-import { MoveData } from '../interfaces';
+import type { MoveData } from './types';
 
-export const iceMoves: Record<string, MoveData> = {
+export const iceMoves = {
   'ice-beam':     { id: 'ice-beam', name: 'Ice Beam', type: 'ice', category: 'special', power: 90, accuracy: 100, pp: 10, effect: { type: 'status', target: 'enemy', status: 'freeze', chance: 10 } },
   'blizzard':     { id: 'blizzard', name: 'Blizzard', type: 'ice', category: 'special', power: 110, accuracy: 70, pp: 5, effect: { type: 'status', target: 'enemy', status: 'freeze', chance: 10 } },
   'aurora-beam':  { id: 'aurora-beam', name: 'Aurora Beam', type: 'ice', category: 'special', power: 65, accuracy: 100, pp: 20, effect: { type: 'stat-change', target: 'enemy', stat: 'attack', stages: -1, chance: 10 } },
@@ -10,4 +10,4 @@ export const iceMoves: Record<string, MoveData> = {
   'hail':         { id: 'hail', name: 'Hail', type: 'ice', category: 'status', power: null, accuracy: 100, pp: 10, effect: { type: 'weather', target: 'self', weather: 'hail' } },
   'icicle-crash': { id: 'icicle-crash', name: 'Icicle Crash', type: 'ice', category: 'physical', power: 85, accuracy: 90, pp: 10, effect: { type: 'flinch', target: 'enemy', chance: 30 } },
   'frost-breath': { id: 'frost-breath', name: 'Frost Breath', type: 'ice', category: 'special', power: 60, accuracy: 90, pp: 10 },
-};
+} as const satisfies Record<string, MoveData>;

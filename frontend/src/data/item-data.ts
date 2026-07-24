@@ -1,4 +1,4 @@
-import { ItemData } from './interfaces';
+import type { ItemData } from './items/types';
 
 export const itemData: Record<string, ItemData> = {
   // ─── Medicine ───
