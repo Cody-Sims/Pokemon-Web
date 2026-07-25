@@ -3,6 +3,26 @@
 > Last reconciled: 2026-07-24 against `83b2fab` (`revamp/bug-triage`) plus this bug-triage commit.
 > Scope: every backlog entry that was under `## Open
 
+### Performance budgets cannot be met on a GPU-less CI runner
+
+- **Files:** [tests/e2e/performance.spec.ts](tests/e2e/performance.spec.ts#L54-L132)
+- **Symptom:** `title screen sustains > 30 FPS` and `overworld sustains > 30 FPS`
+  fail on GitHub-hosted runners, measuring 27.6 and 10.4 FPS.
+- **Cause:** the runners have no GPU and fall back to swiftshader software
+  rendering, so a 30 FPS budget is unreachable regardless of code quality.
+- **Not a regression:** measured locally on real hardware, the pre-revamp
+  baseline `e7f3341` reports 45.6 / 33.9 FPS and current `main` reports
+  38.4 / 34.4 FPS on the same full-file run. Both hover just above the 30 FPS
+  threshold, so the spec is also noisy under machine load — an earlier run on a
+  busy machine produced 22.6 FPS on `main` and 60.1 FPS when run in isolation.
+- **Impact on CI:** performance runs as an informational `continue-on-error`
+  step; smoke gates PRs.
+- **Fix options:** (a) set CI-specific budgets via an env var, (b) assert
+  frame-time percentiles rather than a mean FPS to reduce noise, or (c) run
+  budgets only on a self-hosted runner with a GPU.
+
+
+
 ### Visual regression tests can never pass in CI
 
 - **Files:** [.gitignore](.gitignore#L27), [tests/e2e/visual.spec.ts](tests/e2e/visual.spec.ts), [tests/e2e/playwright.config.ts](tests/e2e/playwright.config.ts#L49)

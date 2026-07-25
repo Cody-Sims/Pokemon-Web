@@ -107,20 +107,24 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E tests
-        # Only specs proven to pass on a Linux runner gate a PR. Visual
-        # regression is excluded because tests/e2e/*-snapshots/ is gitignored,
-        # so no Linux baseline can ever exist and every screenshot assertion
-        # fails with "A snapshot doesn't exist ... writing actual".
-        # mobile-ui, ui-regression, boot-to-title, menu-navigation and
-        # new-game-flow have never run in CI and hang on context teardown.
-        # Both gaps are tracked in docs/bugs.md.
-        run: |
-          npm run test:e2e:smoke
-          npm run test:perf
+        # Only specs proven to pass on a Linux runner gate a PR.
+        # Excluded, all tracked in docs/bugs.md:
+        #  - visual: tests/e2e/*-snapshots/ is gitignored, so no Linux baseline
+        #    can exist and every screenshot assertion fails on a clean runner.
+        #  - performance: FPS and load budgets assume a GPU. GitHub runners use
+        #    software rendering (swiftshader) and measure 10-27 FPS against a
+        #    30 FPS budget regardless of code quality.
+        #  - mobile-ui, ui-regression, boot-to-title, menu-navigation and
+        #    new-game-flow have never run in CI and hang on context teardown.
+        run: npm run test:e2e:smoke
 
       - name: Visual regression (informational)
         continue-on-error: true
         run: npm run test:visual
+
+      - name: Performance budgets (informational)
+        continue-on-error: true
+        run: npm run test:perf
 
       - name: Upload Playwright report
         if: ${{ failure() }}
