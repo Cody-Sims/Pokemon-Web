@@ -46,7 +46,8 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   scale: {
     // FIT preserves aspect ratio and gives correct touch input coordinates.
     // The game width is dynamically computed from viewport aspect ratio
-    // (see computeGameDimensions) and updated on resize, so bars are minimal.
+    // (see computeGameDimensions) and updated with setGameSize() on resize,
+    // so phones use the full viewport without stretching pixel art.
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },

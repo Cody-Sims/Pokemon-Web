@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - Mobile viewport scaling
+
+- Fixed mobile rotation/resize handling so Phaser FIT mode recomputes its
+  display size from the updated safe viewport, eliminating landscape-phone
+  canvas gutters without stretching pixel art.
+- Added CSS pixel-art image rendering hints for the game canvas.
+
 ### Fixed - E2E intro helpers
 
 - Reworked the new-game Playwright helper to drive IntroScene with keyboard and

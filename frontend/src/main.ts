@@ -315,7 +315,10 @@ function handleViewportResize(): void {
     const { width, height } = computeGameDimensions();
     const current = game.scale.gameSize;
     if (current.width !== width || current.height !== height) {
-      game.scale.resize(width, height);
+      // FIT mode needs setGameSize() so Phaser recalculates the CSS display
+      // size against the current viewport. resize() only changes the canvas
+      // backing size and can leave stale letterboxed gutters after rotation.
+      game.scale.setGameSize(width, height);
     }
     // Always call refresh — even when dims are unchanged, the canvas DOM
     // rect can shift after the address bar collapses, and refresh() syncs
