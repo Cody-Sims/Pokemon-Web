@@ -8,6 +8,13 @@ type PlaytestSnapshot = {
   activeScenes: string[];
   loadedScenes: string[];
   canvas: { width: number; height: number };
+  shell?: {
+    blockingOverlays: string[];
+    shellPaused: boolean;
+    rotatePromptVisible: boolean;
+    iosInstallVisible: boolean;
+    installBannerVisible: boolean;
+  };
 };
 
 type PlayerStateSnapshot = {
@@ -36,14 +43,6 @@ export async function tapCanvasFraction(page: Page, xFraction: number, yFraction
   await nextAnimationFrame(page);
 }
 
-/** Click a point expressed as a fraction of the rendered game canvas. */
-async function clickCanvasFraction(page: Page, xFraction: number, yFraction: number): Promise<void> {
-  const box = await page.locator('canvas').boundingBox();
-  if (!box) throw new Error('Cannot click canvas before it has a layout box');
-  await page.mouse.click(box.x + box.width * xFraction, box.y + box.height * yFraction);
-  await nextAnimationFrame(page);
-}
-
 /** Wait for the Phaser `<canvas>` to appear and be visible. */
 export async function waitForCanvas(page: Page, timeout = 15_000): Promise<void> {
   await page.locator('canvas').waitFor({ state: 'visible', timeout });
@@ -65,24 +64,72 @@ export async function getPlaytestSnapshot(page: Page): Promise<PlaytestSnapshot>
   return page.evaluate(() => (window as any).__pokemonPlaytest.snapshot());
 }
 
+/** Format the current browser/game state for loud E2E helper failures. */
+async function getPlaytestDiagnostics(page: Page): Promise<string> {
+  try {
+    const diagnostics = await page.evaluate(() => {
+      const snapshot = (window as any).__pokemonPlaytest?.snapshot?.();
+      const activeElement = document.activeElement;
+      return {
+        url: location.href,
+        snapshot,
+        dom: {
+          activeElement:
+            activeElement instanceof HTMLElement
+              ? {
+                tagName: activeElement.tagName,
+                id: activeElement.id,
+                name: activeElement.getAttribute('name'),
+              }
+              : null,
+          introNameInputPresent: Boolean(document.querySelector('input[name="nickname-disabled"]')),
+          canvasCount: document.querySelectorAll('canvas').length,
+        },
+      };
+    });
+    return JSON.stringify(diagnostics);
+  } catch (error) {
+    return `unable to read diagnostics: ${error instanceof Error ? error.message : String(error)}`;
+  }
+}
+
+async function timeoutWithDiagnostics(
+  page: Page,
+  step: string,
+  timeout: number,
+  cause?: unknown,
+): Promise<never> {
+  const details = await getPlaytestDiagnostics(page);
+  const causeMessage = cause instanceof Error ? ` Cause: ${cause.message}` : '';
+  throw new Error(`${step} did not complete within ${timeout}ms.${causeMessage} State: ${details}`);
+}
+
 /** Wait for a Phaser scene to become active. */
 export async function waitForScene(page: Page, sceneName: string, timeout = 15_000): Promise<void> {
   await waitForPlaytestSnapshot(page, timeout);
-  await page.waitForFunction(
-    scene => (window as any).__pokemonPlaytest.snapshot().activeScenes.includes(scene),
-    sceneName,
-    { timeout },
-  );
+  try {
+    await page.waitForFunction(
+      scene => (window as any).__pokemonPlaytest.snapshot().activeScenes.includes(scene),
+      sceneName,
+      { timeout },
+    );
+  } catch (error) {
+    await timeoutWithDiagnostics(page, `Waiting for active scene "${sceneName}"`, timeout, error);
+  }
 }
 
 /** Wait for a Phaser scene to no longer be active. */
 export async function waitForSceneInactive(page: Page, sceneName: string, timeout = 15_000): Promise<void> {
   await waitForPlaytestSnapshot(page, timeout);
-  await page.waitForFunction(
-    scene => !(window as any).__pokemonPlaytest.snapshot().activeScenes.includes(scene),
-    sceneName,
-    { timeout },
-  );
+  try {
+    await page.waitForFunction(
+      scene => !(window as any).__pokemonPlaytest.snapshot().activeScenes.includes(scene),
+      sceneName,
+      { timeout },
+    );
+  } catch (error) {
+    await timeoutWithDiagnostics(page, `Waiting for inactive scene "${sceneName}"`, timeout, error);
+  }
 }
 
 /** Return whether a scene is active in the current playtest snapshot. */
@@ -231,13 +278,74 @@ export async function getGameFlag(page: Page, flag: string): Promise<boolean> {
   }, flag);
 }
 
+async function getPlayerName(page: Page): Promise<string> {
+  return page.evaluate(async () => {
+    const modulePath = `${location.origin}/Pokemon-Web/src/managers/GameManager.ts`;
+    const { GameManager } = await import(modulePath);
+    return GameManager.getInstance().getPlayerName();
+  });
+}
+
+async function fillIntroNameIfAvailable(page: Page, playerName: string): Promise<void> {
+  const filledDomInput = await page.evaluate(name => {
+    const input = document.querySelector<HTMLInputElement>('input[name="nickname-disabled"]');
+    if (!input) return false;
+    input.value = name;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.blur();
+    return true;
+  }, playerName);
+
+  if (!filledDomInput) {
+    for (let i = 0; i < playerName.length + 10; i++) {
+      await page.keyboard.press('Backspace');
+    }
+    await page.keyboard.type(playerName, { delay: 10 });
+  }
+}
+
+async function hasIntroNameInput(page: Page): Promise<boolean> {
+  return page.evaluate(() => Boolean(document.querySelector('input[name="nickname-disabled"]')));
+}
+
+async function driveUntil(
+  page: Page,
+  step: string,
+  isDone: () => Promise<boolean>,
+  action: (attempt: number) => Promise<void>,
+  options: { timeout?: number; maxAttempts?: number } = {},
+): Promise<void> {
+  const timeout = options.timeout ?? 15_000;
+  const maxAttempts = options.maxAttempts ?? 80;
+  const startedAt = Date.now();
+  let attempts = 0;
+
+  while (Date.now() - startedAt < timeout && attempts < maxAttempts) {
+    if (await isDone()) return;
+    await action(attempts);
+    attempts += 1;
+    await nextAnimationFrame(page);
+    if (await isDone()) return;
+  }
+
+  await timeoutWithDiagnostics(
+    page,
+    `${step} after ${attempts} attempts`,
+    Math.min(timeout, Date.now() - startedAt),
+  );
+}
+
 /** Advance the automatic opening cutscene until the overworld is playable. */
 export async function completeOpeningCutscene(page: Page): Promise<void> {
   await waitForPlaytestSnapshot(page, 30_000);
-  await page.waitForFunction(() => {
-    const activeScenes = (window as any).__pokemonPlaytest.snapshot().activeScenes;
-    return activeScenes.includes('OverworldScene') || activeScenes.includes('DialogueScene');
-  }, undefined, { timeout: 30_000 });
+  try {
+    await page.waitForFunction(() => {
+      const activeScenes = (window as any).__pokemonPlaytest.snapshot().activeScenes;
+      return activeScenes.includes('OverworldScene') || activeScenes.includes('DialogueScene');
+    }, undefined, { timeout: 30_000 });
+  } catch (error) {
+    await timeoutWithDiagnostics(page, 'Waiting for opening cutscene scene', 30_000, error);
+  }
 
   for (let i = 0; i < 20; i++) {
     const cutsceneDone = await getGameFlag(page, 'game_started');
@@ -246,19 +354,23 @@ export async function completeOpeningCutscene(page: Page): Promise<void> {
       break;
     }
     await pressKey(page, 'Enter', 100);
-    await page.waitForTimeout(300);
+    await nextAnimationFrame(page);
   }
 
-  await page.waitForFunction(async () => {
-    const modulePath = `${location.origin}/Pokemon-Web/src/managers/GameManager.ts`;
-    const { GameManager } = await import(modulePath);
-    const activeScenes = (window as any).__pokemonPlaytest.snapshot().activeScenes;
-    return GameManager.getInstance().getFlag('game_started') && !activeScenes.includes('DialogueScene');
-  }, undefined, { timeout: 20_000 });
+  try {
+    await page.waitForFunction(async () => {
+      const modulePath = `${location.origin}/Pokemon-Web/src/managers/GameManager.ts`;
+      const { GameManager } = await import(modulePath);
+      const activeScenes = (window as any).__pokemonPlaytest.snapshot().activeScenes;
+      return GameManager.getInstance().getFlag('game_started') && !activeScenes.includes('DialogueScene');
+    }, undefined, { timeout: 20_000 });
+  } catch (error) {
+    await timeoutWithDiagnostics(page, 'Completing opening cutscene', 20_000, error);
+  }
 }
 
 /**
- * Navigate to the app, wait for the canvas, and dismiss the "PRESS START"
+ * Navigate to the app, wait for the canvas, and dismiss the initial title
  * prompt so the title menu is visible.
  */
 export async function bootToTitleMenu(
@@ -275,7 +387,7 @@ export async function bootToTitleMenu(
   if (dismissShellOverlays) {
     await dismissRotateGate(page);
   }
-  // Dismiss "PRESS START"
+  // Dismiss the initial title prompt.
   await pressKey(page, 'Enter', 75);
   await waitForScene(page, 'TitleScene');
 }
@@ -296,50 +408,57 @@ export async function startNewGame(page: Page): Promise<void> {
 
 /**
  * Skip through the IntroScene slides, type a player name, select an
- * appearance, and confirm — arriving at StarterSelectScene.
- *
- * This is intentionally aggressive with Enter presses; extra presses on
- * scenes that are already dismissed are harmless.
+ * appearance, and confirm — arriving at the opening overworld cutscene.
  */
 export async function skipIntro(page: Page, playerName = 'Ash'): Promise<void> {
   await waitForScene(page, 'IntroScene', 15_000);
-  // IntroScene has ~8 text slides; pressing Enter advances each one.
-  for (let i = 0; i < 7; i++) {
-    await pressKey(page, 'Enter', 100);
-    await page.waitForTimeout(300);
-  }
-  await page.waitForTimeout(1_000);
 
   const touchDevice = await page.evaluate(() => navigator.maxTouchPoints > 0);
   if (touchDevice) {
-    // Mobile browsers may not route Playwright keyboard events to Phaser while
-    // the hidden DOM keyboard bridge is unfocused. Use canvas pointer setup to
-    // choose the Ash preset and DONE; gameplay touch assertions use real touch.
-    await clickCanvasFraction(page, 0.4, 0.63);
-    await page.waitForTimeout(200);
-    await clickCanvasFraction(page, 0.5, 0.82);
+    await driveUntil(
+      page,
+      'Reaching intro name entry',
+      async () => await hasIntroNameInput(page),
+      async () => {
+        await pressKey(page, 'Enter', 75);
+      },
+      { timeout: 25_000, maxAttempts: 120 },
+    );
+    await fillIntroNameIfAvailable(page, playerName);
+    await pressKey(page, 'Enter', 75);
+    await driveUntil(
+      page,
+      `Confirming intro player name "${playerName}"`,
+      async () => await getPlayerName(page) === playerName,
+      async () => {
+        await fillIntroNameIfAvailable(page, playerName);
+        await pressKey(page, 'Enter', 75);
+      },
+      { timeout: 5_000, maxAttempts: 20 },
+    );
   } else {
-    await page.keyboard.type(playerName, { delay: 50 });
-    await page.waitForTimeout(200);
-    await pressKey(page, 'Enter', 100);
+    await driveUntil(
+      page,
+      `Confirming intro player name "${playerName}"`,
+      async () => await getPlayerName(page) === playerName,
+      async () => {
+        await fillIntroNameIfAvailable(page, playerName);
+        await pressKey(page, 'Enter', 75);
+      },
+      { timeout: 25_000, maxAttempts: 120 },
+    );
   }
-  await page.waitForTimeout(1_200);
 
-  // Appearance select — just confirm the default.
-  if (touchDevice) {
-    await clickCanvasFraction(page, 0.5, 0.78);
-  } else {
-    await pressKey(page, 'Enter', 100);
-  }
-  await page.waitForTimeout(1_200);
-
-  // Final confirmation slide.
-  if (touchDevice) {
-    await clickCanvasFraction(page, 0.5, 0.68);
-  } else {
-    await pressKey(page, 'Enter', 100);
-  }
-  await waitForScene(page, 'OverworldScene', 30_000);
+  await driveUntil(
+    page,
+    'Confirming intro appearance and final prompt',
+    async () => await isSceneActive(page, 'OverworldScene'),
+    async () => {
+      await pressKey(page, 'Enter', 75);
+    },
+    { timeout: 20_000, maxAttempts: 120 },
+  );
+  await waitForScene(page, 'OverworldScene', 5_000);
 }
 
 /**
@@ -358,9 +477,13 @@ export async function selectStarter(page: Page): Promise<void> {
   // Confirmation prompt — press Enter again.
   await pressKey(page, 'Enter', 100);
   await waitForScene(page, 'OverworldScene', 30_000);
-  await page.waitForFunction(async () => {
-    const modulePath = `${location.origin}/Pokemon-Web/src/managers/GameManager.ts`;
-    const { GameManager } = await import(modulePath);
-    return GameManager.getInstance().getCurrentMap() === 'pallet-town';
-  }, undefined, { timeout: 10_000 });
+  try {
+    await page.waitForFunction(async () => {
+      const modulePath = `${location.origin}/Pokemon-Web/src/managers/GameManager.ts`;
+      const { GameManager } = await import(modulePath);
+      return GameManager.getInstance().getCurrentMap() === 'pallet-town';
+    }, undefined, { timeout: 10_000 });
+  } catch (error) {
+    await timeoutWithDiagnostics(page, 'Waiting for starter selection to return to Pallet Town', 10_000, error);
+  }
 }
