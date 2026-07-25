@@ -93,6 +93,23 @@ async function getPlaytestDiagnostics(page: Page): Promise<string> {
   }
 }
 
+async function isOpeningCutsceneSceneActive(page: Page): Promise<boolean> {
+  const snapshot = await getPlaytestSnapshot(page);
+  return snapshot.activeScenes.includes('OverworldScene') || snapshot.activeScenes.includes('DialogueScene');
+}
+
+async function waitForOpeningCutsceneScene(page: Page, timeout: number): Promise<void> {
+  await waitForPlaytestSnapshot(page, timeout);
+  try {
+    await page.waitForFunction(() => {
+      const activeScenes = (window as any).__pokemonPlaytest.snapshot().activeScenes;
+      return activeScenes.includes('OverworldScene') || activeScenes.includes('DialogueScene');
+    }, undefined, { timeout });
+  } catch (error) {
+    await timeoutWithDiagnostics(page, 'Waiting for opening cutscene scene', timeout, error);
+  }
+}
+
 async function timeoutWithDiagnostics(
   page: Page,
   step: string,
@@ -290,9 +307,9 @@ async function fillIntroNameIfAvailable(page: Page, playerName: string): Promise
   const filledDomInput = await page.evaluate(name => {
     const input = document.querySelector<HTMLInputElement>('input[name="nickname-disabled"]');
     if (!input) return false;
+    input.focus();
     input.value = name;
     input.dispatchEvent(new Event('input', { bubbles: true }));
-    input.blur();
     return true;
   }, playerName);
 
@@ -337,15 +354,7 @@ async function driveUntil(
 
 /** Advance the automatic opening cutscene until the overworld is playable. */
 export async function completeOpeningCutscene(page: Page): Promise<void> {
-  await waitForPlaytestSnapshot(page, 30_000);
-  try {
-    await page.waitForFunction(() => {
-      const activeScenes = (window as any).__pokemonPlaytest.snapshot().activeScenes;
-      return activeScenes.includes('OverworldScene') || activeScenes.includes('DialogueScene');
-    }, undefined, { timeout: 30_000 });
-  } catch (error) {
-    await timeoutWithDiagnostics(page, 'Waiting for opening cutscene scene', 30_000, error);
-  }
+  await waitForOpeningCutsceneScene(page, 30_000);
 
   for (let i = 0; i < 20; i++) {
     const cutsceneDone = await getGameFlag(page, 'game_started');
@@ -413,52 +422,36 @@ export async function startNewGame(page: Page): Promise<void> {
 export async function skipIntro(page: Page, playerName = 'Ash'): Promise<void> {
   await waitForScene(page, 'IntroScene', 15_000);
 
-  const touchDevice = await page.evaluate(() => navigator.maxTouchPoints > 0);
-  if (touchDevice) {
-    await driveUntil(
-      page,
-      'Reaching intro name entry',
-      async () => await hasIntroNameInput(page),
-      async () => {
-        await pressKey(page, 'Enter', 75);
-      },
-      { timeout: 25_000, maxAttempts: 120 },
-    );
-    await fillIntroNameIfAvailable(page, playerName);
-    await pressKey(page, 'Enter', 75);
-    await driveUntil(
-      page,
-      `Confirming intro player name "${playerName}"`,
-      async () => await getPlayerName(page) === playerName,
-      async () => {
-        await fillIntroNameIfAvailable(page, playerName);
-        await pressKey(page, 'Enter', 75);
-      },
-      { timeout: 5_000, maxAttempts: 20 },
-    );
-  } else {
-    await driveUntil(
-      page,
-      `Confirming intro player name "${playerName}"`,
-      async () => await getPlayerName(page) === playerName,
-      async () => {
-        await fillIntroNameIfAvailable(page, playerName);
-        await pressKey(page, 'Enter', 75);
-      },
-      { timeout: 25_000, maxAttempts: 120 },
-    );
-  }
+  await driveUntil(
+    page,
+    'Reaching intro name entry',
+    async () => await hasIntroNameInput(page),
+    async () => {
+      await pressKey(page, 'Enter', 75);
+    },
+    { timeout: 25_000, maxAttempts: 120 },
+  );
+  await driveUntil(
+    page,
+    `Confirming intro player name "${playerName}"`,
+    async () => await getPlayerName(page) === playerName,
+    async () => {
+      await fillIntroNameIfAvailable(page, playerName);
+      await pressKey(page, 'Enter', 75);
+    },
+    { timeout: 5_000, maxAttempts: 20 },
+  );
 
   await driveUntil(
     page,
     'Confirming intro appearance and final prompt',
-    async () => await isSceneActive(page, 'OverworldScene'),
+    async () => await isOpeningCutsceneSceneActive(page),
     async () => {
       await pressKey(page, 'Enter', 75);
     },
     { timeout: 20_000, maxAttempts: 120 },
   );
-  await waitForScene(page, 'OverworldScene', 5_000);
+  await waitForOpeningCutsceneScene(page, 5_000);
 }
 
 /**
@@ -466,7 +459,6 @@ export async function skipIntro(page: Page, playerName = 'Ash'): Promise<void> {
  * OverworldScene to load.
  */
 export async function selectStarter(page: Page): Promise<void> {
-  await waitForScene(page, 'OverworldScene', 30_000);
   await completeOpeningCutscene(page);
   if (!await isSceneActive(page, 'StarterSelectScene')) {
     return;
@@ -476,7 +468,7 @@ export async function selectStarter(page: Page): Promise<void> {
   await pressKey(page, 'Enter', 100);
   // Confirmation prompt — press Enter again.
   await pressKey(page, 'Enter', 100);
-  await waitForScene(page, 'OverworldScene', 30_000);
+  await completeOpeningCutscene(page);
   try {
     await page.waitForFunction(async () => {
       const modulePath = `${location.origin}/Pokemon-Web/src/managers/GameManager.ts`;

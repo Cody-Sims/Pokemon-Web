@@ -83,6 +83,24 @@
 
 ---
 
+## Recently fixed
+
+### 2026-07-25 desktop intro name entry lacks DOM input
+
+- **Files:** [frontend/src/scenes/title/IntroScene.ts](../frontend/src/scenes/title/IntroScene.ts),
+  [frontend/src/ui/dom/DomTextInputAdapter.ts](../frontend/src/ui/dom/DomTextInputAdapter.ts),
+  [tests/e2e/helpers.ts](../tests/e2e/helpers.ts).
+- **Symptom:** GitHub Linux smoke E2E could remain in `IntroScene` while trying
+  to confirm the player name; diagnostics showed no `nickname-disabled` input
+  existed and focus stayed on `BODY`.
+- **Cause:** IntroScene only mounted the shared DOM text input on detected mobile
+  devices, leaving desktop/headless users dependent on Phaser keyboard focus.
+- **Fix:** IntroScene now mounts the DOM input for the name-entry phase on every
+  device, wires submit handling through the shared adapter, and still removes the
+  node during confirmation/shutdown.
+
+---
+
 ## Open
 
 ### 2026-07-24 mobile portrait gameplay follow-up
