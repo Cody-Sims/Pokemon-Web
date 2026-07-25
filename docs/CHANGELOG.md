@@ -46,6 +46,11 @@ All notable changes to the Pokemon Web project.
 - Added windowed pause/settings composition so menu rows keep 44px+ hit targets
   instead of shrinking into crowded text lists on 390px-high viewports.
 
+### Fixed - Title menu prompt
+
+- Removed the blinking "PRESS START" prompt and its tween as soon as the title
+  menu opens so it cannot overlap the mobile card buttons.
+
 ### Added - Agent workflow skills
 
 - Added `parallel-worktree-delivery` for multi-worktree agent fleet planning,

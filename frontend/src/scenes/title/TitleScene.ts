@@ -19,6 +19,7 @@ export class TitleScene extends Phaser.Scene {
   private menuItems!: Phaser.GameObjects.Text[];
   private menuButtons: Phaser.GameObjects.Rectangle[] = [];
   private cursorIcon!: Phaser.GameObjects.Text;
+  private pressStartPrompt?: Phaser.GameObjects.Text;
   private mobileTap?: MobileTapMenu;
   private menuController?: SelectableController;
 
@@ -30,6 +31,7 @@ export class TitleScene extends Phaser.Scene {
 
   create(): void {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.destroyPressStartPrompt();
       this.menuController?.destroy();
       this.mobileTap?.destroy();
       this.inputRegistry.clear();
@@ -144,7 +146,7 @@ export class TitleScene extends Phaser.Scene {
     this.menuButtons.forEach(button => button.disableInteractive());
 
     // ── "Press Start" prompt (shown before menu) ──
-    const pressStart = this.add.text(width / 2, height * 0.58, 'PRESS START', {
+    this.pressStartPrompt = this.add.text(width / 2, height * 0.58, 'PRESS START', {
       ...FONTS.menuItem,
       fontSize: mobileFontSize(20),
       color: COLORS.textHighlight,
@@ -152,7 +154,7 @@ export class TitleScene extends Phaser.Scene {
 
     // Blink animation
     this.tweens.add({
-      targets: pressStart,
+      targets: this.pressStartPrompt,
       alpha: 0.2,
       duration: 800,
       yoyo: true,
@@ -160,12 +162,15 @@ export class TitleScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
+    let menuRevealed = false;
     const revealMenu = () => {
+      if (menuRevealed) return;
+      menuRevealed = true;
+
       // Remove press-start listeners
       this.inputRegistry.clear();
 
-      // Fade out press start
-      this.tweens.add({ targets: pressStart, alpha: 0, duration: 200, onComplete: () => pressStart.destroy() });
+      this.destroyPressStartPrompt();
 
       // Show menu items immediately and enable interaction — no fade delay
       // that could cause touch taps to be ignored during the transition.
@@ -201,6 +206,13 @@ export class TitleScene extends Phaser.Scene {
     this.inputRegistry.bindKey('keydown-ENTER', revealMenu);
     this.inputRegistry.bindKey('keydown-SPACE', revealMenu);
     this.inputRegistry.bindPointer(this.input, 'pointerdown', revealMenu);
+  }
+
+  private destroyPressStartPrompt(): void {
+    if (!this.pressStartPrompt) return;
+    this.tweens.killTweensOf(this.pressStartPrompt);
+    this.pressStartPrompt.destroy();
+    this.pressStartPrompt = undefined;
   }
 
   private updateCursor(): void {
