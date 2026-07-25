@@ -11,6 +11,7 @@ Scene-agnostic input and selection helpers for menus, touch controls, and mobile
 | `MobileTapMenu.ts` | Touch-friendly radial/menu tap affordances for mobile play. |
 | `TouchControls.ts` | On-screen movement/action controls for touch devices. |
 | `VirtualJoystick.ts` | Virtual joystick implementation for directional movement. |
+| `touch-geometry.ts` | Pure touch-control math for joystick vectors, dead-zone direction resolution, and safe-area-aware layout. |
 
 ## Conventions
 

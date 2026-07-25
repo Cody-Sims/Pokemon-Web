@@ -85,6 +85,15 @@
 
 ## Open
 
+### 2026-07-24 touch controls verification findings
+
+- **Status:** No new unfixed touch-control defects found in the 844×390
+  landscape mobile Playwright pass. Historical stuck-direction risk from
+  cancelled/off-screen joystick touches was fixed in `TouchControls` and
+  `VirtualJoystick` by releasing tracked pointers on cancel, blur, scene hide,
+  and out-of-bounds movement.
+
+
 ### 2026-07-24 inventory decomposition findings
 
 - **Files:** [frontend/src/scenes/menu/InventoryScene.ts](frontend/src/scenes/menu/InventoryScene.ts) (pre-refactor lines 545-642), [tests/integration/systems/inventory.test.ts](tests/integration/systems/inventory.test.ts) (pre-refactor lines 27-49).

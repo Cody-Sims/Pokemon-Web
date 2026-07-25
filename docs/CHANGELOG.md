@@ -6,6 +6,14 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - Mobile touch controls
+
+- Reworked mobile touch-control geometry for safe-area-aware, thumb-reachable
+  joystick/action/menu placement with minimum touch targets and left-handed mode.
+- Hardened joystick/button cancellation so cancelled, blurred, hidden, or
+  out-of-bounds pointers release cleanly instead of leaving stuck movement.
+- Added pure unit coverage for touch-control dead-zone, diagonal, and layout math.
+
 ### Added - Agent workflow skills
 
 - Added `parallel-worktree-delivery` for multi-worktree agent fleet planning,

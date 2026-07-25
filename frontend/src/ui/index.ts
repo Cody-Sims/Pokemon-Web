@@ -1,6 +1,14 @@
 // ── Controls ─────────────────────────────────────────────────
 export { TouchControls } from './controls/TouchControls';
 export { VirtualJoystick } from './controls/VirtualJoystick';
+export {
+  clampJoystickVector,
+  computeTouchControlLayout,
+  computeTouchMetrics,
+  resolveJoystickDirection,
+  type TouchControlLayout,
+  type TouchMetrics,
+} from './controls/touch-geometry';
 export { MenuController, type MenuControllerConfig } from './controls/MenuController';
 export {
   SelectableController,
