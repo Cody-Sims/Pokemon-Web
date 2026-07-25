@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - E2E intro helpers
+
+- Reworked the new-game Playwright helper to drive IntroScene with keyboard and
+  runtime state checks instead of hardcoded mobile canvas coordinates.
+- Added playtest snapshot diagnostics to scene waits so helper failures report
+  active scenes, canvas, shell overlays, and relevant DOM state.
+
 ### Changed - Mobile shell first-run flow
 
 - Reworked the portrait orientation shell into a themed, safe-area-aware gate
