@@ -29,8 +29,17 @@ compatibility: Requires Node.js 22+ and npm.
 - Keep scenes as coordinators, data as plain data, persistent state in managers,
   reusable behavior in systems, and battle logic outside scenes.
 - Use path aliases and barrel exports.
-- Preserve cleanup on scene shutdown and compatibility of serialized saves.
-- Add focused tests with deterministic randomness and reset singleton state.
+- Reuse shared infrastructure before hand-rolling: `SceneKey`, `scene-data`,
+  `SceneRouter`, `SceneInputRegistry`, `SelectableController`, `ProgressBar`,
+  `TextBox`, theme presets, `grid-math`, `format`, `phaser-sequence`, and
+  `@data/selectors`.
+- Extend typed contracts instead of using ad-hoc strings: `EventMap`, scene data,
+  map keys, and move IDs.
+- Add battle behavior through effect registries and the FSM transition table;
+  preserve injected `BattleRng` ordering.
+- Preserve scene shutdown cleanup, singleton callback teardown, and serialized
+  save compatibility.
+- Add focused tests with deterministic randomness and reset manager singletons.
 
 ## Validate
 

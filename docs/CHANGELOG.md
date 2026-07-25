@@ -6,6 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - Agent guidance accuracy
+
+- Updated quality-gate, frontend-change, path-scoped instruction, AGENTS, and
+  LLM index guidance for lint/format commands, deterministic builds, integrity
+  tests, typed scene/event contracts, manager resets, and battle registries.
+
 ### Fixed - Bug backlog triage
 
 - Reconciled the bug tracker against the current revamp codebase, moving stale,
