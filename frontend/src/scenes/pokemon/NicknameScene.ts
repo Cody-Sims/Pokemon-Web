@@ -90,6 +90,11 @@ export class NicknameScene extends Phaser.Scene {
         this.nameInput = value;
         this.updateNameDisplay();
       },
+      onSubmit: () => this.confirmNickname(),
+      onCancel: () => {
+        AudioManager.getInstance().playSFX(SFX.CANCEL);
+        this.scene.stop();
+      },
     });
     this.hiddenInput.mount();
 

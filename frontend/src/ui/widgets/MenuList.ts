@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { SelectableController } from '@ui/controls/SelectableController';
-import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
+import { COLORS, FONTS, SPACING, mobileFontSize } from '@ui/theme';
 
 /** Selectable vertical menu view backed by SelectableController. */
 export class MenuList {
@@ -17,7 +17,12 @@ export class MenuList {
     style?: Phaser.Types.GameObjects.Text.TextStyle,
   ) {
     this.onSelect = onSelect;
-    const textStyle = style ?? { ...FONTS.menuItem, fontSize: mobileFontSize(18), color: COLORS.textWhite };
+    const textStyle = style ?? {
+      ...FONTS.menuItem,
+      fontSize: mobileFontSize(17),
+      color: COLORS.textWhite,
+      lineSpacing: 4,
+    };
 
     this.controller = new SelectableController({
       itemCount: labels.length,
@@ -28,7 +33,12 @@ export class MenuList {
     });
 
     labels.forEach((label, index) => {
-      const text = scene.add.text(x, y + index * 32, label, textStyle);
+      const text = scene.add.text(
+        x,
+        y + index * Math.max(30, SPACING.lineHeight),
+        label,
+        textStyle,
+      );
       this.items.push(text);
     });
     this.controller.bindInteractive(this.items);

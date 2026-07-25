@@ -1,11 +1,14 @@
 import Phaser from 'phaser';
 import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
-import { ui } from '@utils/ui-layout';
-import { COLORS, isMobile, minTouchTarget } from '@ui/theme';
+import { layoutOn } from '@utils/layout-on';
+import { COLORS, isMobile, minTouchTarget, mobileScale } from '@ui/theme';
+import { computeTouchMetrics } from '@ui/controls/touch-geometry';
+import { getGameSafeAreaInsets } from '@utils/safe-area';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
 import { SceneRouter } from '@scenes/SceneRouter';
 import { SceneKey } from '@scenes/scene-keys';
+import { computeOverworldHudLayout } from '@scenes/overworld/overworld-hud-layout';
 
 const MAX_PARTY = 6;
 const STROKE_WIDTH = 2;
@@ -20,11 +23,11 @@ function ballSpacing(): number {
 }
 
 /** HP-based fill colours matching theme constants. */
-const HP_GREEN = COLORS.hpGreen;   // >50%
+const HP_GREEN = COLORS.hpGreen; // >50%
 const HP_YELLOW = COLORS.hpYellow; // 25-50%
-const HP_RED = COLORS.hpRed;       // <25%
-const HP_FAINTED = 0x666666;       // 0 HP
-const SLOT_EMPTY = 0x333344;       // no Pokemon in slot
+const HP_RED = COLORS.hpRed; // <25%
+const HP_FAINTED = 0x666666; // 0 HP
+const SLOT_EMPTY = 0x333344; // no Pokemon in slot
 const OUTLINE_COLOR = 0xcccccc;
 const OUTLINE_EMPTY = 0x555566;
 
@@ -55,15 +58,12 @@ export class PartyQuickViewScene extends Phaser.Scene {
 
   create(): void {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
-    const layout = ui(this);
     const BALL_RADIUS = ballRadius();
     const BALL_SPACING = ballSpacing();
 
     // Total width of the row of balls
     const totalWidth = (MAX_PARTY - 1) * BALL_SPACING;
     const startX = -totalWidth / 2;
-    const yPos = isMobile() ? 18 : 14;
-
     // Semi-transparent background pill behind the balls
     const bgWidth = totalWidth + BALL_RADIUS * 2 + 16;
     const bgHeight = BALL_RADIUS * 2 + 12;
@@ -74,19 +74,15 @@ export class PartyQuickViewScene extends Phaser.Scene {
     const children: Phaser.GameObjects.GameObject[] = [this.bg];
 
     for (let i = 0; i < MAX_PARTY; i++) {
-      const ball = this.add.circle(
-        startX + i * BALL_SPACING,
-        0,
-        BALL_RADIUS,
-        SLOT_EMPTY,
-      );
+      const ball = this.add.circle(startX + i * BALL_SPACING, 0, BALL_RADIUS, SLOT_EMPTY);
       ball.setStrokeStyle(STROKE_WIDTH, OUTLINE_EMPTY);
       this.balls.push(ball);
       children.push(ball);
     }
 
-    this.container = this.add.container(layout.cx, yPos, children);
+    this.container = this.add.container(0, 0, children);
     this.container.setDepth(100);
+    this.container.setScrollFactor(0);
 
     // Interactive hit zone covering the full strip -- meets minimum touch target
     const hitWidth = bgWidth;
@@ -99,6 +95,11 @@ export class PartyQuickViewScene extends Phaser.Scene {
       const router = SceneRouter.for(this);
       if (router.isActive(SceneKey.Party) || router.isActive(SceneKey.Menu)) return;
       router.launch(SceneKey.Party);
+    });
+
+    layoutOn(this, () => {
+      const position = this.computePosition(bgWidth, bgHeight);
+      this.container.setPosition(position.x, position.y);
     });
 
     // Listen for party / HP changes via EventManager
@@ -159,5 +160,23 @@ export class PartyQuickViewScene extends Phaser.Scene {
 
   shutdown(): void {
     this.inputRegistry.clear();
+  }
+
+  private computePosition(width: number, height: number): { x: number; y: number } {
+    const touchMetrics = computeTouchMetrics(minTouchTarget(), mobileScale());
+    const layout = computeOverworldHudLayout({
+      width: this.cameras.main.width,
+      height: this.cameras.main.height,
+      safeArea: getGameSafeAreaInsets(this.cameras.main),
+      hasTouchControls: isMobile(),
+      hasSpeedrunTimer: false,
+      partyWidth: width,
+      partyHeight: height,
+      questWidth: isMobile() ? 200 : 230,
+      questHeight: 48,
+      minimapSize: (isMobile() ? 4 : 5) * 15 + 8,
+      touchPanelWidth: isMobile() ? touchMetrics.panelWidth + touchMetrics.edgePadding : 0,
+    });
+    return layout.partyQuickView;
   }
 }

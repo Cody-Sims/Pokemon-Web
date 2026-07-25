@@ -81,17 +81,19 @@ export class PartyScene extends Phaser.Scene {
 
     // Use a tighter row height on mobile so all 6 slots and the bottom
     // helper text + Close button stay visible inside the safe area (B7).
+    const shortLandscape = isMobile() && layout.w > layout.h && layout.h <= 430;
     const rowH = isMobile()
-      ? Math.min(SPACING.slotHeight, Math.floor((layout.h - 140) / 6))
+      ? Math.max(minTouchTarget(), Math.min(SPACING.slotHeight, Math.floor((layout.h - (shortLandscape ? 100 : 140)) / 6)))
       : SPACING.slotHeight;
     this.rowH = rowH;
+    const listTop = shortLandscape ? 54 : 64;
 
     for (let i = 0; i < 6; i++) {
-      const y = 64 + i * rowH;
+      const y = listTop + i * rowH;
       const hasMon = i < party.length;
       const p = hasMon ? party[i] : null;
 
-      const slotBg = this.add.rectangle(layout.cx, y + rowH / 2, layout.w - 70, rowH - 6,
+      const slotBg = this.add.rectangle(layout.cx, y + rowH / 2, layout.w - 70, Math.max(44, rowH - 4),
         hasMon ? COLORS.bgCard : COLORS.bgDark, hasMon ? 0.9 : 0.5)
         .setStrokeStyle(1, hasMon ? COLORS.border : 0x2a2a3a);
       this.slotBgs.push(slotBg);
@@ -204,13 +206,13 @@ export class PartyScene extends Phaser.Scene {
     // ✕ button above is the always-on fallback.
     const bottomLift = isMobile() ? 32 : 0;
     this.add.text(
-      layout.cx, layout.h - 52 - bottomLift,
+      layout.cx, layout.h - (shortLandscape ? 28 : 52) - bottomLift,
       this.forcedSwitch
         ? 'You must choose another Pokémon!'
         : this.selectMode ? 'Choose a Pokémon' : 'Select a Pokémon to view options',
       { ...FONTS.caption, fontSize: mobileFontSize(12) },
     ).setOrigin(0.5);
-    if (!this.forcedSwitch) {
+    if (!this.forcedSwitch && !shortLandscape) {
       drawButton(
         this, layout.cx, layout.h - 30 - bottomLift,
         'Close (ESC)', () => this.closeScene(),
@@ -276,7 +278,8 @@ export class PartyScene extends Phaser.Scene {
     this.controller?.setDisabled(true);
     const actions = ['SUMMARY', 'SWITCH', 'Cancel'];
     const menuX = layout.w - 140;
-    const menuY = 64 + index * this.rowH + this.rowH / 2;
+    const listTop = isMobile() && layout.w > layout.h && layout.h <= 430 ? 54 : 64;
+    const menuY = listTop + index * this.rowH + this.rowH / 2;
 
     const panel = new NinePatchPanel(this, menuX, menuY, 130, actions.length * Math.max(minTouchTarget(), 32) + 12, {
       fillColor: 0x0a0a18,

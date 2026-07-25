@@ -1,8 +1,11 @@
 import Phaser from 'phaser';
-import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
+import { layoutOn } from '@utils/layout-on';
+import { COLORS, FONTS, mobileFontSize, isMobile, minTouchTarget, mobileScale } from '@ui/theme';
+import { computeTouchMetrics } from '@ui/controls/touch-geometry';
+import { getGameSafeAreaInsets } from '@utils/safe-area';
 import { QuestManager } from '@managers/QuestManager';
 import { EventManager } from '@managers/EventManager';
+import { computeOverworldHudLayout } from '@scenes/overworld/overworld-hud-layout';
 
 /**
  * QuestTrackerScene — Lightweight HUD overlay showing the current active quest step.
@@ -25,12 +28,9 @@ export class QuestTrackerScene extends Phaser.Scene {
   }
 
   create(): void {
-    const layout = ui(this);
-    const padX = 24;          // leaves room for the icon
+    const padX = 24; // leaves room for the icon
     const padY = 6;
     const width = isMobile() ? 200 : 230;
-    const x = layout.w - width - 8;
-    const y = 6;
 
     this.bg = this.add.rectangle(0, 0, width, 48, 0x101820, 0.78).setOrigin(0, 0);
     // Gold accent stripe on the left edge
@@ -57,11 +57,21 @@ export class QuestTrackerScene extends Phaser.Scene {
       wordWrap: { width: width - padX - 4 },
     });
 
-    this.container = this.add.container(x, y, [
-      this.bg, this.accent, this.iconText, this.questNameText, this.stepText,
+    this.container = this.add.container(0, 0, [
+      this.bg,
+      this.accent,
+      this.iconText,
+      this.questNameText,
+      this.stepText,
     ]);
     this.container.setDepth(100);
-    this.container.setAlpha(0);    // hidden until first refresh
+    this.container.setScrollFactor(0);
+    this.container.setAlpha(0); // hidden until first refresh
+
+    layoutOn(this, () => {
+      const position = this.computePosition(width, Math.max(48, this.bg.height));
+      this.container.setPosition(position.x, position.y);
+    });
 
     // Listen for quest updates
     const em = EventManager.getInstance();
@@ -116,6 +126,8 @@ export class QuestTrackerScene extends Phaser.Scene {
       const newH = Math.max(48, h);
       this.bg.setSize(this.bg.width, newH);
       this.accent.setSize(this.accent.width, newH);
+      const position = this.computePosition(this.bg.width, newH);
+      this.container.setPosition(position.x, position.y);
       if (this.visible) this.fadeTo(1);
     };
 
@@ -145,5 +157,22 @@ export class QuestTrackerScene extends Phaser.Scene {
     this.visible = !this.visible;
     this.fadeTo(this.visible ? 1 : 0);
   }
-}
 
+  private computePosition(width: number, height: number): { x: number; y: number } {
+    const touchMetrics = computeTouchMetrics(minTouchTarget(), mobileScale());
+    const layout = computeOverworldHudLayout({
+      width: this.cameras.main.width,
+      height: this.cameras.main.height,
+      safeArea: getGameSafeAreaInsets(this.cameras.main),
+      hasTouchControls: isMobile(),
+      hasSpeedrunTimer: false,
+      partyWidth: isMobile() ? 176 : 144,
+      partyHeight: isMobile() ? 32 : 28,
+      questWidth: width,
+      questHeight: height,
+      minimapSize: (isMobile() ? 4 : 5) * 15 + 8,
+      touchPanelWidth: isMobile() ? touchMetrics.panelWidth + touchMetrics.edgePadding : 0,
+    });
+    return layout.questTracker;
+  }
+}

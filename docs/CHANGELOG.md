@@ -4,7 +4,84 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-07-25]
+
+### Fixed - Overworld HUD layout
+
+- Split the overworld location label, interaction hint, party strip, minimap,
+  and quest tracker onto viewport/safe-area-derived anchors so landscape phones
+  no longer draw the top HUD through itself or the touch controls.
+- Added pure unit coverage for the shared overworld HUD layout helper.
+
+### Fixed - Intro name entry
+
+- Mounted the intro's DOM text input on desktop and touch devices so keyboard-only
+  and touch-only players can finish player naming reliably in headless E2E and
+  real browsers.
+- Updated the smoke E2E intro helper to wait for the name-entry control and for
+  either opening cutscene scene, preserving state assertions without coordinate
+  shortcuts.
+
 ## [2026-07-24]
+
+### Fixed - Mobile viewport scaling
+
+- Fixed mobile rotation/resize handling so Phaser FIT mode recomputes its
+  display size from the updated safe viewport, eliminating landscape-phone
+  canvas gutters without stretching pixel art.
+- Added CSS pixel-art image rendering hints for the game canvas.
+
+### Fixed - E2E intro helpers
+
+- Reworked the new-game Playwright helper to drive IntroScene with keyboard and
+  runtime state checks instead of hardcoded mobile canvas coordinates.
+- Added playtest snapshot diagnostics to scene waits so helper failures report
+  active scenes, canvas, shell overlays, and relevant DOM state.
+
+### Changed - Mobile shell first-run flow
+
+- Reworked the portrait orientation shell into a themed, safe-area-aware gate
+  that pauses Phaser while visible and remembers "Continue Anyway" in
+  localStorage.
+- Sequenced mobile install prompts behind the orientation gate, changed them to
+  non-blocking toasts, and persisted "Not Now" so they do not reappear on reload.
+- Hardened viewport handling for dynamic viewport units, touch scrolling,
+  rotation, and mobile keyboard resize events.
+### Changed - Mobile touch controls
+
+- Reworked mobile touch-control geometry for safe-area-aware, thumb-reachable
+  joystick/action/menu placement with minimum touch targets and left-handed mode.
+- Hardened joystick/button cancellation so cancelled, blurred, hidden, or
+  out-of-bounds pointers release cleanly instead of leaving stuck movement.
+- Added pure unit coverage for touch-control dead-zone, diagonal, and layout math.
+### Fixed - Mobile E2E harness
+
+- Changed Playwright's `mobile-chromium` project to landscape touch gameplay
+  and added a portrait-only rotate-gate shell project.
+- Reworked mobile UI coverage to use touch input against landscape controls,
+  state-based scene waits, and structural render assertions instead of missing
+  screenshot baselines.
+### Changed - UI visual polish
+
+- Established richer UI theme tokens for semantic surfaces, text roles, spacing, radii,
+  strokes, elevation, mobile typography, and nameplate measurement.
+- Polished shared panels, progress/health bars, battle HUD labels, confirmation prompts,
+  menu lists, achievement toasts, inventory panels, scrolling, and region-map rendering
+  for short landscape mobile screens.
+- Fixed dialogue speaker nameplates so long labels fit on one line or truncate gracefully,
+  and reduced landscape-phone dialogue height for short messages.
+### Changed - Mobile scene layouts
+
+- Reworked title, dialogue, pause, party, settings, and battle scene-side layouts
+  for short landscape phones with touch-sized controls and clearer back/cancel
+  affordances.
+- Added windowed pause/settings composition so menu rows keep 44px+ hit targets
+  instead of shrinking into crowded text lists on 390px-high viewports.
+
+### Fixed - Title menu prompt
+
+- Removed the blinking "PRESS START" prompt and its tween as soon as the title
+  menu opens so it cannot overlap the mobile card buttons.
 
 ### Added - Agent workflow skills
 

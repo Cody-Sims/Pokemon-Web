@@ -32,9 +32,11 @@ import {
 } from '@data/maps';
 import { AudioManager } from '@managers/AudioManager';
 import { BGM, SFX, MAP_BGM } from '@utils/audio-keys';
-import { mobileFontSize, mobileFontPx } from '@ui/theme';
+import { mobileFontSize, mobileFontPx, mobileScale, minTouchTarget } from '@ui/theme';
+import { computeTouchMetrics } from '@ui/controls/touch-geometry';
 import { EmoteBubble } from '@systems/rendering/EmoteBubble';
 import { hintText } from '@utils/hint-text';
+import { getGameSafeAreaInsets } from '@utils/safe-area';
 import { MapPreloader } from '@systems/engine/MapPreloader';
 import { EventManager } from '@managers/EventManager';
 import { SceneRouter } from '@scenes/SceneRouter';
@@ -66,6 +68,7 @@ import { getFootstepSFX as getFootstepSFXHelper } from './OverworldFootsteps';
 import { tryInteract as tryInteractHelper, InteractionContext, OverworldState } from './OverworldInteraction';
 import { buildTilemap, redrawTilemapTile, TilemapResult } from '@systems/rendering/TilemapBuilder';
 import { GlowEmitterSystem } from '@systems/rendering/GlowEmitterSystem';
+import { computeOverworldHudLayout } from './overworld-hud-layout';
 
 export class OverworldScene extends Phaser.Scene {
   private player!: Player;
@@ -109,6 +112,7 @@ export class OverworldScene extends Phaser.Scene {
   /** Tracks the last time period to detect transitions and update NPC schedules. */
   private lastTimePeriod: TimePeriod | null = null;
   private hudText?: Phaser.GameObjects.Text | Phaser.GameObjects.BitmapText;
+  private hudHintText?: Phaser.GameObjects.Text;
   private clockText?: Phaser.GameObjects.Text;
   /** Optional speed-run timer overlay; only created when the setting is on. */
   private speedrunTimerText?: Phaser.GameObjects.Text;
@@ -453,38 +457,34 @@ export class OverworldScene extends Phaser.Scene {
     // the system font otherwise (test harnesses skip BootScene asset loads).
     const mapLabel = this.mapDef.displayName
       ?? this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    // On portrait/mobile screens we only have ~400px of horizontal HUD room,
-    // which used to clip both the map name and the input hints. Show the
-    // location name on its own there and reserve the longer hint string for
-    // landscape/desktop layouts where there is space for it.
-    const isPortraitHud = this.cameras.main.height > this.cameras.main.width;
-    const hudHint = isPortraitHud
-      ? mapLabel
-      : TouchControls.isTouchDevice()
-        ? `${mapLabel}  |  ${hintText('interact')}`
-        : `${mapLabel}  |  ${hintText('interact')}  |  ESC = Menu`;
     if (this.cache.bitmapFont.exists('aurum-pixel')) {
       // BitmapText takes a number; mobileFontPx gives the same scaled
       // value as mobileFontSize without the parseInt round-trip (NIT-003).
       const sizePx = mobileFontPx(14);
       this.hudText = this.add.bitmapText(
-        this.cameras.main.width / 2, 14, 'aurum-pixel', hudHint, sizePx,
+        0, 0, 'aurum-pixel', mapLabel, sizePx,
       ).setOrigin(0.5, 0).setScrollFactor(0).setDepth(100).setTint(0xffffff);
     } else {
-      this.hudText = this.add.text(this.cameras.main.width / 2, 20, hudHint, {
+      this.hudText = this.add.text(0, 0, mapLabel, {
         fontSize: mobileFontSize(14),
         color: '#ffffff',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(100);
+      }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(100);
     }
+    this.hudHintText = this.add.text(0, 0, '', {
+      fontSize: mobileFontSize(11),
+      color: '#ffcc00',
+      fontFamily: 'monospace',
+      backgroundColor: '#0f0f1abb',
+      padding: { x: 6, y: 2 },
+    }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(100);
 
     // Clock widget — below location text in portrait, top-left in landscape
     const periodEmoji: Record<string, string> = { morning: '🌅', day: '☀️', evening: '🌆', night: '🌙' };
     const period = this.gameClock.getTimePeriod();
     const clockStr = `${periodEmoji[period] ?? '☀️'} ${this.gameClock.getClockString()}`;
-    const isPortrait = this.cameras.main.height > this.cameras.main.width;
     this.clockText = this.add.text(
-      isPortrait ? this.cameras.main.width / 2 : 8,
-      isPortrait ? 38 : 8,
+      0,
+      0,
       clockStr, {
         fontSize: mobileFontSize(11),
         color: '#ffcc00',
@@ -492,15 +492,15 @@ export class OverworldScene extends Phaser.Scene {
         backgroundColor: '#0f0f1abb',
         padding: { x: 6, y: 3 },
       },
-    ).setOrigin(isPortrait ? 0.5 : 0, 0).setScrollFactor(0).setDepth(100);
+    ).setOrigin(0, 0).setScrollFactor(0).setDepth(100);
 
     // Optional speed-run timer (sits just below the clock, same alignment).
     const showTimer = GameManager.getInstance().getSetting('speedrunTimer') === true
       || GameManager.getInstance().getSetting('speedrunTimer') === 'true';
     if (showTimer) {
       this.speedrunTimerText = this.add.text(
-        isPortrait ? this.cameras.main.width / 2 : 8,
-        isPortrait ? 60 : 28,
+        0,
+        0,
         this.formatPlaytime(GameManager.getInstance().getPlaytime()), {
           fontSize: mobileFontSize(11),
           color: '#7fffd4',
@@ -508,29 +508,26 @@ export class OverworldScene extends Phaser.Scene {
           backgroundColor: '#0f0f1abb',
           padding: { x: 6, y: 3 },
         },
-      ).setOrigin(isPortrait ? 0.5 : 0, 0).setScrollFactor(0).setDepth(100);
+      ).setOrigin(0, 0).setScrollFactor(0).setDepth(100);
     }
 
     // Re-layout HUD elements on resize / orientation change
     layoutOn(this, () => {
-      const w = this.cameras.main.width;
-      const h = this.cameras.main.height;
-      const portrait = h > w;
-      // Refresh the HUD text so the input hint follows the orientation
-      // (portrait = location only; landscape = location + key hints).
-      const portraitHint = mapLabel;
-      const landscapeHint = TouchControls.isTouchDevice()
-        ? `${mapLabel}  |  ${hintText('interact')}`
-        : `${mapLabel}  |  ${hintText('interact')}  |  ESC = Menu`;
-      this.hudText?.setText(portrait ? portraitHint : landscapeHint);
-      this.hudText?.setX(w / 2);
+      const hudLayout = this.computeHudLayout(showTimer);
+      const interactionHint = TouchControls.isTouchDevice()
+        ? hintText('interact')
+        : `${hintText('interact')}  |  ESC = Menu`;
+      this.hudText?.setText(mapLabel);
+      this.hudText?.setPosition(hudLayout.mapName.x, hudLayout.mapName.y);
+      this.hudHintText?.setText(interactionHint);
+      this.hudHintText?.setPosition(hudLayout.interactionHint.x, hudLayout.interactionHint.y);
       if (this.clockText) {
-        this.clockText.setPosition(portrait ? w / 2 : 8, portrait ? 38 : 8);
-        this.clockText.setOrigin(portrait ? 0.5 : 0, 0);
+        this.clockText.setPosition(hudLayout.clock.x, hudLayout.clock.y);
+        this.clockText.setOrigin(hudLayout.clock.originX, 0);
       }
       if (this.speedrunTimerText) {
-        this.speedrunTimerText.setPosition(portrait ? w / 2 : 8, portrait ? 60 : 28);
-        this.speedrunTimerText.setOrigin(portrait ? 0.5 : 0, 0);
+        this.speedrunTimerText.setPosition(hudLayout.speedrunTimer.x, hudLayout.speedrunTimer.y);
+        this.speedrunTimerText.setOrigin(hudLayout.speedrunTimer.originX, 0);
       }
     });
 
@@ -544,39 +541,42 @@ export class OverworldScene extends Phaser.Scene {
         ?? this.mapKey.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       const bannerW = 200;
       const bannerH = 28;
-      const bannerX = this.cameras.main.width / 2;
-      const bannerY = -bannerH;
+      const hudLayout = this.computeHudLayout(showTimer);
+      const bannerX = hudLayout.banner.x;
+      const bannerY = hudLayout.banner.y;
 
-      const bannerBg = this.add.graphics().setScrollFactor(0).setDepth(100);
+      const bannerBg = this.add.graphics();
       bannerBg.fillStyle(0x0f0f1a, 0.88);
-      bannerBg.fillRoundedRect(bannerX - bannerW / 2, 0, bannerW, bannerH, 4);
+      bannerBg.fillRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 4);
       bannerBg.lineStyle(1, 0xffcc00, 0.6);
-      bannerBg.strokeRoundedRect(bannerX - bannerW / 2, 0, bannerW, bannerH, 4);
-      bannerBg.setY(bannerY);
+      bannerBg.strokeRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 4);
 
-      const bannerText = this.add.text(bannerX, bannerY + bannerH / 2, bannerLabel, {
+      const bannerText = this.add.text(0, 0, bannerLabel, {
         fontSize: mobileFontSize(13),
         color: '#ffcc00',
         fontFamily: 'monospace',
         fontStyle: 'bold',
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(101);
+      }).setOrigin(0.5);
+
+      const bannerContainer = this.add.container(bannerX, -bannerH, [bannerBg, bannerText]);
+      bannerContainer.setScrollFactor(0).setDepth(101);
 
       // Slide in from top
       this.tweens.add({
-        targets: [bannerBg, bannerText],
-        y: '+=38',
+        targets: bannerContainer,
+        y: bannerY,
         duration: 350,
         ease: 'Back.easeOut',
         onComplete: () => {
           // Hold, then slide out
           this.time.delayedCall(1800, () => {
             this.tweens.add({
-              targets: [bannerBg, bannerText],
-              y: '-=38',
+              targets: bannerContainer,
+              y: -bannerH,
               alpha: 0,
               duration: 250,
               ease: 'Cubic.easeIn',
-              onComplete: () => { bannerBg.destroy(); bannerText.destroy(); },
+              onComplete: () => { bannerContainer.destroy(true); },
             });
           });
         },
@@ -608,6 +608,25 @@ export class OverworldScene extends Phaser.Scene {
 
     // Start FPS monitoring for auto-quality downgrade on low-end devices
     startFpsMonitor();
+  }
+
+  private computeHudLayout(hasSpeedrunTimer: boolean): ReturnType<typeof computeOverworldHudLayout> {
+    const hasTouchControls = TouchControls.isTouchDevice();
+    const touchMetrics = computeTouchMetrics(minTouchTarget(), mobileScale());
+    const minimapSize = (hasTouchControls ? 4 : 5) * 15 + 8;
+    return computeOverworldHudLayout({
+      width: this.cameras.main.width,
+      height: this.cameras.main.height,
+      safeArea: getGameSafeAreaInsets(this.cameras.main),
+      hasTouchControls,
+      hasSpeedrunTimer,
+      partyWidth: hasTouchControls ? 176 : 144,
+      partyHeight: hasTouchControls ? 32 : 28,
+      questWidth: hasTouchControls ? 200 : 230,
+      questHeight: 48,
+      minimapSize,
+      touchPanelWidth: hasTouchControls ? touchMetrics.panelWidth + touchMetrics.edgePadding : 0,
+    });
   }
 
   // ── NPC / Trainer spawning ────────────────────────────────

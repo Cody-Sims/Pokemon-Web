@@ -10,6 +10,7 @@ import { TouchControls } from '@ui/controls/TouchControls';
 import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
 import { EventManager } from '@managers/EventManager';
 import { SceneKey, type SceneKeyName } from '@scenes/scene-keys';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import type { DialogueSceneData } from '@scenes/scene-data';
 
 /** Text speed options: delay (ms) per character. 0 = instant. */
@@ -51,6 +52,7 @@ export class DialogueScene extends Phaser.Scene {
   private mobileTapMenu?: MobileTapMenu;
   private lastChoiceMoveTick = 0;
   private callingScene: SceneKeyName = SceneKey.Overworld;
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: SceneKey.Dialogue });
@@ -99,13 +101,14 @@ export class DialogueScene extends Phaser.Scene {
 
     // ── Nine-patch dialogue box ───────────────────────────────
     const isPortraitOrientation = layout.h > layout.w;
+    const isShortLandscape = layout.w > layout.h && layout.h <= 430;
     // Portrait viewports use a much narrower line width which means more
     // wraps per dialogue, so the box needs to be taller or the text gets
     // visually clipped at the bottom edge.
     const boxW = layout.w - 20;
-    const boxH = isPortraitOrientation ? 130 : 100;
+    const boxH = isPortraitOrientation ? 130 : isShortLandscape ? 76 : 100;
     const boxX = layout.cx;
-    const boxY = isPortraitOrientation ? layout.h - 180 : layout.h - 80;
+    const boxY = isPortraitOrientation ? layout.h - 180 : isShortLandscape ? layout.h - boxH / 2 - 12 : layout.h - 80;
     this.panel = new NinePatchPanel(this, boxX, boxY, boxW, boxH, {
       fillColor: 0x0a0a18,
       fillAlpha: 0.98,
@@ -192,6 +195,23 @@ export class DialogueScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
+    const closeSize = Math.max(minTouchTarget(), 36);
+    const closeX = boxX + boxW / 2 - closeSize / 2 - 8;
+    const closeY = boxY - boxH / 2 + closeSize / 2 + 4;
+    const closeButton = this.add.rectangle(closeX, closeY, closeSize, closeSize, COLORS.bgCard, 0.82)
+      .setStrokeStyle(1, COLORS.borderLight)
+      .setDepth(DIALOGUE_DEPTH + 3)
+      .setInteractive({ useHandCursor: true });
+    const closeText = this.add.text(closeX, closeY, '×', {
+      ...FONTS.body, fontSize: mobileFontSize(16), color: COLORS.textHighlight,
+    }).setOrigin(0.5).setDepth(DIALOGUE_DEPTH + 4);
+    this.inputRegistry.bindPointer(closeButton, 'pointerover', () => closeButton.setFillStyle(COLORS.btnHover, 0.9));
+    this.inputRegistry.bindPointer(closeButton, 'pointerout', () => closeButton.setFillStyle(COLORS.bgCard, 0.82));
+    this.inputRegistry.bindPointer(closeButton, 'pointerdown', () => {
+      this.choiceTappedThisFrame = true;
+      if (!this.inChoiceMode) this.closeDialogue();
+    });
+
     // ── Fade-in animation ──────────────────────────────────────
     const fadeTargets: Phaser.GameObjects.GameObject[] = [
       this.panel.getGraphics(),
@@ -219,8 +239,9 @@ export class DialogueScene extends Phaser.Scene {
     layoutOn(this, () => {
       const l = ui(this);
       const rIsPortrait = l.h > l.w;
-      const rBoxH = rIsPortrait ? 130 : 100;
-      const rBoxY = rIsPortrait ? l.h - 180 : l.h - 80;
+      const rShortLandscape = l.w > l.h && l.h <= 430;
+      const rBoxH = rIsPortrait ? 130 : rShortLandscape ? 76 : 100;
+      const rBoxY = rIsPortrait ? l.h - 180 : rShortLandscape ? l.h - rBoxH / 2 - 12 : l.h - 80;
       this.panel.destroy();
       this.panel = new NinePatchPanel(this, l.cx, rBoxY, l.w - 20, rBoxH, {
         fillColor: 0x0a0a18, fillAlpha: 0.98, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 8,
@@ -229,6 +250,10 @@ export class DialogueScene extends Phaser.Scene {
       this.dialogueText.setPosition(30 + portraitPad, rBoxY - rBoxH / 2 + 10);
       this.dialogueText.setWordWrapWidth(l.w - 60 - portraitPad);
       this.advanceIndicator.setPosition(l.w - 40, rBoxY + rBoxH / 2 + 12);
+      const rCloseX = l.cx + (l.w - 20) / 2 - closeSize / 2 - 8;
+      const rCloseY = rBoxY - rBoxH / 2 + closeSize / 2 + 4;
+      closeButton.setPosition(rCloseX, rCloseY);
+      closeText.setPosition(rCloseX, rCloseY);
       if (this.portrait) {
         const pX = l.cx - (l.w - 20) / 2 + 12 + portraitSize / 2;
         this.portrait.setPosition(pX, rBoxY);
@@ -268,22 +293,22 @@ export class DialogueScene extends Phaser.Scene {
     this.showLine(this.queue[this.currentIndex]);
 
     // Input — keyboard
-    this.input.keyboard!.on('keydown-ENTER', () => this.handleInput());
-    this.input.keyboard!.on('keydown-SPACE', () => this.handleInput());
-    this.input.keyboard!.on('keydown-Z', () => this.handleInput());
-    this.input.keyboard!.on('keydown-ESC', () => {
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.handleInput());
+    this.inputRegistry.bindKey('keydown-SPACE', () => this.handleInput());
+    this.inputRegistry.bindKey('keydown-Z', () => this.handleInput());
+    this.inputRegistry.bindKey('keydown-ESC', () => {
       if (!this.inChoiceMode) this.closeDialogue();
     });
-    this.input.keyboard!.on('keydown-UP', () => {
+    this.inputRegistry.bindKey('keydown-UP', () => {
       if (this.inChoiceMode) this.moveChoice(-1);
     });
-    this.input.keyboard!.on('keydown-DOWN', () => {
+    this.inputRegistry.bindKey('keydown-DOWN', () => {
       if (this.inChoiceMode) this.moveChoice(1);
     });
 
     // Input — tap to advance on touch devices
     // Skip when in choice mode — per-item handlers on choice texts handle taps directly.
-    this.input.on('pointerdown', () => {
+    this.inputRegistry.bindPointer(this.input, 'pointerdown', () => {
       if (this.choiceTappedThisFrame) return;
       if (!this.inChoiceMode) this.handleInput();
     });
@@ -477,8 +502,7 @@ export class DialogueScene extends Phaser.Scene {
     if (this.portrait) fadeTargets.push(this.portrait);
 
     // Disable input during exit animation
-    this.input.keyboard?.removeAllListeners();
-    this.input.removeAllListeners();
+    this.inputRegistry.clear();
 
     AudioManager.getInstance().playSFX(SFX.CANCEL);
     this.tweens.add({
@@ -498,8 +522,7 @@ export class DialogueScene extends Phaser.Scene {
 
   shutdown(): void {
     this.cleanupChoices();
-    this.input.keyboard?.removeAllListeners();
-    this.input.removeAllListeners();
+    this.inputRegistry.clear();
     this.typeTimer?.destroy();
     this.indicatorTween?.destroy();
     this.portrait?.destroy();

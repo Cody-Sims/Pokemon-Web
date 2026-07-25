@@ -50,12 +50,17 @@
   <title>Pokemon Aurum</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100dvh; height: 100%; background: #000000 !important; background-color: #000000 !important; overflow: hidden; touch-action: none;
+    html, body {
+      width: 100%; height: 100%; min-height: 100dvh;
+      background: #000000 !important; background-color: #000000 !important;
+      overflow: hidden; overscroll-behavior: none; touch-action: none;
       user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+      -webkit-text-size-adjust: 100%;
+      position: fixed; inset: 0;
+      padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    }
     canvas { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; display: block;
-      background: #000000; }
+      background: #000000; image-rendering: pixelated; image-rendering: crisp-edges; }
 
     /* ── Desktop chrome: background, frame, controls ── */
     @media (hover: hover) and (pointer: fine) {
@@ -179,78 +184,110 @@
     #rotate-prompt {
       display: none; position: fixed; inset: 0;
       flex-direction: column; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.92); color: #fff; z-index: 9999;
-      font-family: monospace; text-align: center; gap: 20px;
-      padding: 24px; padding-top: calc(24px + env(safe-area-inset-top, 0px));
+      background:
+        radial-gradient(circle at 50% 22%, rgba(255,204,0,0.12), transparent 28rem),
+        linear-gradient(180deg, rgba(15,15,26,0.96), rgba(10,10,24,0.98));
+      color: #fff; z-index: 9999;
+      font-family: 'Courier New', monospace; text-align: center; gap: 20px;
+      padding: calc(24px + env(safe-area-inset-top, 0px)) calc(20px + env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) calc(20px + env(safe-area-inset-left, 0px));
+      touch-action: none;
+    }
+    #rotate-prompt .rotate-card {
+      width: min(340px, 100%);
+      padding: 24px 22px 22px;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      background: rgba(26,26,46,0.96);
+      border: 2px solid #6a6aaa; border-radius: 12px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.05);
     }
     #rotate-prompt .rotate-icon {
-      font-size: 64px; animation: rotate-hint 2s ease-in-out infinite;
+      width: 76px; height: 76px; border-radius: 18px;
+      display: grid; place-items: center;
+      background: linear-gradient(180deg, rgba(85,153,255,0.18), rgba(255,204,0,0.12));
+      border: 1px solid rgba(255,204,0,0.45);
+      font-size: 48px; animation: rotate-hint 2.4s ease-in-out infinite;
     }
     @keyframes rotate-hint {
       0%, 100% { transform: rotate(0deg); }
       25% { transform: rotate(-30deg); }
       75% { transform: rotate(30deg); }
     }
-    #rotate-prompt h2 { font-size: 20px; color: #ffcc00; }
-    #rotate-prompt p { font-size: 14px; color: #aaa; max-width: 280px; }
+    #rotate-prompt h2 { font-size: 20px; color: #ffcc00; letter-spacing: 0.02em; }
+    #rotate-prompt p { font-size: 14px; color: #b0b0c8; max-width: 280px; line-height: 1.5; }
+    #rotate-prompt .rotate-note { color: #6a6a80; font-size: 12px; }
     #rotate-prompt button {
-      margin-top: 8px; padding: 10px 28px; border: 1px solid #ffcc00;
-      background: transparent; color: #ffcc00; font-family: monospace;
+      margin-top: 6px; min-height: 48px; padding: 12px 26px; border: 2px solid #ffcc00;
+      background: rgba(255,204,0,0.12); color: #ffcc00; font-family: monospace;
       font-size: 16px; border-radius: 6px; cursor: pointer;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.35);
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
     #rotate-prompt button:active { background: rgba(255,204,0,0.15); }
 
-    /* iOS install-to-home-screen banner */
-    #ios-install-prompt {
-      display: none; position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(15,15,26,0.96); color: #fff; z-index: 9998;
-      font-family: monospace; padding: 14px 16px;
-      padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-      border-top: 1px solid rgba(255,204,0,0.3);
-      flex-direction: column; align-items: center; gap: 8px;
+    /* Small install-to-home-screen toast (never a blocking modal) */
+    .shell-toast {
+      display: none; position: fixed; left: max(12px, env(safe-area-inset-left, 0px));
+      right: max(12px, env(safe-area-inset-right, 0px));
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      max-width: 440px; margin: 0 auto;
+      background: rgba(26,26,46,0.96); color: #e8e8f0; z-index: 9980;
+      font-family: monospace; padding: 12px 14px;
+      border: 1px solid rgba(255,204,0,0.45); border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      align-items: center; gap: 12px;
+      touch-action: manipulation;
     }
-    #ios-install-prompt .install-title {
-      font-size: 15px; font-weight: bold; color: #ffcc00;
+    #ios-install-prompt { flex-direction: row; }
+    #ios-install-prompt .install-copy { flex: 1; min-width: 0; }
+    .shell-toast .install-title {
+      font-size: 14px; font-weight: bold; color: #ffcc00; margin-bottom: 3px;
     }
-    #ios-install-prompt .install-steps {
-      font-size: 13px; color: #ccc; text-align: center; line-height: 1.5;
+    .shell-toast .install-steps {
+      font-size: 12px; color: #b0b0c8; line-height: 1.4;
     }
-    #ios-install-prompt .install-steps .share-icon {
+    .shell-toast .share-icon {
       display: inline-block; font-size: 16px; vertical-align: middle;
     }
-    #ios-install-prompt .install-actions {
-      display: flex; gap: 12px; margin-top: 4px;
+    .shell-toast button {
+      min-width: 44px; min-height: 44px;
+      padding: 8px 12px; border: 1px solid #4a4a6a;
+      background: rgba(51,51,85,0.75); color: #b0b0c8; font-family: monospace;
+      font-size: 13px; border-radius: 6px; cursor: pointer;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
-    #ios-install-prompt button {
-      padding: 8px 20px; border: 1px solid #ffcc00;
-      background: transparent; color: #ffcc00; font-family: monospace;
-      font-size: 14px; border-radius: 6px; cursor: pointer;
+    .shell-toast button:active { background: rgba(255,204,0,0.15); color: #ffcc00; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 1ms !important;
+      }
     }
-    #ios-install-prompt button.install-dismiss {
-      border-color: #666; color: #999;
-    }
-    #ios-install-prompt button:active { background: rgba(255,204,0,0.15); }
   </style>
 </head>
 <body>
   <!-- Portrait orientation prompt -->
-  <div id="rotate-prompt">
-    <div class="rotate-icon">📱</div>
-    <h2>Rotate Your Device</h2>
-    <p>This game is best played in landscape mode. Please rotate your phone horizontally.</p>
-    <button id="rotate-dismiss">Continue Anyway</button>
+  <div id="rotate-prompt" role="dialog" aria-modal="true" aria-labelledby="rotate-title">
+    <div class="rotate-card">
+      <div class="rotate-icon" aria-hidden="true">📱</div>
+      <h2 id="rotate-title">Landscape Recommended</h2>
+      <p>This adventure is tuned for landscape controls. Rotate your phone for the best view, or continue in portrait.</p>
+      <p class="rotate-note">The game is paused while this message is open.</p>
+      <button id="rotate-dismiss" type="button">Continue Anyway</button>
+    </div>
   </div>
 
   <!-- iOS install-to-home-screen banner -->
-  <div id="ios-install-prompt">
-    <div class="install-title">Install for Full Screen</div>
-    <div class="install-steps">
-      Tap <span class="share-icon">⬆</span> Share, then "Add to Home Screen"
-      for the best experience with no browser bars.
+  <div id="ios-install-prompt" class="shell-toast" role="status" aria-live="polite">
+    <div class="install-copy">
+      <div class="install-title">Full-screen tip</div>
+      <div class="install-steps">
+        Tap <span class="share-icon">⬆</span> Share, then "Add to Home Screen".
+      </div>
     </div>
-    <div class="install-actions">
-      <button class="install-dismiss" id="ios-install-dismiss">Not Now</button>
-    </div>
+    <button class="install-dismiss" id="ios-install-dismiss" type="button">Not Now</button>
   </div>
 
   <!-- Desktop chrome: title, fullscreen, keyboard hints -->
@@ -301,13 +338,15 @@
     document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
     // Block context menu (long-press copy)
     document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-    // Dismiss rotate prompt
+    // Dismiss rotate prompt. main.ts owns game pausing; the event keeps this
+    // fallback in sync if the module is still loading.
     var dismissBtn = document.getElementById('rotate-dismiss');
     if (dismissBtn) {
       dismissBtn.addEventListener('click', function() {
         var overlay = document.getElementById('rotate-prompt');
         if (overlay) overlay.style.display = 'none';
-        try { sessionStorage.setItem('pokemon-web-rotate-dismissed', '1'); } catch(e) {}
+        try { localStorage.setItem('pokemon-web-portrait-ok', '1'); } catch(e) {}
+        window.dispatchEvent(new CustomEvent('pokemon-shell-overlay-dismissed', { detail: { overlay: 'orientation' } }));
       });
     }
     // ── Desktop fullscreen toggle ──

@@ -16,7 +16,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { AchievementManager } from '@managers/AchievementManager';
 import { SFX } from '@utils/audio-keys';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
-import { COLORS, FONTS, mobileFontSize, mobileScale, isMobile } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale, isMobile, minTouchTarget } from '@ui/theme';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { SynthesisHandler } from '@battle/effects/SynthesisHandler';
 import { SYNTHESIS_ELIGIBLE } from '@data/synthesis-data';
@@ -94,7 +94,7 @@ export class BattleUIScene extends Phaser.Scene {
 
     // Compact mode for small mobile screens
     const compact = isMobile() && (window.innerHeight < 400 || h < 400);
-    const menuH = compact ? 50 : 100;
+    const menuH = compact ? 64 : 108;
     // Reserve room at the bottom of the canvas in mobile portrait so the
     // action menu doesn't sit underneath the DOM touch controls (joystick
     // + A/B buttons take ~140 px on phones). Landscape phones keep 0 since
@@ -124,9 +124,12 @@ export class BattleUIScene extends Phaser.Scene {
 
     const actions = ['FIGHT', 'BAG', 'POKEMON', 'RUN'];
     const actionFontSize = mobileFontSize(compact ? 15 : 18);
-    const actionRowH = Math.round(35 * mobileScale());
+    const actionRowH = Math.max(minTouchTarget(), Math.round(35 * mobileScale()));
+    this.actionMenu.actionButtons = [];
     this.actionMenu.actionTexts = actions.map((action, i) => {
       let x: number, y: number;
+      const buttonW = compact ? Math.min(160, (w - 36) / 4) : 190;
+      const buttonH = Math.max(minTouchTarget(), compact ? 48 : 42);
       if (compact) {
         const spacing = w / 5;
         x = spacing * (i + 1);
@@ -140,10 +143,28 @@ export class BattleUIScene extends Phaser.Scene {
         x = cx - 80 + col * 160;
         y = menuY - actionRowH / 2 + row * actionRowH;
       }
+      const button = this.add.rectangle(x, y, buttonW, buttonH, COLORS.bgCard, 0.95)
+        .setStrokeStyle(2, COLORS.borderLight)
+        .setDepth(1)
+        .setInteractive({ useHandCursor: true });
+      this.actionMenu.actionButtons.push(button);
+      this.inputRegistry.bindPointer(button, 'pointerover', () => {
+        if (this.state === 'actions') {
+          this.actionMenu.cursor = i;
+          this.actionMenu.updateCursor();
+        }
+      });
+      this.inputRegistry.bindPointer(button, 'pointerdown', () => {
+        if (this.state === 'actions') {
+          this.actionMenu.cursor = i;
+          this.actionMenu.updateCursor();
+          this.actionMenu.selectAction();
+        }
+      });
       const t = this.add.text(
         x, y,
         action, { ...FONTS.menuItem, fontSize: actionFontSize },
-      ).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      ).setOrigin(0.5).setDepth(2).setInteractive({ useHandCursor: true });
       t.setPadding(12, 8, 12, 8);
       t.on('pointerover', () => { if (this.state === 'actions') { this.actionMenu.cursor = i; this.actionMenu.updateCursor(); } });
       t.on('pointerdown', () => { if (this.state === 'actions') { this.actionMenu.cursor = i; this.actionMenu.selectAction(); } });
@@ -183,7 +204,7 @@ export class BattleUIScene extends Phaser.Scene {
     layoutOn(this, () => {
       const { w, h, cx } = ui(this);
       const cpt = isMobile() && (window.innerHeight < 400 || h < 400);
-      const mH = cpt ? 50 : 100;
+      const mH = cpt ? 64 : 108;
       const isP = h > w;
       const bReserve = isMobile() && isP ? 100 : 10;
       const mY = h - mH / 2 - bReserve;
@@ -199,16 +220,27 @@ export class BattleUIScene extends Phaser.Scene {
         fillColor: COLORS.bgPanel, fillAlpha: 0.95, borderColor: COLORS.borderLight, borderWidth: 2, cornerRadius: 6,
       });
       this.actionMenu.actionMenuBg.setVisible(wasVisible);
-      const rowH = Math.round(35 * mobileScale());
+      const rowH = Math.max(minTouchTarget(), Math.round(35 * mobileScale()));
       this.actionMenu.actionTexts.forEach((t, i) => {
+        let nextX: number;
+        let nextY: number;
+        const nextW = cpt ? Math.min(160, (w - 36) / 4) : 190;
+        const nextH = Math.max(minTouchTarget(), cpt ? 48 : 42);
         if (cpt) {
           const sp = w / 5;
-          t.setPosition(sp * (i + 1), mY);
+          nextX = sp * (i + 1);
+          nextY = mY;
         } else {
           const col = i % 2;
           const row = Math.floor(i / 2);
-          t.setPosition(cx - 80 + col * 160, mY - rowH / 2 + row * rowH);
+          nextX = cx - 80 + col * 160;
+          nextY = mY - rowH / 2 + row * rowH;
         }
+        t.setPosition(nextX, nextY);
+        const button = this.actionMenu.actionButtons[i];
+        button?.setPosition(nextX, nextY);
+        button?.setSize(nextW, nextH);
+        button?.setDisplaySize(nextW, nextH);
       });
       this.actionMenu.synthText?.setPosition(cx, mY + mH / 2 + 8);
       this.actionMenu.partnerActionText?.setPosition(30, msgY - 22);

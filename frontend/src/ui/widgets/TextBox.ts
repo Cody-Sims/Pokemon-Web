@@ -1,6 +1,15 @@
 import Phaser from 'phaser';
 import { NinePatchPanel, type NinePatchPanelOptions } from './NinePatchPanel';
-import { COLORS, FONTS, PANEL_PRESETS, SPACING, mobileFontSize } from '@ui/theme';
+import {
+  COLORS,
+  FONTS,
+  PANEL_PRESETS,
+  SPACING,
+  measureNameplate,
+  mobileFontPx,
+  mobileFontSize,
+  mobileLineHeightPx,
+} from '@ui/theme';
 
 export interface TextBoxMessage {
   text: string;
@@ -28,11 +37,25 @@ export interface TextBoxOptions {
   maxCharsPerPage?: number;
 }
 
-type KeyboardBinding = { keyboard: Phaser.Input.Keyboard.KeyboardPlugin; event: string; fn: () => void };
+type KeyboardBinding = {
+  keyboard: Phaser.Input.Keyboard.KeyboardPlugin;
+  event: string;
+  fn: () => void;
+};
 
 const DEFAULT_TYPE_DELAY_MS = 33;
 const DEFAULT_MAX_CHARS_PER_PAGE = 180;
 const ADVANCE_KEYS = ['keydown-ENTER', 'keydown-SPACE', 'keydown-Z'] as const;
+
+export function resolveDialogueBoxHeight(
+  requestedHeight: number,
+  viewportHeight: number,
+  mobile: boolean,
+): number {
+  if (!mobile || viewportHeight <= 0) return requestedHeight;
+  const maxPhoneHeight = Math.max(76, Math.round(viewportHeight * 0.28));
+  return Math.min(requestedHeight, maxPhoneHeight);
+}
 
 /**
  * Canonical typewriter message widget for battle queues and dialogue boxes.
@@ -59,7 +82,9 @@ export class TextBox {
   private queue: TextBoxMessage[] = [];
   private queueIndex = 0;
   private queueComplete?: () => void;
-  private queueOptions: Required<Pick<TextBoxQueueOptions, 'waitForInput' | 'delayMs' | 'paginate' | 'maxCharsPerPage'>> = {
+  private queueOptions: Required<
+    Pick<TextBoxQueueOptions, 'waitForInput' | 'delayMs' | 'paginate' | 'maxCharsPerPage'>
+  > = {
     waitForInput: false,
     delayMs: 900,
     paginate: false,
@@ -72,25 +97,45 @@ export class TextBox {
   private readonly pointerAdvanceHandler: () => void;
   private destroyed = false;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, width: number, height: number, options: TextBoxOptions = {}) {
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    options: TextBoxOptions = {},
+  ) {
     this.scene = scene;
-    this.panel = new NinePatchPanel(scene, x + width / 2, y + height / 2, width, height, {
+    const viewportHeight =
+      scene.scale?.height ?? (typeof window === 'undefined' ? height : window.innerHeight);
+    const panelHeight = resolveDialogueBoxHeight(
+      height,
+      viewportHeight,
+      typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0,
+    );
+    const textBasePx = 16;
+    const textTop = y + SPACING.sm;
+    this.panel = new NinePatchPanel(scene, x + width / 2, y + panelHeight / 2, width, panelHeight, {
       ...PANEL_PRESETS.dialogue,
       ...options.panel,
     });
-    this.textObject = scene.add.text(x + SPACING.cardPadding, y + 10, '', {
+    this.textObject = scene.add.text(x + SPACING.cardPadding, textTop, '', {
       ...FONTS.body,
-      fontSize: mobileFontSize(16),
+      fontSize: mobileFontSize(textBasePx),
+      lineSpacing: Math.max(0, mobileLineHeightPx(textBasePx) - mobileFontPx(textBasePx)),
       color: COLORS.textWhite,
       wordWrap: { width: width - SPACING.cardPadding * 2 },
       ...options.textStyle,
     });
-    this.advanceIndicator = scene.add.text(x + width - SPACING.md, y + height - SPACING.md, '▼', {
-      ...FONTS.caption,
-      color: COLORS.textHighlight,
-    }).setOrigin(0.5).setAlpha(0);
+    this.advanceIndicator = scene.add
+      .text(x + width - SPACING.lg, y + panelHeight - SPACING.lg, '▼', {
+        ...FONTS.caption,
+        color: COLORS.textHighlight,
+      })
+      .setOrigin(0.5)
+      .setAlpha(0);
     this.hitArea = scene.add
-      .rectangle(x + width / 2, y + height / 2, width, height, COLORS.transparent, 0)
+      .rectangle(x + width / 2, y + panelHeight / 2, width, panelHeight, COLORS.transparent, 0)
       .setInteractive();
     this.pointerAdvanceHandler = () => this.handleAdvanceInput();
     this.hitArea.on('pointerdown', this.pointerAdvanceHandler);
@@ -107,13 +152,28 @@ export class TextBox {
   /** Display one text string with the legacy auto-complete typewriter behaviour. */
   showText(text: string, onComplete?: () => void): void {
     this.clearQueue();
-    this.startMessage({ text, onComplete }, { waitForInput: false, delayMs: 0, paginate: false, maxCharsPerPage: DEFAULT_MAX_CHARS_PER_PAGE }, undefined);
+    this.startMessage(
+      { text, onComplete },
+      {
+        waitForInput: false,
+        delayMs: 0,
+        paginate: false,
+        maxCharsPerPage: DEFAULT_MAX_CHARS_PER_PAGE,
+      },
+      undefined,
+    );
   }
 
   /** Queue arbitrary messages for either timed battle flow or confirm-driven dialogue. */
-  queueMessages(messages: readonly (string | TextBoxMessage)[], options: TextBoxQueueOptions = {}, onComplete?: () => void): void {
+  queueMessages(
+    messages: readonly (string | TextBoxMessage)[],
+    options: TextBoxQueueOptions = {},
+    onComplete?: () => void,
+  ): void {
     this.clearQueue();
-    this.queue = messages.map((message) => typeof message === 'string' ? { text: message } : message);
+    this.queue = messages.map((message) =>
+      typeof message === 'string' ? { text: message } : message,
+    );
     this.queueOptions = {
       waitForInput: options.waitForInput ?? false,
       delayMs: options.delayMs ?? 900,
@@ -132,12 +192,20 @@ export class TextBox {
   }
 
   /** Battle-style timed queue: each message completes, waits, then advances. */
-  showBattleQueue(messages: readonly (string | TextBoxMessage)[], onComplete: () => void, delayMs = 900): void {
+  showBattleQueue(
+    messages: readonly (string | TextBoxMessage)[],
+    onComplete: () => void,
+    delayMs = 900,
+  ): void {
     this.queueMessages(messages, { waitForInput: false, delayMs }, onComplete);
   }
 
   /** Dialogue-style queue with speaker, portrait, pagination, and confirm-to-advance. */
-  showDialogue(messages: readonly (string | TextBoxMessage)[], options: Omit<TextBoxQueueOptions, 'waitForInput' | 'paginate'> = {}, onComplete?: () => void): void {
+  showDialogue(
+    messages: readonly (string | TextBoxMessage)[],
+    options: Omit<TextBoxQueueOptions, 'waitForInput' | 'paginate'> = {},
+    onComplete?: () => void,
+  ): void {
     this.queueMessages(messages, { ...options, waitForInput: true, paginate: true }, onComplete);
   }
 
@@ -222,21 +290,30 @@ export class TextBox {
 
   private startMessage(
     message: TextBoxMessage,
-    options: Required<Pick<TextBoxQueueOptions, 'waitForInput' | 'delayMs' | 'paginate' | 'maxCharsPerPage'>>,
+    options: Required<
+      Pick<TextBoxQueueOptions, 'waitForInput' | 'delayMs' | 'paginate' | 'maxCharsPerPage'>
+    >,
     queueComplete?: () => void,
   ): void {
     this.clearTimers();
     this.onComplete = message.onComplete;
     this.queueComplete = queueComplete;
     this.messageCompletionFired = false;
-    this.pages = options.paginate ? this.paginate(message.text, options.maxCharsPerPage) : [message.text];
+    this.pages = options.paginate
+      ? this.paginate(message.text, options.maxCharsPerPage)
+      : [message.text];
     this.pageIndex = 0;
     this.renderSpeaker(message.speaker);
     this.renderPortrait(message.portraitKey, message.portraitFrame);
     this.showPage(this.pages[this.pageIndex] ?? '', options);
   }
 
-  private showPage(text: string, options: Required<Pick<TextBoxQueueOptions, 'waitForInput' | 'delayMs' | 'paginate' | 'maxCharsPerPage'>>): void {
+  private showPage(
+    text: string,
+    options: Required<
+      Pick<TextBoxQueueOptions, 'waitForInput' | 'delayMs' | 'paginate' | 'maxCharsPerPage'>
+    >,
+  ): void {
     this.fullText = text;
     this.queueOptions = options;
     this.textObject.setText('');
@@ -275,7 +352,9 @@ export class TextBox {
       this.showAdvanceIndicator();
       return;
     }
-    this.delayTimer = this.scene.time.delayedCall(this.queueOptions.delayMs, () => this.advanceQueue());
+    this.delayTimer = this.scene.time.delayedCall(this.queueOptions.delayMs, () =>
+      this.advanceQueue(),
+    );
   }
 
   private advanceFromRestingState(): void {
@@ -332,15 +411,40 @@ export class TextBox {
     this.speakerPanel = undefined;
     this.speakerText = undefined;
     if (!speaker) return;
-    const width = Math.max(100, speaker.length * 10 + SPACING.lg);
-    const x = this.textObject.x + width / 2 - SPACING.cardPadding;
-    const y = this.textObject.y - SPACING.lg;
-    this.speakerPanel = new NinePatchPanel(this.scene, x, y, width, 26, PANEL_PRESETS.speaker);
-    this.speakerText = this.scene.add.text(x, y, speaker, {
-      ...FONTS.caption,
-      color: COLORS.textHighlight,
-      fontSize: mobileFontSize(12),
-    }).setOrigin(0.5);
+    const maxWidth = Math.max(
+      96,
+      Math.min(
+        this.textObject.style.wordWrapWidth || 180,
+        (this.scene.scale?.width ?? 320) - SPACING.lg * 2,
+      ),
+    );
+    const layout = measureNameplate(speaker, {
+      maxWidth,
+      baseFontPx: mobileFontPx(12),
+      minFontPx: 10,
+      minWidth: 92,
+    });
+    const x = this.textObject.x + layout.width / 2 - SPACING.cardPadding;
+    const minY = layout.height / 2 + SPACING.xs;
+    const y = Math.max(minY, this.textObject.y - layout.height / 2 - SPACING.xs);
+    this.speakerPanel = new NinePatchPanel(
+      this.scene,
+      x,
+      y,
+      layout.width,
+      layout.height,
+      PANEL_PRESETS.speaker,
+    );
+    this.speakerText = this.scene.add
+      .text(x, y, layout.label, {
+        ...FONTS.caption,
+        color: COLORS.textHighlight,
+        fontStyle: 'bold',
+        fontSize: `${layout.fontPx}px`,
+        maxLines: 1,
+        align: 'center',
+      })
+      .setOrigin(0.5);
   }
 
   private renderPortrait(portraitKey?: string, portraitFrame?: string | number): void {

@@ -6,7 +6,7 @@ Reusable UI widgets and input controls shared across scenes. Themed via `theme.t
 
 | Path | Purpose |
 |---|---|
-| `controls/` | Input and selection handling: `SelectableController.ts`, `MenuController.ts`, `MobileTapMenu.ts`, `TouchControls.ts`, `VirtualJoystick.ts`. |
+| `controls/` | Input and selection handling: `SelectableController.ts`, `MenuController.ts`, `MobileTapMenu.ts`, `TouchControls.ts`, `VirtualJoystick.ts`, and pure `touch-geometry.ts` helpers. |
 | `widgets/` | Display components: `NinePatchPanel.ts`, `BarFrame.ts`, `BattlePlatform.ts`, `PixelText.ts`, `HealthBar.ts`, `ProgressBar.ts`, `TextBox.ts`, `MenuList.ts`, `ConfirmBox.ts`, `ScrollContainer.ts`, `BattleHUD.ts`, `AchievementToast.ts`. |
 | `theme.ts` | Shared color palette, font sizes, spacing, radii, strokes, type/category colors, panel presets, progress-bar presets, and mobile sizing helpers. |
 | `index.ts` | Barrel re-exports for UI controls, widgets, and theme tokens. |
