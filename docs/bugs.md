@@ -3,6 +3,28 @@
 > Last reconciled: 2026-07-24 against `83b2fab` (`revamp/bug-triage`) plus this bug-triage commit.
 > Scope: every backlog entry that was under `## Open
 
+### Visual regression tests can never pass in CI
+
+- **Files:** [.gitignore](.gitignore#L27), [tests/e2e/visual.spec.ts](tests/e2e/visual.spec.ts), [tests/e2e/playwright.config.ts](tests/e2e/playwright.config.ts#L49)
+- **Symptom:** Every `toHaveScreenshot` assertion fails on CI with
+  `A snapshot doesn't exist at ...-linux.png, writing actual.` All 14 visual
+  tests fail on a Linux runner (7 specs x 2 browser projects).
+- **Cause:** `.gitignore` line 27 ignores `tests/e2e/*-snapshots/` with the note
+  "Don't commit local snapshots — generate them in CI on a fixed Linux runner",
+  but nothing in CI ever commits or restores them, and the runner starts clean
+  every time. `git ls-files` shows zero committed snapshots, so no baseline can
+  exist and the first run always fails.
+- **Predates the revamp:** CI runs on `main` have been failing since 2026-07-11.
+- **Impact on CI:** visual regression now runs as an informational,
+  `continue-on-error` step. Smoke and performance specs gate PRs and pass on
+  Linux.
+- **Fix options:** (a) generate baselines once on a Linux runner with
+  `--update-snapshots`, un-ignore the snapshot directory and commit them; or
+  (b) cache/restore snapshots as a CI artifact keyed on a UI-affecting hash.
+  Option (a) is simpler and makes review diffs visible.
+
+
+
 ### Playwright E2E specs hang on browser context teardown
 
 - **Files:** [tests/e2e/smoke.spec.ts](tests/e2e/smoke.spec.ts), [tests/e2e/ui-regression.spec.ts](tests/e2e/ui-regression.spec.ts), [tests/e2e/mobile-ui.spec.ts](tests/e2e/mobile-ui.spec.ts), [tests/e2e/playwright.config.ts](tests/e2e/playwright.config.ts)
