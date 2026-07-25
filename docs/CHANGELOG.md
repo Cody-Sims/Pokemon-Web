@@ -6,6 +6,14 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Fixed - Mobile E2E harness
+
+- Changed Playwright's `mobile-chromium` project to landscape touch gameplay
+  and added a portrait-only rotate-gate shell project.
+- Reworked mobile UI coverage to use touch input against landscape controls,
+  state-based scene waits, and structural render assertions instead of missing
+  screenshot baselines.
+
 ### Added - Agent workflow skills
 
 - Added `parallel-worktree-delivery` for multi-worktree agent fleet planning,
