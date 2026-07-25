@@ -7,7 +7,6 @@ import { SceneRouter } from '@scenes/SceneRouter';
 import { SceneKey } from '@scenes/scene-keys';
 import type { IntroSceneData } from '@scenes/scene-data';
 import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
-import { isMobile } from '@ui/theme';
 import { NICKNAME_MAX_LENGTH } from '@utils/nickname-validation';
 import { DomTextInputAdapter } from '@ui/dom/DomTextInputAdapter';
 import { NameEntryPanel } from '@ui/widgets/NameEntryPanel';
@@ -105,14 +104,13 @@ export class IntroScene extends Phaser.Scene {
         },
         onFocusInput: () => this.hiddenInput?.focusTemporarily(),
       });
-      this.createMobileInput();
+      this.createNameInput();
       this.bindNameInput();
       this.isAnimating = false;
     });
   }
 
-  private createMobileInput(): void {
-    if (!isMobile()) return;
+  private createNameInput(): void {
     this.hiddenInput = new DomTextInputAdapter({
       maxLength: NICKNAME_MAX_LENGTH,
       name: 'nickname-disabled',
@@ -122,8 +120,10 @@ export class IntroScene extends Phaser.Scene {
         this.flow.setNameInput(value);
         this.namePanel?.setName(value);
       },
+      onSubmit: () => this.confirmName(),
     });
     this.hiddenInput.mount();
+    this.hiddenInput.focus();
   }
 
   private bindNameInput(): void {

@@ -4,6 +4,17 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-07-25]
+
+### Fixed - Intro name entry
+
+- Mounted the intro's DOM text input on desktop and touch devices so keyboard-only
+  and touch-only players can finish player naming reliably in headless E2E and
+  real browsers.
+- Updated the smoke E2E intro helper to wait for the name-entry control and for
+  either opening cutscene scene, preserving state assertions without coordinate
+  shortcuts.
+
 ## [2026-07-24]
 
 ### Fixed - E2E intro helpers
