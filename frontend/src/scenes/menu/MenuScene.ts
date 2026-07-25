@@ -2,8 +2,9 @@ import Phaser from 'phaser';
 import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, mobileFontSize, mobileScale } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale, minTouchTarget } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
+import { SelectableController } from '@ui/controls/SelectableController';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SaveManager } from '@managers/SaveManager';
@@ -18,11 +19,17 @@ import { SceneKey } from '@scenes/scene-keys';
 export class MenuScene extends Phaser.Scene {
   private cursor = 0;
   private menuItems!: Phaser.GameObjects.Text[];
+  private menuButtons: Phaser.GameObjects.Rectangle[] = [];
   private cursorIcon!: Phaser.GameObjects.Text;
   private menuLabels: string[] = [];
   private overlay!: Phaser.GameObjects.Rectangle;
   private menuPanel!: NinePatchPanel;
   private moneyText!: Phaser.GameObjects.Text;
+  private scrollText!: Phaser.GameObjects.Text;
+  private closeButton!: Phaser.GameObjects.Rectangle;
+  private closeButtonText!: Phaser.GameObjects.Text;
+  private menuController?: SelectableController;
+  private windowStart = 0;
 
   private readonly inputRegistry = new SceneInputRegistry(this);
 
@@ -81,19 +88,23 @@ export class MenuScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(2);
 
     const menuFontSize = mobileFontSize(dims.fontPx);
-    const startY = panelY - panelH / 2 + 24;
+    const startY = panelY - panelH / 2 + 42;
     this.menuItems = this.menuLabels.map((label, i) => {
+      const itemButton = this.add.rectangle(panelX, startY + i * rowH, panelW - 24, rowH - 6, COLORS.bgCard, 0.9)
+        .setStrokeStyle(2, COLORS.border)
+        .setDepth(1)
+        .setInteractive({ useHandCursor: true });
+      this.menuButtons.push(itemButton);
       // Center text on the panel center (no +10 offset) so longer labels
       // like HALL OF FAME and POKEDEX stay inside the panel borders.
       const item = this.add.text(panelX, startY + i * rowH, label, {
         ...FONTS.menuItem, fontSize: menuFontSize,
         fontStyle: 'bold',
         stroke: '#000000', strokeThickness: 4,
-      }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(2);
+      }).setOrigin(0.5).setDepth(2);
 
-      item.setPadding(8, 4, 8, 4);
-      item.on('pointerover', () => { this.cursor = i; this.updateCursor(); });
-      item.on('pointerdown', () => { this.cursor = i; this.selectOption(); });
+      this.inputRegistry.bindPointer(itemButton, 'pointerover', () => this.menuController?.hoverIndex(i));
+      this.inputRegistry.bindPointer(itemButton, 'pointerdown', () => this.menuController?.clickIndex(i));
       return item;
     });
 
@@ -102,21 +113,55 @@ export class MenuScene extends Phaser.Scene {
       fontStyle: 'bold', stroke: '#000000', strokeThickness: 4,
     }).setDepth(2);
 
-    this.cursor = 0;
-    this.updateCursor();
+    this.scrollText = this.add.text(panelX, panelY + panelH / 2 - 42, '', {
+      ...FONTS.caption,
+      fontSize: mobileFontSize(11),
+      color: COLORS.textDim,
+    }).setOrigin(0.5).setDepth(2);
 
-    this.inputRegistry.bindKey('keydown-UP', () => {
-      this.cursor = (this.cursor - 1 + this.menuItems.length) % this.menuItems.length;
-      this.updateCursor();
-      AudioManager.getInstance().playSFX(SFX.CURSOR);
+    const closeH = Math.max(minTouchTarget(), 42);
+    this.closeButton = this.add.rectangle(panelX, panelY + panelH / 2 - closeH / 2 - 6, panelW - 24, closeH, COLORS.btnBg, 0.95)
+      .setStrokeStyle(2, COLORS.borderLight)
+      .setDepth(1)
+      .setInteractive({ useHandCursor: true });
+    this.closeButtonText = this.add.text(panelX, this.closeButton.y, 'RESUME', {
+      ...FONTS.button,
+      fontSize: mobileFontSize(14),
+      fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(2);
+    this.inputRegistry.bindPointer(this.closeButton, 'pointerover', () => this.closeButton.setFillStyle(COLORS.btnHover, 0.98));
+    this.inputRegistry.bindPointer(this.closeButton, 'pointerout', () => this.closeButton.setFillStyle(COLORS.btnBg, 0.95));
+    this.inputRegistry.bindPointer(this.closeButton, 'pointerdown', () => this.closeMenu());
+
+    this.cursor = 0;
+    this.menuController = new SelectableController({
+      itemCount: this.menuLabels.length,
+      wrap: true,
+      visibleCount: dims.visibleCount,
+      windowStart: this.windowStart,
+      onMove: (index) => {
+        this.cursor = index;
+        this.updateCursor();
+      },
+      onConfirm: () => this.selectOption(),
+      onCancel: () => this.closeMenu(),
+      onWindowChange: range => {
+        this.windowStart = range.start;
+        this.renderVisibleMenuItems();
+      },
+      sounds: {
+        move: () => AudioManager.getInstance().playSFX(SFX.CURSOR),
+        confirm: () => AudioManager.getInstance().playSFX(SFX.CONFIRM),
+        cancel: () => AudioManager.getInstance().playSFX(SFX.CANCEL),
+      },
     });
-    this.inputRegistry.bindKey('keydown-DOWN', () => {
-      this.cursor = (this.cursor + 1) % this.menuItems.length;
-      this.updateCursor();
-      AudioManager.getInstance().playSFX(SFX.CURSOR);
-    });
-    this.inputRegistry.bindKey('keydown-ENTER', () => this.selectOption());
-    this.inputRegistry.bindKey('keydown-ESC', () => this.closeMenu());
+    this.updateCursor();
+    this.renderVisibleMenuItems();
+
+    this.inputRegistry.bindKey('keydown-UP', () => this.menuController?.navigate('up'));
+    this.inputRegistry.bindKey('keydown-DOWN', () => this.menuController?.navigate('down'));
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.menuController?.confirm());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.menuController?.cancel());
 
     // Re-layout on resize / orientation change
     layoutOn(this, () => {
@@ -135,14 +180,27 @@ export class MenuScene extends Phaser.Scene {
       });
       this.menuPanel.setDepth(0);
       this.moneyText.setPosition(pX, pY - pH / 2 - 16);
-      const sY = pY - pH / 2 + 24;
+      const sY = pY - pH / 2 + 42;
       const fSize = mobileFontSize(d.fontPx);
       this.menuItems.forEach((item, i) => {
         item.setPosition(pX, sY + i * rH);
         item.setFontSize(fSize);
       });
+      this.menuButtons.forEach((button, i) => {
+        button.setPosition(pX, sY + i * rH);
+        button.setSize(pW - 24, rH - 6);
+        button.setDisplaySize(pW - 24, rH - 6);
+      });
+      this.scrollText.setPosition(pX, pY + pH / 2 - 42);
+      const closeHeight = Math.max(minTouchTarget(), 42);
+      this.closeButton.setPosition(pX, pY + pH / 2 - closeHeight / 2 - 6);
+      this.closeButton.setSize(pW - 24, closeHeight);
+      this.closeButton.setDisplaySize(pW - 24, closeHeight);
+      this.closeButtonText.setPosition(pX, this.closeButton.y);
+      this.menuController?.setVisibleCount(d.visibleCount);
       this.cursorIcon.setFontSize(fSize);
       this.updateCursor();
+      this.renderVisibleMenuItems();
     });
 
     // Drain stale confirm/cancel when returning from a child scene
@@ -157,37 +215,24 @@ export class MenuScene extends Phaser.Scene {
    * controls), and the row height shrinks before the font does.
    */
   private computePanelDims(viewW: number, viewH: number): {
-    panelW: number; panelH: number; rowH: number; fontPx: number;
+    panelW: number; panelH: number; rowH: number; fontPx: number; visibleCount: number;
   } {
     // Reserve room for the location HUD at the top and any touch controls
     // at the bottom of the viewport so the menu panel never overhangs.
     const topReserve = 56;
     const bottomReserve = 48;
-    const maxPanelH = Math.max(160, viewH - topReserve - bottomReserve);
+    const maxPanelH = Math.max(190, viewH - topReserve - bottomReserve);
     const items = this.menuLabels.length;
 
     // Default sizes (kept for landscape / desktop where there is plenty of
     // vertical room).
-    const baseRowH = Math.round(48 * mobileScale());
+    const baseRowH = Math.max(minTouchTarget(), 48);
     const baseFontPx = 18;
     const baseW = Math.round(220 * mobileScale());
-
-    // If the default row height already fits, use it.
-    let rowH = baseRowH;
-    let fontPx = baseFontPx;
-    let panelH = items * rowH + 32;
-    if (panelH > maxPanelH) {
-      // Shrink rowH first (preserve readable font), but never below 28px.
-      const fittedRowH = Math.max(28, Math.floor((maxPanelH - 32) / items));
-      rowH = fittedRowH;
-      panelH = items * rowH + 32;
-      // If even the smallest sensible rowH doesn't fit, also drop the font.
-      if (rowH <= 30) {
-        fontPx = 14;
-      } else if (rowH <= 36) {
-        fontPx = 16;
-      }
-    }
+    const rowH = baseRowH;
+    const visibleCount = Math.max(3, Math.min(items, Math.floor((maxPanelH - 92) / rowH)));
+    const fontPx = visibleCount < items ? 16 : baseFontPx;
+    const panelH = visibleCount * rowH + 92;
 
     // Cap the panel width to the viewport so the side menu never spills
     // past the screen on narrow portrait phones. The minimum (160 px) is
@@ -196,7 +241,7 @@ export class MenuScene extends Phaser.Scene {
     const rightInset = MenuScene.computeRightInset(viewW, viewH);
     const maxW = viewW - 32 - rightInset;
     const panelW = Math.max(minW, Math.min(baseW, maxW));
-    return { panelW, panelH, rowH, fontPx };
+    return { panelW, panelH, rowH, fontPx, visibleCount };
   }
 
   /**
@@ -217,15 +262,43 @@ export class MenuScene extends Phaser.Scene {
     const tc = TouchControls.getInstance();
     if (tc?.consumeCancel()) {
       this.closeMenu();
+      return;
     }
+    if (tc?.consumeSwipeUp()) this.menuController?.navigate('up');
+    else if (tc?.consumeSwipeDown()) this.menuController?.navigate('down');
   }
 
   private updateCursor(): void {
     this.menuItems.forEach((item, i) => {
       item.setColor(i === this.cursor ? COLORS.textHighlight : COLORS.textWhite);
+      this.menuButtons[i]?.setFillStyle(i === this.cursor ? COLORS.btnHover : COLORS.bgCard, 0.9);
+      this.menuButtons[i]?.setStrokeStyle(2, i === this.cursor ? COLORS.borderHighlight : COLORS.border);
     });
     const sel = this.menuItems[this.cursor];
     this.cursorIcon.setPosition(sel.x - sel.width / 2 - 20, sel.y - 10);
+  }
+
+  private renderVisibleMenuItems(): void {
+    const range = this.menuController?.getWindowRange() ?? {
+      start: this.windowStart,
+      end: this.menuItems.length,
+      size: this.menuItems.length,
+    };
+    this.menuItems.forEach((item, i) => {
+      const visible = i >= range.start && i < range.end;
+      item.setVisible(visible);
+      this.menuButtons[i]?.setVisible(visible);
+      if (visible) {
+        this.menuButtons[i]?.setInteractive({ useHandCursor: true });
+      } else {
+        this.menuButtons[i]?.disableInteractive();
+      }
+    });
+    this.cursorIcon.setVisible(this.cursor >= range.start && this.cursor < range.end);
+    this.scrollText.setText(range.end < this.menuItems.length || range.start > 0
+      ? `${range.start + 1}-${range.end} / ${this.menuItems.length}  ▲▼`
+      : '');
+    this.updateCursor();
   }
 
   private selectOption(): void {
@@ -316,6 +389,7 @@ export class MenuScene extends Phaser.Scene {
 
   shutdown(): void {
     EventManager.getInstance().clearByTag(this.scene.key);
+    this.menuController?.destroy();
     this.inputRegistry.clear();
   }
 

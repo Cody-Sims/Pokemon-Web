@@ -3,10 +3,11 @@ import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { SaveManager } from '@managers/SaveManager';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
-import { COLORS, FONTS, mobileFontSize, mobileScale } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale, minTouchTarget } from '@ui/theme';
 import { BGM, SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
+import { SelectableController } from '@ui/controls/SelectableController';
 import { DifficultyMode, DIFFICULTY_CONFIGS } from '@data/difficulty';
 import { CHALLENGE_CONFIGS, ChallengeMode } from '@data/challenge-modes';
 import { layoutOn } from '@utils/layout-on';
@@ -16,8 +17,10 @@ import { SceneKey } from '@scenes/scene-keys';
 export class TitleScene extends Phaser.Scene {
   private cursor!: number;
   private menuItems!: Phaser.GameObjects.Text[];
+  private menuButtons: Phaser.GameObjects.Rectangle[] = [];
   private cursorIcon!: Phaser.GameObjects.Text;
   private mobileTap?: MobileTapMenu;
+  private menuController?: SelectableController;
 
   private readonly inputRegistry = new SceneInputRegistry(this);
 
@@ -26,11 +29,17 @@ export class TitleScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.menuController?.destroy();
+      this.mobileTap?.destroy();
+      this.inputRegistry.clear();
+    });
     const audio = AudioManager.getInstance();
     audio.setScene(this);
     audio.playBGM(BGM.TITLE);
 
     const { width, height } = this.cameras.main;
+    const shortLandscape = width > height && height <= 430;
 
     // Background gradient
     this.add.rectangle(width / 2, height / 2, width, height, COLORS.bgDark);
@@ -73,18 +82,18 @@ export class TitleScene extends Phaser.Scene {
 
     // Decorative band — single soft rule (BUG-068: the previous five 2-px
     // rectangles offset by 4 px stacked into a 10-px-tall fuzzy smudge).
-    this.add.rectangle(width / 2, height * 0.18, width * 0.6, 2, COLORS.borderHighlight, 0.45);
+    this.add.rectangle(width / 2, height * (shortLandscape ? 0.13 : 0.18), width * 0.6, 2, COLORS.borderHighlight, 0.45);
 
     // Title
-    this.add.text(width / 2, height * 0.28, 'POKEMON', {
-      ...FONTS.title, fontSize: mobileFontSize(52),
+    this.add.text(width / 2, height * (shortLandscape ? 0.22 : 0.28), 'POKEMON', {
+      ...FONTS.title, fontSize: mobileFontSize(shortLandscape ? 42 : 52),
     }).setOrigin(0.5);
-    this.add.text(width / 2, height * 0.38, 'W  E  B', {
-      ...FONTS.title, fontSize: mobileFontSize(28), color: COLORS.textHighlight,
+    this.add.text(width / 2, height * (shortLandscape ? 0.33 : 0.38), 'W  E  B', {
+      ...FONTS.title, fontSize: mobileFontSize(shortLandscape ? 22 : 28), color: COLORS.textHighlight,
     }).setOrigin(0.5);
 
     // Decorative divider
-    this.add.rectangle(width / 2, height * 0.44, 200, 2, COLORS.borderHighlight, 0.5);
+    this.add.rectangle(width / 2, height * (shortLandscape ? 0.41 : 0.44), 200, 2, COLORS.borderHighlight, 0.5);
 
     // Menu options
     const options = ['New Game'];
@@ -102,22 +111,26 @@ export class TitleScene extends Phaser.Scene {
     options.push('Options');
 
     this.cursor = 0;
-    const menuStartY = height * 0.54;
-    const menuSpacing = Math.round(44 * mobileScale());
+    const menuStartY = height * (shortLandscape ? 0.52 : 0.54);
+    const menuSpacing = Math.max(minTouchTarget(), Math.round(44 * mobileScale()));
     const menuFontSize = mobileFontSize(22);
+    const buttonW = Math.min(320, Math.max(240, width * 0.38));
+    const buttonH = Math.max(minTouchTarget(), menuSpacing - 6);
     this.menuItems = options.map((label, i) => {
-      const item = this.add.text(width / 2 + 16, menuStartY + i * menuSpacing, label, {
+      const y = menuStartY + i * menuSpacing;
+      const button = this.add.rectangle(width / 2, y, buttonW, buttonH, COLORS.bgCard, 0.92)
+        .setStrokeStyle(2, COLORS.border)
+        .setAlpha(0);
+      this.menuButtons.push(button);
+      const item = this.add.text(width / 2, y, label, {
         ...FONTS.menuItem, fontSize: menuFontSize,
-      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      }).setOrigin(0.5).setAlpha(0);
 
-      // Ensure minimum touch target height
-      item.setPadding(8, 6, 8, 6);
-      item.on('pointerover', () => { this.cursor = i; this.updateCursor(); });
       return item;
     });
 
     // Cursor arrow
-    this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, fontSize: menuFontSize, color: COLORS.textHighlight });
+    this.cursorIcon = this.add.text(0, 0, '▸', { ...FONTS.menuItem, fontSize: menuFontSize, color: COLORS.textHighlight }).setVisible(false);
 
     // Version
     this.add.text(width / 2, height - 20, 'v1.0', {
@@ -127,8 +140,8 @@ export class TitleScene extends Phaser.Scene {
     this.updateCursor();
 
     // Initially hide menu — reveal on "Press Start" dismissal
-    this.menuItems.forEach(item => { item.setAlpha(0); item.disableInteractive(); });
-    this.cursorIcon.setAlpha(0);
+    this.menuItems.forEach(item => item.setAlpha(0));
+    this.menuButtons.forEach(button => button.disableInteractive());
 
     // ── "Press Start" prompt (shown before menu) ──
     const pressStart = this.add.text(width / 2, height * 0.58, 'PRESS START', {
@@ -156,23 +169,31 @@ export class TitleScene extends Phaser.Scene {
 
       // Show menu items immediately and enable interaction — no fade delay
       // that could cause touch taps to be ignored during the transition.
-      this.menuItems.forEach(item => {
-        item.setAlpha(1);
-        item.setInteractive({ useHandCursor: true });
+      this.menuItems.forEach(item => item.setAlpha(1));
+      this.menuButtons.forEach(button => {
+        button.setAlpha(1);
+        button.setInteractive({ useHandCursor: true });
       });
-      this.cursorIcon.setAlpha(1);
+      this.cursorIcon.setVisible(true);
+      this.menuController = new SelectableController({
+        itemCount: this.menuItems.length,
+        wrap: true,
+        initialIndex: this.cursor,
+        onMove: (index) => {
+          this.cursor = index;
+          this.updateCursor();
+        },
+        onConfirm: () => this.selectOption(),
+        sounds: {
+          move: () => AudioManager.getInstance().playSFX(SFX.CURSOR),
+          confirm: () => AudioManager.getInstance().playSFX(SFX.CONFIRM),
+        },
+      });
+      this.updateCursor();
 
       // Bind menu navigation (keyboard)
       this.bindMenuKeys();
-
-      // ── Scene-level tap handler for menu items ──
-      // Register after a frame delay so the tap that dismissed "Press Start"
-      // does not immediately select a menu item on mobile.
-      this.mobileTap = new MobileTapMenu(this, this.menuItems, (idx) => {
-        this.cursor = idx;
-        this.updateCursor();
-        this.selectOption();
-      });
+      this.bindMenuPointers();
 
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
     };
@@ -185,9 +206,11 @@ export class TitleScene extends Phaser.Scene {
   private updateCursor(): void {
     this.menuItems.forEach((item, i) => {
       item.setColor(i === this.cursor ? COLORS.textHighlight : COLORS.textWhite);
+      this.menuButtons[i]?.setFillStyle(i === this.cursor ? COLORS.btnHover : COLORS.bgCard, 0.94);
+      this.menuButtons[i]?.setStrokeStyle(2, i === this.cursor ? COLORS.borderHighlight : COLORS.border);
     });
     const selected = this.menuItems[this.cursor];
-    this.cursorIcon.setPosition(selected.x - selected.width / 2 - 24, selected.y - 12);
+    this.cursorIcon.setPosition(selected.x - selected.width / 2 - 26, selected.y - 12);
   }
 
   private selectOption(): void {
@@ -242,23 +265,22 @@ export class TitleScene extends Phaser.Scene {
   }
 
   private bindMenuKeys(): void {
-    const audio = AudioManager.getInstance();
-    this.inputRegistry.bindKey('keydown-UP', () => {
-      this.cursor = (this.cursor - 1 + this.menuItems.length) % this.menuItems.length;
-      this.updateCursor();
-      audio.playSFX(SFX.CURSOR);
-    });
-    this.inputRegistry.bindKey('keydown-DOWN', () => {
-      this.cursor = (this.cursor + 1) % this.menuItems.length;
-      this.updateCursor();
-      audio.playSFX(SFX.CURSOR);
-    });
-    this.inputRegistry.bindKey('keydown-ENTER', () => { this.selectOption(); });
-    this.inputRegistry.bindKey('keydown-SPACE', () => { this.selectOption(); });
+    this.inputRegistry.bindKey('keydown-UP', () => this.menuController?.navigate('up'));
+    this.inputRegistry.bindKey('keydown-DOWN', () => this.menuController?.navigate('down'));
+    this.inputRegistry.bindKey('keydown-ENTER', () => { this.menuController?.confirm(); });
+    this.inputRegistry.bindKey('keydown-SPACE', () => { this.menuController?.confirm(); });
   }
 
   private rebindTitleKeys(): void {
     this.bindMenuKeys();
+    this.bindMenuPointers();
+  }
+
+  private bindMenuPointers(): void {
+    this.menuButtons.forEach((button, i) => {
+      this.inputRegistry.bindPointer(button, 'pointerover', () => this.menuController?.hoverIndex(i));
+      this.inputRegistry.bindPointer(button, 'pointerdown', () => this.menuController?.clickIndex(i));
+    });
   }
 
   private showDifficultySelect(): void {
@@ -269,6 +291,7 @@ export class TitleScene extends Phaser.Scene {
     this.inputRegistry.clear();
     this.mobileTap?.destroy();
     this.menuItems.forEach(item => item.disableInteractive());
+    this.menuButtons.forEach(button => button.disableInteractive());
     this.cursorIcon.setVisible(false);
 
     // Opaque background to cover title screen
@@ -341,6 +364,7 @@ export class TitleScene extends Phaser.Scene {
     const restoreTitle = () => {
       cleanup();
       this.menuItems.forEach(item => item.setInteractive({ useHandCursor: true }));
+      this.menuButtons.forEach(button => button.setInteractive({ useHandCursor: true }));
       this.cursorIcon.setVisible(true);
       this.rebindTitleKeys();
       this.mobileTap?.reattach();

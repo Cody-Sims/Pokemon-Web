@@ -43,7 +43,7 @@ export class BattleMoveMenu {
 
     const { w: mw, h: mh, cx: mcx } = ui(this.scene);
     const compactMoves = isMobile() && (window.innerHeight < 400 || mh < 400);
-    const moveMenuH = compactMoves ? 50 : 100;
+    const moveMenuH = compactMoves ? 64 : 108;
     // BUG-003: Match the action menu's bottomReserve so the move grid
     // doesn't render under the DOM joystick / A-B overlay on mobile portrait.
     const isPortraitM = mh > mw;
@@ -225,10 +225,11 @@ export class BattleMoveMenu {
       return t;
     });
     // Back button
+    const backY = Math.max(40, menuY - moveMenuH / 2 - 28);
     const back = this.scene.add
-      .text(mw - 60, mh - 115, '\u2190 Back', { ...FONTS.bodySmall, fontSize: mobileFontSize(14) })
+      .text(mw - 70, backY, '\u2190 Back', { ...FONTS.bodySmall, fontSize: mobileFontSize(14), backgroundColor: '#252545dd' })
       .setInteractive({ useHandCursor: true });
-    back.setPadding(8, 6, 8, 6);
+    back.setPadding(12, 10, 12, 10);
     back.on('pointerdown', () => this.closeMoveMenu());
     this.moveTexts.push(back);
     this.updateMoveCursor();

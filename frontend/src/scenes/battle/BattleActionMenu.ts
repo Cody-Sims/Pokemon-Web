@@ -20,6 +20,7 @@ export class BattleActionMenu {
   private scene: BattleUIScene;
 
   actionTexts: Phaser.GameObjects.Text[] = [];
+  actionButtons: Phaser.GameObjects.Rectangle[] = [];
   cursor = 0;
   // NIT-002: Single bordered panel instead of a hidden Rectangle stacked
   // beneath an identical NinePatchPanel.
@@ -33,13 +34,16 @@ export class BattleActionMenu {
   }
 
   updateCursor(): void {
-    this.actionTexts.forEach((t, i) =>
-      t.setColor(i === this.cursor ? COLORS.textHighlight : COLORS.textWhite),
-    );
+    this.actionTexts.forEach((t, i) => {
+      t.setColor(i === this.cursor ? COLORS.textHighlight : COLORS.textWhite);
+      this.actionButtons[i]?.setFillStyle(i === this.cursor ? COLORS.btnHover : COLORS.bgCard, 0.95);
+      this.actionButtons[i]?.setStrokeStyle(2, i === this.cursor ? COLORS.borderHighlight : COLORS.borderLight);
+    });
   }
 
   showActions(): void {
     this.actionMenuBg.setVisible(true);
+    this.actionButtons.forEach(t => t.setVisible(true));
     this.actionTexts.forEach(t => t.setVisible(true));
     this.updateSynthButton();
     this.updateCursor();
@@ -48,6 +52,7 @@ export class BattleActionMenu {
 
   hideActions(): void {
     this.actionMenuBg.setVisible(false);
+    this.actionButtons.forEach(t => t.setVisible(false));
     this.actionTexts.forEach(t => t.setVisible(false));
     this.synthText?.setVisible(false);
     this.partnerActionText?.setVisible(false);
