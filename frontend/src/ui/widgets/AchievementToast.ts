@@ -1,58 +1,81 @@
 import Phaser from 'phaser';
 import { AchievementDef } from '@managers/AchievementManager';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
+import { isReducedMotion } from '@utils/accessibility';
+import { COLORS, FONTS, PANEL_PRESETS, SPACING, mobileFontSize } from '@ui/theme';
+import { NinePatchPanel } from './NinePatchPanel';
 
 /** Slide-in toast notification for achievement unlocks. */
 export class AchievementToast {
   static show(scene: Phaser.Scene, achievement: AchievementDef): void {
     const layout = ui(scene);
-    const bannerW = 320;
-    const bannerH = 54;
+    const bannerW = Math.min(340, layout.w - SPACING.lg * 2);
+    const bannerH = 64;
     const startY = -bannerH;
-    const targetY = 10;
+    const targetY = SPACING.sm;
+    const reducedMotion = isReducedMotion();
 
-    const container = scene.add.container(layout.cx, startY).setDepth(200);
+    const container = scene.add
+      .container(layout.cx, reducedMotion ? targetY : startY)
+      .setDepth(200);
 
-    // Gold/dark background
-    const bg = scene.add.graphics();
-    bg.fillStyle(0x2a2a1a, 0.95);
-    bg.fillRoundedRect(-bannerW / 2, 0, bannerW, bannerH, 8);
-    bg.lineStyle(2, 0xffcc00, 1);
-    bg.strokeRoundedRect(-bannerW / 2, 0, bannerW, bannerH, 8);
-    container.add(bg);
+    const bg = new NinePatchPanel(scene, 0, bannerH / 2, bannerW, bannerH, {
+      ...PANEL_PRESETS.menu,
+      fillColor: 0x2a2414,
+      borderColor: COLORS.borderHighlight,
+      shadowAlpha: 0.45,
+    });
+    container.add(bg.getGraphics());
 
     // Trophy + header
-    const header = scene.add.text(0, 8, '🏆 Achievement Unlocked!', {
-      ...FONTS.caption, fontSize: mobileFontSize(11), color: COLORS.textHighlight,
-    }).setOrigin(0.5);
+    const header = scene.add
+      .text(0, 10, '🏆 Achievement Unlocked!', {
+        ...FONTS.caption,
+        fontSize: mobileFontSize(11),
+        color: COLORS.textHighlight,
+      })
+      .setOrigin(0.5);
     container.add(header);
 
     // Achievement name with icon
     const icon = achievement.icon ?? '🏆';
-    const nameText = scene.add.text(0, 30, `${icon} ${achievement.name}`, {
-      ...FONTS.body, fontSize: mobileFontSize(15), color: COLORS.textWhite,
-    }).setOrigin(0.5);
+    const nameText = scene.add
+      .text(0, 34, `${icon} ${achievement.name}`, {
+        ...FONTS.body,
+        fontSize: mobileFontSize(14),
+        color: COLORS.textWhite,
+        wordWrap: { width: bannerW - SPACING.lg * 2 },
+        align: 'center',
+        maxLines: 1,
+      })
+      .setOrigin(0.5);
     container.add(nameText);
 
-    // Slide down
+    const dismiss = () => {
+      if (reducedMotion) {
+        container.destroy();
+        return;
+      }
+      scene.tweens.add({
+        targets: container,
+        y: startY,
+        duration: 260,
+        ease: 'Cubic.easeIn',
+        onComplete: () => container.destroy(),
+      });
+    };
+
+    if (reducedMotion) {
+      scene.time.delayedCall(3000, dismiss);
+      return;
+    }
+
     scene.tweens.add({
       targets: container,
       y: targetY,
-      duration: 500,
+      duration: 360,
       ease: 'Back.easeOut',
-      onComplete: () => {
-        // Wait 3s then slide back up and destroy
-        scene.time.delayedCall(3000, () => {
-          scene.tweens.add({
-            targets: container,
-            y: startY,
-            duration: 400,
-            ease: 'Cubic.easeIn',
-            onComplete: () => container.destroy(),
-          });
-        });
-      },
+      onComplete: () => scene.time.delayedCall(3000, dismiss),
     });
   }
 }

@@ -6,6 +6,16 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - UI visual polish
+
+- Established richer UI theme tokens for semantic surfaces, text roles, spacing, radii,
+  strokes, elevation, mobile typography, and nameplate measurement.
+- Polished shared panels, progress/health bars, battle HUD labels, confirmation prompts,
+  menu lists, achievement toasts, inventory panels, scrolling, and region-map rendering
+  for short landscape mobile screens.
+- Fixed dialogue speaker nameplates so long labels fit on one line or truncate gracefully,
+  and reduced landscape-phone dialogue height for short messages.
+
 ### Added - Agent workflow skills
 
 - Added `parallel-worktree-delivery` for multi-worktree agent fleet planning,

@@ -22,6 +22,13 @@ export class ScrollContainer {
   private direction: 'vertical' | 'horizontal';
   private onScroll?: (offset: number) => void;
   private decayTimer?: Phaser.Time.TimerEvent;
+  private readonly wheelHandler: (
+    pointer: Phaser.Input.Pointer,
+    over: Phaser.GameObjects.GameObject[],
+    deltaX: number,
+    deltaY: number,
+  ) => void;
+  private destroyed = false;
 
   private static readonly FRICTION = 0.92;
   private static readonly MIN_VELOCITY = 0.5;
@@ -32,8 +39,14 @@ export class ScrollContainer {
     this.direction = config.direction ?? 'vertical';
     this.onScroll = config.onScroll;
     this.maxOffset = Math.max(0, config.contentHeight - config.height);
+    this.wheelHandler = (_pointer, over, deltaX, deltaY) => {
+      if (!over.includes(this.zone)) return;
+      const delta = this.direction === 'vertical' ? deltaY : deltaX;
+      this.scrollTo(this.offset + delta);
+    };
 
-    this.zone = scene.add.zone(config.x, config.y, config.width, config.height)
+    this.zone = scene.add
+      .zone(config.x, config.y, config.width, config.height)
       .setOrigin(0, 0)
       .setInteractive({ draggable: true });
 
@@ -66,13 +79,12 @@ export class ScrollContainer {
       this.dragging = false;
       // Calculate release velocity from last drag delta
       const pointer = scene.input.activePointer;
-      this.velocity = this.direction === 'vertical'
-        ? -(pointer.velocity.y)
-        : -(pointer.velocity.x);
+      this.velocity = this.direction === 'vertical' ? -pointer.velocity.y : -pointer.velocity.x;
 
       this.startDecay();
     });
 
+    this.scene.input.on('wheel', this.wheelHandler);
     this.scene.events.once('shutdown', () => this.destroy());
   }
 
@@ -82,7 +94,10 @@ export class ScrollContainer {
       delay: 16,
       loop: true,
       callback: () => {
-        if (this.dragging) { this.decayTimer?.destroy(); return; }
+        if (this.dragging) {
+          this.decayTimer?.destroy();
+          return;
+        }
 
         this.velocity *= ScrollContainer.FRICTION;
         this.offset += this.velocity * 0.016 * 60;
@@ -98,8 +113,11 @@ export class ScrollContainer {
 
         this.onScroll?.(this.clampedOffset());
 
-        if (Math.abs(this.velocity) < ScrollContainer.MIN_VELOCITY &&
-            this.offset >= 0 && this.offset <= this.maxOffset) {
+        if (
+          Math.abs(this.velocity) < ScrollContainer.MIN_VELOCITY &&
+          this.offset >= 0 &&
+          this.offset <= this.maxOffset
+        ) {
           this.decayTimer?.destroy();
         }
       },
@@ -126,7 +144,10 @@ export class ScrollContainer {
   }
 
   destroy(): void {
+    if (this.destroyed) return;
+    this.destroyed = true;
     this.decayTimer?.destroy();
+    this.scene.input.off('wheel', this.wheelHandler);
     this.zone.destroy();
   }
 }

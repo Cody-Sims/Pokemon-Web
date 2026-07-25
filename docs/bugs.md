@@ -85,6 +85,18 @@
 
 ## Open
 
+### UI token migration remains incomplete
+
+- **Files:** broad frontend UI/scene/data rendering callers outside
+  `frontend/src/ui/widgets/**` and `frontend/src/ui/theme.ts`.
+- **Symptom:** A prior audit found hundreds of numeric hex literals and repeated
+  HP/status colors outside the new theme tokens.
+- **Status:** Open / deferred — this pass made the token system complete and
+  migrated owned widgets, but parallel ownership prevented a repo-wide scene/control
+  migration. Future UI work should replace remaining literals with `COLORS`,
+  `SEMANTIC_COLORS`, `PANEL_PRESETS`, `PROGRESS_BAR_PRESETS`, `SPACING`, `RADII`,
+  `STROKES`, and typography helpers.
+
 ### 2026-07-24 inventory decomposition findings
 
 - **Files:** [frontend/src/scenes/menu/InventoryScene.ts](frontend/src/scenes/menu/InventoryScene.ts) (pre-refactor lines 545-642), [tests/integration/systems/inventory.test.ts](tests/integration/systems/inventory.test.ts) (pre-refactor lines 27-49).
