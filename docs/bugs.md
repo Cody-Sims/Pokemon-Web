@@ -116,6 +116,17 @@
   Playwright snapshot directory, generate baselines on a Linux runner with
   `npm run test:visual:update`, commit those baselines, and keep updates tied to
   reviewed UI changes.
+### UI token migration remains incomplete
+
+- **Files:** broad frontend UI/scene/data rendering callers outside
+  `frontend/src/ui/widgets/**` and `frontend/src/ui/theme.ts`.
+- **Symptom:** A prior audit found hundreds of numeric hex literals and repeated
+  HP/status colors outside the new theme tokens.
+- **Status:** Open / deferred — this pass made the token system complete and
+  migrated owned widgets, but parallel ownership prevented a repo-wide scene/control
+  migration. Future UI work should replace remaining literals with `COLORS`,
+  `SEMANTIC_COLORS`, `PANEL_PRESETS`, `PROGRESS_BAR_PRESETS`, `SPACING`, `RADII`,
+  `STROKES`, and typography helpers.
 
 ### 2026-07-24 inventory decomposition findings
 

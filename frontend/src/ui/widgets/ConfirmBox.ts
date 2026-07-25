@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { mobileFontSize } from '@ui/theme';
+import { COLORS, FONTS, PANEL_PRESETS, SPACING, minTouchTarget, mobileFontSize } from '@ui/theme';
+import { NinePatchPanel } from './NinePatchPanel';
 
 /** Top-most depth used by ConfirmBox overlays — well above any menu panel. */
 const CONFIRM_DEPTH = 1000;
@@ -8,20 +9,21 @@ const CONFIRM_DEPTH = 1000;
 export class ConfirmBox {
   private scene: Phaser.Scene;
   private dim: Phaser.GameObjects.Rectangle;
-  private background: Phaser.GameObjects.Rectangle;
+  private background: NinePatchPanel;
   private promptText: Phaser.GameObjects.Text;
   private yesText: Phaser.GameObjects.Text;
   private noText: Phaser.GameObjects.Text;
   private cursor = 0; // 0 = Yes, 1 = No
   private onResult: (confirmed: boolean) => void;
   private active = true;
+  private destroyed = false;
 
   constructor(
     scene: Phaser.Scene,
     _x: number,
     _y: number,
     prompt: string,
-    onResult: (confirmed: boolean) => void
+    onResult: (confirmed: boolean) => void,
   ) {
     this.scene = scene;
     this.onResult = onResult;
@@ -34,29 +36,74 @@ export class ConfirmBox {
 
     // Full-screen dim so the underlying scene cannot bleed through and the
     // prompt always reads as a modal layer.
-    this.dim = scene.add.rectangle(cx, cy, cam.width, cam.height, 0x000000, 0.55)
-      .setDepth(CONFIRM_DEPTH).setInteractive({ useHandCursor: false });
+    this.dim = scene.add
+      .rectangle(cx, cy, cam.width, cam.height, COLORS.bgOverlay, 0.62)
+      .setDepth(CONFIRM_DEPTH)
+      .setInteractive({ useHandCursor: false });
     // Swallow taps on the dim so they never reach buttons underneath.
     // Setting the dim as interactive with a no-op handler ensures Phaser's
     // input depth ordering prevents underlying game objects from receiving
     // the pointer event.
-    this.dim.on('pointerdown', (_pointer: Phaser.Input.Pointer, _localX: number, _localY: number, event: Phaser.Types.Input.EventData) => {
-      event.stopPropagation();
-    });
+    this.dim.on(
+      'pointerdown',
+      (
+        _pointer: Phaser.Input.Pointer,
+        _localX: number,
+        _localY: number,
+        event: Phaser.Types.Input.EventData,
+      ) => {
+        event.stopPropagation();
+      },
+    );
 
-    this.background = scene.add.rectangle(cx, cy, 180, 110, 0x222222, 0.98)
-      .setDepth(CONFIRM_DEPTH + 1);
-    this.background.setStrokeStyle(2, 0xffffff);
+    const boxW = Math.min(
+      Math.max(220, prompt.length * 8 + SPACING.xl * 2),
+      cam.width - SPACING.xl * 2,
+    );
+    const rowH = Math.max(30, minTouchTarget());
+    const boxH = 72 + rowH * 2;
+    this.background = new NinePatchPanel(scene, cx, cy, boxW, boxH, PANEL_PRESETS.choice).setDepth(
+      CONFIRM_DEPTH + 1,
+    );
 
-    this.promptText = scene.add.text(cx, cy - 32, prompt, {
-      fontSize: mobileFontSize(14), color: '#ffffff',
-    }).setOrigin(0.5).setDepth(CONFIRM_DEPTH + 2);
-    this.yesText = scene.add.text(cx, cy - 4, '▶ YES', {
-      fontSize: mobileFontSize(16), color: '#ffcc00',
-    }).setOrigin(0.5).setDepth(CONFIRM_DEPTH + 2);
-    this.noText = scene.add.text(cx, cy + 24, '  NO', {
-      fontSize: mobileFontSize(16), color: '#ffffff',
-    }).setOrigin(0.5).setDepth(CONFIRM_DEPTH + 2);
+    this.promptText = scene.add
+      .text(cx, cy - boxH / 2 + SPACING.lg, prompt, {
+        ...FONTS.bodySmall,
+        fontSize: mobileFontSize(14),
+        color: COLORS.textWhite,
+        wordWrap: { width: boxW - SPACING.xl * 2 },
+        align: 'center',
+      })
+      .setOrigin(0.5, 0)
+      .setDepth(CONFIRM_DEPTH + 2);
+    this.yesText = scene.add
+      .text(cx, cy + 2, '▶ YES', {
+        ...FONTS.body,
+        fontSize: mobileFontSize(16),
+        color: COLORS.textHighlight,
+      })
+      .setOrigin(0.5)
+      .setDepth(CONFIRM_DEPTH + 2)
+      .setPadding(
+        SPACING.lg,
+        Math.max(4, (rowH - 20) / 2),
+        SPACING.lg,
+        Math.max(4, (rowH - 20) / 2),
+      );
+    this.noText = scene.add
+      .text(cx, cy + rowH, '  NO', {
+        ...FONTS.body,
+        fontSize: mobileFontSize(16),
+        color: COLORS.textWhite,
+      })
+      .setOrigin(0.5)
+      .setDepth(CONFIRM_DEPTH + 2)
+      .setPadding(
+        SPACING.lg,
+        Math.max(4, (rowH - 20) / 2),
+        SPACING.lg,
+        Math.max(4, (rowH - 20) / 2),
+      );
 
     // Keyboard input (BUG-083: guard with active flag)
     scene.input.keyboard!.on('keydown-UP', this.moveUp, this);
@@ -67,8 +114,16 @@ export class ConfirmBox {
     // Touch/pointer support (BUG-067)
     this.yesText.setInteractive({ useHandCursor: true });
     this.noText.setInteractive({ useHandCursor: true });
-    this.yesText.on('pointerdown', () => { this.cursor = 0; this.updateCursor(); this.confirm(); });
-    this.noText.on('pointerdown', () => { this.cursor = 1; this.updateCursor(); this.confirm(); });
+    this.yesText.on('pointerdown', () => {
+      this.cursor = 0;
+      this.updateCursor();
+      this.confirm();
+    });
+    this.noText.on('pointerdown', () => {
+      this.cursor = 1;
+      this.updateCursor();
+      this.confirm();
+    });
   }
 
   private moveUp = (): void => {
@@ -100,12 +155,14 @@ export class ConfirmBox {
 
   private updateCursor(): void {
     this.yesText.setText(this.cursor === 0 ? '▶ YES' : '  YES');
-    this.yesText.setColor(this.cursor === 0 ? '#ffcc00' : '#ffffff');
+    this.yesText.setColor(this.cursor === 0 ? COLORS.textHighlight : COLORS.textWhite);
     this.noText.setText(this.cursor === 1 ? '▶ NO' : '  NO');
-    this.noText.setColor(this.cursor === 1 ? '#ffcc00' : '#ffffff');
+    this.noText.setColor(this.cursor === 1 ? COLORS.textHighlight : COLORS.textWhite);
   }
 
   private destroyHandlers(): void {
+    if (this.destroyed) return;
+    this.destroyed = true;
     this.scene.input.keyboard?.off('keydown-UP', this.moveUp, this);
     this.scene.input.keyboard?.off('keydown-DOWN', this.moveDown, this);
     this.scene.input.keyboard?.off('keydown-ENTER', this.confirm, this);

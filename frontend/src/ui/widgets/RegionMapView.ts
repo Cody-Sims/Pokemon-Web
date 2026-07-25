@@ -1,7 +1,17 @@
 import Phaser from 'phaser';
 import type { RegionMapEdge, RegionMapNode } from '@data/region-map';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, mobileFontSize, mobileScale, isMobile } from '@ui/theme';
+import {
+  COLORS,
+  FONTS,
+  PANEL_PRESETS,
+  RADII,
+  SPACING,
+  mobileFontSize,
+  mobileScale,
+  isMobile,
+  readableStroke,
+} from '@ui/theme';
 import { NinePatchPanel } from './NinePatchPanel';
 
 interface GridArea {
@@ -58,36 +68,52 @@ export class RegionMapView {
     this.destroy();
     this.state = state;
     const layout = ui(this.scene);
-    this.overlay = this.scene.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark, 1);
+    this.overlay = this.scene.add.rectangle(
+      layout.cx,
+      layout.cy,
+      layout.w,
+      layout.h,
+      COLORS.bgDark,
+      1,
+    );
 
     const panelW = Math.min(layout.w - 16, 700);
     const panelH = Math.min(layout.h - 16, 520);
     this.panel = new NinePatchPanel(this.scene, layout.cx, layout.cy, panelW, panelH, {
-      fillColor: COLORS.bgPanel,
-      borderColor: COLORS.border,
-      cornerRadius: 8,
+      ...PANEL_PRESETS.menu,
+      cornerRadius: RADII.lg,
     });
 
-    this.titleText = this.scene.add.text(layout.cx, layout.cy - panelH / 2 + 20, 'TOWN MAP — Aurum Region', {
-      ...FONTS.heading,
-      fontSize: mobileFontSize(18),
-      color: COLORS.textHighlight,
-    }).setOrigin(0.5);
+    this.titleText = this.scene.add
+      .text(layout.cx, layout.cy - panelH / 2 + 20, 'TOWN MAP — Aurum Region', {
+        ...FONTS.heading,
+        fontSize: mobileFontSize(18),
+        color: COLORS.textHighlight,
+      })
+      .setOrigin(0.5);
 
     const hintStr = state.canFly
-      ? (isMobile() ? 'Tap city to fly  |  B to close' : 'ENTER to fly  |  ESC to close')
-      : (isMobile() ? 'Tap to inspect  |  B to close' : 'Arrow keys to browse  |  ESC to close');
-    this.hintText = this.scene.add.text(layout.cx, layout.cy + panelH / 2 - 18, hintStr, {
-      ...FONTS.caption,
-      fontSize: mobileFontSize(10),
-      color: COLORS.textDim,
-    }).setOrigin(0.5);
+      ? isMobile()
+        ? 'Tap city to fly  |  B to close'
+        : 'ENTER to fly  |  ESC to close'
+      : isMobile()
+        ? 'Tap to inspect  |  B to close'
+        : 'Arrow keys to browse  |  ESC to close';
+    this.hintText = this.scene.add
+      .text(layout.cx, layout.cy + panelH / 2 - 18, hintStr, {
+        ...FONTS.caption,
+        fontSize: mobileFontSize(10),
+        color: COLORS.textDim,
+      })
+      .setOrigin(0.5);
 
-    this.infoText = this.scene.add.text(layout.cx, layout.cy + panelH / 2 - 40, state.infoText, {
-      ...FONTS.bodySmall,
-      fontSize: mobileFontSize(12),
-      color: COLORS.textGray,
-    }).setOrigin(0.5);
+    this.infoText = this.scene.add
+      .text(layout.cx, layout.cy + panelH / 2 - 40, state.infoText, {
+        ...FONTS.bodySmall,
+        fontSize: mobileFontSize(12),
+        color: COLORS.textGray,
+      })
+      .setOrigin(0.5);
 
     const grid = this.getGridArea(state.nodes, layout.cx, layout.cy, panelW, panelH);
     this.edgeGraphics = this.scene.add.graphics();
@@ -95,12 +121,14 @@ export class RegionMapView {
     this.nodeGraphics = this.scene.add.graphics();
     this.drawNodes(grid, state);
 
-    this.playerMarker = this.scene.add.text(0, 0, '\u25BC', {
-      fontSize: mobileFontSize(14),
-      color: COLORS.textSuccess,
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-    }).setOrigin(0.5, 1);
+    this.playerMarker = this.scene.add
+      .text(0, 0, '\u25BC', {
+        fontSize: mobileFontSize(14),
+        color: COLORS.textSuccess,
+        fontFamily: 'monospace',
+        fontStyle: 'bold',
+      })
+      .setOrigin(0.5, 1);
     this.positionPlayerMarker(grid, state);
     this.startPulse();
     this.updateSelection(state.selectedNodeIndex, state.infoText);
@@ -144,17 +172,23 @@ export class RegionMapView {
     this.edgeGraphics?.destroy();
     this.nodeGraphics?.destroy();
     this.playerMarker?.destroy();
-    this.labels.forEach(label => label.destroy());
+    this.labels.forEach((label) => label.destroy());
     this.labels = [];
     this.state = undefined;
   }
 
-  private getGridArea(nodes: readonly RegionMapNode[], cx: number, cy: number, panelW: number, panelH: number): GridArea {
-    const maxCol = Math.max(...nodes.map(node => node.col));
-    const maxRow = Math.max(...nodes.map(node => node.row));
-    const marginX = 60 * mobileScale();
-    const marginTop = 50 * mobileScale();
-    const marginBottom = 60 * mobileScale();
+  private getGridArea(
+    nodes: readonly RegionMapNode[],
+    cx: number,
+    cy: number,
+    panelW: number,
+    panelH: number,
+  ): GridArea {
+    const maxCol = Math.max(...nodes.map((node) => node.col));
+    const maxRow = Math.max(...nodes.map((node) => node.row));
+    const marginX = Math.max(SPACING.xxl, 54 * mobileScale());
+    const marginTop = Math.max(SPACING.xl, 44 * mobileScale());
+    const marginBottom = Math.max(SPACING.xxl, 56 * mobileScale());
     const areaX = cx - panelW / 2 + marginX;
     const areaY = cy - panelH / 2 + marginTop;
     const areaW = panelW - marginX * 2;
@@ -190,7 +224,7 @@ export class RegionMapView {
       const visitedB = state.isVisited(b);
       const edgeColor = visitedA && visitedB ? NODE_COLORS.edgeVisited : NODE_COLORS.edge;
       const alpha = visitedA || visitedB ? 0.7 : 0.3;
-      this.edgeGraphics?.lineStyle(2, edgeColor, alpha);
+      this.edgeGraphics?.lineStyle(readableStroke(2), edgeColor, alpha);
       this.edgeGraphics?.beginPath();
       this.edgeGraphics?.moveTo(posA.x, posA.y);
       this.edgeGraphics?.lineTo(posB.x, posB.y);
@@ -205,14 +239,22 @@ export class RegionMapView {
       const pos = this.nodePos(node, grid);
       const visited = state.isVisited(index);
       const isCurrent = index === state.currentNodeIndex;
-      const fillColor = isCurrent ? NODE_COLORS.current : (visited ? NODE_COLORS[node.type] : NODE_COLORS.unvisited);
+      const fillColor = isCurrent
+        ? NODE_COLORS.current
+        : visited
+          ? NODE_COLORS[node.type]
+          : NODE_COLORS.unvisited;
       const alpha = visited || isCurrent ? 1 : 0.5;
       this.drawNodeShape(node, pos, fillColor, alpha, isCurrent);
-      const label = this.scene.add.text(pos.x, pos.y + 12, node.label, {
-        fontSize,
-        color: isCurrent ? COLORS.textSuccess : (visited ? COLORS.textWhite : COLORS.textDim),
-        fontFamily: 'monospace',
-      }).setOrigin(0.5, 0).setAlpha(alpha).setInteractive({ useHandCursor: true });
+      const label = this.scene.add
+        .text(pos.x, pos.y + 12, node.label, {
+          fontSize,
+          color: isCurrent ? COLORS.textSuccess : visited ? COLORS.textWhite : COLORS.textDim,
+          fontFamily: 'monospace',
+        })
+        .setOrigin(0.5, 0)
+        .setAlpha(alpha)
+        .setInteractive({ useHandCursor: true });
       label.on('pointerdown', () => {
         state.onNodeSelected(index);
         if (state.canActivateNode(index)) state.onNodeActivated(index);
@@ -234,7 +276,7 @@ export class RegionMapView {
     if (node.type === 'town') {
       const radius = isCurrent ? 8 : 6;
       graphics.fillCircle(pos.x, pos.y, radius);
-      graphics.lineStyle(1.5, 0xffffff, alpha * 0.6);
+      graphics.lineStyle(readableStroke(1.5), COLORS.white, alpha * 0.6);
       graphics.strokeCircle(pos.x, pos.y, radius);
       return;
     }
@@ -247,14 +289,14 @@ export class RegionMapView {
       graphics.lineTo(pos.x - size, pos.y);
       graphics.closePath();
       graphics.fillPath();
-      graphics.lineStyle(1.5, 0xffffff, alpha * 0.6);
+      graphics.lineStyle(readableStroke(1.5), COLORS.white, alpha * 0.6);
       graphics.strokePath();
       return;
     }
     if (node.type === 'dungeon') {
       const size = isCurrent ? 6 : 5;
       graphics.fillRect(pos.x - size, pos.y - size, size * 2, size * 2);
-      graphics.lineStyle(1.5, 0xffffff, alpha * 0.3);
+      graphics.lineStyle(readableStroke(1.5), COLORS.white, alpha * 0.3);
       graphics.strokeRect(pos.x - size, pos.y - size, size * 2, size * 2);
       return;
     }
