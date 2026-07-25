@@ -38,6 +38,13 @@ All notable changes to the Pokemon Web project.
   for short landscape mobile screens.
 - Fixed dialogue speaker nameplates so long labels fit on one line or truncate gracefully,
   and reduced landscape-phone dialogue height for short messages.
+### Changed - Mobile scene layouts
+
+- Reworked title, dialogue, pause, party, settings, and battle scene-side layouts
+  for short landscape phones with touch-sized controls and clearer back/cancel
+  affordances.
+- Added windowed pause/settings composition so menu rows keep 44px+ hit targets
+  instead of shrinking into crowded text lists on 390px-high viewports.
 
 ### Added - Agent workflow skills
 

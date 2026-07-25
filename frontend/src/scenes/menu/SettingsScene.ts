@@ -6,9 +6,9 @@ import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
 import { SaveManager } from '@managers/SaveManager';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
-import { MenuController } from '@ui/controls/MenuController';
+import { SelectableController } from '@ui/controls/SelectableController';
 import { TouchControls } from '@ui/controls/TouchControls';
-import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, minTouchTarget } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import { setRenderQuality, type RenderQuality } from '@utils/perf-profile';
 import { syncAccessibilitySettings, colorblindFilter } from '@utils/accessibility';
@@ -48,14 +48,16 @@ const SETTING_DEFS: SettingDef[] = [
 ];
 
 export class SettingsScene extends Phaser.Scene {
-  private controller?: MenuController;
-  private settingTexts: { label: Phaser.GameObjects.Text; value: Phaser.GameObjects.Text; leftArrow: Phaser.GameObjects.Text; rightArrow: Phaser.GameObjects.Text }[] = [];
+  private controller?: SelectableController;
+  private settingTexts: Array<{ label: Phaser.GameObjects.Text; value: Phaser.GameObjects.Text; leftArrow: Phaser.GameObjects.Text; rightArrow: Phaser.GameObjects.Text } | undefined> = [];
   private returnScene: SceneKeyName = SceneKey.Title;
   private isFullscreen = false;
   /** Layer holding every layout-derived game object so we can wipe + rebuild on resize. */
   private layoutLayer?: Phaser.GameObjects.Container;
   /** Cursor index preserved across re-layouts. */
   private savedCursor = 0;
+  /** First visible settings row preserved across re-layouts. */
+  private savedWindowStart = 0;
 
   private readonly inputRegistry = new SceneInputRegistry(this);
 
@@ -79,6 +81,11 @@ export class SettingsScene extends Phaser.Scene {
     // across re-layouts).
     this.inputRegistry.bindKey('keydown-LEFT', () => this.adjustValue(-1));
     this.inputRegistry.bindKey('keydown-RIGHT', () => this.adjustValue(1));
+    this.inputRegistry.bindKey('keydown-UP', () => this.controller?.navigate('up'));
+    this.inputRegistry.bindKey('keydown-DOWN', () => this.controller?.navigate('down'));
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.adjustValue(1));
+    this.inputRegistry.bindKey('keydown-SPACE', () => this.adjustValue(1));
+    this.inputRegistry.bindKey('keydown-ESC', () => this.closeSettings());
 
     // Sync accessibility settings on scene create
     syncAccessibilitySettings({
@@ -127,102 +134,100 @@ export class SettingsScene extends Phaser.Scene {
     const titleRule = this.add.rectangle(layout.cx, portrait ? 56 : 70, 180, 2, COLORS.borderHighlight, 0.4);
     this.layoutLayer.add([title, titleRule]);
 
-    // Settings rows — compact layout in portrait so labels never overlap
-    // the value/arrow column on narrow screens.
-    const startY = portrait ? 78 : 100;
-    // Reserve room for the back button + hint at the bottom of the panel,
-    // PLUS extra clearance on mobile portrait so the bottom DOM touch
-    // controls (~140 px) never overlap the bottom row of arrows.
-    const portraitMobileReserve = portrait && isMobile ? 150 : 0;
-    const bottomReserve = (portrait ? 64 : 90) + portraitMobileReserve;
+    // Settings rows use a scroll window on short screens so every visible
+    // target keeps a phone-sized hit area instead of squeezing 18 rows into
+    // a 390px landscape viewport.
+    const startY = portrait ? 72 : 70;
+    const bottomSafeReserve = portrait && isMobile ? 120 : !portrait && isMobile ? 58 : 58;
+    const rowH = Math.max(minTouchTarget(), portrait ? 46 : 48);
     const allItemCount = SETTING_DEFS.length + 1; // +1 for fullscreen
-    const availH = layout.h - startY - bottomReserve;
-    const idealRowH = portrait ? 30 : 40;
-    const rowH = Math.max(24, Math.min(idealRowH, Math.floor(availH / allItemCount)));
-    const rowFontPx = portrait ? 14 : 17;
+    const visibleCount = Math.max(3, Math.min(allItemCount, Math.floor((layout.h - startY - bottomSafeReserve) / rowH)));
+    let windowStart = Math.min(this.savedWindowStart, Math.max(0, allItemCount - visibleCount));
+    if (this.savedCursor < windowStart) windowStart = this.savedCursor;
+    if (this.savedCursor >= windowStart + visibleCount) windowStart = this.savedCursor - visibleCount + 1;
+    this.savedWindowStart = Math.max(0, Math.min(windowStart, Math.max(0, allItemCount - visibleCount)));
+    const rowFontPx = portrait ? 14 : 16;
 
     // Column anchors (right-aligned controls so long labels have room).
-    const labelX = portrait ? 24 : 100;
-    const rightArrowX = layout.w - (portrait ? 28 : 95);
-    const valueX = rightArrowX - (portrait ? 30 : 55);
-    const leftArrowX = valueX - (portrait ? 38 : 60);
+    const labelX = portrait ? 24 : 72;
+    const rightArrowX = layout.w - (portrait ? 28 : 88);
+    const valueX = rightArrowX - (portrait ? 34 : 78);
+    const leftArrowX = valueX - (portrait ? 40 : 70);
+    const rowW = layout.w - 40;
 
-    SETTING_DEFS.forEach((def, i) => {
-      const y = startY + i * rowH;
-      const label = this.add.text(labelX, y, def.label, { ...FONTS.body, fontSize: mobileFontSize(rowFontPx) });
-      const currentVal = gm.getSetting(def.key);
-      const displayVal = this.formatValue(def, currentVal);
+    for (let visibleIndex = 0; visibleIndex < visibleCount; visibleIndex++) {
+      const i = this.savedWindowStart + visibleIndex;
+      const y = startY + visibleIndex * rowH;
+      const isFullscreenRow = i === SETTING_DEFS.length;
+      const def = SETTING_DEFS[i];
+      const labelText = isFullscreenRow ? 'Fullscreen' : def.label;
+      const currentVal = isFullscreenRow ? (this.scale.isFullscreen ? 'ON' : 'OFF') : this.formatValue(def, gm.getSetting(def.key));
 
-      // Tappable left arrow — enforce minimum touch target
-      const leftArrow = this.add.text(leftArrowX, y, '◀', {
-        ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
-      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
-      leftArrow.setPadding(12, 10, 12, 10);
-      leftArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(-1); });
-
-      // Value display
-      const value = this.add.text(valueX, y, displayVal, {
-        ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
-      }).setOrigin(0.5, 0);
-
-      // Tappable right arrow — enforce minimum touch target
-      const rightArrow = this.add.text(rightArrowX, y, '▶', {
-        ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
-      }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
-      rightArrow.setPadding(12, 10, 12, 10);
-      rightArrow.on('pointerdown', () => { this.controller?.setCursor(i); this.highlightRow(i); this.adjustValue(1); });
-
-      // Invisible row hit area for touch selection
-      const hitArea = this.add.rectangle(layout.cx, y + rowH / 2 - 4, layout.w - 40, rowH, 0x000000, 0)
+      const rowBg = this.add.rectangle(layout.cx, y + rowH / 2, rowW, rowH - 6, COLORS.bgCard, 0.55)
+        .setStrokeStyle(1, COLORS.border)
         .setInteractive({ useHandCursor: true });
-      hitArea.on('pointerover', () => { this.controller?.setCursor(i); this.highlightRow(i); });
+      this.inputRegistry.bindPointer(rowBg, 'pointerover', () => { this.controller?.setCursor(i); this.highlightRow(i); });
+      this.inputRegistry.bindPointer(rowBg, 'pointerdown', () => {
+        this.controller?.setCursor(i);
+        this.highlightRow(i);
+        if (isFullscreenRow) this.toggleFullscreenFromGesture(); else this.adjustValue(1);
+      });
 
-      this.layoutLayer!.add([label, leftArrow, value, rightArrow, hitArea]);
-      this.settingTexts.push({ label, value, leftArrow, rightArrow });
-    });
+      const label = this.add.text(labelX, y + rowH / 2, labelText, {
+        ...FONTS.body,
+        fontSize: mobileFontSize(rowFontPx),
+        wordWrap: { width: Math.max(160, leftArrowX - labelX - 16) },
+      }).setOrigin(0, 0.5);
 
-    // Fullscreen row
-    const fsY = startY + SETTING_DEFS.length * rowH;
-    const fsLabel = this.add.text(labelX, fsY, 'Fullscreen', { ...FONTS.body, fontSize: mobileFontSize(rowFontPx) });
-    this.isFullscreen = this.scale.isFullscreen;
-    const fsState = this.isFullscreen ? 'ON' : 'OFF';
+      const leftArrow = this.add.text(leftArrowX, y + rowH / 2, '◀', {
+        ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      leftArrow.setPadding(12, 12, 12, 12);
+      this.inputRegistry.bindPointer(leftArrow, 'pointerdown', () => {
+        this.controller?.setCursor(i);
+        this.highlightRow(i);
+        if (isFullscreenRow) this.toggleFullscreenFromGesture(); else this.adjustValue(-1);
+      });
 
-    const fsLeftArrow = this.add.text(leftArrowX, fsY, '◀', {
-      ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
-    }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
-    fsLeftArrow.setPadding(12, 10, 12, 10);
-    fsLeftArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.toggleFullscreenFromGesture(); });
+      const value = this.add.text(valueX, y + rowH / 2, currentVal, {
+        ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
+      }).setOrigin(0.5);
 
-    const fsValue = this.add.text(valueX, fsY, fsState, {
-      ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
-    }).setOrigin(0.5, 0);
+      const rightArrow = this.add.text(rightArrowX, y + rowH / 2, '▶', {
+        ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      rightArrow.setPadding(12, 12, 12, 12);
+      this.inputRegistry.bindPointer(rightArrow, 'pointerdown', () => {
+        this.controller?.setCursor(i);
+        this.highlightRow(i);
+        if (isFullscreenRow) this.toggleFullscreenFromGesture(); else this.adjustValue(1);
+      });
 
-    const fsRightArrow = this.add.text(rightArrowX, fsY, '▶', {
-      ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
-    }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
-    fsRightArrow.setPadding(12, 10, 12, 10);
-    fsRightArrow.on('pointerdown', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); this.toggleFullscreenFromGesture(); });
+      this.layoutLayer!.add([rowBg, label, leftArrow, value, rightArrow]);
+      this.settingTexts[i] = { label, value, leftArrow, rightArrow };
+    }
 
-    const fsHitArea = this.add.rectangle(layout.cx, fsY + rowH / 2 - 4, layout.w - 40, rowH, 0x000000, 0)
-      .setInteractive({ useHandCursor: true });
-    fsHitArea.on('pointerover', () => { this.controller?.setCursor(SETTING_DEFS.length); this.highlightRow(SETTING_DEFS.length); });
-
-    this.layoutLayer!.add([fsLabel, fsLeftArrow, fsValue, fsRightArrow, fsHitArea]);
-    this.settingTexts.push({ label: fsLabel, value: fsValue, leftArrow: fsLeftArrow, rightArrow: fsRightArrow });
+    const rangeText = this.add.text(layout.cx, layout.h - bottomSafeReserve + 2, `${this.savedWindowStart + 1}-${Math.min(allItemCount, this.savedWindowStart + visibleCount)} / ${allItemCount}  ▲▼`, {
+      ...FONTS.caption,
+      fontSize: mobileFontSize(10),
+      color: COLORS.textDim,
+    }).setOrigin(0.5);
+    this.layoutLayer!.add(rangeText);
 
     // Back button (visible for touch users, always works) — sit clear of
     // the OS home indicator + DOM touch controls so it's reachable on
     // mobile portrait/landscape phones.
     const portraitMobile = portrait && isMobile;
     const landscapeMobile = !portrait && isMobile;
-    const bottomSafeReserve = portraitMobile ? 90 : landscapeMobile ? 24 : 16;
-    const backY = layout.h - bottomSafeReserve - 22;
+    const buttonBottomReserve = portraitMobile ? 86 : landscapeMobile ? 18 : 12;
+    const backY = layout.h - buttonBottomReserve - 22;
     const backBtn = this.add.text(layout.cx, backY, '[ Back ]', {
       ...FONTS.body, fontSize: mobileFontSize(portrait ? 16 : 20), color: COLORS.textHighlight,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    backBtn.on('pointerdown', () => this.closeSettings());
-    backBtn.on('pointerover', () => backBtn.setColor(COLORS.textWhite));
-    backBtn.on('pointerout', () => backBtn.setColor(COLORS.textHighlight));
+    backBtn.setPadding(16, 12, 16, 12);
+    this.inputRegistry.bindPointer(backBtn, 'pointerdown', () => this.closeSettings());
+    this.inputRegistry.bindPointer(backBtn, 'pointerover', () => backBtn.setColor(COLORS.textWhite));
+    this.inputRegistry.bindPointer(backBtn, 'pointerout', () => backBtn.setColor(COLORS.textHighlight));
 
     // Save Export / Import buttons (plan.md D.6) — flank the Back button.
     const sideFont = mobileFontSize(portrait ? 12 : 14);
@@ -230,31 +235,47 @@ export class SettingsScene extends Phaser.Scene {
     const exportBtn = this.add.text(layout.cx - sideOffset, backY, '[ Export ]', {
       ...FONTS.body, fontSize: sideFont, color: COLORS.textGray,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    exportBtn.on('pointerdown', () => this.exportSave());
-    exportBtn.on('pointerover', () => exportBtn.setColor(COLORS.textHighlight));
-    exportBtn.on('pointerout', () => exportBtn.setColor(COLORS.textGray));
+    exportBtn.setPadding(12, 12, 12, 12);
+    this.inputRegistry.bindPointer(exportBtn, 'pointerdown', () => this.exportSave());
+    this.inputRegistry.bindPointer(exportBtn, 'pointerover', () => exportBtn.setColor(COLORS.textHighlight));
+    this.inputRegistry.bindPointer(exportBtn, 'pointerout', () => exportBtn.setColor(COLORS.textGray));
 
     const importBtn = this.add.text(layout.cx + sideOffset, backY, '[ Import ]', {
       ...FONTS.body, fontSize: sideFont, color: COLORS.textGray,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    importBtn.on('pointerdown', () => this.importSave());
-    importBtn.on('pointerover', () => importBtn.setColor(COLORS.textHighlight));
-    importBtn.on('pointerout', () => importBtn.setColor(COLORS.textGray));
+    importBtn.setPadding(12, 12, 12, 12);
+    this.inputRegistry.bindPointer(importBtn, 'pointerdown', () => this.importSave());
+    this.inputRegistry.bindPointer(importBtn, 'pointerover', () => importBtn.setColor(COLORS.textHighlight));
+    this.inputRegistry.bindPointer(importBtn, 'pointerout', () => importBtn.setColor(COLORS.textGray));
 
     // Close hint — keep above the bottom OS reserve so it isn't clipped.
     const hintTxt = isMobile ? 'Tap ◀ ▶ to change  •  Tap [ Back ] to return' : 'ESC to go back   ◀ ▶ to change values';
-    const hint = this.add.text(layout.cx, layout.h - bottomSafeReserve, hintTxt, {
+    const hint = this.add.text(layout.cx, layout.h - buttonBottomReserve, hintTxt, {
       ...FONTS.caption,
       fontSize: mobileFontSize(portrait ? 10 : 12),
     }).setOrigin(0.5);
     this.layoutLayer!.add([backBtn, exportBtn, importBtn, hint]);
 
-    this.controller = new MenuController(this, {
+    this.controller = new SelectableController({
       columns: 1,
       itemCount: allItemCount,
       wrap: true,
-      onMove: (idx) => this.highlightRow(idx),
+      visibleCount,
+      windowStart: this.savedWindowStart,
+      onMove: (idx) => { this.savedCursor = idx; this.highlightRow(idx); },
+      onConfirm: () => this.adjustValue(1),
       onCancel: () => this.closeSettings(),
+      onWindowChange: range => {
+        this.savedWindowStart = range.start;
+        this.time.delayedCall(0, () => {
+          if (this.scene.isActive()) this.buildLayout();
+        });
+      },
+      sounds: {
+        move: () => AudioManager.getInstance().playSFX(SFX.CURSOR),
+        confirm: () => AudioManager.getInstance().playSFX(SFX.CURSOR),
+        cancel: () => AudioManager.getInstance().playSFX(SFX.CANCEL),
+      },
     });
     // Restore cursor position from before the rebuild.
     const restored = Math.min(this.savedCursor, allItemCount - 1);
@@ -264,6 +285,7 @@ export class SettingsScene extends Phaser.Scene {
 
   private highlightRow(idx: number): void {
     this.settingTexts.forEach((row, i) => {
+      if (!row) return;
       row.label.setColor(i === idx ? COLORS.textHighlight : COLORS.textWhite);
       row.value.setColor(i === idx ? COLORS.textHighlight : COLORS.textGray);
     });
@@ -281,7 +303,7 @@ export class SettingsScene extends Phaser.Scene {
       // Re-read actual fullscreen state to stay in sync
       this.isFullscreen = this.scale.isFullscreen;
       const state = this.isFullscreen ? 'ON' : 'OFF';
-      this.settingTexts[idx].value.setText(state);
+      this.settingTexts[idx]?.value.setText(state);
       audio.playSFX(SFX.CURSOR);
       return;
     }
@@ -297,7 +319,7 @@ export class SettingsScene extends Phaser.Scene {
       const newIdx = (curIdx + dir + def.options.length) % def.options.length;
       const newVal = def.options[newIdx];
       gm.setSetting(def.key, newVal);
-      this.settingTexts[idx].value.setText(this.formatValue(def, newVal));
+      this.settingTexts[idx]?.value.setText(this.formatValue(def, newVal));
     } else if (def.type === 'slider') {
       const min = def.min ?? 0;
       const max = def.max ?? 1;
@@ -305,7 +327,7 @@ export class SettingsScene extends Phaser.Scene {
       const curNum = typeof currentVal === 'number' ? currentVal : parseFloat(String(currentVal)) || min;
       const newVal = Math.round(Math.max(min, Math.min(max, curNum + dir * step)) * 100) / 100;
       gm.setSetting(def.key, newVal);
-      this.settingTexts[idx].value.setText(this.formatValue(def, newVal));
+      this.settingTexts[idx]?.value.setText(this.formatValue(def, newVal));
     }
 
     // Apply audio changes in real-time
@@ -387,7 +409,10 @@ export class SettingsScene extends Phaser.Scene {
     const tc = TouchControls.getInstance();
     if (tc?.consumeCancel()) {
       this.closeSettings();
+      return;
     }
+    if (tc?.consumeSwipeUp()) this.controller?.navigate('up');
+    else if (tc?.consumeSwipeDown()) this.controller?.navigate('down');
   }
 
   /** Plan.md D.6 — download current save as JSON. */
