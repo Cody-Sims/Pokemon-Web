@@ -17,6 +17,7 @@ type safety, and Vite for fast bundling. Requires Node 22.x as pinned in
 - [docs/plan.md](docs/plan.md): Development plan and feature phases
 - [docs/storyline.md](docs/storyline.md): Game storyline, characters, and quest arcs
 - [docs/TestingArchitecture.md](docs/TestingArchitecture.md): 5-layer test suite architecture
+- [docs/bugs.md](docs/bugs.md): Bug tracker with trusted `## Open` / `## Resolved` sections
 - [docs/CHANGELOG.md](docs/CHANGELOG.md): Completed work log
 
 ## Source Structure
@@ -73,7 +74,9 @@ type safety, and Vite for fast bundling. Requires Node 22.x as pinned in
 
 - `npm run dev` — Development server
 - `npm run build` — Deterministic asset generation, type-check, and production build
-- `npm run lint` — Report-only ESLint
+- `npm run lint` — Report-only ESLint; warnings are expected
+- `npm run lint:fix` — ESLint auto-fix
+- `npm run format` — Prettier write
 - `npm run format:check` — Prettier check
 - `npm run test` — Unit + integration + replay Vitest suite
 - `npm run test:unit` — Unit tests only
@@ -92,3 +95,10 @@ type safety, and Vite for fast bundling. Requires Node 22.x as pinned in
 - `npm run map:validate` — Validate all map definitions
 - `npm run map:preview` — Render ignored PPM map previews under `temp/map-previews/`
 - `npm run map:region` — Render the ignored region overview to `temp/region-map.ppm`
+
+## Current Shared Frontend Primitives
+
+- `frontend/src/scenes/scene-keys.ts`, `frontend/src/scenes/scene-data.ts`, `frontend/src/scenes/SceneRouter.ts`, and `frontend/src/scenes/SceneInputRegistry.ts` — typed scene keys/data/routing and listener teardown
+- `frontend/src/ui/controls/SelectableController.ts`, `frontend/src/ui/widgets/ProgressBar.ts`, and `frontend/src/ui/widgets/TextBox.ts` — reusable menu/dialogue foundations
+- `frontend/src/utils/grid-math.ts`, `frontend/src/utils/format.ts`, `frontend/src/utils/phaser-sequence.ts`, and `frontend/src/data/selectors.ts` — shared helpers and safe data lookups
+- `frontend/src/battle/effects/registry/` and `frontend/src/battle/core/BattleStateMachine.ts` — battle effect registries and enforced FSM transitions

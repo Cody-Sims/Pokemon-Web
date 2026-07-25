@@ -12,6 +12,11 @@ All notable changes to the Pokemon Web project.
   ownership partitioning, wave sequencing, and one-branch-at-a-time integration.
 - Added `verification-discipline` for red-green test proof, invariant tests,
   report-only gate adoption, timeout handling, and build-purity checks.
+### Changed - Agent guidance accuracy
+
+- Updated quality-gate, frontend-change, path-scoped instruction, AGENTS, and
+  LLM index guidance for lint/format commands, deterministic builds, integrity
+  tests, typed scene/event contracts, manager resets, and battle registries.
 
 ### Fixed - Bug backlog triage
 

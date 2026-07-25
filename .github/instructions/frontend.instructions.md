@@ -24,13 +24,19 @@ applyTo: 'frontend/**'
 - Preserve the 16px tile grid, Phaser lifecycle cleanup, and localStorage save
   compatibility.
 - Treat generated icons, atlases, fonts, and manifests as reproducible output.
-  Review generated diffs and retain only changes required by the task.
+  New generators must not embed wall-clock timestamps, and `npm run build` must
+  not dirty tracked files.
+- Reuse shared utilities (`grid-math`, `format`, `phaser-sequence`) and shared
+  UI/scene foundations before adding another local helper.
 
 ## Validation
 
-- Logic or data: `npm run test` and `npm run build`.
+- Logic or data: `npm run lint`, `npm run format:check`, `npm run test`, and
+  `npm run build`.
 - UI or scene behavior: add the relevant Playwright smoke, visual, or focused E2E
   check.
 - Maps: `npm run map:validate` plus a targeted preview.
 - Performance-sensitive changes: `bash scripts/check-bundle-size.sh` and
   `npm run test:perf`.
+- `npm run lint` is report-only: warnings are expected; errors are failures.
+- After build or generator changes, review tracked diffs to confirm build purity.

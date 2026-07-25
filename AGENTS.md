@@ -21,7 +21,8 @@
 - Run `npm install` before any other command.
 - Run `npm run dev` to start the Vite dev server with HMR.
 - Run `npm run build` to generate deterministic assets, type-check (`tsc --noEmit`), then build for production. **Always run before committing.**
-- Run `npm run lint` and `npm run format:check` for report-only ESLint and Prettier checks.
+- Run `npm run lint` for report-only ESLint; warnings are expected and not failures.
+- Use `npm run lint:fix` and `npm run format` only when you intend auto-fixes; run `npm run format:check` for verification.
 - Run `npm run preview` to preview the production build locally.
 - Path aliases are configured in `frontend/tsconfig.json` and `frontend/vite.config.ts`: `@scenes/*`, `@entities/*`, `@data/*`, `@managers/*`, `@systems/*`, `@ui/*`, `@utils/*`, `@config/*`, `@battle/*`.
 
@@ -33,7 +34,8 @@
 - `npm run test:e2e` — Playwright E2E tests; the config starts Vite automatically
 - `npm run test:coverage` — Tests with V8 coverage report and configured thresholds
 - Tests live in `tests/unit/`, `tests/integration/`, `tests/replay/`, `tests/e2e/`, and `tests/fuzz/`.
-- Seed `Math.random` in `beforeEach` for determinism. Reset singletons between tests.
+- `tests/setup.ts` seeds `Math.random`; use explicit seeded RNGs for order-sensitive paths.
+- Reset manager singletons with `resetManagerSingletons()` between tests.
 
 ## Project Layout
 
@@ -85,7 +87,7 @@ frontend/src/
 | Path | Purpose |
 |------|---------|
 | `frontend/public/assets/` | Static assets: sprites, tilesets, maps, audio, UI, fonts |
-| `docs/` | Design docs, architecture, changelog, storyline, plans |
+| `docs/` | Design docs, architecture, changelog, storyline, bug tracker, plans |
 | `tests/` | Vitest + Playwright tests |
 | `scripts/map-gen/` | Tracked map generation, preview, region render, and validation toolchain |
 | `temp/` | Scratch work, generated previews, templates, and one-off experiments (not committed) |
@@ -96,11 +98,12 @@ frontend/src/
 
 ## Architecture Patterns
 
-- **Scene communication**: Via `EventManager` (custom event bus), never direct references.
+- **Scene communication**: Via typed `EventManager` events, never direct references.
+- **Typed scene flow**: `SceneKey`, `scene-data.ts`, and `SceneRouter` own scene keys, payloads, and transitions.
 - **Game state**: `GameManager` is a singleton facade over focused state managers for party, progress, player state, statistics, and related durable data.
 - **Persistence**: `SaveManager` serializes to `localStorage`.
 - **Movement**: Grid-locked 16px tiles via `GridMovement` system.
-- **Battle flow**: `BattleStateMachine` FSM → INTRO → PLAYER_TURN → EXECUTE_TURN → …
+- **Battle flow**: `BattleStateMachine` enforces its transition table; effects live in registries under `battle/effects/registry/`.
 - **Data-driven**: Maps use character-grid strings parsed at runtime. Moves, Pokémon, trainers are plain TypeScript objects with barrel re-exports.
 - **Barrel exports**: Most directories have `index.ts` files that re-export all members.
 
@@ -170,6 +173,10 @@ data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 | Map warp/NPC interfaces | `frontend/src/data/maps/map-interfaces.ts` |
 | Game constants (tile size, etc.) | `frontend/src/utils/constants.ts` |
 | Audio key registry | `frontend/src/utils/audio-keys.ts` |
+| Shared grid/format/sequence helpers | `frontend/src/utils/grid-math.ts`, `frontend/src/utils/format.ts`, `frontend/src/utils/phaser-sequence.ts` |
+| Scene keys and typed scene data | `frontend/src/scenes/scene-keys.ts`, `frontend/src/scenes/scene-data.ts`, `frontend/src/scenes/SceneRouter.ts` |
+| Scene-scoped input teardown | `frontend/src/scenes/SceneInputRegistry.ts` |
+| Reusable menu selection and widgets | `frontend/src/ui/controls/SelectableController.ts`, `frontend/src/ui/widgets/ProgressBar.ts`, `frontend/src/ui/widgets/TextBox.ts` |
 | Game config (resolution, physics) | `frontend/src/config/game-config.ts` |
 | Vite path aliases | `frontend/vite.config.ts` and `frontend/tsconfig.json` |
 
@@ -219,15 +226,16 @@ data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 
 ### Adding a New Scene
 1. Create the scene file in the appropriate `frontend/src/scenes/<domain>/` folder
-2. Register it in `frontend/src/config/game-config.ts`
-3. Use `EventManager` for cross-scene communication — never direct scene references
+2. Register it in `frontend/src/config/game-config.ts`, `scene-keys.ts`, and `scene-data.ts`
+3. Use `SceneRouter` for transitions and `EventManager` for cross-scene communication
 4. Update `docs/architecture.md` with the new scene
 
 ### Modifying Battle Logic
 1. Battle subsystem is in `frontend/src/battle/` (isolated from scenes)
 2. Scene-level battle code is in `frontend/src/scenes/battle/`
-3. The FSM in `BattleStateMachine.ts` drives all state transitions
-4. Run `npm run test` after changes — battle logic has thorough test coverage
+3. The FSM transition table drives all state transitions
+4. Add effects through `frontend/src/battle/effects/registry/` and preserve `BattleRng` ordering
+5. Run `npm run test` after changes — battle logic has thorough test coverage
 
 ## Anti-Patterns (Common AI Mistakes)
 
@@ -242,6 +250,14 @@ data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 | Using `git add -A` or `git add .` | Picks up temp files, unrelated changes | Stage only changed files: `git add <file1> <file2>` |
 | Adding game state to Scene classes | State should be centralized | Use `GameManager` for all persistent game state |
 | Hardcoding tile characters without checking `tiles.ts` | Wrong char = broken map | Look up the character in `CHAR_TO_TILE` from `map-parser.ts` |
+| Writing a test that reimplements production logic | The test can pass while the real code regresses | Assert externally visible behavior using production modules or fixtures |
+| Weakening assertions, mocks, or thresholds to pass | Hides the bug and erodes the gate | Fix the cause; keep coverage thresholds and assertions strict |
+| Renaming IDs for internal consistency only | Runtime lookups depend on stable keys | Trace every lookup path and keep IDs as contracts |
+| Registering Phaser listeners without teardown | `scene.restart()` leaks handlers | Use `SceneInputRegistry` or clear listeners on shutdown |
+| Leaving scene callbacks in singletons | Retains destroyed scenes | Unsubscribe or clear manager callbacks during shutdown |
+| Adding expensive CPU-bound tests without timeouts | Causes flaky failures under parallel load | Keep tests small or raise only that test's timeout |
+| Assuming a documented command works | Stale guidance can mislead agents | Verify the command before relying on it |
+| Treating lint warnings as failures | `npm run lint` is report-only by design | Fix lint errors; do not escalate warnings to force a clean report |
 
 ## Keeping Context Fresh
 
@@ -334,10 +350,10 @@ Playwright journeys. It writes ignored evidence under `temp/playtest-runs/`, sen
 only findings reproduced across both attempts into the repair loop, and makes the
 gate replay that exact scenario before accepting the implementation.
 
-Two constraints govern what may enter the backlog. No Vitest test imports anything
-from `frontend/src/scenes/`, so scene changes are compile-checked only. And
-`npm run build` runs three asset generators before `tsc`, so it rewrites tracked
-files under `frontend/public/assets/`; the gate discards that churn.
+Two constraints govern what may enter the backlog. Scene-heavy changes need
+Playwright or extracted-helper coverage in addition to compile checks. And
+`npm run build` must be deterministic; the gate rejects tracked-file churn from
+builds or generators.
 
 ### Parallel Agent Strategy
 

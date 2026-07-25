@@ -12,23 +12,24 @@ The battle subsystem is **isolated from scenes**. Scene-level battle code lives 
 
 ### Module Responsibilities
 
-| Module | Responsibility |
-|---|---|
-| `core/BattleManager.ts` | Single-battle orchestration (turns, win/loss, party management) |
-| `core/DoubleBattleManager.ts` | 2v2 battles with partner/opponent pairs |
-| `core/BattleStateMachine.ts` | FSM driving battle state transitions |
-| `core/AIController.ts` | Enemy move selection heuristics |
-| `core/PartnerAI.ts` | NPC ally move selection in tag/double battles |
-| `calculation/DamageCalculator.ts` | Damage formula (STAB, type effectiveness, crits, weather) |
-| `calculation/ExperienceCalculator.ts` | EXP yield, level-up detection, stat recalculation |
-| `calculation/CatchCalculator.ts` | Poké Ball catch rate formula |
-| `effects/StatusEffectHandler.ts` | Burn, paralysis, poison, sleep, freeze effects |
-| `effects/AbilityHandler.ts` | Ability hooks (switch-in, after-damage, end-of-turn) |
-| `effects/HeldItemHandler.ts` | Held item hooks (end-of-turn, after-damage) |
-| `effects/WeatherManager.ts` | Weather conditions and type damage modifiers |
-| `effects/SynthesisHandler.ts` | Synthesis Mode activation and reversion |
-| `execution/MoveExecutor.ts` | Move application (damage, status, PP deduction) |
-| `execution/MoveAnimationPlayer.ts` | Data-driven move animation playback |
+| Module                                | Responsibility                                                   |
+| ------------------------------------- | ---------------------------------------------------------------- |
+| `core/BattleManager.ts`               | Single-battle orchestration (turns, win/loss, party management)  |
+| `core/DoubleBattleManager.ts`         | 2v2 battles with partner/opponent pairs                          |
+| `core/BattleStateMachine.ts`          | FSM driving battle state transitions                             |
+| `core/AIController.ts`                | Enemy move selection heuristics                                  |
+| `core/PartnerAI.ts`                   | NPC ally move selection in tag/double battles                    |
+| `calculation/DamageCalculator.ts`     | Damage formula (STAB, type effectiveness, crits, weather)        |
+| `calculation/ExperienceCalculator.ts` | EXP yield, level-up detection, stat recalculation                |
+| `calculation/CatchCalculator.ts`      | Poké Ball catch rate formula                                     |
+| `effects/StatusEffectHandler.ts`      | Burn, paralysis, poison, sleep, freeze effects                   |
+| `effects/AbilityHandler.ts`           | Facade over ability hooks (switch-in, after-damage, end-of-turn) |
+| `effects/HeldItemHandler.ts`          | Facade over held item hooks (end-of-turn, after-damage)          |
+| `effects/registry/`                   | Ability, held-item, move-effect, and status-effect registries    |
+| `effects/WeatherManager.ts`           | Weather conditions and type damage modifiers                     |
+| `effects/SynthesisHandler.ts`         | Synthesis Mode activation and reversion                          |
+| `execution/MoveExecutor.ts`           | Move application (damage, status, PP deduction)                  |
+| `execution/MoveAnimationPlayer.ts`    | Data-driven move animation playback                              |
 
 ## Rules
 
@@ -37,5 +38,11 @@ The battle subsystem is **isolated from scenes**. Scene-level battle code lives 
 3. **Use interfaces**: All Pokémon data must use `PokemonInstance` and `MoveData` from `@data`.
 4. **Import from barrel**: `import { DamageCalculator } from '@battle'` — not from the direct file path.
 5. **Test after changes**: Run `npm run test` — battle logic has thorough unit test coverage.
-6. **FSM transitions**: State changes must go through `BattleStateMachine` — never set state directly.
+6. **FSM transitions**: State changes must go through `BattleStateMachine` and
+   its transition table — never set state directly or bypass illegal-transition
+   errors.
 7. **Type chart**: Use `data/type-chart.ts` for effectiveness — never hardcode type matchups.
+8. **Effect registries**: Add or change abilities, held items, move effects, and
+   status effects in `effects/registry/`; do not add switch-chain dispatch.
+9. **RNG discipline**: Thread `BattleRng` through battle paths and preserve roll
+   ordering so seeded battles replay deterministically.
