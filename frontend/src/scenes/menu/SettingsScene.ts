@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
@@ -11,6 +12,9 @@ import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import { setRenderQuality, type RenderQuality } from '@utils/perf-profile';
 import { syncAccessibilitySettings, colorblindFilter } from '@utils/accessibility';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey, type SceneKeyName } from '@scenes/scene-keys';
+import type { SettingsSceneData } from '@scenes/scene-data';
 
 interface SettingDef {
   key: string;
@@ -46,19 +50,21 @@ const SETTING_DEFS: SettingDef[] = [
 export class SettingsScene extends Phaser.Scene {
   private controller?: MenuController;
   private settingTexts: { label: Phaser.GameObjects.Text; value: Phaser.GameObjects.Text; leftArrow: Phaser.GameObjects.Text; rightArrow: Phaser.GameObjects.Text }[] = [];
-  private returnScene = 'TitleScene';
+  private returnScene: SceneKeyName = SceneKey.Title;
   private isFullscreen = false;
   /** Layer holding every layout-derived game object so we can wipe + rebuild on resize. */
   private layoutLayer?: Phaser.GameObjects.Container;
   /** Cursor index preserved across re-layouts. */
   private savedCursor = 0;
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
-    super({ key: 'SettingsScene' });
+    super({ key: SceneKey.Settings });
   }
 
-  init(data?: { returnScene?: string }): void {
-    this.returnScene = data?.returnScene ?? 'TitleScene';
+  init(data?: SettingsSceneData): void {
+    this.returnScene = data?.returnScene ?? SceneKey.Title;
   }
 
   create(): void {
@@ -71,8 +77,8 @@ export class SettingsScene extends Phaser.Scene {
 
     // LEFT/RIGHT to adjust value (registered once so the controller persists
     // across re-layouts).
-    this.input.keyboard!.on('keydown-LEFT', () => this.adjustValue(-1));
-    this.input.keyboard!.on('keydown-RIGHT', () => this.adjustValue(1));
+    this.inputRegistry.bindKey('keydown-LEFT', () => this.adjustValue(-1));
+    this.inputRegistry.bindKey('keydown-RIGHT', () => this.adjustValue(1));
 
     // Sync accessibility settings on scene create
     syncAccessibilitySettings({
@@ -147,7 +153,7 @@ export class SettingsScene extends Phaser.Scene {
       const currentVal = gm.getSetting(def.key);
       const displayVal = this.formatValue(def, currentVal);
 
-      // Tappable left arrow — enforce MIN_TOUCH_TARGET
+      // Tappable left arrow — enforce minimum touch target
       const leftArrow = this.add.text(leftArrowX, y, '◀', {
         ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
       }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
@@ -159,7 +165,7 @@ export class SettingsScene extends Phaser.Scene {
         ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
       }).setOrigin(0.5, 0);
 
-      // Tappable right arrow — enforce MIN_TOUCH_TARGET
+      // Tappable right arrow — enforce minimum touch target
       const rightArrow = this.add.text(rightArrowX, y, '▶', {
         ...FONTS.body, fontSize: mobileFontSize(rowFontPx), color: COLORS.textHighlight,
       }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
@@ -366,13 +372,14 @@ export class SettingsScene extends Phaser.Scene {
     } catch { /* ignore */ }
 
     this.controller?.destroy();
-    this.scene.stop();
+    const router = SceneRouter.for(this);
+    router.stop();
     // Use wake() to match the sleep() used by MenuScene, fall back to resume()
-    const target = this.scene.get(this.returnScene);
+    const target = router.get(this.returnScene);
     if (target && !target.scene.isActive()) {
-      this.scene.wake(this.returnScene);
+      router.wake(this.returnScene);
     } else {
-      this.scene.resume(this.returnScene);
+      router.resume(this.returnScene);
     }
   }
 
@@ -414,8 +421,7 @@ export class SettingsScene extends Phaser.Scene {
         } else {
           this.flashStatus('Save imported. Returning to title…');
           this.time.delayedCall(900, () => {
-            this.scene.stop();
-            this.scene.start('TitleScene');
+            SceneRouter.for(this).transitionTo(SceneKey.Title);
           });
         }
       };

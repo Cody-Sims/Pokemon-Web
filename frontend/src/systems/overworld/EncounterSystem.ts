@@ -1,24 +1,51 @@
 import { encounterTables, fishingTables, RodTier } from '@data/encounter-tables';
 import { BASE_ENCOUNTER_RATE, SHINY_CHANCE, FISHING_ENCOUNTER_RATE } from '@utils/constants';
-import { weightedRandom, randomInt, seededRandom } from '@utils/math-helpers';
+import { seededRandom } from '@utils/math-helpers';
 import { PokemonInstance } from '@data/interfaces';
 import { pokemonData } from '@data/pokemon';
 import { moveData } from '@data/moves';
 import { ExperienceCalculator, getNatureMultiplier } from '@battle/calculation/ExperienceCalculator';
 
+export interface EncounterRng {
+  next(): number;
+  chance(probability: number): boolean;
+  int(min: number, max: number): number;
+  weightedIndex(weights: readonly number[], precomputedTotal?: number): number;
+}
+
+export type EncounterRngSource = EncounterRng | (() => number);
+
+function wrapRng(rng: EncounterRngSource): EncounterRng {
+  if (typeof rng !== 'function') return rng;
+  return {
+    next: rng,
+    chance: (probability) => rng() <= probability,
+    int: (min, max) => Math.floor(rng() * (max - min + 1)) + min,
+    weightedIndex: (weights, precomputedTotal) => {
+      const total = precomputedTotal ?? weights.reduce((sum, weight) => sum + weight, 0);
+      let roll = rng() * total;
+      for (let i = 0; i < weights.length; i++) {
+        roll -= weights[i];
+        if (roll <= 0) return i;
+      }
+      return weights.length - 1;
+    },
+  };
+}
+
 /** Step counter → random wild encounter trigger. */
 export class EncounterSystem {
   private stepCount = 0;
   private repelSteps = 0;
-  private rng: () => number = seededRandom;
+  private rng: EncounterRng = wrapRng(seededRandom);
 
   constructor(initialRepelSteps = 0) {
     this.repelSteps = initialRepelSteps;
   }
 
   /** Inject a seeded PRNG for deterministic encounters (e.g. replays). */
-  setRng(rng: () => number): void {
-    this.rng = rng;
+  setRng(rng: EncounterRngSource): void {
+    this.rng = wrapRng(rng);
   }
 
   /** Call on each step in an encounter zone. Returns a wild Pokemon if triggered, else null.
@@ -31,7 +58,7 @@ export class EncounterSystem {
 
     this.stepCount++;
 
-    if (this.rng() > BASE_ENCOUNTER_RATE * rateMultiplier) {
+    if (!this.rng.chance(BASE_ENCOUNTER_RATE * rateMultiplier)) {
       return null;
     }
 
@@ -40,16 +67,17 @@ export class EncounterSystem {
 
     // Weighted random selection
     const weights = table.map(e => e.weight);
-    const index = weightedRandom(weights);
+    const index = this.rng.weightedIndex(weights);
     const entry = table[index];
 
     // Generate wild Pokemon
-    const level = randomInt(entry.levelRange[0], entry.levelRange[1]);
-    return EncounterSystem.createWildPokemon(entry.pokemonId, level);
+    const level = this.rng.int(entry.levelRange[0], entry.levelRange[1]);
+    return EncounterSystem.createWildPokemon(entry.pokemonId, level, this.rng);
   }
 
   /** Create a PokemonInstance for a wild encounter. */
-  static createWildPokemon(pokemonId: number, level: number): PokemonInstance {
+  static createWildPokemon(pokemonId: number, level: number, rngSource: EncounterRngSource = seededRandom): PokemonInstance {
+    const rng = wrapRng(rngSource);
     const data = pokemonData[pokemonId];
     if (!data) {
       throw new Error(`Pokemon data not found for id: ${pokemonId}`);
@@ -57,8 +85,8 @@ export class EncounterSystem {
 
     // Generate random IVs (0-31)
     const ivs = {
-      hp: randomInt(0, 31), attack: randomInt(0, 31), defense: randomInt(0, 31),
-      spAttack: randomInt(0, 31), spDefense: randomInt(0, 31), speed: randomInt(0, 31),
+      hp: rng.int(0, 31), attack: rng.int(0, 31), defense: rng.int(0, 31),
+      spAttack: rng.int(0, 31), spDefense: rng.int(0, 31), speed: rng.int(0, 31),
     };
 
     const evs = { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 };
@@ -71,7 +99,7 @@ export class EncounterSystem {
       'calm', 'gentle', 'sassy', 'careful', 'quirky',
     ];
 
-    const nature = NATURES[randomInt(0, NATURES.length - 1)];
+    const nature = NATURES[rng.int(0, NATURES.length - 1)];
 
     // Calculate stats using the same formula as ExperienceCalculator.recalculateStats
     // so wild encounters and level-up stats are consistent.
@@ -105,13 +133,14 @@ export class EncounterSystem {
       status: null,
       exp: ExperienceCalculator.expForLevel(level),
       friendship: 70,
-      isShiny: seededRandom() < SHINY_CHANCE,
+      isShiny: rng.chance(SHINY_CHANCE),
     };
   }
 
   /** Attempt a fishing encounter. Returns a wild Pokémon if successful, else null. */
-  static fishEncounter(mapKey: string, rod: RodTier): PokemonInstance | null {
-    if (seededRandom() > FISHING_ENCOUNTER_RATE) return null;
+  static fishEncounter(mapKey: string, rod: RodTier, rngSource: EncounterRngSource = seededRandom): PokemonInstance | null {
+    const rng = wrapRng(rngSource);
+    if (!rng.chance(FISHING_ENCOUNTER_RATE)) return null;
 
     const mapTables = fishingTables[mapKey];
     if (!mapTables) return null;
@@ -119,10 +148,10 @@ export class EncounterSystem {
     if (!table || table.length === 0) return null;
 
     const weights = table.map(e => e.weight);
-    const index = weightedRandom(weights);
+    const index = rng.weightedIndex(weights);
     const entry = table[index];
-    const level = randomInt(entry.levelRange[0], entry.levelRange[1]);
-    return EncounterSystem.createWildPokemon(entry.pokemonId, level);
+    const level = rng.int(entry.levelRange[0], entry.levelRange[1]);
+    return EncounterSystem.createWildPokemon(entry.pokemonId, level, rng);
   }
 
   useRepel(steps: number): void {

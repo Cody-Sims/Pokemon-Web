@@ -1,4 +1,4 @@
-import { PokemonData } from '../interfaces';
+import type { PokemonData } from './types';
 
 /** Fire-type Pokemon (Gen 1) */
 export const firePokemon: Record<number, PokemonData> = {

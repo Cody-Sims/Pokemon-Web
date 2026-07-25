@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
-import { COLORS, FONTS, mobileFontSize, mobileScale, isMobile, minTouchTarget } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { SFX } from '@utils/audio-keys';
@@ -27,6 +28,8 @@ export class QuestJournalScene extends Phaser.Scene {
   private detailRight = 0;
   private readonly listStartY = 90;
   private readonly itemH = 28;
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: 'QuestJournalScene' });
@@ -78,11 +81,11 @@ export class QuestJournalScene extends Phaser.Scene {
     }
 
     // Keyboard bindings
-    this.input.keyboard!.on('keydown-UP', () => this.moveCursor(-1));
-    this.input.keyboard!.on('keydown-DOWN', () => this.moveCursor(1));
-    this.input.keyboard!.on('keydown-LEFT', () => this.switchTab('active'));
-    this.input.keyboard!.on('keydown-RIGHT', () => this.switchTab('complete'));
-    this.input.keyboard!.on('keydown-ESC', () => {
+    this.inputRegistry.bindKey('keydown-UP', () => this.moveCursor(-1));
+    this.inputRegistry.bindKey('keydown-DOWN', () => this.moveCursor(1));
+    this.inputRegistry.bindKey('keydown-LEFT', () => this.switchTab('active'));
+    this.inputRegistry.bindKey('keydown-RIGHT', () => this.switchTab('complete'));
+    this.inputRegistry.bindKey('keydown-ESC', () => {
       AudioManager.getInstance().playSFX(SFX.CANCEL);
       this.scene.stop();
     });

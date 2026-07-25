@@ -1,6 +1,6 @@
 # Pokemon Web
 
-> A browser-based Pokémon-style RPG built with Phaser 3 + TypeScript + Vite. Fully client-side static web app with 153 Pokémon, 66 maps, turn-based battles, and a complete storyline. No backend.
+> A browser-based Pokémon-style RPG built with Phaser 3 + TypeScript + Vite. Fully client-side static web app with 155 Pokémon, 244 moves, 82 registered map entries from 66 map source files, turn-based battles, 50 achievements, and a complete storyline. No backend.
 
 ## Quick Reference
 
@@ -10,7 +10,7 @@
 | Framework       | Phaser 3.90+                                         |
 | Bundler         | Vite 8.x                                             |
 | Test Runner     | Vitest 4.x + Playwright                              |
-| Node Version    | 22+                                                  |
+| Node Version    | 22.x (pinned in `package.json`)                     |
 | Package Manager | npm                                                  |
 | Entry Point     | `frontend/src/main.ts`                               |
 | Game Config     | `frontend/src/config/game-config.ts`                 |
@@ -20,19 +20,22 @@
 
 - Run `npm install` before any other command.
 - Run `npm run dev` to start the Vite dev server with HMR.
-- Run `npm run build` to type-check (`tsc --noEmit`) then build for production. **Always run before committing.**
+- Run `npm run build` to generate deterministic assets, type-check (`tsc --noEmit`), then build for production. **Always run before committing.**
+- Run `npm run lint` for report-only ESLint; warnings are expected and not failures.
+- Use `npm run lint:fix` and `npm run format` only when you intend auto-fixes; run `npm run format:check` for verification.
 - Run `npm run preview` to preview the production build locally.
 - Path aliases are configured in `frontend/tsconfig.json` and `frontend/vite.config.ts`: `@scenes/*`, `@entities/*`, `@data/*`, `@managers/*`, `@systems/*`, `@ui/*`, `@utils/*`, `@config/*`, `@battle/*`.
 
 ## Testing
 
-- `npm run test` — All unit + integration tests (< 2s)
+- `npm run test` — Unit, integration, and replay Vitest suite
 - `npm run test:unit` — Unit tests only
 - `npm run test:integration` — Integration tests only
-- `npm run test:e2e` — Playwright E2E tests (needs dev server running)
-- `npm run test:coverage` — Tests with V8 coverage report
-- Tests live in `tests/unit/`, `tests/integration/`, `tests/e2e/`.
-- Seed `Math.random` in `beforeEach` for determinism. Reset singletons between tests.
+- `npm run test:e2e` — Playwright E2E tests; the config starts Vite automatically
+- `npm run test:coverage` — Tests with V8 coverage report and configured thresholds
+- Tests live in `tests/unit/`, `tests/integration/`, `tests/replay/`, `tests/e2e/`, and `tests/fuzz/`.
+- `tests/setup.ts` seeds `Math.random`; use explicit seeded RNGs for order-sensitive paths.
+- Reset manager singletons with `resetManagerSingletons()` between tests.
 
 ## Project Layout
 
@@ -56,9 +59,9 @@ frontend/src/
 │   └── execution/          # Move executor, animation player
 ├── data/                   # Pure data files (no game logic)
 │   ├── interfaces.ts       # All TypeScript interfaces
-│   ├── maps/               # 66 map definitions in cities/, routes/, interiors/, dungeons/
-│   ├── moves/              # Per-type move data files (16 types)
-│   ├── pokemon/            # Per-type Pokémon data files (153 species)
+│   ├── maps/               # 66 map source files; mapRegistry exposes 82 map entries
+│   ├── moves/              # Per-type move data files (18 types, 244 moves)
+│   ├── pokemon/            # Per-type Pokémon data files (155 species)
 │   ├── trainers/           # Trainer data by category (rival, gym, elite four, etc.)
 │   ├── type-chart.ts       # 18×18 type effectiveness matrix
 │   ├── item-data.ts        # Items (potions, balls, key items)
@@ -84,9 +87,10 @@ frontend/src/
 | Path | Purpose |
 |------|---------|
 | `frontend/public/assets/` | Static assets: sprites, tilesets, maps, audio, UI, fonts |
-| `docs/` | Design docs, architecture, changelog, storyline, plans |
+| `docs/` | Design docs, architecture, changelog, storyline, bug tracker, plans |
 | `tests/` | Vitest + Playwright tests |
-| `temp/` | Scratch work, one-off scripts, map generators (not committed) |
+| `scripts/map-gen/` | Tracked map generation, preview, region render, and validation toolchain |
+| `temp/` | Scratch work, generated previews, templates, and one-off experiments (not committed) |
 | `.github/instructions/` | Copilot custom instructions (path-specific) |
 | `.github/workflows/` | CI/CD (ci.yml, deploy.yml) |
 | `.github/skills/` | AgentSkills-compatible workflows loaded on demand |
@@ -94,11 +98,12 @@ frontend/src/
 
 ## Architecture Patterns
 
-- **Scene communication**: Via `EventManager` (custom event bus), never direct references.
-- **Game state**: `GameManager` singleton holds the party, badges, bag, flags, playtime.
+- **Scene communication**: Via typed `EventManager` events, never direct references.
+- **Typed scene flow**: `SceneKey`, `scene-data.ts`, and `SceneRouter` own scene keys, payloads, and transitions.
+- **Game state**: `GameManager` is a singleton facade over focused state managers for party, progress, player state, statistics, and related durable data.
 - **Persistence**: `SaveManager` serializes to `localStorage`.
 - **Movement**: Grid-locked 16px tiles via `GridMovement` system.
-- **Battle flow**: `BattleStateMachine` FSM → INTRO → PLAYER_TURN → EXECUTE_TURN → …
+- **Battle flow**: `BattleStateMachine` enforces its transition table; effects live in registries under `battle/effects/registry/`.
 - **Data-driven**: Maps use character-grid strings parsed at runtime. Moves, Pokémon, trainers are plain TypeScript objects with barrel re-exports.
 - **Barrel exports**: Most directories have `index.ts` files that re-export all members.
 
@@ -109,7 +114,7 @@ Maps are defined as TypeScript files in `frontend/src/data/maps/`. Each map has:
 - NPC spawns, trainer spawns, warp definitions, wild encounter zones
 - Map metadata (name, dimensions, BGM key, lighting, weather)
 
-Use the map toolchain for generation:
+Use the tracked map toolchain (`scripts/map-gen/`) for generation:
 ```bash
 npm run map:validate                    # Validate all maps
 npm run map:validate -- --map route-1   # Validate one map
@@ -129,25 +134,25 @@ battle/* → data/interfaces.ts, data/moves/*, data/type-chart.ts
 systems/overworld/* → entities/Player, managers/GameManager, data/maps/*
 systems/rendering/* → managers/GameManager (weather/lighting state)
 systems/engine/* → managers/* (InputManager wraps Phaser input)
-ui/* → managers/GameManager (theme, accessibility)
+ui/* → ui/theme.ts + caller-provided scene data (no direct GameManager access)
 data/maps/* → data/maps/tiles.ts, data/maps/map-parser.ts, data/maps/map-interfaces.ts
 data/moves/index.ts → data/moves/<type>.ts (barrel re-export)
 data/pokemon/index.ts → data/pokemon/<type>.ts (barrel re-export)
 data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 ```
 
-## Key Interfaces (from `data/interfaces.ts`)
+## Key Interfaces and Type Sources
 
-| Interface | Used For | Key Fields |
-|---|---|---|
-| `PokemonData` | Species definitions | `id`, `name`, `types`, `baseStats`, `learnset`, `catchRate` |
-| `MoveData` | Move definitions | `id`, `name`, `type`, `category`, `power`, `accuracy`, `pp`, `effect` |
-| `ItemData` | Item definitions | `id`, `name`, `category`, `buyPrice`, `effect` |
-| `TrainerData` | Trainer definitions | `id`, `name`, `party[]`, `dialogue`, `rewardMoney` |
-| `PokemonInstance` | Runtime Pokémon state | `dataId`, `level`, `currentHp`, `stats`, `moves`, `nature`, `ivs` |
-| `MapDefinition` | Map structure | `key`, `name`, `width`, `height`, `grid`, `npcs`, `objects`, `warps`, `encounters` |
-| `ObjectSpawn` | Object placement | `id`, `tileX`, `tileY`, `textureKey`, `objectType`, `dialogue` |
-| `SaveData` | Serialized game state | `player`, `flags`, `trainersDefeated`, `boxes` |
+| Interface | Source | Used For | Key Fields |
+|---|---|---|---|
+| `PokemonData` | `frontend/src/data/interfaces.ts` | Species definitions | `id`, `name`, `types`, `baseStats`, `learnset`, `catchRate` |
+| `MoveData` | `frontend/src/data/interfaces.ts` | Move definitions | `id`, `name`, `type`, `category`, `power`, `accuracy`, `pp`, `effect` |
+| `ItemData` | `frontend/src/data/interfaces.ts` | Item definitions | `id`, `name`, `category`, `buyPrice`, `effect` |
+| `TrainerData` | `frontend/src/data/interfaces.ts` | Trainer definitions | `id`, `name`, `party[]`, `dialogue`, `rewardMoney` |
+| `PokemonInstance` | `frontend/src/data/interfaces.ts` | Runtime Pokémon state | `dataId`, `level`, `currentHp`, `stats`, `moves`, `nature`, `ivs` |
+| `MapDefinition` | `frontend/src/data/maps/map-interfaces.ts` | Map structure | `key`, `width`, `height`, `ground`, `npcs`, `objects`, `warps`, `spawnPoints` |
+| `ObjectSpawn` | `frontend/src/data/maps/map-interfaces.ts` | Object placement | `id`, `tileX`, `tileY`, `textureKey`, `objectType`, `dialogue` |
+| `SaveData` | `frontend/src/data/interfaces.ts` | Serialized game state | `player`, `flags`, `trainersDefeated`, `boxes` |
 
 ## File-Finding Shortcuts
 
@@ -155,7 +160,7 @@ data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 |---|---|
 | Type effectiveness | `frontend/src/data/type-chart.ts` |
 | All interfaces/types | `frontend/src/data/interfaces.ts` |
-| Type helper enums (`PokemonType`, `Stats`) | `frontend/src/utils/type-helpers.ts` |
+| Type helpers (`PokemonType` union, `Stats` interface) | `frontend/src/utils/type-helpers.ts` |
 | Damage formula | `frontend/src/battle/calculation/DamageCalculator.ts` |
 | EXP/level-up formula | `frontend/src/battle/calculation/ExperienceCalculator.ts` |
 | Catch rate formula | `frontend/src/battle/calculation/CatchCalculator.ts` |
@@ -168,6 +173,10 @@ data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 | Map warp/NPC interfaces | `frontend/src/data/maps/map-interfaces.ts` |
 | Game constants (tile size, etc.) | `frontend/src/utils/constants.ts` |
 | Audio key registry | `frontend/src/utils/audio-keys.ts` |
+| Shared grid/format/sequence helpers | `frontend/src/utils/grid-math.ts`, `frontend/src/utils/format.ts`, `frontend/src/utils/phaser-sequence.ts` |
+| Scene keys and typed scene data | `frontend/src/scenes/scene-keys.ts`, `frontend/src/scenes/scene-data.ts`, `frontend/src/scenes/SceneRouter.ts` |
+| Scene-scoped input teardown | `frontend/src/scenes/SceneInputRegistry.ts` |
+| Reusable menu selection and widgets | `frontend/src/ui/controls/SelectableController.ts`, `frontend/src/ui/widgets/ProgressBar.ts`, `frontend/src/ui/widgets/TextBox.ts` |
 | Game config (resolution, physics) | `frontend/src/config/game-config.ts` |
 | Vite path aliases | `frontend/vite.config.ts` and `frontend/tsconfig.json` |
 
@@ -217,15 +226,16 @@ data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 
 ### Adding a New Scene
 1. Create the scene file in the appropriate `frontend/src/scenes/<domain>/` folder
-2. Register it in `frontend/src/config/game-config.ts`
-3. Use `EventManager` for cross-scene communication — never direct scene references
+2. Register it in `frontend/src/config/game-config.ts`, `scene-keys.ts`, and `scene-data.ts`
+3. Use `SceneRouter` for transitions and `EventManager` for cross-scene communication
 4. Update `docs/architecture.md` with the new scene
 
 ### Modifying Battle Logic
 1. Battle subsystem is in `frontend/src/battle/` (isolated from scenes)
 2. Scene-level battle code is in `frontend/src/scenes/battle/`
-3. The FSM in `BattleStateMachine.ts` drives all state transitions
-4. Run `npm run test` after changes — battle logic has thorough test coverage
+3. The FSM transition table drives all state transitions
+4. Add effects through `frontend/src/battle/effects/registry/` and preserve `BattleRng` ordering
+5. Run `npm run test` after changes — battle logic has thorough test coverage
 
 ## Anti-Patterns (Common AI Mistakes)
 
@@ -240,6 +250,14 @@ data/trainers/index.ts → data/trainers/<category>.ts (barrel re-export)
 | Using `git add -A` or `git add .` | Picks up temp files, unrelated changes | Stage only changed files: `git add <file1> <file2>` |
 | Adding game state to Scene classes | State should be centralized | Use `GameManager` for all persistent game state |
 | Hardcoding tile characters without checking `tiles.ts` | Wrong char = broken map | Look up the character in `CHAR_TO_TILE` from `map-parser.ts` |
+| Writing a test that reimplements production logic | The test can pass while the real code regresses | Assert externally visible behavior using production modules or fixtures |
+| Weakening assertions, mocks, or thresholds to pass | Hides the bug and erodes the gate | Fix the cause; keep coverage thresholds and assertions strict |
+| Renaming IDs for internal consistency only | Runtime lookups depend on stable keys | Trace every lookup path and keep IDs as contracts |
+| Registering Phaser listeners without teardown | `scene.restart()` leaks handlers | Use `SceneInputRegistry` or clear listeners on shutdown |
+| Leaving scene callbacks in singletons | Retains destroyed scenes | Unsubscribe or clear manager callbacks during shutdown |
+| Adding expensive CPU-bound tests without timeouts | Causes flaky failures under parallel load | Keep tests small or raise only that test's timeout |
+| Assuming a documented command works | Stale guidance can mislead agents | Verify the command before relying on it |
+| Treating lint warnings as failures | `npm run lint` is report-only by design | Fix lint errors; do not escalate warnings to force a clean report |
 
 ## Keeping Context Fresh
 
@@ -276,6 +294,7 @@ Available skills:
 | `frontend-change` | Phaser, TypeScript, Vite, data, UI, scenes, systems, or assets |
 | `backend-change` | Explicit server, API, worker, persistence, or authentication work |
 | `quality-gate` | Selecting and running final validation |
+| `playtest-discovery` | Deterministic Playwright journeys, seeded fuzzing, bug reports, and bounded autonomous repairs |
 | `tile-sprite-gen` | Tileset and character sprite generation or repair |
 | `pokemon-shadow-architecture` | Inspecting, validating, or updating this repository's decision graph |
 
@@ -316,6 +335,8 @@ Nothing reaches `main` except through that pull request.
 |---|---|
 | `npm run loop:dry-run` | Print the exact agent invocation without spending credits |
 | `npm run loop:run -- --iterations 3` | Run the bounded loop |
+| `npm run playtest:discover` | Produce JSON/Markdown bug reports from browser journeys and seeded fuzzing |
+| `npm run loop:playtest -- --cycles 3` | Repeatedly discover and independently gate one reproducible repair per cycle |
 | `npm run loop:gate -- --worktree . --base develop` | Grade a worktree directly |
 
 The gate is the contract, not the prompt. It restores `tests/` and every config
@@ -324,10 +345,15 @@ paths, rejects newly added suppressions such as `@ts-ignore` and `.skip(`, caps
 diff size, and requires a `docs/CHANGELOG.md` entry. Full design, safety rails,
 and phases are in `docs/loop-engineering-plan.md`.
 
-Two constraints govern what may enter the backlog. No Vitest test imports anything
-from `frontend/src/scenes/`, so scene changes are compile-checked only. And
-`npm run build` runs three asset generators before `tsc`, so it rewrites tracked
-files under `frontend/public/assets/`; the gate discards that churn.
+The playtest extension runs a read-only localhost probe plus deterministic
+Playwright journeys. It writes ignored evidence under `temp/playtest-runs/`, sends
+only findings reproduced across both attempts into the repair loop, and makes the
+gate replay that exact scenario before accepting the implementation.
+
+Two constraints govern what may enter the backlog. Scene-heavy changes need
+Playwright or extracted-helper coverage in addition to compile checks. And
+`npm run build` must be deterministic; the gate rejects tracked-file churn from
+builds or generators.
 
 ### Parallel Agent Strategy
 

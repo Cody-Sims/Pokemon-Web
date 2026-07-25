@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
@@ -12,6 +13,8 @@ import { TouchControls } from '@ui/controls/TouchControls';
  * Accessible from the pause menu.
  */
 export class StatisticsScene extends Phaser.Scene {
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
     super({ key: 'StatisticsScene' });
   }
@@ -125,7 +128,7 @@ export class StatisticsScene extends Phaser.Scene {
       exportBtn.on('pointerdown', () => this.exportSplits(splits));
       exportBtn.on('pointerover', () => exportBtn.setColor('#ffd86b'));
       exportBtn.on('pointerout', () => exportBtn.setColor(COLORS.textHighlight));
-      this.input.keyboard!.on('keydown-E', () => this.exportSplits(splits));
+      this.inputRegistry.bindKey('keydown-E', () => this.exportSplits(splits));
     }
 
     // Close hint
@@ -136,8 +139,8 @@ export class StatisticsScene extends Phaser.Scene {
     closeBtn.on('pointerdown', () => this.close());
 
     // Input (BUG-085: removed global pointerdown close)
-    this.input.keyboard!.on('keydown-ESC', () => this.close());
-    this.input.keyboard!.on('keydown-ENTER', () => this.close());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.close());
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.close());
   }
 
   private close(): void {

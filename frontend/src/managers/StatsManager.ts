@@ -27,7 +27,7 @@ export function defaultStats(): GameStats {
  * Extracted from GameManager to separate stats concerns.
  */
 export class StatsManager {
-  private static instance: StatsManager;
+  private static instance: StatsManager | undefined;
   private gameStats: GameStats = defaultStats();
   private stepCount = 0;
 
@@ -40,7 +40,7 @@ export class StatsManager {
 
   /** Reset singleton (for testing). */
   static resetInstance(): void {
-    StatsManager.instance = undefined as unknown as StatsManager;
+    StatsManager.instance = undefined;
   }
 
   /** Reset all stats for a new game. */

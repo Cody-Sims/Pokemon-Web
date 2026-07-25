@@ -2,13 +2,16 @@ import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { GameManager } from '@managers/GameManager';
+import { EventManager } from '@managers/EventManager';
 import { AudioManager } from '@managers/AudioManager';
 import { pokemonData } from '@data/pokemon';
-import { COLORS, FONTS, SPACING, TYPE_COLORS, STATUS_COLORS, drawTypeBadge, drawStatusBadge, drawHpBar, drawButton, mobileFontSize, mobileScale, minTouchTarget, isMobile } from '@ui/theme';
+import { COLORS, FONTS, SPACING, drawTypeBadge, drawStatusBadge, drawHpBar, drawButton, mobileFontSize, minTouchTarget, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { SFX } from '@utils/audio-keys';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 export class PartyScene extends Phaser.Scene {
   private cursor = 0;
@@ -28,7 +31,7 @@ export class PartyScene extends Phaser.Scene {
   private longPressFired = false;
 
   constructor() {
-    super({ key: 'PartyScene' });
+    super({ key: SceneKey.Party });
   }
 
   init(data?: { selectMode?: boolean; forcedSwitch?: boolean }): void {
@@ -338,6 +341,7 @@ export class PartyScene extends Phaser.Scene {
     const temp = party[srcIdx];
     party[srcIdx] = party[destIdx];
     party[destIdx] = temp;
+    EventManager.getInstance().emit('party-changed');
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
     this.swapMode = false;
     // Refresh
@@ -349,10 +353,11 @@ export class PartyScene extends Phaser.Scene {
     const party = GameManager.getInstance().getParty();
     if (index >= party.length) return;
     this.controller?.setDisabled(true);
-    this.scene.sleep();
-    this.scene.launch('SummaryScene', { pokemon: party[index], partyIndex: index });
-    this.scene.get('SummaryScene').events.once('shutdown', () => {
-      this.scene.wake();
+    const router = SceneRouter.for(this);
+    router.sleep();
+    router.launch(SceneKey.Summary, { pokemon: party[index], partyIndex: index });
+    router.get(SceneKey.Summary).events.once('shutdown', () => {
+      router.wake();
       this.controller?.setDisabled(false);
     });
   }

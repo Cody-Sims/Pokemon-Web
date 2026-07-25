@@ -10,7 +10,7 @@ describe('QuestManager', () => {
   beforeEach(() => {
     // Reset singletons
     QuestManager.resetInstance();
-    (GameManager as unknown as { instance: undefined }).instance = undefined;
+    GameManager.resetInstance();
     qm = QuestManager.getInstance();
     gm = GameManager.getInstance();
   });

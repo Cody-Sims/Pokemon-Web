@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { isMobile } from '@ui/theme';
@@ -46,11 +47,14 @@ export class MinimapScene extends Phaser.Scene {
   private lastTileY = -1;
   private lastMapKey = '';
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
     super({ key: 'MinimapScene' });
   }
 
   create(): void {
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
     const layout = ui(this);
     const px = isMobile() ? PX_MOBILE : PX_DESKTOP;
     const size = DIAMETER * px;
@@ -99,18 +103,15 @@ export class MinimapScene extends Phaser.Scene {
     this.lastMapKey = '';
 
     // Refresh on wake / resume (returning from menus / battles)
-    this.events.on('wake', () => {
+    this.inputRegistry.bindSceneEvent('wake', () => {
       this.lastTileX = -1; // force redraw
       this.refreshVisibility();
     });
-    this.events.on('resume', () => {
+    this.inputRegistry.bindSceneEvent('resume', () => {
       this.lastTileX = -1;
       this.refreshVisibility();
     });
 
-    this.events.once('shutdown', () => {
-      this.rt?.destroy();
-    });
   }
 
   update(): void {
@@ -269,6 +270,6 @@ export class MinimapScene extends Phaser.Scene {
 
   shutdown(): void {
     this.rt?.destroy();
-    this.input.removeAllListeners();
+    this.inputRegistry.clear();
   }
 }

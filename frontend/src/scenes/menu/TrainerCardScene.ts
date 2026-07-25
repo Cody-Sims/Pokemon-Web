@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
@@ -8,6 +9,8 @@ import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
 
 export class TrainerCardScene extends Phaser.Scene {
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
     super({ key: 'TrainerCardScene' });
   }
@@ -69,10 +72,6 @@ export class TrainerCardScene extends Phaser.Scene {
     }).setOrigin(0, 0.5);
 
     const badges = gm.getBadges();
-    const badgeNames = [
-      'Aster', 'Terra', 'Coral', 'Voltara',
-      'Ember', 'Iron', 'Wraith', 'Drake',
-    ];
     const badgeStartX = leftX + 80;
     for (let i = 0; i < 8; i++) {
       const bx = badgeStartX + i * 52;
@@ -132,9 +131,9 @@ export class TrainerCardScene extends Phaser.Scene {
     closeHintText.on('pointerdown', () => this.close());
 
     // Input
-    this.input.keyboard!.on('keydown-ESC', () => this.close());
-    this.input.keyboard!.on('keydown-ENTER', () => this.close());
-    this.input.on('pointerdown', () => this.close());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.close());
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.close());
+    this.inputRegistry.bindPointer(this.input, 'pointerdown', () => this.close());
   }
 
   private close(): void {

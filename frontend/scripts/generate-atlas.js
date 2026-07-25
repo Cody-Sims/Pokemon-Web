@@ -174,7 +174,6 @@ function buildAudio(subfolder) {
 
 const manifest = {
   version: 1,
-  generated: new Date().toISOString(),
   categories: {
     'pokemon-icons':    buildPokemonIcons(),
     'pokemon-front':    buildPokemonBattle('front'),

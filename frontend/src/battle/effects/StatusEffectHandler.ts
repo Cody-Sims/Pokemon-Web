@@ -1,13 +1,12 @@
 import { PokemonInstance, MoveData } from '@data/interfaces';
-import { moveData } from '@data/moves';
-import { pokemonData } from '@data/pokemon';
-import { clamp, randomInt, seededRandom } from '@utils/math-helpers';
-import { Stats, StatStages, StatusCondition, VolatileStatus, MoveEffect, PokemonType } from '@utils/type-helpers';
-import { HeldItemHandler } from './HeldItemHandler';
+import { Stats, StatStages, VolatileStatus } from '@utils/type-helpers';
+import { moveEffects } from './registry/move-effects';
+import type { BattleRng } from '../core/BattleRng';
+import { globalBattleRng } from '../core/BattleRng';
 
 // ── Result types ────────────────────────────────────────────────
 
-export interface TurnStartResult {
+interface TurnStartResult {
   canAct: boolean;
   messages: string[];
 }
@@ -19,7 +18,7 @@ export interface EffectResult {
   selfDestruct?: boolean;
 }
 
-export interface EndOfTurnResult {
+interface EndOfTurnResult {
   damage: number;
   messages: string[];
   fainted: boolean;
@@ -47,12 +46,6 @@ const STAGE_MULTIPLIERS: Record<number, number> = {
   [1]: 3 / 2, [2]: 4 / 2, [3]: 5 / 2, [4]: 6 / 2, [5]: 7 / 2, [6]: 8 / 2,
 };
 
-const STAT_NAMES: Record<keyof StatStages, string> = {
-  attack: 'Attack', defense: 'Defense',
-  spAttack: 'Sp. Atk', spDefense: 'Sp. Def', speed: 'Speed',
-  accuracy: 'Accuracy', evasion: 'Evasion',
-};
-
 // ── Helper to get a pokemon display name ───────────────────────
 
 function pokeName(p: PokemonInstance): string {
@@ -65,6 +58,10 @@ function pokeName(p: PokemonInstance): string {
 
 export class StatusEffectHandler {
   private states = new Map<PokemonInstance, BattlePokemonState>();
+
+  constructor(private readonly rng: BattleRng = globalBattleRng) {}
+
+  getRng(): BattleRng { return this.rng; }
 
   // ── Lifecycle ────────────────────────────────────────────────
 
@@ -172,7 +169,7 @@ export class StatusEffectHandler {
     // ── Freeze ──
     if (pokemon.status === 'freeze') {
       // 20% chance to thaw each turn
-      if (seededRandom() < 0.2) {
+      if (this.rng.chance(0.2)) {
         pokemon.status = null;
         messages.push(`${name} thawed out!`);
       } else {
@@ -183,7 +180,7 @@ export class StatusEffectHandler {
 
     // ── Paralysis ──
     if (pokemon.status === 'paralysis') {
-      if (seededRandom() < 0.25) {
+      if (this.rng.chance(0.25)) {
         messages.push(`${name} is paralyzed! It can't move!`);
         return { canAct: false, messages };
       }
@@ -198,7 +195,7 @@ export class StatusEffectHandler {
       } else {
         messages.push(`${name} is confused!`);
         // 50% chance to hit self
-        if (seededRandom() < 0.5) {
+        if (this.rng.chance(0.5)) {
           // AUDIT-046: Use proper confusion damage formula (level-based like the games)
           const confusionPower = 40;
           const level = pokemon.level;
@@ -250,24 +247,6 @@ export class StatusEffectHandler {
     return null;
   }
 
-  // ── Type-based status immunity check ────────────────────────
-
-  /** Returns true if the target is immune to the given status based on its type. */
-  private isImmuneToStatus(target: PokemonInstance, status: string): boolean {
-    const data = pokemonData[target.dataId];
-    if (!data) return false;
-    const types = data.types as PokemonType[];
-
-    switch (status) {
-      case 'burn':        return types.includes('fire');
-      case 'paralysis':   return types.includes('electric');
-      case 'poison':
-      case 'bad-poison':  return types.includes('poison') || types.includes('steel');
-      case 'freeze':      return types.includes('ice');
-      default:            return false;
-    }
-  }
-
   // ── Apply a move's secondary effect ─────────────────────────
 
   applyMoveEffect(
@@ -279,19 +258,12 @@ export class StatusEffectHandler {
     const effect = move.effect;
     if (!effect) return { messages: [] };
 
-    const messages: string[] = [];
-    let healedHp = 0;
-    let recoilDamage = 0;
-    let selfDestruct = false;
-
-    // Check probability
     const chance = effect.chance ?? 100;
-    if (seededRandom() * 100 >= chance) return { messages: [] };
+    if (this.rng.next() * 100 >= chance) return { messages: [] };
 
     const target = effect.target === 'self' ? attacker : defender;
     const targetName = pokeName(target);
 
-    // Substitute blocks status effects from opponent moves (not self-inflicted)
     if (effect.target !== 'self') {
       const defState = this.states.get(defender);
       if (defState?.volatileStatuses?.has('substitute')) {
@@ -299,218 +271,17 @@ export class StatusEffectHandler {
       }
     }
 
-    switch (effect.type) {
-      // ── Status condition ──
-      case 'status': {
-        let status = effect.status;
-        // Support random status selection (e.g. Tri Attack)
-        if (!status && effect.randomStatus && effect.randomStatus.length > 0) {
-          status = effect.randomStatus[Math.floor(seededRandom() * effect.randomStatus.length)];
-        }
-        if (!status) break;
-
-        // Volatile statuses (can stack alongside a non-volatile)
-        if (status === 'confusion') {
-          const state = this.getState(target);
-          if (!state.volatileStatuses.has('confusion')) {
-            state.volatileStatuses.add('confusion');
-            state.confusionTurns = randomInt(2, 5);
-            messages.push(`${targetName} became confused!`);
-
-            // Berry-cures-on-apply (Persim, Lum) — undo immediately if held.
-            const cure = HeldItemHandler.onVolatileApplied(target, 'confusion');
-            if (cure.cured) {
-              state.volatileStatuses.delete('confusion');
-              state.confusionTurns = 0;
-              messages.push(...cure.messages);
-            }
-          }
-          break;
-        }
-
-        // Type-based immunities
-        if (this.isImmuneToStatus(target, status)) {
-          messages.push(`It doesn't affect ${targetName}...`);
-          break;
-        }
-
-        // Non-volatile — only one at a time
-        if (target.status) break; // already has a status
-        target.status = status;
-        if (status === 'sleep') {
-          target.statusTurns = randomInt(2, 4);
-        } else if (status === 'bad-poison') {
-          target.statusTurns = 1; // toxic counter
-        }
-
-        const statusMessages: Record<string, string> = {
-          burn: `${targetName} was burned!`,
-          paralysis: `${targetName} is paralyzed! It may be unable to move!`,
-          poison: `${targetName} was poisoned!`,
-          'bad-poison': `${targetName} was badly poisoned!`,
-          sleep: `${targetName} fell asleep!`,
-          freeze: `${targetName} was frozen solid!`,
-        };
-        messages.push(statusMessages[status] ?? `${targetName} was inflicted with ${status}!`);
-        break;
-      }
-
-      // ── Stat change ──
-      case 'stat-change': {
-        // Support multi-stat changes via statChanges array
-        const changes = effect.statChanges ?? (effect.stat && effect.stages != null
-          ? [{ stat: effect.stat, stages: effect.stages }]
-          : []);
-
-        for (const change of changes) {
-          const stat = change.stat;
-          const stages = change.stages ?? 0;
-          if (!stat || stages === 0) continue;
-
-          const state = this.getState(target);
-          const statKey = stat as keyof StatStages;
-          if (!(statKey in state.statStages)) continue;
-
-          const old = state.statStages[statKey];
-          state.statStages[statKey] = clamp(old + stages, -6, 6) as number;
-          const actual = state.statStages[statKey] - old;
-
-          if (actual === 0) {
-            messages.push(`${targetName}'s ${STAT_NAMES[statKey]} won't go any ${stages > 0 ? 'higher' : 'lower'}!`);
-          } else if (Math.abs(actual) === 1) {
-            messages.push(`${targetName}'s ${STAT_NAMES[statKey]} ${actual > 0 ? 'rose' : 'fell'}!`);
-          } else if (Math.abs(actual) >= 2) {
-            messages.push(`${targetName}'s ${STAT_NAMES[statKey]} ${actual > 0 ? 'rose sharply' : 'fell harshly'}!`);
-          }
-        }
-        break;
-      }
-
-      // ── Drain ──
-      case 'drain': {
-        if (damageDealt <= 0) break;
-        healedHp = Math.max(1, Math.floor(damageDealt / 2));
-        attacker.currentHp = Math.min(attacker.stats.hp, attacker.currentHp + healedHp);
-        messages.push(`${pokeName(attacker)} had its energy drained!`);
-        break;
-      }
-
-      // ── Recoil ──
-      case 'recoil': {
-        if (damageDealt <= 0) break;
-        const pct = (effect.amount ?? 25) / 100;
-        recoilDamage = Math.max(1, Math.floor(damageDealt * pct));
-        attacker.currentHp = Math.max(0, attacker.currentHp - recoilDamage);
-        messages.push(`${pokeName(attacker)} is damaged by recoil! ${recoilDamage} dmg.`);
-        break;
-      }
-
-      // ── Flinch ──
-      case 'flinch': {
-        const defState = this.getState(defender);
-        defState.volatileStatuses.add('flinch');
-        // No message yet — shown at start of defender's turn
-        break;
-      }
-
-      // ── Heal ──
-      case 'heal': {
-        const pct = (effect.amount ?? 50) / 100;
-        healedHp = Math.floor(attacker.stats.hp * pct);
-        const before = attacker.currentHp;
-        attacker.currentHp = Math.min(attacker.stats.hp, attacker.currentHp + healedHp);
-        healedHp = attacker.currentHp - before;
-        if (healedHp > 0) {
-          messages.push(`${pokeName(attacker)} regained health!`);
-        }
-        // Rest also puts user to sleep
-        if (move.id === 'rest') {
-          attacker.status = 'sleep';
-          attacker.statusTurns = 2;
-          messages.push(`${pokeName(attacker)} fell asleep and became healthy!`);
-        }
-        break;
-      }
-
-      // ── Self-destruct ──
-      case 'self-destruct': {
-        attacker.currentHp = 0;
-        selfDestruct = true;
-        messages.push(`${pokeName(attacker)} fainted!`);
-        break;
-      }
-
-      // ── Multi-hit (handled in MoveExecutor) ──
-      case 'multi-hit':
-        break;
-
-      // ── Fixed damage / Level damage / OHKO (handled in MoveExecutor) ──
-      case 'fixed-damage':
-      case 'level-damage':
-      case 'ohko':
-        break;
-
-      // ── Leech Seed ──
-      case 'leech-seed': {
-        // Grass types are immune
-        const defData = pokemonData[defender.dataId];
-        if (defData && (defData.types as PokemonType[]).includes('grass')) {
-          messages.push(`It doesn't affect ${pokeName(defender)}...`);
-          break;
-        }
-        const defState = this.getState(defender);
-        if (!defState.volatileStatuses.has('leech-seed')) {
-          defState.volatileStatuses.add('leech-seed');
-          messages.push(`${pokeName(defender)} was seeded!`);
-        } else {
-          messages.push(`${pokeName(defender)} is already seeded!`);
-        }
-        break;
-      }
-
-      // ── Trapping moves (Wrap, Bind, Fire Spin, Clamp) ──
-      case 'trap': {
-        const defState = this.getState(defender);
-        if (!defState.volatileStatuses.has('trapped')) {
-          defState.volatileStatuses.add('trapped');
-          defState.trapTurns = randomInt(4, 5);
-          messages.push(`${pokeName(defender)} was trapped!`);
-        }
-        break;
-      }
-
-      // ── Weather-setting moves ──
-      case 'weather': {
-        // Weather is set by the caller (BattleUIScene) using WeatherManager.
-        // This case signals that the move was a weather move.
-        // The actual weather setting happens in executeMove.
-        break;
-      }
-
-      // ── Protect / Detect ──
-      case 'protect': {
-        const atkState = this.getState(attacker);
-        // Success chance halves each consecutive use
-        if (seededRandom() < atkState.protectSuccessRate) {
-          atkState.volatileStatuses.add('protect');
-          atkState.protectSuccessRate *= 0.5;
-          messages.push(`${pokeName(attacker)} protected itself!`);
-        } else {
-          // NEW-009: Don't reset rate on failure — keep halving
-          atkState.protectSuccessRate *= 0.5;
-          messages.push(`But it failed!`);
-        }
-        break;
-      }
-
-      // ── Two-turn moves (charge turn handled in MoveExecutor) ──
-      case 'two-turn': {
-        // Handled in MoveExecutor — this is a no-op here
-        break;
-      }
-    }
-
-    return { messages, healedHp, recoilDamage, selfDestruct };
+    return moveEffects[effect.type]?.apply({
+      attacker,
+      defender,
+      move,
+      effect,
+      damageDealt,
+      target,
+      targetName,
+      statusHandler: this,
+      rng: this.rng,
+    }) ?? { messages: [] };
   }
 
   // ── End-of-turn residual damage ─────────────────────────────

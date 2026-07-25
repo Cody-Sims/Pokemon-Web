@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { HealthBar } from './HealthBar';
-import { mobileFontSize } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize } from '@ui/theme';
 
 /** Composite widget: name, level, HP bar, EXP bar. */
 export class BattleHUD {
@@ -18,16 +18,16 @@ export class BattleHUD {
     currentHp: number,
     maxHp: number
   ) {
-    this.nameText = scene.add.text(x, y, name, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
-    this.levelText = scene.add.text(x + 140, y, `Lv${level}`, { fontSize: mobileFontSize(14), color: '#ffffff' });
+    this.nameText = scene.add.text(x, y, name, { ...FONTS.body, fontSize: mobileFontSize(16), color: COLORS.textWhite, fontStyle: 'bold' });
+    this.levelText = scene.add.text(x + 140, y, `Lv${level}`, { ...FONTS.bodySmall, fontSize: mobileFontSize(14), color: COLORS.textWhite });
     this.hpBar = new HealthBar(scene, x, y + 22, 180, 10, maxHp);
     this.hpBar.setValue(currentHp);
-    this.hpText = scene.add.text(x + 90, y + 34, `${currentHp}/${maxHp}`, { fontSize: mobileFontSize(12), color: '#ffffff' }).setOrigin(0.5, 0);
+    this.hpText = scene.add.text(x + 90, y + 34, `${currentHp}/${maxHp}`, { ...FONTS.caption, fontSize: mobileFontSize(12), color: COLORS.textWhite }).setOrigin(0.5, 0);
   }
 
   updateHp(currentHp: number, maxHp: number): void {
-    this.hpBar.setValue(currentHp);
     this.hpBar.setMaxValue(maxHp);
+    this.hpBar.setValue(currentHp);
     this.hpText.setText(`${currentHp}/${maxHp}`);
   }
 

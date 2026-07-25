@@ -1,33 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { SaveManager } from '../../../frontend/src/managers/SaveManager';
 import { GameManager } from '../../../frontend/src/managers/GameManager';
-import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 import { createLocalStorageMock } from '../../mocks/local-storage-mock';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 
-const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
-  dataId: 4,
-  level: 10,
-  currentHp: 30,
-  stats: { hp: 30, attack: 15, defense: 12, spAttack: 18, spDefense: 14, speed: 16 },
-  ivs: { hp: 15, attack: 15, defense: 15, spAttack: 15, spDefense: 15, speed: 15 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy',
-  moves: [{ moveId: 'ember', currentPp: 25 }],
-  status: null,
-  exp: 0,
-  friendship: 70,
-  ...overrides,
-});
+
+const makePokemon = createPokemonFactory('standard');
 
 describe('SaveManager', () => {
   let mockStorage: ReturnType<typeof createLocalStorageMock>;
 
   beforeEach(() => {
     // Reset singletons
-    // @ts-expect-error private access for test
-    GameManager.instance = undefined;
-    // @ts-expect-error private access for test
-    SaveManager.instance = undefined;
+    GameManager.resetInstance();
+    SaveManager.resetInstance();
 
     mockStorage = createLocalStorageMock();
     vi.stubGlobal('localStorage', mockStorage);
@@ -123,8 +109,7 @@ describe('SaveManager', () => {
     sm.save();
 
     // Reset GameManager
-    // @ts-expect-error private
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     const gm2 = GameManager.getInstance();
 
     // Load and restore

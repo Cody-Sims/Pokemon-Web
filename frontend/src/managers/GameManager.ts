@@ -22,7 +22,7 @@ export { defaultStats };
  * (e.g. `GameManager.getInstance().partyMgr`) for clarity.
  */
 export class GameManager {
-  private static instance: GameManager;
+  private static instance: GameManager | undefined;
 
   // ── Sub-managers ───────────────────────────────────────
   private readonly _party = new PartyManager();
@@ -30,13 +30,28 @@ export class GameManager {
   private readonly _player = new PlayerStateManager();
   private readonly _stats = StatsManager.getInstance();
 
-  private constructor() { /* sub-manager constructors handle init */ }
+  private constructor() {
+    QuestManager.configureStateAccess({
+      getFlag: (flag) => this.getFlag(flag),
+      setFlag: (flag, value) => this.setFlag(flag, value),
+      addItem: (itemId, qty) => this.addItem(itemId, qty),
+      addMoney: (amount) => this.addMoney(amount),
+    });
+  }
 
   static getInstance(): GameManager {
     if (!GameManager.instance) {
       GameManager.instance = new GameManager();
     }
     return GameManager.instance;
+  }
+
+  static resetInstance(): void {
+    GameManager.instance?.reset();
+    GameManager.instance = undefined;
+    EventManager.resetInstance();
+    StatsManager.resetInstance();
+    QuestManager.resetInstance();
   }
 
   /** Direct access to the party / PC-box sub-manager. */

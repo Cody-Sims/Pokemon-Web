@@ -1,13 +1,17 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
+import { FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { AchievementManager } from '@managers/AchievementManager';
 import { pokemonData } from '@data/pokemon';
 import { AudioManager } from '@managers/AudioManager';
+import { EventManager } from '@managers/EventManager';
 import { SFX } from '@utils/audio-keys';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 /** Overlay scene for choosing a starter Pokémon. */
 export class StarterSelectScene extends Phaser.Scene {
@@ -19,8 +23,10 @@ export class StarterSelectScene extends Phaser.Scene {
   ];
   private cards: Phaser.GameObjects.Container[] = [];
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
-    super({ key: 'StarterSelectScene' });
+    super({ key: SceneKey.StarterSelect });
   }
 
   create(): void {
@@ -109,7 +115,7 @@ export class StarterSelectScene extends Phaser.Scene {
       const data = pokemonData[s.id];
       if (isPortrait) {
         // Sprite zone width — capped so wide cards don't push the text
-        // column off the right edge once `MOBILE_SCALE` (1.35) inflates
+        // column off the right edge once `mobileScale()` inflates
         // the font sizes on mobile.
         const spriteZone = Math.min(cardH, 84);
         const spriteX = -cardW / 2 + spriteZone / 2;
@@ -174,31 +180,31 @@ export class StarterSelectScene extends Phaser.Scene {
     this.updateCursor();
 
     // Keyboard input
-    this.input.keyboard!.on('keydown-LEFT', () => {
+    this.inputRegistry.bindKey('keydown-LEFT', () => {
       this.cursor = (this.cursor - 1 + 3) % 3;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-RIGHT', () => {
+    this.inputRegistry.bindKey('keydown-RIGHT', () => {
       this.cursor = (this.cursor + 1) % 3;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
     // Portrait stack — also wire UP/DOWN so arrow keys feel natural.
-    this.input.keyboard!.on('keydown-UP', () => {
+    this.inputRegistry.bindKey('keydown-UP', () => {
       this.cursor = (this.cursor - 1 + 3) % 3;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-DOWN', () => {
+    this.inputRegistry.bindKey('keydown-DOWN', () => {
       this.cursor = (this.cursor + 1) % 3;
       this.updateCursor();
       AudioManager.getInstance().playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-ENTER', () => this.selectStarter());
-    this.input.keyboard!.on('keydown-SPACE', () => this.selectStarter());
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.selectStarter());
+    this.inputRegistry.bindKey('keydown-SPACE', () => this.selectStarter());
     // BUG-079: Add back/cancel handler
-    this.input.keyboard!.on('keydown-ESC', () => this.goBack());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.goBack());
 
     // Re-layout on resize / orientation change
     let resizeInit = false;
@@ -241,6 +247,7 @@ export class StarterSelectScene extends Phaser.Scene {
     // Clear party (remove the auto-generated starter) and add the chosen one
     gm.setParty([]);
     gm.addToParty(starter);
+    EventManager.getInstance().emit('party-changed');
     gm.setFlag('receivedStarter');
     gm.setFlag(`starterChoice_${choice.id}`);
     gm.markSeen(choice.id);
@@ -262,16 +269,17 @@ export class StarterSelectScene extends Phaser.Scene {
 
     this.time.delayedCall(400, () => {
       // Show confirmation dialogue
-      this.scene.stop();
+      const router = SceneRouter.for(this);
+      router.stop();
       const data = pokemonData[choice.id];
-      this.scene.launch('DialogueScene', {
+      router.launch(SceneKey.Dialogue, {
         dialogue: [
           `You received ${data?.name ?? choice.name}!`,
           'Take good care of it!',
         ],
       });
-      this.scene.get('DialogueScene').events.once('shutdown', () => {
-        this.scene.resume('OverworldScene');
+      router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+        router.resume(SceneKey.Overworld);
       });
     });
   }

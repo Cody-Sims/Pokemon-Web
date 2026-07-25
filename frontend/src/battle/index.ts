@@ -5,12 +5,15 @@ export { BattleStateMachine } from './core/BattleStateMachine';
 export { DoubleBattleManager, getMoveTarget } from './core/DoubleBattleManager';
 export { AIController } from './core/AIController';
 export { PartnerAI } from './core/PartnerAI';
+export { GlobalBattleRng, SeededBattleRng, globalBattleRng, createBattleRng } from './core/BattleRng';
+export type { BattleRng } from './core/BattleRng';
 
 // ── Calculation ──────────────────────────────────────────────
 export { DamageCalculator } from './calculation/DamageCalculator';
 export type { DamageResult } from './calculation/DamageCalculator';
 export { ExperienceCalculator, getNatureMultiplier, getNatureDescription } from './calculation/ExperienceCalculator';
 export { CatchCalculator } from './calculation/CatchCalculator';
+export { getTypeEffectiveness, getCombinedEffectiveness } from './calculation/TypeEffectiveness';
 
 // ── Effects ──────────────────────────────────────────────────
 export { StatusEffectHandler } from './effects/StatusEffectHandler';

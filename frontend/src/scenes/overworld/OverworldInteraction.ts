@@ -8,13 +8,15 @@ import { EncounterSystem } from '@systems/overworld/EncounterSystem';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { Tile } from '@data/maps';
 import type { MapDefinition, NpcSpawn, ObjectSpawn } from '@data/maps';
-import { trainerData } from '@data/trainer-data';
 import { pokemonData } from '@data/pokemon';
 import { cutsceneData } from '@data/cutscene-data';
 import { TILE_SIZE } from '@utils/constants';
 import type { Direction } from '@utils/type-helpers';
 import type { PokemonInstance } from '@data/interfaces';
-import type { CutsceneDefinition } from '@systems/engine/CutsceneEngine';
+import type { CutsceneDefinition } from '@data/cutscenes/types';
+import { getTrainerData } from '@systems/engine/TrainerResolver';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 /** Shared mutable overworld state — passed by reference so handlers can write through. */
 export interface OverworldState {
@@ -49,7 +51,17 @@ export interface InteractionContext {
 /** Handle player interact action — NPC dialogue/dispatch and tile interactions. */
 export function tryInteract(ctx: InteractionContext): void {
   const { scene, mapDef, player, npcs } = ctx;
-  const sm = scene.scene; // Phaser ScenePlugin
+  const router = SceneRouter.for(scene);
+  const onNextDialogueClosed = (callback: () => void) => {
+    const tag = `${scene.scene.key}:dialogue-closed`;
+    const events = EventManager.getInstance();
+    events.clearByTag(tag);
+    events.onTagged(tag, 'dialogue-closed', ({ callingScene }) => {
+      if (callingScene !== scene.scene.key) return;
+      events.clearByTag(tag);
+      callback();
+    });
+  };
   const { x: px, y: py } = player.getTilePosition();
   const facing = player.getFacing();
 
@@ -150,34 +162,45 @@ export function tryInteract(ctx: InteractionContext): void {
 
       // Handle special interaction types
       if (spawnDef?.interactionType === 'heal') {
-        sm.pause();
-        sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-        sm.get('DialogueScene').events.once('shutdown', () => {
+        router.pause();
+        onNextDialogueClosed(() => {
           ctx.healParty();
-          sm.resume();
         });
+        router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
         return;
       }
 
       if (spawnDef?.interactionType === 'shop') {
-        sm.pause();
-        sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-        sm.get('DialogueScene').events.once('shutdown', () => {
-          sm.launch('ShopScene', { shopId: gm.getCurrentMap() });
-          sm.get('ShopScene').events.once('shutdown', () => {
-            sm.resume();
+        router.pause();
+        router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+        router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+          router.launch(SceneKey.Shop, { shopId: gm.getCurrentMap() });
+          router.get(SceneKey.Shop).events.once('shutdown', () => {
+            router.resume();
+          });
+        });
+        return;
+      }
+
+      if ((spawnDef as { interactionType?: string } | undefined)?.interactionType === 'voltorb-flip') {
+        router.pause();
+        router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+        router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+          router.launch(SceneKey.VoltorbFlip);
+          router.get(SceneKey.VoltorbFlip).events.once('shutdown', () => {
+            router.resume();
           });
         });
         return;
       }
 
       if (spawnDef?.interactionType === 'pc') {
-        sm.pause();
-        sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-        sm.get('DialogueScene').events.once('shutdown', () => {
-          sm.launch('PCScene');
-          sm.get('PCScene').events.once('shutdown', () => {
-            sm.resume();
+        router.pause();
+        router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+        router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+          router.launch(SceneKey.PC);
+          router.get(SceneKey.PC).events.once('shutdown', () => {
+            router.resume();
           });
         });
         return;
@@ -185,48 +208,48 @@ export function tryInteract(ctx: InteractionContext): void {
 
       if (spawnDef?.interactionType === 'move-tutor') {
         const tutorId = spawnDef.interactionData ?? spawnDef.id;
-        sm.pause();
-        sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-        sm.get('DialogueScene').events.once('shutdown', () => {
-          sm.launch('MoveTutorScene', { tutorId });
-          sm.get('MoveTutorScene').events.once('shutdown', () => {
-            sm.resume();
+        router.pause();
+        router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+        router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+          router.launch(SceneKey.MoveTutor, { tutorId });
+          router.get(SceneKey.MoveTutor).events.once('shutdown', () => {
+            router.resume();
           });
         });
         return;
       }
 
       if (spawnDef?.interactionType === 'starter-select' && !gm.getFlag('receivedStarter')) {
-        sm.pause();
-        sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-        sm.get('DialogueScene').events.once('shutdown', () => {
-          sm.resume();
+        router.pause();
+        router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+        router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+          router.resume();
           ctx.launchStarterSelection();
         });
         return;
       }
 
       if (spawnDef?.interactionType === 'name-rater') {
-        sm.pause();
-        sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-        sm.get('DialogueScene').events.once('shutdown', () => {
+        router.pause();
+        router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+        router.get(SceneKey.Dialogue).events.once('shutdown', () => {
           let selectionHandled = false;
-          sm.launch('PartyScene', { selectMode: true });
-          sm.get('PartyScene').events.once('pokemon-selected', (index: number) => {
+          router.launch(SceneKey.Party, { selectMode: true });
+          router.get(SceneKey.Party).events.once('pokemon-selected', (index: number) => {
             selectionHandled = true;
-            sm.stop('PartyScene');
+            router.stop(SceneKey.Party);
             const party = gm.getParty();
             const selected = party[index];
-            if (!selected) { sm.resume(); return; }
+            if (!selected) { router.resume(); return; }
             const speciesName = pokemonData[selected.dataId]?.name ?? '???';
             ctx.launchNicknameInput(selected, speciesName, () => {
-              sm.resume();
+              router.resume();
             });
           });
-          sm.get('PartyScene').events.once('shutdown', () => {
+          router.get(SceneKey.Party).events.once('shutdown', () => {
             // Only resume if PartyScene shut down without a selection
             if (!selectionHandled) {
-              sm.resume();
+              router.resume();
             }
           });
         });
@@ -239,19 +262,19 @@ export function tryInteract(ctx: InteractionContext): void {
         if (wonFlag && gm.getFlag(wonFlag)) {
           // Already completed – show regular dialogue
         } else {
-          const allyData = trainerData[allyId];
-          const e1Data = trainerData[enemy1Id];
-          const e2Data = trainerData[enemy2Id];
+          const allyData = getTrainerData(allyId);
+          const e1Data = getTrainerData(enemy1Id);
+          const e2Data = getTrainerData(enemy2Id);
           if (allyData && e1Data && e2Data) {
             const allyParty = allyData.party.map(p => EncounterSystem.createWildPokemon(p.pokemonId, p.level));
             const enemyParty1 = e1Data.party.map(p => EncounterSystem.createWildPokemon(p.pokemonId, p.level));
             const enemyParty2 = e2Data.party.map(p => EncounterSystem.createWildPokemon(p.pokemonId, p.level));
-            sm.pause();
-            sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-            sm.get('DialogueScene').events.once('shutdown', () => {
-              sm.start('TransitionScene', {
-                targetScene: 'BattleScene',
-                returnScene: 'OverworldScene',
+            router.pause();
+            router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+            router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+              router.start(SceneKey.Transition, {
+                targetScene: SceneKey.Battle,
+                returnScene: SceneKey.Overworld,
                 targetData: {
                   isDouble: true,
                   allyParty,
@@ -275,32 +298,32 @@ export function tryInteract(ctx: InteractionContext): void {
         });
         const nextReq = requirements.find(r => !gm.getFlag(r.flag));
         if (nextReq) {
-          sm.pause();
-          sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-          sm.get('DialogueScene').events.once('shutdown', () => {
+          router.pause();
+          router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+          router.get(SceneKey.Dialogue).events.once('shutdown', () => {
             let selectionHandled = false;
-            sm.launch('PartyScene', { selectMode: true });
-            sm.get('PartyScene').events.once('pokemon-selected', (index: number) => {
+            router.launch(SceneKey.Party, { selectMode: true });
+            router.get(SceneKey.Party).events.once('pokemon-selected', (index: number) => {
               selectionHandled = true;
-              sm.stop('PartyScene');
+              router.stop(SceneKey.Party);
               const party = gm.getParty();
               const selected = party[index];
-              if (!selected) { sm.resume(); return; }
+              if (!selected) { router.resume(); return; }
               const pData = pokemonData[selected.dataId];
               if (pData && pData.types.some((t: string) => t === nextReq.type)) {
                 gm.setFlag(nextReq.flag);
                 EventManager.getInstance().emit('flag-set', nextReq.flag);
-                sm.launch('DialogueScene', { dialogue: [`Magnificent! A fine ${nextReq.type}-type indeed!`], speaker: npcSpeaker, portraitKey: npcPortraitKey });
-                sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+                router.launch(SceneKey.Dialogue, { dialogue: [`Magnificent! A fine ${nextReq.type}-type indeed!`], speaker: npcSpeaker, portraitKey: npcPortraitKey });
+                router.get(SceneKey.Dialogue).events.once('shutdown', () => router.resume());
               } else {
-                sm.launch('DialogueScene', { dialogue: [`Hmm, that's not the ${nextReq.type}-type I'm looking for.`], speaker: npcSpeaker, portraitKey: npcPortraitKey });
-                sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+                router.launch(SceneKey.Dialogue, { dialogue: [`Hmm, that's not the ${nextReq.type}-type I'm looking for.`], speaker: npcSpeaker, portraitKey: npcPortraitKey });
+                router.get(SceneKey.Dialogue).events.once('shutdown', () => router.resume());
               }
             });
-            sm.get('PartyScene').events.once('shutdown', () => {
+            router.get(SceneKey.Party).events.once('shutdown', () => {
               // Only resume if PartyScene shut down without a selection
               if (!selectionHandled) {
-                sm.resume();
+                router.resume();
               }
             });
           });
@@ -312,13 +335,13 @@ export function tryInteract(ctx: InteractionContext): void {
       if (spawnDef?.interactionType === 'wild-encounter' && spawnDef.interactionData) {
         const [speciesId, lvl] = spawnDef.interactionData.split('-').map(Number);
         if (speciesId && lvl) {
-          sm.pause();
-          sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-          sm.get('DialogueScene').events.once('shutdown', () => {
+          router.pause();
+          router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+          router.get(SceneKey.Dialogue).events.once('shutdown', () => {
             const wild = EncounterSystem.createWildPokemon(speciesId, lvl);
             // Resume before triggering encounter — triggerWildEncounter uses
             // delayedCall which won't fire on a paused scene.
-            sm.resume();
+            router.resume();
             ctx.triggerWildEncounter(wild);
           });
           return;
@@ -328,12 +351,12 @@ export function tryInteract(ctx: InteractionContext): void {
       // ── Battle Tower handler (A.1) ──
       // Launches the Battle Tower lobby; on close it returns the player here.
       if (spawnDef?.interactionType === 'battle-tower') {
-        sm.pause();
-        sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-        sm.get('DialogueScene').events.once('shutdown', () => {
+        router.pause();
+        router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+        router.get(SceneKey.Dialogue).events.once('shutdown', () => {
           // Stop the dialogue + overworld so the lobby owns the canvas.
-          sm.stop('DialogueScene');
-          sm.start('BattleTowerScene', { exitScene: 'OverworldScene' });
+          router.stop(SceneKey.Dialogue);
+          router.start(SceneKey.BattleTower, { exitScene: SceneKey.Overworld });
         });
         return;
       }
@@ -347,28 +370,28 @@ export function tryInteract(ctx: InteractionContext): void {
         const owned = fossilTable.find(f => gm.getItemCount(f.itemId) > 0);
         if (!owned) {
           // No fossil — explain and exit.
-          sm.pause();
-          sm.launch('DialogueScene', {
+          router.pause();
+          router.launch(SceneKey.Dialogue, {
             dialogue: [
               'I can revive ancient fossils into living Pokémon!',
               'Bring me a Claw Fossil or Wing Fossil and I will get to work.',
             ],
             speaker: npcSpeaker, portraitKey: npcPortraitKey,
           });
-          sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+          router.get(SceneKey.Dialogue).events.once('shutdown', () => router.resume());
           return;
         }
         const FOSSIL_PRICE = 5000;
         if (gm.getMoney() < FOSSIL_PRICE) {
-          sm.pause();
-          sm.launch('DialogueScene', {
+          router.pause();
+          router.launch(SceneKey.Dialogue, {
             dialogue: [
               `Reviving the ${owned.name === 'Lithoclaw' ? 'Claw' : 'Wing'} Fossil costs ¥${FOSSIL_PRICE}.`,
               `You don\u2019t have enough money. Come back when you can afford it!`,
             ],
             speaker: npcSpeaker, portraitKey: npcPortraitKey,
           });
-          sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+          router.get(SceneKey.Dialogue).events.once('shutdown', () => router.resume());
           return;
         }
         // Revive: spend money, consume fossil, generate Pokémon, add to party.
@@ -376,8 +399,9 @@ export function tryInteract(ctx: InteractionContext): void {
         gm.removeItem(owned.itemId, 1);
         const revived = EncounterSystem.createWildPokemon(owned.speciesId, 20);
         gm.addToParty(revived);
-        sm.pause();
-        sm.launch('DialogueScene', {
+        EventManager.getInstance().emit('party-changed');
+        router.pause();
+        router.launch(SceneKey.Dialogue, {
           dialogue: [
             `Loading the ${owned.name === 'Lithoclaw' ? 'Claw' : 'Wing'} Fossil into the regenerator...`,
             'The machine hums to life — ancient DNA reawakens!',
@@ -386,7 +410,7 @@ export function tryInteract(ctx: InteractionContext): void {
           ],
           speaker: npcSpeaker, portraitKey: npcPortraitKey,
         });
-        sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+        router.get(SceneKey.Dialogue).events.once('shutdown', () => router.resume());
         return;
       }
 
@@ -405,10 +429,10 @@ export function tryInteract(ctx: InteractionContext): void {
       }
 
       // Regular dialogue
-      sm.pause();
-      sm.launch('DialogueScene', { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
-      sm.get('DialogueScene').events.once('shutdown', () => {
-        sm.resume();
+      router.pause();
+      router.launch(SceneKey.Dialogue, { dialogue, speaker: npcSpeaker, portraitKey: npcPortraitKey });
+      router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+        router.resume();
       });
       return;
     }
@@ -460,12 +484,12 @@ export function tryInteract(ctx: InteractionContext): void {
 
       // Handle special interaction types
       if (spawnDef?.interactionType === 'pc') {
-        sm.pause();
-        sm.launch('DialogueScene', { dialogue });
-        sm.get('DialogueScene').events.once('shutdown', () => {
-          sm.launch('PCScene');
-          sm.get('PCScene').events.once('shutdown', () => {
-            sm.resume();
+        router.pause();
+        router.launch(SceneKey.Dialogue, { dialogue });
+        router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+          router.launch(SceneKey.PC);
+          router.get(SceneKey.PC).events.once('shutdown', () => {
+            router.resume();
           });
         });
         return;
@@ -482,28 +506,28 @@ export function tryInteract(ctx: InteractionContext): void {
         const ready = lastHarvest === null || (now - lastHarvest) >= regrowth;
         if (!ready && lastHarvest !== null) {
           const remaining = Math.max(1, Math.ceil(regrowth - (now - lastHarvest)));
-          sm.pause();
-          sm.launch('DialogueScene', {
+          router.pause();
+          router.launch(SceneKey.Dialogue, {
             dialogue: [
               'The berry tree is bare.',
               `It looks like it needs about ${remaining} more game-minutes to bear fruit again.`,
             ],
           });
-          sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+          router.get(SceneKey.Dialogue).events.once('shutdown', () => router.resume());
           return;
         }
         gm.addItem(berryId, 1);
         gm.recordBerryHarvest(treeId, now);
         EventManager.getInstance().emit('berry-harvested', { treeId, berryId });
         const berryName = berryId.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
-        sm.pause();
-        sm.launch('DialogueScene', {
+        router.pause();
+        router.launch(SceneKey.Dialogue, {
           dialogue: [
             'You picked a ripe berry from the tree!',
             `Got 1 ${berryName}!`,
           ],
         });
-        sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+        router.get(SceneKey.Dialogue).events.once('shutdown', () => router.resume());
         return;
       }
 
@@ -522,10 +546,10 @@ export function tryInteract(ctx: InteractionContext): void {
       }
 
       // Regular dialogue
-      sm.pause();
-      sm.launch('DialogueScene', { dialogue });
-      sm.get('DialogueScene').events.once('shutdown', () => {
-        sm.resume();
+      router.pause();
+      router.launch(SceneKey.Dialogue, { dialogue });
+      router.get(SceneKey.Dialogue).events.once('shutdown', () => {
+        router.resume();
       });
       return;
     }
@@ -564,9 +588,9 @@ export function tryInteract(ctx: InteractionContext): void {
         if (gm.getFlag('oakOfferedStarter')) {
           ctx.launchStarterSelection();
         } else {
-          sm.pause();
-          sm.launch('DialogueScene', { dialogue: ['There are three Poké Balls on the table.'] });
-          sm.get('DialogueScene').events.once('shutdown', () => sm.resume());
+          router.pause();
+          router.launch(SceneKey.Dialogue, { dialogue: ['There are three Poké Balls on the table.'] });
+          router.get(SceneKey.Dialogue).events.once('shutdown', () => router.resume());
         }
         return;
       }

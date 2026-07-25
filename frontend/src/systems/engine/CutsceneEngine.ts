@@ -1,40 +1,15 @@
-import Phaser from 'phaser';
+import type Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
 import { TILE_SIZE, WALK_DURATION } from '@utils/constants';
-import { EmoteBubble, EmoteType } from '@systems/rendering/EmoteBubble';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
 import { SaveManager } from '@managers/SaveManager';
-
-// ─── CutsceneAction union type ──────────────────────────────
-
-export type CutsceneAction =
-  | { type: 'dialogue'; speaker?: string; portraitKey?: string; lines: string[] }
-  | { type: 'moveCameraTo'; x: number; y: number; duration?: number }
-  | { type: 'moveNPC'; npcId: string; direction: Direction; tiles: number; speed?: number }
-  | { type: 'faceNPC'; npcId: string; direction: Direction }
-  | { type: 'facePlayer'; direction: Direction }
-  | { type: 'wait'; ms: number }
-  | { type: 'fadeToBlack'; duration?: number }
-  | { type: 'fadeFromBlack'; duration?: number }
-  | { type: 'flashScreen'; color?: number; duration?: number }
-  | { type: 'playBGM'; key: string }
-  | { type: 'playSFX'; key: string }
-  | { type: 'screenShake'; intensity?: number; duration?: number }
-  | { type: 'showEmote'; targetId: string; emote: string }
-  | { type: 'setFlag'; flag: string; value?: boolean }
-  | { type: 'parallel'; actions: CutsceneAction[] }
-  | { type: 'movePlayer'; direction: Direction; tiles: number };
-
-export interface CutsceneDefinition {
-  id: string;
-  actions: CutsceneAction[];
-}
+import type { CutsceneAction, CutsceneDefinition } from '@data/cutscenes/types';
 
 // ─── Minimal interface so CutsceneEngine doesn't depend on the concrete OverworldScene class ───
 
-export interface CutsceneSceneAccess {
+interface CutsceneSceneAccess {
   npcs: { npcId: string; x: number; y: number; faceDirection(dir: Direction): void; playWalkAnim(duration: number): void; stopWalkAnim(): void; setFrame(frame: string): void; setFlipX(flip: boolean): void; texture: { key: string } }[];
   player: {
     x: number; y: number;
@@ -48,20 +23,53 @@ export interface CutsceneSceneAccess {
   };
 }
 
+export interface CutsceneDialogueRequest {
+  speaker?: string;
+  portraitKey?: string;
+  lines: string[];
+}
+
+export interface CutsceneDialogueLauncher {
+  showDialogue(scene: Phaser.Scene, request: CutsceneDialogueRequest): Promise<void>;
+}
+
+const defaultDialogueLauncher: CutsceneDialogueLauncher = {
+  showDialogue(scene, request) {
+    return new Promise<void>((resolve) => {
+      scene.scene.pause();
+      scene.scene.launch('DialogueScene', {
+        dialogue: request.lines,
+        speaker: request.speaker,
+        portraitKey: request.portraitKey,
+      });
+      scene.scene.get('DialogueScene').events.once('shutdown', () => {
+        scene.scene.resume(scene.scene.key);
+        resolve();
+      });
+    });
+  },
+};
+
 // ─── CutsceneEngine ─────────────────────────────────────────
 
 export class CutsceneEngine {
   private scene: Phaser.Scene;
   private running = false;
   private sceneAccess: CutsceneSceneAccess | null = null;
+  private dialogueLauncher: CutsceneDialogueLauncher;
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, dialogueLauncher: CutsceneDialogueLauncher = defaultDialogueLauncher) {
     this.scene = scene;
+    this.dialogueLauncher = dialogueLauncher;
   }
 
   /** Provide access to NPCs and the player from the overworld scene. */
   setSceneAccess(access: CutsceneSceneAccess): void {
     this.sceneAccess = access;
+  }
+
+  setDialogueLauncher(dialogueLauncher: CutsceneDialogueLauncher): void {
+    this.dialogueLauncher = dialogueLauncher;
   }
 
   /** Play a cutscene. Returns a Promise that resolves when complete. */
@@ -132,18 +140,7 @@ export class CutsceneEngine {
   // ── Action implementations ──────────────────────────────
 
   private execDialogue(action: { speaker?: string; portraitKey?: string; lines: string[] }): Promise<void> {
-    return new Promise<void>((resolve) => {
-      this.scene.scene.pause();
-      this.scene.scene.launch('DialogueScene', {
-        dialogue: action.lines,
-        speaker: action.speaker,
-        portraitKey: action.portraitKey,
-      });
-      this.scene.scene.get('DialogueScene').events.once('shutdown', () => {
-        this.scene.scene.resume(this.scene.scene.key);
-        resolve();
-      });
-    });
+    return this.dialogueLauncher.showDialogue(this.scene, action);
   }
 
   private execMoveCameraTo(action: { x: number; y: number; duration?: number }): Promise<void> {
@@ -258,12 +255,12 @@ export class CutsceneEngine {
     });
   }
 
-  private execShowEmote(action: { targetId: string; emote: string }): Promise<void> {
+  private async execShowEmote(action: { targetId: string; emote: string }): Promise<void> {
     const sprite = this.findSpriteById(action.targetId);
     if (sprite) {
-      EmoteBubble.show(this.scene, sprite, action.emote as EmoteType);
+      const { EmoteBubble } = await import('@systems/rendering/EmoteBubble');
+      EmoteBubble.show(this.scene, sprite, action.emote as Parameters<typeof EmoteBubble.show>[2]);
     }
-    return Promise.resolve();
   }
 
   private execSetFlag(action: { flag: string; value?: boolean }): Promise<void> {

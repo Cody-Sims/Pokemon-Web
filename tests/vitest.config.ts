@@ -16,14 +16,22 @@ export default defineConfig({
     },
   },
   test: {
-    root: path.resolve(__dirname),
-    include: ['unit/**/*.test.ts', 'integration/**/*.test.ts', 'replay/**/*.test.ts'],
+    root: path.resolve(__dirname, '..'),
+    include: ['tests/unit/**/*.test.ts', 'tests/integration/**/*.test.ts', 'tests/replay/**/*.test.ts'],
+    setupFiles: ['tests/setup.ts'],
     globals: true,
     environment: 'node',
     coverage: {
       provider: 'v8',
-      include: ['../frontend/src/**/*.ts'],
-      exclude: ['../frontend/src/scenes/**', '../frontend/src/main.ts'],
+      reportsDirectory: 'tests/coverage',
+      include: ['frontend/src/**/*.ts'],
+      exclude: ['frontend/src/main.ts'],
+      thresholds: {
+        statements: 11,
+        branches: 10,
+        functions: 15,
+        lines: 11,
+      },
     },
   },
 });

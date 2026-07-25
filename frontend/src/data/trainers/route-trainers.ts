@@ -1,4 +1,4 @@
-import { TrainerData } from '../interfaces';
+import type { TrainerData } from './types';
 
 export const routeTrainers: Record<string, TrainerData> = {
   // ─── Crystal Cavern: Hikers ───

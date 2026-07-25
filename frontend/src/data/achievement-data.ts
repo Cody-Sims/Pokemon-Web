@@ -1,4 +1,4 @@
-import { AchievementDef } from '@managers/AchievementManager';
+import type { AchievementDef } from '@data/achievement-types';
 
 export const ACHIEVEMENTS: AchievementDef[] = [
   // ── Story (10) ──

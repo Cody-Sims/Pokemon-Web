@@ -67,10 +67,18 @@ describe('CatchCalculator', () => {
     expect(sleepResult.shakes).toBeGreaterThanOrEqual(awakeResult.shakes);
   });
 
-  it('should give status bonus for burn/paralysis/poison (1.5x)', () => {
-    const burned = makeWild({ status: 'burn' });
-    const result = CatchCalculator.calculate(burned, 1);
-    expect(result.caught).toBe(true); // Pidgey with 255 catchRate + burn bonus → guaranteed
+  it.each(['burn', 'paralysis', 'poison', 'bad-poison'])('should give a 1.5x status bonus for %s', (status) => {
+    const healthy = makeWild({ status: null });
+    const afflicted = makeWild({ status });
+
+    vi.spyOn(mathHelpers, 'seededRandom').mockReturnValue(0.8);
+    const healthyResult = CatchCalculator.calculate(healthy, 1);
+    const afflictedResult = CatchCalculator.calculate(afflicted, 1);
+
+    expect(healthyResult.caught).toBe(false);
+    expect(healthyResult.shakes).toBe(0);
+    expect(afflictedResult.caught).toBe(true);
+    expect(afflictedResult.shakes).toBe(4);
   });
 
   it('should return { caught: false, shakes: 0 } for invalid pokemon data', () => {

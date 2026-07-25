@@ -1,176 +1,156 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
-import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX } from '@utils/audio-keys';
 import { mapRegistry } from '@data/maps';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
-
-/**
- * Town destinations for Fly. Each entry maps a badge count requirement
- * to a town map key and display name. Towns are unlocked when the
- * player has visited them (map key is in visitedMaps).
- */
-interface FlyDestination {
-  mapKey: string;
-  displayName: string;
-  /** Grid position on the visual map (column, row) for layout. */
-  gridX: number;
-  gridY: number;
-}
-
-const FLY_DESTINATIONS: FlyDestination[] = [
-  { mapKey: 'pallet-town',        displayName: 'Littoral Town',       gridX: 1, gridY: 7 },
-  { mapKey: 'viridian-city',      displayName: 'Viridian City',       gridX: 1, gridY: 6 },
-  { mapKey: 'pewter-city',        displayName: 'Pewter City',         gridX: 1, gridY: 4 },
-  { mapKey: 'coral-harbor',       displayName: 'Coral Harbor',        gridX: 3, gridY: 4 },
-  { mapKey: 'ironvale-city',      displayName: 'Ironvale City',       gridX: 3, gridY: 3 },
-  { mapKey: 'verdantia-village',  displayName: 'Verdantia Village',   gridX: 5, gridY: 3 },
-  { mapKey: 'voltara-city',       displayName: 'Voltara City',        gridX: 5, gridY: 2 },
-  { mapKey: 'wraithmoor-town',    displayName: 'Wraithmoor Town',     gridX: 3, gridY: 1 },
-  { mapKey: 'scalecrest-citadel', displayName: 'Scalecrest Citadel',  gridX: 5, gridY: 1 },
-  { mapKey: 'cinderfall-town',    displayName: 'Cinderfall Town',     gridX: 7, gridY: 1 },
-];
-
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
+import { RegionMapService } from '@systems/overworld/RegionMapService';
+import type { RegionMapNode } from '@data/region-map';
 
 export class FlyMapScene extends Phaser.Scene {
   private cursor = 0;
-  private destinations: FlyDestination[] = [];
+  private destinations: readonly RegionMapNode[] = [];
   private destTexts: Phaser.GameObjects.Text[] = [];
   private cursorIcon!: Phaser.GameObjects.Text;
   private descText!: Phaser.GameObjects.Text;
-  private pokemonName = '';
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
+  private readonly regionMap = new RegionMapService();
 
   constructor() {
-    super({ key: 'FlyMapScene' });
+    super({ key: SceneKey.FlyMap });
   }
 
   create(): void {
     const gm = GameManager.getInstance();
-
-    // Determine which towns player has visited (they've set foot on the map at some point)
-    this.destinations = FLY_DESTINATIONS.filter(d => {
-      // Player has been to this map if it's the current map OR a trainer/flag indicates a visit.
-      // Simple heuristic: if the player's current map matches or any spawn flag for the town exists.
-      // Use visitedMaps tracking from GameManager (we add it below) or fall back to checking
-      // if the player has defeated a trainer or flag associated with that city.
-      return gm.hasVisitedMap(d.mapKey);
-    });
-
-    if (this.destinations.length === 0) {
-      this.destinations = FLY_DESTINATIONS.filter(d => d.mapKey === gm.getCurrentMap());
-    }
-
+    this.destinations = this.regionMap.getFlyableDestinations(mapKey => gm.hasVisitedMap(mapKey), gm.getCurrentMap());
     const flyUser = OverworldAbilities.getUser('fly');
-    this.pokemonName = flyUser?.nickname ?? `Pokémon`;
+    void flyUser;
 
-    // Background
     const layout = ui(this);
     this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, COLORS.bgDark);
     drawPanel(this, layout.cx, layout.cy, layout.w - 20, layout.h - 20);
 
-    // Title
     this.add.text(layout.cx, 30, 'FLY — Choose Destination', {
-      ...FONTS.heading, color: COLORS.textHighlight,
+      ...FONTS.heading,
+      color: COLORS.textHighlight,
     }).setOrigin(0.5);
 
-    // Destination list
     const startY = 80;
     const rowH = Math.round(40 * mobileScale());
     const fontSize = mobileFontSize(17);
-
-    this.destTexts = this.destinations.map((dest, i) => {
+    this.destTexts = this.destinations.map((dest, index) => {
       const currentMarker = dest.mapKey === gm.getCurrentMap() ? ' ◄' : '';
-      const t = this.add.text(layout.cx, startY + i * rowH, dest.displayName + currentMarker, {
-        ...FONTS.body, fontSize, color: COLORS.textWhite,
+      const text = this.add.text(layout.cx, startY + index * rowH, dest.label + currentMarker, {
+        ...FONTS.body,
+        fontSize,
+        color: COLORS.textWhite,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-
-      t.on('pointerover', () => { this.cursor = i; this.updateCursor(); });
-      t.on('pointerdown', () => { this.cursor = i; this.confirmFly(); });
-      return t;
+      this.inputRegistry.bindPointer(text, 'pointerover', () => {
+        this.cursor = index;
+        this.updateCursor();
+      });
+      this.inputRegistry.bindPointer(text, 'pointerdown', () => {
+        this.cursor = index;
+        this.confirmFly();
+      });
+      return text;
     });
+
+    if (this.destinations.length === 0) {
+      this.add.text(layout.cx, startY, 'No fly destinations available.', {
+        ...FONTS.body,
+        fontSize,
+        color: COLORS.textGray,
+      }).setOrigin(0.5);
+    }
 
     this.cursorIcon = this.add.text(0, 0, '▸', {
-      ...FONTS.body, fontSize, color: COLORS.textHighlight,
+      ...FONTS.body,
+      fontSize,
+      color: COLORS.textHighlight,
     });
 
-    // Description text
     this.descText = this.add.text(layout.cx, layout.h - 50, '', {
-      ...FONTS.caption, color: COLORS.textGray,
+      ...FONTS.caption,
+      color: COLORS.textGray,
     }).setOrigin(0.5);
 
     this.cursor = 0;
     this.updateCursor();
-
-    // Back button for mobile users (no physical ESC key)
-    const backBtn = this.add.text(40, layout.h - 30, '← BACK', {
-      ...FONTS.body, fontSize: mobileFontSize(14), color: COLORS.textGray,
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    backBtn.setPadding(16, 12, 16, 12);
-    backBtn.on('pointerdown', () => this.close());
-
-    // Keyboard navigation
-    this.input.keyboard!.on('keydown-UP', () => {
-      this.cursor = (this.cursor - 1 + this.destinations.length) % this.destinations.length;
-      this.updateCursor();
-      AudioManager.getInstance().playSFX(SFX.CURSOR);
-    });
-    this.input.keyboard!.on('keydown-DOWN', () => {
-      this.cursor = (this.cursor + 1) % this.destinations.length;
-      this.updateCursor();
-      AudioManager.getInstance().playSFX(SFX.CURSOR);
-    });
-    this.input.keyboard!.on('keydown-ENTER', () => this.confirmFly());
-    this.input.keyboard!.on('keydown-SPACE', () => this.confirmFly());
-    this.input.keyboard!.on('keydown-ESC', () => this.close());
+    this.addBackButton(layout.h, fontSize);
+    this.bindInput();
   }
 
   update(): void {
-    const tc = TouchControls.getInstance();
-    if (tc?.consumeCancel()) {
-      this.close();
-    }
+    const touchControls = TouchControls.getInstance();
+    if (touchControls?.consumeCancel()) this.close();
+  }
+
+  private addBackButton(height: number, fontSize: string): void {
+    const backBtn = this.add.text(40, height - 30, '← BACK', {
+      ...FONTS.body,
+      fontSize: mobileFontSize(14),
+      color: COLORS.textGray,
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    backBtn.setPadding(16, 12, 16, 12);
+    this.inputRegistry.bindPointer(backBtn, 'pointerdown', () => this.close());
+  }
+
+  private bindInput(): void {
+    this.inputRegistry.bindKey('keydown-UP', () => this.moveCursor(-1));
+    this.inputRegistry.bindKey('keydown-DOWN', () => this.moveCursor(1));
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.confirmFly());
+    this.inputRegistry.bindKey('keydown-SPACE', () => this.confirmFly());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.close());
+  }
+
+  private moveCursor(delta: number): void {
+    if (this.destinations.length === 0) return;
+    this.cursor = (this.cursor + delta + this.destinations.length) % this.destinations.length;
+    this.updateCursor();
+    AudioManager.getInstance().playSFX(SFX.CURSOR);
   }
 
   private updateCursor(): void {
-    this.destTexts.forEach((t, i) => {
-      t.setColor(i === this.cursor ? COLORS.textHighlight : COLORS.textWhite);
+    this.destTexts.forEach((text, index) => {
+      text.setColor(index === this.cursor ? COLORS.textHighlight : COLORS.textWhite);
     });
-    const sel = this.destTexts[this.cursor];
-    if (sel) {
-      this.cursorIcon.setPosition(sel.x - sel.width / 2 - 20, sel.y - 10);
-    }
+    const selectedText = this.destTexts[this.cursor];
+    this.cursorIcon.setVisible(Boolean(selectedText));
+    if (selectedText) this.cursorIcon.setPosition(selectedText.x - selectedText.width / 2 - 20, selectedText.y - 10);
     const dest = this.destinations[this.cursor];
-    const mapDef = mapRegistry[dest.mapKey];
-    this.descText.setText(mapDef?.displayName ?? dest.displayName);
+    this.descText.setText(dest ? (mapRegistry[dest.mapKey]?.displayName ?? dest.label) : 'Press ESC or BACK to close.');
   }
 
   private confirmFly(): void {
     const dest = this.destinations[this.cursor];
     const gm = GameManager.getInstance();
+    if (!dest) {
+      AudioManager.getInstance().playSFX(SFX.CANCEL);
+      this.close();
+      return;
+    }
 
     if (dest.mapKey === gm.getCurrentMap()) {
-      // Already here — close the fly menu instead of trapping the user
       AudioManager.getInstance().playSFX(SFX.CANCEL);
       this.close();
       return;
     }
 
     AudioManager.getInstance().playSFX(SFX.CONFIRM);
-
-    // Flash screen and transition to destination
-    this.cameras.main.fadeOut(400, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.stop();
-      this.scene.stop('MenuScene');
-      this.scene.stop('OverworldScene');
-      this.scene.start('OverworldScene', {
-        flyTo: dest.mapKey,
-        spawnId: 'default',
-      });
+    const router = SceneRouter.for(this);
+    router.stop(SceneKey.Menu);
+    router.stop(SceneKey.Overworld);
+    router.transitionTo(SceneKey.Overworld, {
+      flyTo: dest.mapKey,
+      spawnId: 'default',
     });
   }
 

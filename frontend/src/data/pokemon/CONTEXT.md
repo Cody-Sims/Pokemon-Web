@@ -1,28 +1,14 @@
 # Pokémon
 
-Per-type species data files. Each file exports an array of `PokemonData` objects
-for Pokémon whose primary type matches the filename.
+Per-type species data files. Each file exports `PokemonData` records for Pokémon
+whose primary type matches the filename.
 
-## Files (16 type files + barrel)
+## Files
 
-| File | Type | Species Count |
-|---|---|---|
-| `normal.ts` | Normal | 22 species |
-| `fire.ts` | Fire | 12 species |
-| `water.ts` | Water | 28 species |
-| `electric.ts` | Electric | 9 species |
-| `grass.ts` | Grass | 12 species |
-| `ice.ts` | Ice | 2 species |
-| `fighting.ts` | Fighting | 7 species |
-| `poison.ts` | Poison | 14 species |
-| `ground.ts` | Ground | 8 species |
-| `psychic.ts` | Psychic | 8 species |
-| `bug.ts` | Bug | 12 species |
-| `rock.ts` | Rock | 9 species |
-| `ghost.ts` | Ghost | — |
-| `dragon.ts` | Dragon | — |
-| `fairy.ts` | Fairy | — |
-| `index.ts` | — | Barrel: combines all into `pokemonData` record (153 total) |
+`index.ts` combines the per-type files into the `pokemonData` registry, which
+currently contains 155 species. The nearest source of truth for the exact registry
+is `frontend/src/data/pokemon/index.ts`; avoid duplicating per-file species counts
+here because content files change during data restructuring.
 
 ## Conventions
 

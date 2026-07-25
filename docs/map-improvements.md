@@ -220,9 +220,9 @@ not as a one-shot map generator.
 
 #### What it provides
 
-- [temp/scripts/map-gen/core/value-noise.ts](temp/scripts/map-gen/core/value-noise.ts) — seeded 2-D value noise + fBm.
-- [temp/scripts/map-gen/core/border-shaper.ts](temp/scripts/map-gen/core/border-shaper.ts) — `shapeOrganicBorder`, `carveCoastline`, `carveCliffEdge`, `punchEntrance`. Every pass runs a flood-fill connectivity guard so the player can never be walled off.
-- [temp/scripts/map-gen/algorithms/organic-route.ts](temp/scripts/map-gen/algorithms/organic-route.ts) — `generateOrganicRoute` with four silhouettes (`forest`, `coastal`, `cliffside`, `peninsula`), meandering paths, branch alcoves and one-way ledges.
+- [scripts/map-gen/core/value-noise.ts](../scripts/map-gen/core/value-noise.ts) — seeded 2-D value noise + fBm.
+- [scripts/map-gen/core/border-shaper.ts](../scripts/map-gen/core/border-shaper.ts) — `shapeOrganicBorder`, `carveCoastline`, `carveCliffEdge`, `punchEntrance`. Every pass runs a flood-fill connectivity guard so the player can never be walled off.
+- [scripts/map-gen/algorithms/organic-route.ts](../scripts/map-gen/algorithms/organic-route.ts) — `generateOrganicRoute` with four silhouettes (`forest`, `coastal`, `cliffside`, `peninsula`), meandering paths, branch alcoves and one-way ledges.
 - CLI: `npm run map:gen -- organic-route` with `--shape`, `--roughness`, `--seed`, `--biome`, `--format`, `--no-ledges`.
 
 The generator emits the same neutral character alphabet as `route-carver`, so all 10 biome themes
@@ -737,9 +737,9 @@ tested, and documented in the changelog.
 | Phase | Status | PR / commit |
 |---|---|---|
 | 0 — Tooling & shared tiles | ✅ Complete (2026-04-30) | parser chars + validator checks + 17 unit tests |
-| 1 — Littoral arc | ☐ Not started | — |
-| 2 — Viridian arc | ☐ Not started | — |
-| 3 — Pewter & Tide Pools | ☐ Not started | — |
+| 1 — Littoral arc | ✅ Complete (2026-05-01) | Crescent bay, S-curve route, fences, surf island |
+| 2 — Viridian arc | ✅ Complete (2026-05-01) | River city, L-shaped route, Y-fork forest |
+| 3 — Pewter & Tide Pools | ✅ Complete (2026-05-01) | Two-tier city, coastal cliffs, rope bridge |
 | 4 — Coral Harbor & Route 4 | ☐ Not started | — |
 | 5 — Ironvale & Ember Mines | ☐ Not started | — |
 | 6 — Verdantia & the Canopy | ☐ Not started | — |

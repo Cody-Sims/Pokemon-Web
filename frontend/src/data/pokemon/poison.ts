@@ -1,4 +1,4 @@
-import { PokemonData } from '../interfaces';
+import type { PokemonData } from './types';
 
 /** Poison-type Pokemon (Gen 1) */
 export const poisonPokemon: Record<number, PokemonData> = {

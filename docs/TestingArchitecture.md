@@ -4,7 +4,7 @@
 
 The testing system is a **5-layer automated test suite** designed to catch regressions in game logic, data integrity, UI flows, and scene stability — without requiring human playtesting. Tests are ordered by speed and cost: fast unit tests run on every change, while slow E2E/fuzz tests run before commits or nightly.
 
-**Current stats:** 1172 tests across 38 test files, running in ~1 second (unit + integration).
+**Current stats:** `npm run test` passes 2,250 tests across 61 Vitest files (unit, integration, and replay) in about 4 seconds wall-clock in this worktree.
 
 ---
 
@@ -154,20 +154,39 @@ tests/
 |---|---|
 | `fuzz.test.ts` | 2000 seeded random keypresses (arrows, Enter, Escape, z, x) — game must not throw unhandled errors. Screenshots captured every 500 inputs for debugging. |
 
+### Agentic playtest discovery
+
+`npm run playtest:discover` complements the fixed fuzz spec with current,
+state-aware browser journeys. It verifies active Phaser scenes through a
+localhost-only read-only probe, runs two deterministic attempts by default,
+and writes JSON/Markdown findings, screenshots, seeds, action indexes, and exact
+reproduction commands under `temp/playtest-runs/`.
+
+Only findings reproduced in both attempts can enter
+`npm run loop:playtest -- --cycles 3`. Every repair still passes the normal loop
+gate, and the gate independently reruns the reported Playwright scenario before
+accepting it.
+
 ---
 
 ## Running Tests
 
 | Command | What Runs | Expected Time |
 |---|---|---|
-| `npm run test` | Unit + integration tests (Vitest) | < 2s |
-| `npm run test:unit` | Unit tests only | < 1s |
-| `npm run test:integration` | Integration tests only | < 1s |
+| `npm run test` | Unit + integration + replay tests (Vitest) | ~4s wall-clock in this worktree |
+| `npm run test:unit` | Unit tests only | Fast focused Vitest run |
+| `npm run test:integration` | Integration tests only | Fast focused Vitest run |
 | `npm run test:watch` | Watch mode — re-runs on file change | Continuous |
-| `npm run test:coverage` | Unit + integration with V8 coverage report | < 5s |
-| `npm run test:e2e` | Playwright E2E tests (needs dev server) | ~30s |
-| `npm run test:fuzz` | Fuzz/monkey testing (Playwright) | ~120s |
-| `npm run test:all` | Vitest + Playwright combined | ~30s |
+| `npm run test:coverage` | Vitest with V8 coverage and thresholds (statements 11%, branches 10%, functions 15%, lines 11%) | Coverage-gated run |
+| `npm run test:e2e` | Playwright E2E; config starts the Vite dev server on port 3020 | Browser run |
+| `npm run test:e2e:smoke` | Playwright smoke spec only | Focused browser run |
+| `npm run test:visual` | Playwright visual regression spec | Browser run |
+| `npm run test:perf` | Playwright performance spec | Browser run |
+| `npm run test:fuzz` | Fuzz/monkey testing (Playwright) | Long browser run |
+| `npm run playtest:discover` | State-aware journeys, seeded fuzzing, and bug report generation | Long browser run |
+| `npm run loop:playtest` | Bounded discovery plus one independently gated repair per cycle | Background/overnight |
+| `npm run test:all` | Vitest + Playwright E2E combined | Full local test gate |
+
 
 ---
 
@@ -213,7 +232,7 @@ beforeEach(() => {
 When making changes, follow this order:
 
 1. **`npm run test`** — Fast feedback on logic correctness (< 2s)
-2. **`npm run test:e2e`** — Verify the game boots and basic flows work (~30s)
+2. **`npm run test:e2e`** — Verify the game boots and basic flows; Playwright starts Vite automatically
 3. **If modifying battle logic:** check the `-extended` test files for coverage
 4. **If modifying data files:** data integrity tests will catch cross-reference errors
 5. **If doing a major refactor:** run `npm run test:fuzz`

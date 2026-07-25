@@ -1,31 +1,19 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { GameManager } from '../../../frontend/src/managers/GameManager';
+import { createPokemonByIdFactory } from '../../helpers/pokemon-factory';
 import {
   blockReasonForCatch,
   blockReasonForPartyAdd,
   blockReasonForItemUse,
 } from '../../../frontend/src/systems/engine/ChallengeRules';
-import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 
-const makePokemon = (dataId: number, overrides?: Partial<PokemonInstance>): PokemonInstance => ({
-  dataId,
-  level: 5,
-  currentHp: 20,
-  stats: { hp: 20, attack: 10, defense: 10, spAttack: 10, spDefense: 10, speed: 10 },
-  ivs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy',
-  moves: [{ moveId: 'tackle', currentPp: 35 }],
-  status: null,
-  exp: 0,
-  friendship: 70,
-  ...overrides,
-});
+
+const makePokemon = createPokemonByIdFactory('small-tackle');
 
 describe('ChallengeRules', () => {
   beforeEach(() => {
     // @ts-expect-error reset singleton for isolation
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
   });
 
   describe('Solo Run', () => {
@@ -119,7 +107,7 @@ describe('ChallengeRules', () => {
       gm.setMonotypeLock('water');
       const serialized = gm.serialize();
       // @ts-expect-error reset singleton
-      GameManager.instance = undefined;
+      GameManager.resetInstance();
       const fresh = GameManager.getInstance();
       fresh.deserialize(serialized);
       expect(fresh.getChallengeModes().sort()).toEqual(['monotype', 'noItems'].sort());

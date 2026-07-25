@@ -2,20 +2,7 @@ import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
 import { TILE_SIZE, WALK_DURATION } from '@utils/constants';
 import { NPC } from '@entities/NPC';
-
-export type NPCBehaviorType = 'stationary' | 'look-around' | 'wander' | 'pace';
-
-export interface NPCBehaviorConfig {
-  type: NPCBehaviorType;
-  /** For 'wander': max tiles to wander from origin */
-  wanderRadius?: number;
-  /** For 'pace': ordered list of directions to pace */
-  paceRoute?: Direction[];
-  /** Min ms between actions */
-  intervalMin?: number;
-  /** Max ms between actions */
-  intervalMax?: number;
-}
+import type { NPCBehaviorConfig } from '@data/maps';
 
 const DIRECTIONS: Direction[] = ['up', 'down', 'left', 'right'];
 

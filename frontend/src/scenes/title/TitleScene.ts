@@ -1,14 +1,17 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { SaveManager } from '@managers/SaveManager';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
-import { COLORS, FONTS, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, mobileScale } from '@ui/theme';
 import { BGM, SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { MobileTapMenu } from '@ui/controls/MobileTapMenu';
 import { DifficultyMode, DIFFICULTY_CONFIGS } from '@data/difficulty';
 import { CHALLENGE_CONFIGS, ChallengeMode } from '@data/challenge-modes';
 import { layoutOn } from '@utils/layout-on';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 export class TitleScene extends Phaser.Scene {
   private cursor!: number;
@@ -16,8 +19,10 @@ export class TitleScene extends Phaser.Scene {
   private cursorIcon!: Phaser.GameObjects.Text;
   private mobileTap?: MobileTapMenu;
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
-    super({ key: 'TitleScene' });
+    super({ key: SceneKey.Title });
   }
 
   create(): void {
@@ -98,7 +103,7 @@ export class TitleScene extends Phaser.Scene {
 
     this.cursor = 0;
     const menuStartY = height * 0.54;
-    const menuSpacing = Math.round(44 * MOBILE_SCALE);
+    const menuSpacing = Math.round(44 * mobileScale());
     const menuFontSize = mobileFontSize(22);
     this.menuItems = options.map((label, i) => {
       const item = this.add.text(width / 2 + 16, menuStartY + i * menuSpacing, label, {
@@ -144,9 +149,7 @@ export class TitleScene extends Phaser.Scene {
 
     const revealMenu = () => {
       // Remove press-start listeners
-      this.input.keyboard!.off('keydown-ENTER', revealMenu);
-      this.input.keyboard!.off('keydown-SPACE', revealMenu);
-      this.input.off('pointerdown', revealMenu);
+      this.inputRegistry.clear();
 
       // Fade out press start
       this.tweens.add({ targets: pressStart, alpha: 0, duration: 200, onComplete: () => pressStart.destroy() });
@@ -174,9 +177,9 @@ export class TitleScene extends Phaser.Scene {
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
     };
 
-    this.input.keyboard!.on('keydown-ENTER', revealMenu);
-    this.input.keyboard!.on('keydown-SPACE', revealMenu);
-    this.input.on('pointerdown', revealMenu);
+    this.inputRegistry.bindKey('keydown-ENTER', revealMenu);
+    this.inputRegistry.bindKey('keydown-SPACE', revealMenu);
+    this.inputRegistry.bindPointer(this.input, 'pointerdown', revealMenu);
   }
 
   private updateCursor(): void {
@@ -203,15 +206,15 @@ export class TitleScene extends Phaser.Scene {
         // The `resume: true` flag tells OverworldScene to spawn the
         // player at the saved position instead of the map default.
         if (SaveManager.getInstance().loadAndApply()) {
-          this.scene.start('OverworldScene', { resume: true });
+          SceneRouter.for(this).transitionTo(SceneKey.Overworld, { resume: true });
         }
         break;
       }
       case 'Options':
-        this.scene.sleep();
-        this.scene.launch('SettingsScene', { returnScene: 'TitleScene' });
-        this.scene.get('SettingsScene').events.once('shutdown', () => {
-          this.scene.wake();
+        SceneRouter.for(this).sleep();
+        SceneRouter.for(this).launch(SceneKey.Settings, { returnScene: SceneKey.Title });
+        SceneRouter.for(this).get(SceneKey.Settings).events.once('shutdown', () => {
+          SceneRouter.for(this).wake();
         });
         break;
       case 'Delete Save':
@@ -229,10 +232,10 @@ export class TitleScene extends Phaser.Scene {
         );
         break;
       case 'Hall of Fame':
-        this.scene.sleep();
-        this.scene.launch('HallOfFameScene');
-        this.scene.get('HallOfFameScene').events.once('shutdown', () => {
-          this.scene.wake();
+        SceneRouter.for(this).sleep();
+        SceneRouter.for(this).launch(SceneKey.HallOfFame);
+        SceneRouter.for(this).get(SceneKey.HallOfFame).events.once('shutdown', () => {
+          SceneRouter.for(this).wake();
         });
         break;
     }
@@ -240,18 +243,18 @@ export class TitleScene extends Phaser.Scene {
 
   private bindMenuKeys(): void {
     const audio = AudioManager.getInstance();
-    this.input.keyboard!.on('keydown-UP', () => {
+    this.inputRegistry.bindKey('keydown-UP', () => {
       this.cursor = (this.cursor - 1 + this.menuItems.length) % this.menuItems.length;
       this.updateCursor();
       audio.playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-DOWN', () => {
+    this.inputRegistry.bindKey('keydown-DOWN', () => {
       this.cursor = (this.cursor + 1) % this.menuItems.length;
       this.updateCursor();
       audio.playSFX(SFX.CURSOR);
     });
-    this.input.keyboard!.on('keydown-ENTER', () => { this.selectOption(); });
-    this.input.keyboard!.on('keydown-SPACE', () => { this.selectOption(); });
+    this.inputRegistry.bindKey('keydown-ENTER', () => { this.selectOption(); });
+    this.inputRegistry.bindKey('keydown-SPACE', () => { this.selectOption(); });
   }
 
   private rebindTitleKeys(): void {
@@ -263,8 +266,7 @@ export class TitleScene extends Phaser.Scene {
     const modes: DifficultyMode[] = ['classic', 'hard', 'nuzlocke'];
 
     // Disable title menu interaction
-    this.input.keyboard!.removeAllListeners();
-    this.input.removeAllListeners(); // Remove title menu tap handler
+    this.inputRegistry.clear();
     this.mobileTap?.destroy();
     this.menuItems.forEach(item => item.disableInteractive());
     this.cursorIcon.setVisible(false);
@@ -328,10 +330,7 @@ export class TitleScene extends Phaser.Scene {
 
     const cleanup = () => {
       diffTap.destroy();
-      this.input.keyboard!.off('keydown-UP', onUp);
-      this.input.keyboard!.off('keydown-DOWN', onDown);
-      this.input.keyboard!.off('keydown-ENTER', onEnter);
-      this.input.keyboard!.off('keydown-ESC', onEsc);
+      this.inputRegistry.clear();
       overlay.destroy();
       title.destroy();
       diffItems.forEach(i => i.destroy());
@@ -366,10 +365,10 @@ export class TitleScene extends Phaser.Scene {
       cancelDiff();
     };
 
-    this.input.keyboard!.on('keydown-UP', onUp);
-    this.input.keyboard!.on('keydown-DOWN', onDown);
-    this.input.keyboard!.on('keydown-ENTER', onEnter);
-    this.input.keyboard!.on('keydown-ESC', onEsc);
+    this.inputRegistry.bindKey('keydown-UP', onUp);
+    this.inputRegistry.bindKey('keydown-DOWN', onDown);
+    this.inputRegistry.bindKey('keydown-ENTER', onEnter);
+    this.inputRegistry.bindKey('keydown-ESC', onEsc);
   }
 
   /**
@@ -474,11 +473,7 @@ export class TitleScene extends Phaser.Scene {
     items.forEach((item, i) => item.on('pointerdown', () => { cursor = i; toggle(); }));
 
     const cleanup = () => {
-      this.input.keyboard!.off('keydown-UP', onUp);
-      this.input.keyboard!.off('keydown-DOWN', onDown);
-      this.input.keyboard!.off('keydown-SPACE', toggle);
-      this.input.keyboard!.off('keydown-ENTER', onEnter);
-      this.input.keyboard!.off('keydown-ESC', onEsc);
+      this.inputRegistry.clear();
       overlay.destroy(); title.destroy(); hint.destroy(); desc.destroy();
       arrow.destroy(); beginBtn.destroy();
       items.forEach(i => i.destroy());
@@ -487,19 +482,23 @@ export class TitleScene extends Phaser.Scene {
     const begin = () => {
       AudioManager.getInstance().playSFX(SFX.CONFIRM);
       cleanup();
-      this.scene.start('IntroScene', { difficulty, challengeModes: Array.from(enabled) });
+      SceneRouter.for(this).transitionTo(SceneKey.Intro, { difficulty, challengeModes: Array.from(enabled) });
     };
     beginBtn.on('pointerdown', begin);
 
     const onUp = () => { cursor = (cursor - 1 + modes.length) % modes.length; AudioManager.getInstance().playSFX(SFX.CURSOR); updateUI(); };
     const onDown = () => { cursor = (cursor + 1) % modes.length; AudioManager.getInstance().playSFX(SFX.CURSOR); updateUI(); };
     const onEnter = () => begin();
-    const onEsc = () => { AudioManager.getInstance().playSFX(SFX.CANCEL); cleanup(); this.scene.start('IntroScene', { difficulty, challengeModes: [] }); };
+    const onEsc = () => {
+      AudioManager.getInstance().playSFX(SFX.CANCEL);
+      cleanup();
+      SceneRouter.for(this).transitionTo(SceneKey.Intro, { difficulty, challengeModes: [] });
+    };
 
-    this.input.keyboard!.on('keydown-UP', onUp);
-    this.input.keyboard!.on('keydown-DOWN', onDown);
-    this.input.keyboard!.on('keydown-SPACE', toggle);
-    this.input.keyboard!.on('keydown-ENTER', onEnter);
-    this.input.keyboard!.on('keydown-ESC', onEsc);
+    this.inputRegistry.bindKey('keydown-UP', onUp);
+    this.inputRegistry.bindKey('keydown-DOWN', onDown);
+    this.inputRegistry.bindKey('keydown-SPACE', toggle);
+    this.inputRegistry.bindKey('keydown-ENTER', onEnter);
+    this.inputRegistry.bindKey('keydown-ESC', onEsc);
   }
 }

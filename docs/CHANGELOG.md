@@ -6,6 +6,186 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Added - Agent workflow skills
+
+- Added `parallel-worktree-delivery` for multi-worktree agent fleet planning,
+  ownership partitioning, wave sequencing, and one-branch-at-a-time integration.
+- Added `verification-discipline` for red-green test proof, invariant tests,
+  report-only gate adoption, timeout handling, and build-purity checks.
+### Changed - Agent guidance accuracy
+
+- Updated quality-gate, frontend-change, path-scoped instruction, AGENTS, and
+  LLM index guidance for lint/format commands, deterministic builds, integrity
+  tests, typed scene/event contracts, manager resets, and battle registries.
+
+### Fixed - Bug backlog triage
+
+- Reconciled the bug tracker against the current revamp codebase, moving stale,
+  duplicate, and already-fixed audit entries out of the open backlog.
+- Hardened save loading by normalizing removed-map saves to Pallet Town, resetting
+  achievements before restore, recording save write errors, and supplying default
+  v1 box names during migration.
+- Updated trainer approach movement so `Trainer.walkToward()` can close both axes
+  toward an adjacent tile while still checking per-step collisions.
+### Fixed - Test suite credibility
+
+- Replaced copy-pasted GridMovement, scene lifecycle, and battle state machine
+  test models with tests against the real modules.
+- Centralized duplicated Pokémon test fixtures under `tests/helpers/` and
+  strengthened move-effect, save validation, battle RNG, and listener-cleanup
+  safety nets.
+### Changed - Inventory scene decomposition
+
+- Split bag filtering/windowing, item-use planning, battle item event bridging,
+  and reusable inventory UI panels out of `InventoryScene`.
+- Updated inventory integration coverage to call the production item-use service
+  instead of re-implementing medicine effects in the test.
+### Changed - Town map and intro scene decomposition
+
+- Moved Aurum region map data, navigation, flyable destination resolution, and rendering into shared data/system/widget modules used by TownMap and FlyMap scenes.
+- Split the professor intro flow into declarative slide data, a pure flow controller, reusable intro/name/appearance widgets, and a DOM text input adapter shared with NicknameScene.
+- Added unit coverage for region-map resolution/navigation and intro flow/name validation.
+
+### Fixed - Scene lifecycle listener cleanup
+
+- Added a scene input registry that removes keyboard, pointer, and scene-event
+  listeners on scene shutdown/destroy.
+- Migrated leak-prone battle, menu, minigame, overworld, Pokémon, and title
+  scenes to registry-owned listeners, and hardened Overworld encounter teardown.
+### Added - Shadow revamp decisions
+
+- Recorded DEC-0009 through DEC-0016 for scene boundaries, shared UI, typed scene/event/data contracts, battle RNG determinism, GameManager facade state ownership, tracked map tooling, and canonical quality gates.
+- Refreshed stable `CONTEXT.md` coverage for runtime config, data, and UI controls/widgets without inventorying volatile scene, battle, manager, or system internals.
+### Changed - Battle effects registry
+
+- Replaced ability, held-item, and move-effect switch dispatch with hook-based registries while preserving existing handler APIs and battle RNG ordering.
+- Added registry-level battle tests for migrated ability, held-item, and move-effect hooks.
+### Changed - Battle FSM orchestration
+
+- Added an explicit battle-state transition table that throws on illegal,
+  unregistered, or terminal-state transitions.
+- Introduced a shared battle orchestration engine with single/double format
+  strategies and double-battle targeting policy while preserving manager APIs.
+- Documented remaining scene-owned double-battle replacement flow for the next
+  engine event/command migration wave.
+### Changed - Manager reset and system determinism
+
+- Added a public `@managers` barrel with reset helpers for manager singletons,
+  replacing private-field test resets with supported APIs.
+- Hardened `AudioManager` scene teardown, lazy-loaded player settings, injected
+  cutscene dialogue launching, decoupled touch-control construction, and made
+  encounter RNG injection cover table, level, IV, nature, and shiny rolls.
+### Added - Agentic playtest discovery
+
+- Added deterministic Playwright journeys, seeded overworld fuzzing, a read-only
+  localhost probe, and JSON/Markdown bug reports with screenshots and exact
+  reproduction commands.
+- Extended the bounded improvement loop to discover one reproducible finding at
+  a time, repair it in an isolated worktree, and replay the reported browser
+  scenario in the independent gate before integration.
+- Replaced writable dependency symlinks with lockfile-derived worktree installs;
+  the gate discards and reinstalls dependencies before verification and rejects
+  any uncommitted or untracked agent output.
+- Pinned discovery to a clean external worktree from the selected base and purge
+  ignored artifacts before gate execution so local or agent-only files cannot
+  influence findings or accepted repairs.
+- Added the `playtest-discovery` skill, npm commands, VS Code tasks, and unit
+  contracts for unattended playtest and repair workflows.
+
+### Added - Shared frontend modules
+
+- Added reusable grid math, display formatting, Phaser sequencing, and pure data
+  selector modules with unit coverage for edge cases and cancellation behavior.
+### Added - UI control consolidation
+
+- Added a reusable selectable-controller state machine for list/grid navigation,
+  disabled entries, pointer activation, and scroll-window tracking while keeping
+  `MenuController` consumers backward compatible.
+- Promoted TextBox, panel presets, HP/EXP progress bars, and shared UI tokens as
+  canonical foundations for future scene menu and dialogue migrations.
+### Changed - Deterministic battle RNG and save validation
+
+- Added an injectable battle RNG for battle outcomes, threaded through damage,
+  catch, AI, status, ability, and move execution paths.
+- Hardened save loading/import with shared validation, v1 migration, corrupt-save
+  backups, and defensive manager deserialization errors.
+### Changed - Scene contracts
+
+- Added typed scene-key and scene-data contracts plus a SceneRouter wrapper for
+  typed scene transitions.
+- Tightened EventManager event names, typed berry/dialogue/inventory events, and
+  moved priority scene transitions to the router.
+
+### Fixed - Import cycle enforcement
+
+- Broke production import cycles between game/quest managers, double-battle
+  targeting, and achievement data by moving shared contracts to lower-level
+  modules.
+- Added a Vitest production import-cycle regression check that resolves frontend
+  TypeScript path aliases and reports the full cycle path on failure.
+### Fixed - Documentation drift
+
+- Corrected verified agent, architecture, testing, scene, manager, data, and context documentation drift for current registries, commands, map rendering, and ownership policy.
+- Added `DEC-0017` to document source-of-truth ownership for repository documentation types.
+### Changed - Data layer purity
+
+- Moved starter-dependent rival party resolution and data helper logic out of
+  `frontend/src/data`, split shared interfaces by domain, and added initial
+  `MoveId`/`MapKey` derived ID types.
+
+### Fixed - Build purity
+
+- Removed the wall-clock timestamp from the generated asset manifest so atlas
+  generation and production builds no longer dirty the working tree.
+- Declared Phaser as a production dependency and added the missing `gh-pages`
+  development dependency used by the deploy script.
+
+### Changed - Dead code and asset cleanup
+
+- Removed unreachable systems, entities, manager/test-only dialogue code, stale
+  sprite backups/source sheets, and the non-portable root sprite extraction script.
+- Registered Voltorb Flip as an intended minigame scene, relocated seeded replay
+  randomness under tests, and dropped deprecated UI compatibility exports.
+- Reduced unused TypeScript locals/exports outside files owned by parallel agents.
+- Parsed tracked TypeScript map tooling in ESLint so lint remains warning-only.
+
+### Changed - Tracked map toolchain
+
+- Moved the map generation, preview, region render, and validation toolchain into
+  tracked `scripts/map-gen/` source and pointed the `map:*` npm scripts at it.
+- Declared `tsx` as a development dependency for the TypeScript map commands.
+- Updated agent, map-generation, architecture, and decision-graph references to
+  distinguish tracked toolchain source from ignored `temp/` preview outputs.
+### Fixed - Test harness
+
+- Enabled the shared Vitest setup file, repaired unit and integration script filters
+  for Vitest 4, made catch RNG expectations explicit, and restored frontend
+  coverage reporting with scene files visible.
+### Added - Lint and editor tooling
+
+- Added report-only ESLint flat configuration, Prettier settings, EditorConfig,
+  Node 22 pinning, and lint/format npm scripts for the TypeScript frontend,
+  Node scripts, Vitest tests, and Playwright specs.
+
+### Changed - CI gates
+
+- Aligned CI and deploy workflows with the repository Node 22 pin and added
+  blocking map, agent, shadow, lint, coverage, build-purity, bundle-size, and E2E
+  gates before shipping to GitHub Pages.
+- Surfaced formatting drift and high-severity npm audit advisories as
+  non-blocking workflow checks until the existing backlog is triaged.
+- Added a nightly scheduled deterministic fuzz workflow so the 2000-input fuzz
+  suite runs outside PR latency.
+
+### Fixed - Data reference integrity
+
+- Added missing TM, tutor, reward item, and Voltara tutor definitions; repaired
+  the Pallet generic-house return warp and renamed stale shop inventory keys.
+- Re-keyed Poké Mart inventories to the interior maps that actually host shop
+  clerks, added the missing League clerk, and stopped missing shops from silently
+  falling back to Viridian's starter inventory.
+- Added a data-driven registry integrity regression test covering moves, Pokémon,
+  trainers, encounters, maps, shop-host maps, quests, cutscenes, and achievements.
 ### Removed - Deprecated `computeGameWidth()` helper
 
 - Deleted the unused deprecated `computeGameWidth()` from

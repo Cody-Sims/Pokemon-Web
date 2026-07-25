@@ -2,7 +2,7 @@
  * Safe-area inset reader.
  * Reads CSS env() values and exposes them as pixel numbers for in-canvas use.
  */
-export interface SafeAreaInsets {
+interface SafeAreaInsets {
   top: number;
   right: number;
   bottom: number;
@@ -11,7 +11,7 @@ export interface SafeAreaInsets {
 
 let cachedInsets: SafeAreaInsets | null = null;
 
-export function getSafeAreaInsets(): SafeAreaInsets {
+function getSafeAreaInsets(): SafeAreaInsets {
   if (cachedInsets) return cachedInsets;
   if (typeof document === 'undefined') return { top: 0, right: 0, bottom: 0, left: 0 };
 

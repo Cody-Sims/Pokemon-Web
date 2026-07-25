@@ -38,31 +38,85 @@
       "id": "DEC-0004",
       "title": "EventManager mediates cross-scene communication",
       "path": ".shadow/decisions/DEC-0004.md",
-      "status": "observed"
+      "status": "superseded"
     },
     {
       "id": "DEC-0005",
       "title": "Battle flow is isolated behind an FSM",
       "path": ".shadow/decisions/DEC-0005.md",
-      "status": "observed"
+      "status": "superseded"
     },
     {
       "id": "DEC-0006",
       "title": "Game data is declarative TypeScript",
       "path": ".shadow/decisions/DEC-0006.md",
-      "status": "observed"
+      "status": "superseded"
     },
     {
       "id": "DEC-0007",
       "title": "Maps use character grids and dedicated tooling",
       "path": ".shadow/decisions/DEC-0007.md",
-      "status": "observed"
+      "status": "superseded"
     },
     {
       "id": "DEC-0008",
       "title": "Verification is layered and deterministic",
       "path": ".shadow/decisions/DEC-0008.md",
       "status": "observed"
+    },
+    {
+      "id": "DEC-0009",
+      "title": "Scene decomposition boundary \u2014 scenes are lifecycle/presentation coordinators",
+      "path": ".shadow/decisions/DEC-0009.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0010",
+      "title": "Shared UI/menu abstraction is mandatory for new menus",
+      "path": ".shadow/decisions/DEC-0010.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0011",
+      "title": "Typed scene keys, typed init payloads, closed event contracts",
+      "path": ".shadow/decisions/DEC-0011.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0012",
+      "title": "Typed data IDs, enforced data purity, integrity tests",
+      "path": ".shadow/decisions/DEC-0012.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0013",
+      "title": "Battle rules/presentation separation; injected RNG for determinism",
+      "path": ".shadow/decisions/DEC-0013.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0014",
+      "title": "GameManager is a facade; durable state lives in focused stores",
+      "path": ".shadow/decisions/DEC-0014.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0015",
+      "title": "Map toolchain is tracked under `scripts/`; `temp/` is scratch only",
+      "path": ".shadow/decisions/DEC-0015.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0016",
+      "title": "Canonical quality gates (lint, format, coverage thresholds, validators in CI)",
+      "path": ".shadow/decisions/DEC-0016.md",
+      "status": "observed"
+    },
+    {
+      "id": "DEC-0017",
+      "title": "Documentation ownership policy",
+      "path": ".shadow/decisions/DEC-0017.md",
+      "status": "accepted"
     }
   ]
 }

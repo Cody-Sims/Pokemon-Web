@@ -6,7 +6,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { itemData } from '@data/item-data';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
-import { COLORS, FONTS, SPACING, mobileFontSize, isMobile, minTouchTarget, mobileScale } from '@ui/theme';
+import { COLORS, FONTS, mobileFontSize, isMobile, minTouchTarget, mobileScale } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
 import type { ItemData } from '@data/interfaces';
 import { TouchControls } from '@ui/controls/TouchControls';
@@ -49,7 +49,11 @@ export class ShopScene extends Phaser.Scene {
     const shopId = this.shopId;
     // Dynamically import shop data
     import('@data/shop-data').then(mod => {
-      this.shopItems = mod.shopInventories[shopId] ?? mod.shopInventories['viridian-city'] ?? [];
+      const inventory = mod.shopInventories[shopId];
+      if (!inventory) {
+        console.warn(`[ShopScene] No inventory configured for shop map '${shopId}'.`);
+      }
+      this.shopItems = inventory ?? [];
       this.buildUI();
     });
   }

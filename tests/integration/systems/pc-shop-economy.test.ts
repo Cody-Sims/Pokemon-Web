@@ -1,31 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { GameManager } from '../../../frontend/src/managers/GameManager';
-import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 import { itemData } from '../../../frontend/src/data/item-data';
 import { shopInventories } from '../../../frontend/src/data/shop-data';
 import { trainerData } from '../../../frontend/src/data/trainer-data';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 
-const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
-  dataId: 4,
-  level: 10,
-  currentHp: 30,
-  stats: { hp: 30, attack: 15, defense: 12, spAttack: 18, spDefense: 14, speed: 16 },
-  ivs: { hp: 15, attack: 15, defense: 15, spAttack: 15, spDefense: 15, speed: 15 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy',
-  moves: [{ moveId: 'ember', currentPp: 25 }],
-  status: null,
-  exp: 0,
-  friendship: 70,
-  ...overrides,
-});
+
+const makePokemon = createPokemonFactory('standard');
 
 describe('PC Box Storage', () => {
   let gm: GameManager;
 
   beforeEach(() => {
-    // @ts-expect-error accessing private for test reset
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     gm = GameManager.getInstance();
   });
 
@@ -174,8 +161,7 @@ describe('PC Box Storage', () => {
       const saved = gm.serialize();
 
       // Reset and restore
-      // @ts-expect-error accessing private for test reset
-      GameManager.instance = undefined;
+      GameManager.resetInstance();
       const gm2 = GameManager.getInstance();
       gm2.deserialize(saved);
 
@@ -192,8 +178,7 @@ describe('Shop & Economy', () => {
   let gm: GameManager;
 
   beforeEach(() => {
-    // @ts-expect-error accessing private for test reset
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     gm = GameManager.getInstance();
   });
 
@@ -224,18 +209,18 @@ describe('Shop & Economy', () => {
 
   describe('shop inventories', () => {
     it('viridian shop should have basic items', () => {
-      expect(shopInventories['viridian-city']).toContain('poke-ball');
-      expect(shopInventories['viridian-city']).toContain('potion');
+      expect(shopInventories['viridian-pokemart']).toContain('poke-ball');
+      expect(shopInventories['viridian-pokemart']).toContain('potion');
     });
 
     it('pewter shop should have more items than viridian', () => {
-      expect(shopInventories['pewter-city'].length).toBeGreaterThan(
-        shopInventories['viridian-city'].length
+      expect(shopInventories['pewter-pokemart'].length).toBeGreaterThan(
+        shopInventories['viridian-pokemart'].length
       );
     });
 
     it('pewter shop should include great balls', () => {
-      expect(shopInventories['pewter-city']).toContain('great-ball');
+      expect(shopInventories['pewter-pokemart']).toContain('great-ball');
     });
   });
 

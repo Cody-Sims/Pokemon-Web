@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MoveExecutor } from '../../../frontend/src/battle/execution/MoveExecutor';
 import { StatusEffectHandler } from '../../../frontend/src/battle/effects/StatusEffectHandler';
-import { PokemonInstance } from '../../../frontend/src/data/interfaces';
 import { moveData } from '../../../frontend/src/data/moves';
 import { seedRng } from '../../../frontend/src/utils/math-helpers';
+import { createPokemonFactory } from '../../helpers/pokemon-factory';
 
 // Battle randomness comes from the seeded Mulberry32 PRNG in math-helpers, whose
 // state defaults to Date.now(). Mocking Math.random alone leaves every secondary
@@ -13,15 +13,8 @@ beforeEach(() => {
   vi.spyOn(Math, 'random').mockReturnValue(0.5);
 });
 
-const makePokemon = (overrides?: Partial<PokemonInstance>): PokemonInstance => ({
-  dataId: 4, level: 20, currentHp: 100,
-  stats: { hp: 100, attack: 60, defense: 40, spAttack: 70, spDefense: 45, speed: 55 },
-  ivs: { hp: 15, attack: 15, defense: 15, spAttack: 15, spDefense: 15, speed: 15 },
-  evs: { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
-  nature: 'hardy',
-  moves: Object.keys(moveData).slice(0, 4).map(id => ({ moveId: id, currentPp: moveData[id].pp })),
-  status: null, exp: 0, friendship: 70, ...overrides,
-});
+
+const makePokemon = createPokemonFactory('move-executor-extended');
 
 describe('MoveExecutor — Extended Coverage', () => {
   describe('PP deduction', () => {
@@ -190,19 +183,40 @@ describe('MoveExecutor — Extended Coverage', () => {
       expect(handler.getState(defender).statStages.attack).toBeLessThan(0);
     });
 
-    it('Haze should reset all stat stages (requires effect on move)', () => {
-      // NOTE: Haze currently has no `effect` in move-data, so the reset
-      // only triggers if the code path is reached. This test verifies
-      // that Haze executes without error even without the effect field.
+    it('Haze should reset all stat stages', () => {
       const handler = new StatusEffectHandler();
       const attacker = makePokemon({ moves: [{ moveId: 'haze', currentPp: 30 }] });
       const defender = makePokemon({ dataId: 19 });
       handler.initPokemon(attacker);
       handler.initPokemon(defender);
+      handler.getState(attacker).statStages.attack = 3;
+      handler.getState(attacker).statStages.accuracy = -2;
+      handler.getState(defender).statStages.defense = -4;
+      handler.getState(defender).statStages.evasion = 2;
 
       const result = MoveExecutor.execute(attacker, defender, 'haze', handler);
+
       expect(result.moveHit).toBe(true);
       expect(result.moveName).toBe('Haze');
+      expect(result.effectMessages).toContain('All stat changes were eliminated!');
+      expect(handler.getState(attacker).statStages).toEqual({
+        attack: 0,
+        defense: 0,
+        spAttack: 0,
+        spDefense: 0,
+        speed: 0,
+        accuracy: 0,
+        evasion: 0,
+      });
+      expect(handler.getState(defender).statStages).toEqual({
+        attack: 0,
+        defense: 0,
+        spAttack: 0,
+        spDefense: 0,
+        speed: 0,
+        accuracy: 0,
+        evasion: 0,
+      });
     });
 
     it('fire moves should thaw frozen targets', () => {
@@ -224,11 +238,16 @@ describe('MoveExecutor — Extended Coverage', () => {
       const defender = makePokemon({ dataId: 19, currentHp: 100 });
       handler.initPokemon(attacker);
       handler.initPokemon(defender);
+      const attackerHpBefore = attacker.currentHp;
+      const defenderHpBefore = defender.currentHp;
 
       const result = MoveExecutor.execute(attacker, defender, 'absorb', handler);
-      if (result.moveHit && result.healedHp) {
-        expect(attacker.currentHp).toBeGreaterThan(50);
-      }
+
+      expect(result.moveHit).toBe(true);
+      expect(result.damage.damage).toBeGreaterThan(0);
+      expect(result.healedHp).toBe(Math.max(1, Math.floor(result.damage.damage / 2)));
+      expect(attacker.currentHp).toBe(Math.min(attacker.stats.hp, attackerHpBefore + result.healedHp!));
+      expect(defender.currentHp).toBe(defenderHpBefore - result.damage.damage);
     });
 
     it('Take Down should cause recoil', () => {

@@ -1,19 +1,15 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
+import type { TransitionSceneData } from '@scenes/scene-data';
 
 export class TransitionScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'TransitionScene' });
+    super({ key: SceneKey.Transition });
   }
 
-  init(data: {
-    targetScene: string;
-    returnScene?: string;
-    duration?: number;
-    targetData?: Record<string, unknown>;
-    returnData?: Record<string, unknown>;
-    style?: 'fade' | 'stripes' | 'circles';
-  }): void {
+  init(data: TransitionSceneData): void {
     const duration = data.duration ?? 600;
     const style = data.style ?? 'stripes';
 
@@ -28,7 +24,7 @@ export class TransitionScene extends Phaser.Scene {
 
   private playFadeTransition(
     duration: number,
-    data: { targetScene: string; returnScene?: string; targetData?: Record<string, unknown>; returnData?: Record<string, unknown> },
+    data: TransitionSceneData,
   ): void {
     const layout = ui(this);
     const cover = this.add.rectangle(layout.cx, layout.cy, layout.w, layout.h, 0x000000);
@@ -44,7 +40,7 @@ export class TransitionScene extends Phaser.Scene {
 
   private playStripeTransition(
     duration: number,
-    data: { targetScene: string; returnScene?: string; targetData?: Record<string, unknown>; returnData?: Record<string, unknown> },
+    data: TransitionSceneData,
   ): void {
     const layout = ui(this);
     const stripeCount = 12;
@@ -74,7 +70,7 @@ export class TransitionScene extends Phaser.Scene {
 
   private playCircleTransition(
     duration: number,
-    data: { targetScene: string; returnScene?: string; targetData?: Record<string, unknown>; returnData?: Record<string, unknown> },
+    data: TransitionSceneData,
   ): void {
     const layout = ui(this);
     const gfx = this.add.graphics();
@@ -94,13 +90,8 @@ export class TransitionScene extends Phaser.Scene {
     });
   }
 
-  private launchTarget(data: {
-    targetScene: string;
-    returnScene?: string;
-    targetData?: Record<string, unknown>;
-    returnData?: Record<string, unknown>;
-  }): void {
-    this.scene.start(data.targetScene, {
+  private launchTarget(data: TransitionSceneData): void {
+    SceneRouter.for(this).start(data.targetScene, {
       ...data.targetData,
       _returnScene: data.returnScene,
       _returnData: data.returnData,

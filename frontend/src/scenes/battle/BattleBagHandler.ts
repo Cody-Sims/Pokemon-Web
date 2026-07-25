@@ -1,6 +1,9 @@
 import type { PokemonInstance } from '@data/interfaces';
 import { handlePokeBallUse as doCatch, type CatchContext } from './BattleCatchHandler';
 import type { BattleUIScene } from './BattleUIScene';
+import { EventManager } from '@managers/EventManager';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 /**
  * Handles the BAG action: launching InventoryScene in battle mode,
@@ -15,9 +18,10 @@ export class BattleBagHandler {
 
   /** Open the inventory in battle mode. */
   openBag(): void {
-    this.scene.scene.sleep();
-    this.scene.scene.launch('InventoryScene', { battleMode: true });
-    const invScene = this.scene.scene.get('InventoryScene');
+    const router = SceneRouter.for(this.scene);
+    router.sleep();
+    router.launch(SceneKey.Inventory, { battleMode: true });
+    const invScene = router.get(SceneKey.Inventory);
     let ballUsed = false;
     let itemUsed = false;
 
@@ -25,7 +29,8 @@ export class BattleBagHandler {
     invScene.events.once('use-pokeball', (ballItemId: string) => {
       // LOW-8: Set synchronously before any async work to prevent race conditions
       ballUsed = true;
-      this.scene.scene.wake();
+      EventManager.getInstance().clearByTag(this.scene.scene.key);
+      router.wake();
       this.handlePokeBallUse(ballItemId);
     });
 
@@ -34,9 +39,10 @@ export class BattleBagHandler {
       itemUsed = true;
     });
 
-    invScene.events.once('shutdown', () => {
+    EventManager.getInstance().onTagged(this.scene.scene.key, 'inventory-closed', () => {
+      EventManager.getInstance().clearByTag(this.scene.scene.key);
       if (ballUsed) return;
-      this.scene.scene.wake();
+      router.wake();
       // If a non-ball item was used, enemy gets a free attack (BUG-064)
       if (itemUsed) {
         this.scene.executeEnemyOnlyTurn();

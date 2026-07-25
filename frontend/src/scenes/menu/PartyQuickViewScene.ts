@@ -1,8 +1,11 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, isMobile, minTouchTarget } from '@ui/theme';
 import { GameManager } from '@managers/GameManager';
 import { EventManager } from '@managers/EventManager';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 const MAX_PARTY = 6;
 const STROKE_WIDTH = 2;
@@ -44,11 +47,14 @@ export class PartyQuickViewScene extends Phaser.Scene {
   private balls: Phaser.GameObjects.Arc[] = [];
   private bg!: Phaser.GameObjects.Rectangle;
 
+  private readonly inputRegistry = new SceneInputRegistry(this);
+
   constructor() {
-    super({ key: 'PartyQuickViewScene' });
+    super({ key: SceneKey.PartyQuickView });
   }
 
   create(): void {
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
     const layout = ui(this);
     const BALL_RADIUS = ballRadius();
     const BALL_SPACING = ballSpacing();
@@ -82,32 +88,32 @@ export class PartyQuickViewScene extends Phaser.Scene {
     this.container = this.add.container(layout.cx, yPos, children);
     this.container.setDepth(100);
 
-    // Interactive hit zone covering the full strip -- meets MIN_TOUCH_TARGET
+    // Interactive hit zone covering the full strip -- meets minimum touch target
     const hitWidth = bgWidth;
     const hitHeight = Math.max(bgHeight, minTouchTarget());
     const hitZone = this.add.zone(0, 0, hitWidth, hitHeight).setInteractive();
     this.container.add(hitZone);
 
-    hitZone.on('pointerdown', () => {
+    this.inputRegistry.bindPointer(hitZone, 'pointerdown', () => {
       // Guard: don't open if PartyScene or MenuScene is already up
-      if (this.scene.isActive('PartyScene') || this.scene.isActive('MenuScene')) return;
-      this.scene.launch('PartyScene');
+      const router = SceneRouter.for(this);
+      if (router.isActive(SceneKey.Party) || router.isActive(SceneKey.Menu)) return;
+      router.launch(SceneKey.Party);
     });
 
     // Listen for party / HP changes via EventManager
     const em = EventManager.getInstance();
     const updateHandler = () => this.refresh();
-    em.on('party-changed', updateHandler);
-    em.on('flag-set', updateHandler);
+    em.onTagged(this.scene.key, 'party-changed', updateHandler);
+    em.onTagged(this.scene.key, 'flag-set', updateHandler);
 
     // Refresh when scene resumes (returning from menus / battles)
-    this.events.on('wake', () => this.refresh());
-    this.events.on('resume', () => this.refresh());
+    this.inputRegistry.bindSceneEvent('wake', () => this.refresh());
+    this.inputRegistry.bindSceneEvent('resume', () => this.refresh());
 
     // Clean up listeners on shutdown
     this.events.once('shutdown', () => {
-      em.off('party-changed', updateHandler);
-      em.off('flag-set', updateHandler);
+      em.clearByTag(this.scene.key);
     });
 
     this.refresh();
@@ -152,6 +158,6 @@ export class PartyQuickViewScene extends Phaser.Scene {
   }
 
   shutdown(): void {
-    this.input.removeAllListeners();
+    this.inputRegistry.clear();
   }
 }

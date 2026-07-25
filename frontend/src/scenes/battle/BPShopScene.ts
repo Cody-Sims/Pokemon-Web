@@ -1,12 +1,16 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, drawPanel, mobileFontSize, MOBILE_SCALE } from '@ui/theme';
+import { COLORS, FONTS, drawPanel, mobileFontSize, mobileScale } from '@ui/theme';
 import { AudioManager } from '@managers/AudioManager';
 import { GameManager } from '@managers/GameManager';
 import { SFX } from '@utils/audio-keys';
 import { itemData } from '@data/item-data';
 import { battlePointShopCatalog, type BattlePointShopEntry } from '@data/bp-shop-data';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
+import type { BPShopSceneData } from '@scenes/scene-data';
 
 /**
  * A.1 Battle Tower — BP Shop.
@@ -29,13 +33,15 @@ export class BPShopScene extends Phaser.Scene {
   private readonly visibleCount = 8;
   private rebuildLayer?: Phaser.GameObjects.Container;
   private statusMsg?: Phaser.GameObjects.Text;
-  private initData?: Record<string, unknown>;
+  private initData?: BPShopSceneData;
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
-    super({ key: 'BPShopScene' });
+    super({ key: SceneKey.BPShop });
   }
 
-  init(data?: Record<string, unknown>): void {
+  init(data?: BPShopSceneData): void {
     this.initData = data;
   }
 
@@ -71,7 +77,7 @@ export class BPShopScene extends Phaser.Scene {
 
     // ── Item list ──
     const listTop = 78;
-    const rowH = Math.round(28 * MOBILE_SCALE);
+    const rowH = Math.round(28 * mobileScale());
     const fontSize = mobileFontSize(14);
     const visible = battlePointShopCatalog.slice(this.scroll, this.scroll + this.visibleCount);
 
@@ -138,12 +144,12 @@ export class BPShopScene extends Phaser.Scene {
   }
 
   private bindInput(): void {
-    this.input.keyboard?.removeAllListeners();
-    this.input.keyboard!.on('keydown-UP', () => this.move(-1));
-    this.input.keyboard!.on('keydown-DOWN', () => this.move(1));
-    this.input.keyboard!.on('keydown-ENTER', () => this.buy());
-    this.input.keyboard!.on('keydown-SPACE', () => this.buy());
-    this.input.keyboard!.on('keydown-ESC', () => this.close());
+    this.inputRegistry.clear();
+    this.inputRegistry.bindKey('keydown-UP', () => this.move(-1));
+    this.inputRegistry.bindKey('keydown-DOWN', () => this.move(1));
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.buy());
+    this.inputRegistry.bindKey('keydown-SPACE', () => this.buy());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.close());
   }
 
   private move(delta: number): void {
@@ -181,7 +187,7 @@ export class BPShopScene extends Phaser.Scene {
 
   private close(): void {
     AudioManager.getInstance().playSFX(SFX.CANCEL);
-    const exit = (this.initData?.exitScene as string) ?? 'BattleTowerScene';
-    this.scene.start(exit);
+    const exit = this.initData?.exitScene ?? SceneKey.BattleTower;
+    SceneRouter.for(this).start(exit);
   }
 }

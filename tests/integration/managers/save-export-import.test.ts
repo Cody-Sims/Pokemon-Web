@@ -8,9 +8,9 @@ describe('SaveManager — export / import (plan.md D.6)', () => {
 
   beforeEach(() => {
     // @ts-expect-error reset singletons
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     // @ts-expect-error reset singletons
-    SaveManager.instance = undefined;
+    SaveManager.resetInstance();
     mockStorage = createLocalStorageMock();
     vi.stubGlobal('localStorage', mockStorage);
   });
@@ -63,7 +63,7 @@ describe('SaveManager — export / import (plan.md D.6)', () => {
 
     // Reset and import
     // @ts-expect-error
-    GameManager.instance = undefined;
+    GameManager.resetInstance();
     const err = sm.importJson(exported);
     expect(err).toBeNull();
 

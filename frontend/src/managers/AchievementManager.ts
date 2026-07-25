@@ -1,16 +1,11 @@
 import { ACHIEVEMENTS } from '@data/achievement-data';
+import type { AchievementDef } from '@data/achievement-types';
 
-export interface AchievementDef {
-  id: string;
-  name: string;
-  description: string;
-  category: 'story' | 'collection' | 'battle' | 'exploration' | 'challenge';
-  icon?: string;
-}
+export type { AchievementDef };
 
 /** Singleton manager for tracking unlocked achievements. */
 export class AchievementManager {
-  private static instance: AchievementManager;
+  private static instance: AchievementManager | undefined;
   private unlocked: Set<string> = new Set();
   private onUnlockCallback?: (achievement: AchievementDef) => void;
 
@@ -21,6 +16,11 @@ export class AchievementManager {
       AchievementManager.instance = new AchievementManager();
     }
     return AchievementManager.instance;
+  }
+
+  static resetInstance(): void {
+    AchievementManager.instance?.reset();
+    AchievementManager.instance = undefined;
   }
 
   /**

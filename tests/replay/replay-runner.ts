@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 import { ReplayData, ReplayAssertion } from './replay-types';
-import { mulberry32 } from '../../frontend/src/utils/seeded-random';
+import { mulberry32 } from '../helpers/seeded-random';
 
 export interface ReplayResult {
   passed: boolean;

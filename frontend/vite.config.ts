@@ -29,7 +29,7 @@ export default defineConfig({
           groups: [
             { name: 'phaser', test: /node_modules\/phaser/ },
             { name: 'battle', test: /\/src\/battle\// },
-            { name: 'data', test: /\/src\/data\/pokemon\/|\/src\/data\/moves\/|\/src\/data\/type-chart/ },
+            { name: 'data', test: /\/src\/data\/pokemon\/|\/src\/data\/moves\/|\/src\/data\/trainers\/|\/src\/data\/type-chart|\/src\/data\/item-data|\/src\/data\/tm-data|\/src\/data\/quest-data|\/src\/data\/cutscene-data|\/src\/data\/achievement-data/ },
             { name: 'maps', test: /\/src\/data\/maps\// },
           ],
         },

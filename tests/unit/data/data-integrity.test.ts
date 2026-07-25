@@ -1,10 +1,255 @@
 import { describe, it, expect } from 'vitest';
-import { pokemonData } from '../../../frontend/src/data/pokemon';
-import { moveData } from '../../../frontend/src/data/moves';
-import { itemData } from '../../../frontend/src/data/item-data';
-import { trainerData } from '../../../frontend/src/data/trainer-data';
-import { encounterTables } from '../../../frontend/src/data/encounter-tables';
-import { evolutionData } from '../../../frontend/src/data/evolution-data';
+import { pokemonData } from '@data/pokemon';
+import { moveData } from '@data/moves';
+import { itemData } from '@data/item-data';
+import { trainerData } from '@data/trainer-data';
+import { encounterTables, fishingTables } from '@data/encounter-tables';
+import { evolutionData } from '@data/evolution-data';
+import { tmData, moveTutorData } from '@data/tm-data';
+import { mapRegistry } from '@data/maps';
+import { shopInventories } from '@data/shop-data';
+import { questData } from '@data/quest-data';
+import { cutsceneData } from '@data/cutscene-data';
+import { ACHIEVEMENTS } from '@data/achievement-data';
+import { battleTowerData } from '@data/battle-tower-data';
+import { battlePointShopCatalog } from '@data/bp-shop-data';
+import type { ObjectSpawn, NpcSpawn } from '@data/maps';
+
+type DataIssue = { source: string; message: string };
+type InteractionSpawn = (NpcSpawn | ObjectSpawn) & { id: string };
+
+const addIssue = (issues: DataIssue[], source: string, message: string): void => {
+  issues.push({ source, message });
+};
+
+const assertKnown = (
+  issues: DataIssue[],
+  source: string,
+  registry: ReadonlySet<string>,
+  registryName: string,
+  id: string | undefined,
+): void => {
+  if (id && !registry.has(id)) {
+    addIssue(issues, source, `references missing ${registryName} '${id}'`);
+  }
+};
+
+const assertKnownNumber = (
+  issues: DataIssue[],
+  source: string,
+  registry: ReadonlySet<number>,
+  registryName: string,
+  id: number | undefined,
+): void => {
+  if (id !== undefined && !registry.has(id)) {
+    addIssue(issues, source, `references missing ${registryName} ${id}`);
+  }
+};
+
+describe('Data reference integrity', () => {
+  it('has no dangling references across data registries', () => {
+    const issues: DataIssue[] = [];
+    const moveIds = new Set(Object.keys(moveData));
+    const itemIds = new Set(Object.keys(itemData));
+    const tmIds = new Set(Object.keys(tmData));
+    const validItemOrTmIds = new Set([...itemIds, ...tmIds]);
+    const pokemonIds = new Set(Object.keys(pokemonData).map(Number));
+    const trainerIds = new Set(Object.keys(trainerData));
+    const mapKeys = new Set(Object.keys(mapRegistry));
+    const cutsceneIds = new Set(Object.keys(cutsceneData));
+    const achievementIds = new Set<string>();
+    const shopMapKeys = new Set(
+      Object.entries(mapRegistry)
+        .filter(([, map]) => [...map.npcs, ...map.objects].some(spawn => spawn.interactionType === 'shop'))
+        .map(([mapKey]) => mapKey),
+    );
+
+    for (const [pokemonId, pokemon] of Object.entries(pokemonData)) {
+      for (const entry of pokemon.learnset) {
+        assertKnown(issues, `frontend/src/data/pokemon pokemonData[${pokemonId}].learnset moveId`, moveIds, 'moveData id', entry.moveId);
+      }
+
+      for (const evolution of pokemon.evolutionChain) {
+        assertKnownNumber(issues, `frontend/src/data/pokemon pokemonData[${pokemonId}].evolutionChain pokemonId`, pokemonIds, 'pokemonData id', evolution.pokemonId);
+        assertKnown(issues, `frontend/src/data/pokemon pokemonData[${pokemonId}].evolutionChain itemId`, itemIds, 'itemData id', evolution.condition.itemId);
+      }
+    }
+
+    for (const [tmKey, tm] of Object.entries(tmData)) {
+      if (tm.id !== tmKey) {
+        addIssue(issues, `frontend/src/data/tm-data.ts tmData['${tmKey}']`, `has id '${tm.id}' that does not match its key`);
+      }
+      assertKnown(issues, `frontend/src/data/tm-data.ts tmData['${tmKey}'].moveId`, moveIds, 'moveData id', tm.moveId);
+    }
+
+    for (const [tutorKey, tutor] of Object.entries(moveTutorData)) {
+      if (tutor.id !== tutorKey) {
+        addIssue(issues, `frontend/src/data/tm-data.ts moveTutorData['${tutorKey}']`, `has id '${tutor.id}' that does not match its key`);
+      }
+      assertKnown(issues, `frontend/src/data/tm-data.ts moveTutorData['${tutorKey}'].location`, mapKeys, 'mapRegistry key', tutor.location);
+      for (const [moveIndex, move] of tutor.moves.entries()) {
+        assertKnown(issues, `frontend/src/data/tm-data.ts moveTutorData['${tutorKey}'].moves[${moveIndex}].moveId`, moveIds, 'moveData id', move.moveId);
+        if (move.costType === 'heart-scale') {
+          assertKnown(issues, `frontend/src/data/tm-data.ts moveTutorData['${tutorKey}'].moves[${moveIndex}].costType`, itemIds, 'itemData id', 'heart-scale');
+        }
+      }
+    }
+
+    const checkEncounterEntries = (source: string, entries: { pokemonId: number }[]): void => {
+      for (const [entryIndex, entry] of entries.entries()) {
+        assertKnownNumber(issues, `${source}[${entryIndex}].pokemonId`, pokemonIds, 'pokemonData id', entry.pokemonId);
+      }
+    };
+
+    for (const [tableKey, entries] of Object.entries(encounterTables)) {
+      checkEncounterEntries(`frontend/src/data/encounter-tables.ts encounterTables['${tableKey}']`, entries);
+    }
+
+    for (const [mapKey, rodTables] of Object.entries(fishingTables)) {
+      assertKnown(issues, `frontend/src/data/encounter-tables.ts fishingTables['${mapKey}']`, mapKeys, 'mapRegistry key', mapKey);
+      for (const [rod, entries] of Object.entries(rodTables)) {
+        checkEncounterEntries(`frontend/src/data/encounter-tables.ts fishingTables['${mapKey}'].${rod}`, entries ?? []);
+      }
+    }
+
+    for (const [sourceId, evolutions] of Object.entries(evolutionData)) {
+      assertKnownNumber(issues, `frontend/src/data/evolution-data.ts evolutionData['${sourceId}'] source`, pokemonIds, 'pokemonData id', Number(sourceId));
+      for (const [evolutionIndex, evolution] of evolutions.entries()) {
+        assertKnownNumber(issues, `frontend/src/data/evolution-data.ts evolutionData['${sourceId}'][${evolutionIndex}].evolvesTo`, pokemonIds, 'pokemonData id', evolution.evolvesTo);
+        assertKnown(issues, `frontend/src/data/evolution-data.ts evolutionData['${sourceId}'][${evolutionIndex}].condition.itemId`, itemIds, 'itemData id', evolution.condition.itemId);
+      }
+    }
+
+    const checkTrainerParty = (source: string, party: { pokemonId: number; moves?: string[] }[]): void => {
+      for (const [memberIndex, member] of party.entries()) {
+        assertKnownNumber(issues, `${source}.party[${memberIndex}].pokemonId`, pokemonIds, 'pokemonData id', member.pokemonId);
+        for (const [moveIndex, moveId] of (member.moves ?? []).entries()) {
+          assertKnown(issues, `${source}.party[${memberIndex}].moves[${moveIndex}]`, moveIds, 'moveData id', moveId);
+        }
+      }
+    };
+
+    for (const [trainerKey, trainer] of Object.entries(trainerData)) {
+      if (trainer.id !== trainerKey) {
+        addIssue(issues, `frontend/src/data/trainers trainerData['${trainerKey}']`, `has id '${trainer.id}' that does not match its key`);
+      }
+      checkTrainerParty(`frontend/src/data/trainers trainerData['${trainerKey}']`, trainer.party);
+    }
+
+    for (const [tierKey, tier] of Object.entries(battleTowerData)) {
+      for (const [trainerIndex, trainer] of tier.trainers.entries()) {
+        checkTrainerParty(`frontend/src/data/battle-tower-data.ts battleTowerData.${tierKey}.trainers[${trainerIndex}]`, trainer.party);
+      }
+    }
+
+    const checkInteraction = (mapKey: string, collection: string, spawn: InteractionSpawn, index: number): void => {
+      const source = `frontend/src/data/maps mapRegistry['${mapKey}'].${collection}[${index}] '${spawn.id}'`;
+      assertKnown(issues, `${source}.givesItem`, validItemOrTmIds, 'itemData/tmData id', spawn.givesItem);
+      assertKnown(issues, `${source}.triggerCutscene`, cutsceneIds, 'cutsceneData id', spawn.triggerCutscene);
+
+      if (spawn.interactionType === 'move-tutor') {
+        assertKnown(issues, `${source}.interactionData`, new Set(Object.keys(moveTutorData)), 'moveTutorData id', spawn.interactionData ?? spawn.id);
+      }
+
+      if (spawn.interactionType === 'berry-tree' && spawn.interactionData) {
+        const [berryItemId] = spawn.interactionData.split(':');
+        assertKnown(issues, `${source}.interactionData berry item`, itemIds, 'itemData id', berryItemId);
+      }
+
+      if (spawn.interactionType === 'wild-encounter' && spawn.interactionData) {
+        const [pokemonId] = spawn.interactionData.split('-').map(Number);
+        assertKnownNumber(issues, `${source}.interactionData pokemonId`, pokemonIds, 'pokemonData id', pokemonId);
+      }
+
+      if (spawn.interactionType === 'tag-battle' && spawn.interactionData) {
+        const [allyId, enemyOneId, enemyTwoId] = spawn.interactionData.split('|');
+        for (const trainerId of [allyId, enemyOneId, enemyTwoId]) {
+          assertKnown(issues, `${source}.interactionData trainerId`, trainerIds, 'trainerData id', trainerId);
+        }
+      }
+    };
+
+    for (const [registryKey, map] of Object.entries(mapRegistry)) {
+      if (map.key !== registryKey) {
+        addIssue(issues, `frontend/src/data/maps mapRegistry['${registryKey}']`, `has MapDefinition key '${map.key}' that does not match its registry key`);
+      }
+
+      assertKnown(issues, `frontend/src/data/maps mapRegistry['${registryKey}'].encounterTableKey`, new Set([...Object.keys(encounterTables), '']), 'encounterTables key', map.encounterTableKey);
+      assertKnown(issues, `frontend/src/data/maps mapRegistry['${registryKey}'].onEnterCutscene`, cutsceneIds, 'cutsceneData id', map.onEnterCutscene);
+
+      for (const [warpIndex, warp] of map.warps.entries()) {
+        const source = `frontend/src/data/maps mapRegistry['${registryKey}'].warps[${warpIndex}] (${warp.tileX},${warp.tileY})`;
+        assertKnown(issues, `${source}.targetMap`, mapKeys, 'mapRegistry key', warp.targetMap);
+        const targetMap = mapRegistry[warp.targetMap];
+        if (targetMap && !Object.prototype.hasOwnProperty.call(targetMap.spawnPoints, warp.targetSpawnId)) {
+          addIssue(issues, `${source}.targetSpawnId`, `references missing spawn '${warp.targetSpawnId}' in target map '${warp.targetMap}'`);
+        }
+      }
+
+      for (const [trainerIndex, trainer] of map.trainers.entries()) {
+        assertKnown(issues, `frontend/src/data/maps mapRegistry['${registryKey}'].trainers[${trainerIndex}] '${trainer.id}'.trainerId`, trainerIds, 'trainerData id', trainer.trainerId);
+      }
+
+      map.npcs.forEach((spawn, index) => checkInteraction(registryKey, 'npcs', spawn, index));
+      map.objects.forEach((spawn, index) => checkInteraction(registryKey, 'objects', spawn, index));
+    }
+
+    for (const [shopKey, inventory] of Object.entries(shopInventories)) {
+      assertKnown(issues, `frontend/src/data/shop-data.ts shopInventories['${shopKey}']`, mapKeys, 'mapRegistry key', shopKey);
+      assertKnown(issues, `frontend/src/data/shop-data.ts shopInventories['${shopKey}']`, shopMapKeys, 'map containing a shop interaction', shopKey);
+      for (const [itemIndex, itemId] of inventory.entries()) {
+        assertKnown(issues, `frontend/src/data/shop-data.ts shopInventories['${shopKey}'][${itemIndex}]`, validItemOrTmIds, 'itemData/tmData id', itemId);
+      }
+    }
+
+    for (const shopMapKey of shopMapKeys) {
+      assertKnown(issues, `frontend/src/data/maps mapRegistry['${shopMapKey}'] shop interaction`, new Set(Object.keys(shopInventories)), 'shopInventories key', shopMapKey);
+    }
+
+    for (const [itemKey, item] of Object.entries(itemData)) {
+      if (item.id !== itemKey) {
+        addIssue(issues, `frontend/src/data/item-data.ts itemData['${itemKey}']`, `has id '${item.id}' that does not match its key`);
+      }
+      assertKnown(issues, `frontend/src/data/item-data.ts itemData['${itemKey}'].effect.moveId`, moveIds, 'moveData id', item.effect.moveId);
+    }
+
+    for (const [catalogIndex, entry] of battlePointShopCatalog.entries()) {
+      assertKnown(issues, `frontend/src/data/bp-shop-data.ts battlePointShopCatalog[${catalogIndex}].itemId`, itemIds, 'itemData id', entry.itemId);
+    }
+
+    for (const [questKey, quest] of Object.entries(questData)) {
+      if (quest.id !== questKey) {
+        addIssue(issues, `frontend/src/data/quest-data.ts questData['${questKey}']`, `has id '${quest.id}' that does not match its key`);
+      }
+      for (const [rewardIndex, reward] of quest.rewards.entries()) {
+        assertKnown(issues, `frontend/src/data/quest-data.ts questData['${questKey}'].rewards[${rewardIndex}].itemId`, validItemOrTmIds, 'itemData/tmData id', reward.itemId);
+      }
+      for (const [stepIndex, step] of quest.steps.entries()) {
+        if (step.triggerEvent?.startsWith('map-entered:')) {
+          assertKnown(issues, `frontend/src/data/quest-data.ts questData['${questKey}'].steps[${stepIndex}].triggerEvent`, mapKeys, 'mapRegistry key', step.triggerEvent.slice('map-entered:'.length));
+        }
+      }
+    }
+
+    for (const [cutsceneKey, cutscene] of Object.entries(cutsceneData)) {
+      if (cutscene.id !== cutsceneKey) {
+        addIssue(issues, `frontend/src/data/cutscene-data.ts cutsceneData['${cutsceneKey}']`, `has id '${cutscene.id}' that does not match its key`);
+      }
+    }
+
+    for (const [achievementIndex, achievement] of ACHIEVEMENTS.entries()) {
+      if (achievementIds.has(achievement.id)) {
+        addIssue(issues, `frontend/src/data/achievement-data.ts ACHIEVEMENTS[${achievementIndex}]`, `duplicates achievement id '${achievement.id}'`);
+      }
+      achievementIds.add(achievement.id);
+    }
+
+    expect(
+      issues,
+      `Expected all data references to resolve. Found ${issues.length} dangling reference(s):\n${issues.map(issue => `- ${issue.source}: ${issue.message}`).join('\n')}`,
+    ).toEqual([]);
+  });
+});
 
 describe('Data Integrity', () => {
   describe('pokemon-data', () => {

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
@@ -18,17 +19,17 @@ export class VoltorbFlipScene extends Phaser.Scene {
   private cursorX = 0;
   private cursorY = 0;
   private cursorRect!: Phaser.GameObjects.Graphics;
-  private score = 0;
   private roundScore = 1;
   private level = 1;
   private totalCoins = 0;
   private scoreText!: Phaser.GameObjects.Text;
-  private levelText!: Phaser.GameObjects.Text;
   private totalText!: Phaser.GameObjects.Text;
   private messageText!: Phaser.GameObjects.Text;
   private gameOver = false;
   private rowHints: { sum: number; voltorbs: number }[] = [];
   private colHints: { sum: number; voltorbs: number }[] = [];
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: 'VoltorbFlipScene' });
@@ -37,7 +38,6 @@ export class VoltorbFlipScene extends Phaser.Scene {
   create(): void {
     const layout = ui(this);
     this.gameOver = false;
-    this.score = 0;
     this.roundScore = 1;
 
     // Background
@@ -61,7 +61,7 @@ export class VoltorbFlipScene extends Phaser.Scene {
 
     // HUD
     const hudX = Math.round(layout.w * 0.03);
-    this.levelText = this.add.text(hudX, 70, `Level: ${this.level}`, {
+    this.add.text(hudX, 70, `Level: ${this.level}`, {
       ...FONTS.body, fontSize: mobileFontSize(14),
     });
     this.scoreText = this.add.text(hudX, 95, `Round: ×${this.roundScore}`, {
@@ -81,12 +81,12 @@ export class VoltorbFlipScene extends Phaser.Scene {
     this.updateCursor();
 
     // Input
-    this.input.keyboard!.on('keydown-UP', () => { if (!this.gameOver) { this.cursorY = (this.cursorY - 1 + 5) % 5; this.updateCursor(); } });
-    this.input.keyboard!.on('keydown-DOWN', () => { if (!this.gameOver) { this.cursorY = (this.cursorY + 1) % 5; this.updateCursor(); } });
-    this.input.keyboard!.on('keydown-LEFT', () => { if (!this.gameOver) { this.cursorX = (this.cursorX - 1 + 5) % 5; this.updateCursor(); } });
-    this.input.keyboard!.on('keydown-RIGHT', () => { if (!this.gameOver) { this.cursorX = (this.cursorX + 1) % 5; this.updateCursor(); } });
-    this.input.keyboard!.on('keydown-ENTER', () => this.onConfirm());
-    this.input.keyboard!.on('keydown-ESC', () => this.exitGame());
+    this.inputRegistry.bindKey('keydown-UP', () => { if (!this.gameOver) { this.cursorY = (this.cursorY - 1 + 5) % 5; this.updateCursor(); } });
+    this.inputRegistry.bindKey('keydown-DOWN', () => { if (!this.gameOver) { this.cursorY = (this.cursorY + 1) % 5; this.updateCursor(); } });
+    this.inputRegistry.bindKey('keydown-LEFT', () => { if (!this.gameOver) { this.cursorX = (this.cursorX - 1 + 5) % 5; this.updateCursor(); } });
+    this.inputRegistry.bindKey('keydown-RIGHT', () => { if (!this.gameOver) { this.cursorX = (this.cursorX + 1) % 5; this.updateCursor(); } });
+    this.inputRegistry.bindKey('keydown-ENTER', () => this.onConfirm());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.exitGame());
 
     // Close hint
     this.add.text(layout.w - 30, layout.h - 20, 'ESC to quit', {

@@ -3,6 +3,8 @@ import { pokemonData } from '@data/pokemon';
 import { BGM, SFX } from '@utils/audio-keys';
 import { AudioManager } from '@managers/AudioManager';
 import { mobileFontSize } from '@ui/theme';
+import { SceneRouter } from '@scenes/SceneRouter';
+import { SceneKey } from '@scenes/scene-keys';
 
 // ── Manifest types ───────────────────────────────────────────────────
 
@@ -42,7 +44,7 @@ export class PreloadScene extends Phaser.Scene {
   private manifest: AssetManifest | null = null;
 
   constructor() {
-    super({ key: 'PreloadScene' });
+    super({ key: SceneKey.Preload });
   }
 
   /** Receive the manifest (or null) from BootScene. */
@@ -250,6 +252,6 @@ export class PreloadScene extends Phaser.Scene {
     audio.setScene(this);
     audio.initCryGenerator();
 
-    this.scene.start('TitleScene');
+    SceneRouter.for(this).start(SceneKey.Title);
   }
 }

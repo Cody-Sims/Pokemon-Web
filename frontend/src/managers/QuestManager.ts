@@ -1,14 +1,21 @@
-import { GameManager } from './GameManager';
 import { EventManager } from './EventManager';
 import { questData, QuestDefinition, QuestStatus } from '@data/quest-data';
 
+interface QuestStateAccess {
+  getFlag(flag: string): boolean;
+  setFlag(flag: string, value?: boolean): void;
+  addItem(itemId: string, qty?: number): boolean;
+  addMoney(amount: number): void;
+}
+
 /**
- * QuestManager — Tracks quest progress using GameManager flags.
+ * QuestManager — Tracks quest progress using injected game-state flags.
  * Quests advance when their step completion flags are set.
- * No separate state: everything is derived from GameManager.flags.
+ * No separate state: everything is derived from persistent game flags.
  */
 export class QuestManager {
-  private static instance: QuestManager;
+  private static instance: QuestManager | undefined;
+  private static stateAccess?: QuestStateAccess;
 
   private constructor() {}
 
@@ -17,6 +24,17 @@ export class QuestManager {
       QuestManager.instance = new QuestManager();
     }
     return QuestManager.instance;
+  }
+
+  static configureStateAccess(stateAccess: QuestStateAccess): void {
+    QuestManager.stateAccess = stateAccess;
+  }
+
+  private getStateAccess(): QuestStateAccess {
+    if (!QuestManager.stateAccess) {
+      throw new Error('QuestManager requires GameManager state access before use');
+    }
+    return QuestManager.stateAccess;
   }
 
   /** Get a quest definition by id. */
@@ -34,9 +52,9 @@ export class QuestManager {
     const quest = questData[questId];
     if (!quest) return 'not-started';
 
-    const gm = GameManager.getInstance();
-    if (gm.getFlag(quest.completeFlag)) return 'complete';
-    if (gm.getFlag(quest.startFlag)) return 'active';
+    const state = this.getStateAccess();
+    if (state.getFlag(quest.completeFlag)) return 'complete';
+    if (state.getFlag(quest.startFlag)) return 'active';
     return 'not-started';
   }
 
@@ -44,7 +62,7 @@ export class QuestManager {
   startQuest(questId: string): void {
     const quest = questData[questId];
     if (!quest) return;
-    GameManager.getInstance().setFlag(quest.startFlag);
+    this.getStateAccess().setFlag(quest.startFlag);
   }
 
   /** Get the current step index (0-based) for an active quest. */
@@ -52,9 +70,9 @@ export class QuestManager {
     const quest = questData[questId];
     if (!quest) return 0;
 
-    const gm = GameManager.getInstance();
+    const state = this.getStateAccess();
     for (let i = 0; i < quest.steps.length; i++) {
-      if (!gm.getFlag(quest.steps[i].completionFlag)) {
+      if (!state.getFlag(quest.steps[i].completionFlag)) {
         return i;
       }
     }
@@ -65,7 +83,7 @@ export class QuestManager {
   completeStep(questId: string, stepIndex: number): void {
     const quest = questData[questId];
     if (!quest || stepIndex < 0 || stepIndex >= quest.steps.length) return;
-    GameManager.getInstance().setFlag(quest.steps[stepIndex].completionFlag);
+    this.getStateAccess().setFlag(quest.steps[stepIndex].completionFlag);
   }
 
   /** Complete an entire quest and apply rewards. Only awards if quest is currently active. */
@@ -76,17 +94,17 @@ export class QuestManager {
     // Guard: only complete if quest is active (prevents double rewards)
     if (this.getQuestStatus(questId) !== 'active') return;
 
-    const gm = GameManager.getInstance();
-    gm.setFlag(quest.completeFlag);
+    const state = this.getStateAccess();
+    state.setFlag(quest.completeFlag);
 
     // Award items
     for (const reward of quest.rewards) {
-      gm.addItem(reward.itemId, reward.quantity);
+      state.addItem(reward.itemId, reward.quantity);
     }
 
     // Award money
     if (quest.rewardMoney > 0) {
-      gm.addMoney(quest.rewardMoney);
+      state.addMoney(quest.rewardMoney);
     }
   }
 
@@ -102,7 +120,8 @@ export class QuestManager {
 
   /** Reset singleton (for testing). */
   static resetInstance(): void {
-    QuestManager.instance = undefined as unknown as QuestManager;
+    QuestManager.instance = undefined;
+    QuestManager.stateAccess = undefined;
   }
 
   private automationInitialized = false;
@@ -167,13 +186,13 @@ export class QuestManager {
    * steps whose triggerFlags are already set (handles out-of-order flag sets).
    */
   private checkAllQuestProgress(): void {
-    const gm = GameManager.getInstance();
+    const state = this.getStateAccess();
     for (const quest of this.getActiveQuests()) {
       let stepIdx = this.getCurrentStep(quest.id);
       let advanced = false;
       while (stepIdx < quest.steps.length) {
         const step = quest.steps[stepIdx];
-        if (step.triggerFlag && gm.getFlag(step.triggerFlag)) {
+        if (step.triggerFlag && state.getFlag(step.triggerFlag)) {
           this.completeStep(quest.id, stepIdx);
           stepIdx = this.getCurrentStep(quest.id);
           advanced = true;

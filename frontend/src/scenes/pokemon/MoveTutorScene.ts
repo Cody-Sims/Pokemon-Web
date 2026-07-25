@@ -1,17 +1,19 @@
 import Phaser from 'phaser';
+import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { GameManager } from '@managers/GameManager';
 import { AudioManager } from '@managers/AudioManager';
-import { moveTutorData, tmData, canLearnMove } from '@data/tm-data';
+import { moveTutorData, tmData } from '@data/tm-data';
+import { canLearnMove } from '@systems/engine/MoveLearning';
 import type { MoveTutorData } from '@data/tm-data';
-import { moveData } from '@data/moves';
+import { moveData, type MoveId } from '@data/moves';
 import { pokemonData } from '@data/pokemon';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { MenuController } from '@ui/controls/MenuController';
 import { ScrollContainer } from '@ui/widgets/ScrollContainer';
-import { COLORS, FONTS, TYPE_COLORS, mobileFontSize, MOBILE_SCALE, MIN_TOUCH_TARGET, isMobile } from '@ui/theme';
+import { COLORS, FONTS, TYPE_COLORS, mobileFontSize, minTouchTarget, isMobile } from '@ui/theme';
 import { SFX } from '@utils/audio-keys';
-import type { PokemonInstance, MoveInstance, MoveData } from '@data/interfaces';
+import type { PokemonInstance } from '@data/interfaces';
 
 type TutorMode = 'move-list' | 'party-select' | 'move-replace' | 'confirm' | 'message';
 
@@ -19,14 +21,14 @@ interface SceneData {
   tutorId?: string;
   /** When launched from inventory for TM usage */
   tmMode?: boolean;
-  tmMoveId?: string;
+  tmMoveId?: MoveId;
 }
 
 export class MoveTutorScene extends Phaser.Scene {
   private mode: TutorMode = 'move-list';
   private tutor!: MoveTutorData;
   private tmMode = false;
-  private tmMoveId = '';
+  private tmMoveId: MoveId | '' = '';
 
   // Move list state
   private moveListPanel?: NinePatchPanel;
@@ -46,15 +48,14 @@ export class MoveTutorScene extends Phaser.Scene {
   private replacePanel?: NinePatchPanel;
   private replaceTexts: Phaser.GameObjects.Text[] = [];
   private replaceController?: MenuController;
-  private replacePokemon?: PokemonInstance;
 
   // UI groups for cleanup
   private moveGroup!: Phaser.GameObjects.Group;
   private partyGroup!: Phaser.GameObjects.Group;
   private replaceGroup!: Phaser.GameObjects.Group;
-  private headerText?: Phaser.GameObjects.Text;
-  private costText?: Phaser.GameObjects.Text;
   private moveScrollContainer?: ScrollContainer;
+
+  private readonly inputRegistry = new SceneInputRegistry(this);
 
   constructor() {
     super({ key: 'MoveTutorScene' });
@@ -79,7 +80,7 @@ export class MoveTutorScene extends Phaser.Scene {
         moves: [{ moveId: this.tmMoveId, cost: 0, costType: 'money' }],
       };
       this.drawBackground();
-      this.headerText = this.add.text(layout.cx, 28, `Teach ${move?.name ?? this.tmMoveId}?`, {
+      this.add.text(layout.cx, 28, `Teach ${move?.name ?? this.tmMoveId}?`, {
         ...FONTS.heading, fontSize: mobileFontSize(22),
       }).setOrigin(0.5);
       this.selectedMoveIdx = 0;
@@ -95,13 +96,13 @@ export class MoveTutorScene extends Phaser.Scene {
     }
 
     this.drawBackground();
-    this.headerText = this.add.text(layout.cx, 28, this.tutor.name, {
+    this.add.text(layout.cx, 28, this.tutor.name, {
       ...FONTS.heading, fontSize: mobileFontSize(22),
     }).setOrigin(0.5);
     this.add.text(layout.cx, 52, 'Which move would you like to teach?', FONTS.bodySmall).setOrigin(0.5);
 
     this.showMoveList();
-    this.input.keyboard!.on('keydown-ESC', () => this.handleCancel());
+    this.inputRegistry.bindKey('keydown-ESC', () => this.handleCancel());
   }
 
   private drawBackground(): void {
@@ -133,7 +134,7 @@ export class MoveTutorScene extends Phaser.Scene {
     this.renderMoveItems();
 
     // Touch drag-to-scroll for the move list area
-    const itemH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 40) : 40;
+    const itemH = isMobile() ? Math.max(minTouchTarget(), 40) : 40;
     this.moveScrollContainer?.destroy();
     this.moveScrollContainer = new ScrollContainer(this, {
       x: 20, y: 100, width: layout.w - 40, height: this.moveMaxVisible * itemH,
@@ -176,7 +177,7 @@ export class MoveTutorScene extends Phaser.Scene {
 
     const layout = ui(this);
     const startY = 100;
-    const itemH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 40) : 40;
+    const itemH = isMobile() ? Math.max(minTouchTarget(), 40) : 40;
     const endIdx = Math.min(this.moveScrollOffset + this.moveMaxVisible, this.tutor.moves.length);
 
     for (let vi = this.moveScrollOffset; vi < endIdx; vi++) {
@@ -228,7 +229,7 @@ export class MoveTutorScene extends Phaser.Scene {
   }
 
   private ensureMoveVisible(idx: number): void {
-    const itemH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 40) : 40;
+    const itemH = isMobile() ? Math.max(minTouchTarget(), 40) : 40;
     if (idx < this.moveScrollOffset) {
       this.moveScrollOffset = idx;
       this.renderMoveItems();
@@ -288,7 +289,7 @@ export class MoveTutorScene extends Phaser.Scene {
       }
     }
 
-    const partyItemH = isMobile() ? Math.max(MIN_TOUCH_TARGET, 44) : 44;
+    const partyItemH = isMobile() ? Math.max(minTouchTarget(), 44) : 44;
     const panelH = this.eligibleParty.length * partyItemH + 40;
     this.partyPanel = new NinePatchPanel(this, layout.cx, layout.cy + 40, 400, panelH, {
       fillColor: 0x0a0a18,
@@ -345,9 +346,7 @@ export class MoveTutorScene extends Phaser.Scene {
 
   private selectPokemon(eligibleIdx: number): void {
     const { pokemon } = this.eligibleParty[eligibleIdx];
-    this.replacePokemon = pokemon;
     const moveId = this.tutor.moves[this.selectedMoveIdx].moveId;
-    const move = moveData[moveId];
 
     if (pokemon.moves.length < 4) {
       // Learn immediately
@@ -501,10 +500,10 @@ export class MoveTutorScene extends Phaser.Scene {
       }
     };
 
-    this.input.keyboard!.once('keydown-ENTER', dismiss);
-    this.input.keyboard!.once('keydown-SPACE', dismiss);
-    this.input.keyboard!.once('keydown-ESC', dismiss);
-    this.input.once('pointerdown', dismiss);
+    this.inputRegistry.bindKeyOnce('keydown-ENTER', dismiss);
+    this.inputRegistry.bindKeyOnce('keydown-SPACE', dismiss);
+    this.inputRegistry.bindKeyOnce('keydown-ESC', dismiss);
+    this.inputRegistry.bindPointerOnce(this.input, 'pointerdown', dismiss);
   }
 
   private handleCancel(): void {
