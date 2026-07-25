@@ -15,6 +15,13 @@ All notable changes to the Pokemon Web project.
   non-blocking toasts, and persisted "Not Now" so they do not reappear on reload.
 - Hardened viewport handling for dynamic viewport units, touch scrolling,
   rotation, and mobile keyboard resize events.
+### Changed - Mobile touch controls
+
+- Reworked mobile touch-control geometry for safe-area-aware, thumb-reachable
+  joystick/action/menu placement with minimum touch targets and left-handed mode.
+- Hardened joystick/button cancellation so cancelled, blurred, hidden, or
+  out-of-bounds pointers release cleanly instead of leaving stuck movement.
+- Added pure unit coverage for touch-control dead-zone, diagonal, and layout math.
 
 ### Added - Agent workflow skills
 
