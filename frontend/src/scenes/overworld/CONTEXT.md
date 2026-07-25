@@ -14,6 +14,7 @@ field abilities, footsteps, and scene transitions.
 | `OverworldFishing.ts` | `OverworldFishing` | Fishing rod logic and encounter triggers. |
 | `OverworldHealing.ts` | `OverworldHealing` | PokéCenter party heal helper. |
 | `OverworldFootsteps.ts` | `OverworldFootsteps` | Footstep SFX by tile type (grass, sand, wood, etc.). |
+| `overworld-hud-layout.ts` | — | Pure viewport/safe-area layout helper for overworld HUD overlays. |
 | `DialogueScene.ts` | `DialogueScene` | Typewriter text overlay for NPC dialogue. Runs as a parallel scene. |
 | `TransitionScene.ts` | `TransitionScene` | Fade/wipe transitions between scenes. |
 | `index.ts` | — | Barrel re-exports. |

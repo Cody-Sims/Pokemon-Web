@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-25]
 
+### Fixed - Overworld HUD layout
+
+- Split the overworld location label, interaction hint, party strip, minimap,
+  and quest tracker onto viewport/safe-area-derived anchors so landscape phones
+  no longer draw the top HUD through itself or the touch controls.
+- Added pure unit coverage for the shared overworld HUD layout helper.
+
 ### Fixed - Intro name entry
 
 - Mounted the intro's DOM text input on desktop and touch devices so keyboard-only

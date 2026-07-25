@@ -2,10 +2,12 @@ import Phaser from 'phaser';
 import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { isMobile } from '@ui/theme';
+import { isMobile, minTouchTarget, mobileScale } from '@ui/theme';
+import { computeTouchMetrics } from '@ui/controls/touch-geometry';
 import { GameManager } from '@managers/GameManager';
 import { mapRegistry, MapDefinition, TILE_COLORS } from '@data/maps';
 import { getGameSafeAreaInsets } from '@utils/safe-area';
+import { computeOverworldHudLayout } from '@scenes/overworld/overworld-hud-layout';
 
 /**
  * Minimap radius in tiles from the player center.
@@ -111,7 +113,6 @@ export class MinimapScene extends Phaser.Scene {
       this.lastTileX = -1;
       this.refreshVisibility();
     });
-
   }
 
   update(): void {
@@ -158,36 +159,21 @@ export class MinimapScene extends Phaser.Scene {
    */
   private computePosition(w: number, h: number, totalSize: number): { x: number; y: number } {
     const mobile = isMobile();
-    const isPortrait = h > w;
-    const margin = mobile ? 10 : 12;
-    const insets = getGameSafeAreaInsets(this.cameras.main);
-
-    if (isPortrait) {
-      // Top-left, pushed down past the location-text strip (~28px) so it
-      // doesn't overlap the map name banner at the top of the screen.
-      const topGap = 32;
-      return { x: margin + insets.left, y: topGap + insets.top };
-    }
-
-    // Landscape mobile: pin to the top-left below the location HUD strip
-    // so the minimap clears both the joystick (left side) and the action
-    // buttons + hamburger (right side). Desktop landscape keeps the
-    // legacy bottom-right corner where there's no DOM overlay.
-    if (mobile) {
-      // Mobile landscape DOM controls take up ~120 px on each side, so
-      // the safe content rectangle is the middle band. Sit the minimap
-      // just below the location HUD strip in that middle band.
-      return {
-        x: 130 + margin + insets.left,
-        y: 32 + insets.top,
-      };
-    }
-
-    // Desktop landscape: bottom-right corner.
-    return {
-      x: w - totalSize - margin - insets.right,
-      y: h - totalSize - margin - insets.bottom,
-    };
+    const touchMetrics = computeTouchMetrics(minTouchTarget(), mobileScale());
+    const layout = computeOverworldHudLayout({
+      width: w,
+      height: h,
+      safeArea: getGameSafeAreaInsets(this.cameras.main),
+      hasTouchControls: mobile,
+      hasSpeedrunTimer: false,
+      partyWidth: mobile ? 176 : 144,
+      partyHeight: mobile ? 32 : 28,
+      questWidth: mobile ? 200 : 230,
+      questHeight: 48,
+      minimapSize: totalSize,
+      touchPanelWidth: mobile ? touchMetrics.panelWidth + touchMetrics.edgePadding : 0,
+    });
+    return layout.minimap;
   }
 
   private drawMinimap(mapKey: string, playerTX: number, playerTY: number): void {
