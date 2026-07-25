@@ -15,6 +15,13 @@ declare global {
         activeScenes: string[];
         loadedScenes: string[];
         canvas: { width: number; height: number };
+        shell: {
+          blockingOverlays: string[];
+          shellPaused: boolean;
+          rotatePromptVisible: boolean;
+          iosInstallVisible: boolean;
+          installBannerVisible: boolean;
+        };
       };
     }>;
   }
@@ -29,10 +36,135 @@ if (isLocalPlaytest) {
         activeScenes: game.scene.getScenes(true).map((scene) => scene.scene.key),
         loadedScenes: game.scene.getScenes(false).map((scene) => scene.scene.key),
         canvas: { width: game.canvas.width, height: game.canvas.height },
+        shell: getShellDebugState(),
       }),
     }),
   });
 }
+
+const PORTRAIT_OPT_OUT_KEY = 'pokemon-web-portrait-ok';
+const IOS_INSTALL_DISMISSED_KEY = 'pokemon-web-ios-install-dismissed';
+const LEGACY_IOS_INSTALL_DISMISSED_KEY = 'ios-install-dismissed';
+const WEB_INSTALL_DISMISSED_KEY = 'pokemon-web-install-dismissed';
+const ORIENTATION_OVERLAY = 'orientation';
+
+const shellBlockingOverlays = new Set<string>();
+let shellPaused = false;
+let iosInstallPromptBound = false;
+let iosInstallPromptTimer: ReturnType<typeof setTimeout> | null = null;
+
+function storageValue(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function setStorageValue(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Private browsing or quota errors should not break the shell.
+  }
+}
+
+function isShellBlocking(): boolean {
+  return shellBlockingOverlays.size > 0;
+}
+
+function getShellDebugState(): {
+  blockingOverlays: string[];
+  shellPaused: boolean;
+  rotatePromptVisible: boolean;
+  iosInstallVisible: boolean;
+  installBannerVisible: boolean;
+} {
+  const rotatePrompt = document.getElementById('rotate-prompt');
+  const iosInstall = document.getElementById('ios-install-prompt');
+  return {
+    blockingOverlays: Array.from(shellBlockingOverlays),
+    shellPaused,
+    rotatePromptVisible: rotatePrompt ? getComputedStyle(rotatePrompt).display !== 'none' : false,
+    iosInstallVisible: iosInstall ? getComputedStyle(iosInstall).display !== 'none' : false,
+    installBannerVisible: Boolean(document.getElementById('install-banner')),
+  };
+}
+
+function pauseGameForShellOverlay(): void {
+  if (shellPaused) return;
+  shellPaused = true;
+  document.body.dataset.shellBlocked = 'true';
+  try {
+    game.sound.pauseAll();
+  } catch { /* sound manager may not be ready yet */ }
+  try {
+    AudioManager.getInstance().pauseBGM();
+  } catch { /* no BGM yet */ }
+  game.loop.sleep();
+}
+
+function resumeGameAfterShellOverlay(): void {
+  if (!shellPaused) return;
+  shellPaused = false;
+  delete document.body.dataset.shellBlocked;
+  if (document.hidden) return;
+  try {
+    game.sound.resumeAll();
+  } catch { /* sound manager may not be ready yet */ }
+  try {
+    AudioManager.getInstance().resumeBGM();
+  } catch { /* no BGM yet */ }
+  game.loop.wake();
+  game.scale.refresh();
+}
+
+function hideInstallPromptsWhileBlocked(): void {
+  document.getElementById('ios-install-prompt')?.style.setProperty('display', 'none');
+  document.getElementById('install-banner')?.remove();
+}
+
+function setBlockingOverlay(name: string, visible: boolean): void {
+  const wasBlocking = isShellBlocking();
+  if (visible) shellBlockingOverlays.add(name);
+  else shellBlockingOverlays.delete(name);
+
+  if (!wasBlocking && isShellBlocking()) {
+    hideInstallPromptsWhileBlocked();
+    pauseGameForShellOverlay();
+  } else if (wasBlocking && !isShellBlocking()) {
+    resumeGameAfterShellOverlay();
+    scheduleIOSInstallPrompt();
+    showInstallBanner();
+  }
+}
+
+function eventStartedInsideShell(event: Event): boolean {
+  const path = event.composedPath();
+  return path.some(target => {
+    if (!(target instanceof HTMLElement)) return false;
+    return target.id === 'rotate-prompt'
+      || target.id === 'ios-install-prompt'
+      || target.id === 'install-banner'
+      || Boolean(target.closest?.('#rotate-prompt, #ios-install-prompt, #install-banner'));
+  });
+}
+
+function blockInputBehindShell(event: Event): void {
+  if (!isShellBlocking() || eventStartedInsideShell(event)) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+}
+
+[
+  'keydown', 'keyup', 'keypress',
+  'pointerdown', 'pointerup', 'pointermove',
+  'touchstart', 'touchend', 'touchmove',
+  'mousedown', 'mouseup', 'mousemove',
+  'wheel',
+].forEach(eventName => {
+  document.addEventListener(eventName, blockInputBehindShell, { capture: true, passive: false });
+});
 
 // ── Sync accessibility settings from saved preferences on boot ──
 try {
@@ -146,10 +278,31 @@ window.addEventListener('orientationchange', () => {
 
 // ── Dynamic game resize — adapt to viewport on resize/orientation change ──
 let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+let lastResizePortrait = window.innerHeight > window.innerWidth;
+
+function isEditableFocused(): boolean {
+  const active = document.activeElement;
+  if (!active) return false;
+  return active instanceof HTMLInputElement
+    || active instanceof HTMLTextAreaElement
+    || (active instanceof HTMLElement && active.isContentEditable);
+}
+
+function keyboardLikelyShrankVisualViewport(currentPortrait: boolean): boolean {
+  if (!window.visualViewport || !isEditableFocused()) return false;
+  const heightRatio = window.visualViewport.height / window.innerHeight;
+  return currentPortrait === lastResizePortrait && heightRatio > 0 && heightRatio < 0.82;
+}
+
 function handleViewportResize(): void {
   if (resizeTimer) clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
     resetSafeAreaCache();
+    const currentPortrait = window.innerHeight > window.innerWidth;
+    if (keyboardLikelyShrankVisualViewport(currentPortrait)) {
+      game.scale.refresh();
+      return;
+    }
     // Force a body reflow before reading dimensions so iOS Safari uses
     // the post-rotation client size (it sometimes caches the pre-rotation
     // values until the next layout pass). Toggle a harmless transform on
@@ -174,6 +327,7 @@ function handleViewportResize(): void {
     try {
       game.scale.emit('resize', game.scale.gameSize, game.scale.baseSize);
     } catch { /* defensive — older Phaser versions */ }
+    lastResizePortrait = currentPortrait;
   }, 80);
 }
 function scheduleOrientationResize(): void {
@@ -212,6 +366,25 @@ document.addEventListener('fullscreenchange', () => {
 });
 
 // ── iOS "Add to Home Screen" install prompt ──
+function hasDismissedInstallPrompt(): boolean {
+  return storageValue(IOS_INSTALL_DISMISSED_KEY) === '1'
+    || storageValue(LEGACY_IOS_INSTALL_DISMISSED_KEY) === '1'
+    || storageValue(WEB_INSTALL_DISMISSED_KEY) === '1';
+}
+
+function dismissInstallPrompts(): void {
+  setStorageValue(IOS_INSTALL_DISMISSED_KEY, '1');
+  setStorageValue(WEB_INSTALL_DISMISSED_KEY, '1');
+  document.getElementById('ios-install-prompt')?.style.setProperty('display', 'none');
+  document.getElementById('install-banner')?.remove();
+  deferredInstallPrompt = null;
+}
+
+function scheduleIOSInstallPrompt(delay = 3000): void {
+  if (iosInstallPromptTimer) clearTimeout(iosInstallPromptTimer);
+  iosInstallPromptTimer = setTimeout(showIOSInstallPrompt, delay);
+}
+
 function showIOSInstallPrompt(): void {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -220,81 +393,117 @@ function showIOSInstallPrompt(): void {
     window.matchMedia('(display-mode: standalone)').matches ||
     window.matchMedia('(display-mode: fullscreen)').matches;
   if (!isIOS || isStandalone) return;
-
-  // Check if user already dismissed
-  const dismissed = localStorage.getItem('ios-install-dismissed');
-  if (dismissed) return;
+  if (hasDismissedInstallPrompt() || isShellBlocking()) return;
 
   const banner = document.getElementById('ios-install-prompt');
   if (!banner) return;
   banner.style.display = 'flex';
 
   const dismissBtn = document.getElementById('ios-install-dismiss');
-  if (dismissBtn) {
+  if (dismissBtn && !iosInstallPromptBound) {
+    iosInstallPromptBound = true;
     dismissBtn.addEventListener('click', () => {
-      banner.style.display = 'none';
-      localStorage.setItem('ios-install-dismissed', '1');
+      dismissInstallPrompts();
     });
   }
 }
 
-// Show after a short delay so it doesn't compete with the rotate prompt
-setTimeout(showIOSInstallPrompt, 3000);
+// Show later and only after blocking orientation UI is gone.
+scheduleIOSInstallPrompt(3000);
 
 // ── Tab visibility — pause non-essential work when backgrounded ──
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     game.loop.sleep();
   } else {
-    game.loop.wake();
+    if (!shellPaused) game.loop.wake();
     game.scale.refresh();
   }
 });
 
 // ── Portrait orientation prompt ──
+function hasPortraitOptOut(): boolean {
+  return storageValue(PORTRAIT_OPT_OUT_KEY) === '1';
+}
+
+function isPortraitViewport(): boolean {
+  return window.innerHeight > window.innerWidth;
+}
+
 function updateOrientationPrompt(): void {
   const overlay = document.getElementById('rotate-prompt');
   if (!overlay) return;
-  const dismissed = (() => { try { return sessionStorage.getItem('pokemon-web-rotate-dismissed') === '1'; } catch { return false; } })();
-  if (dismissed) { overlay.style.display = 'none'; return; }
-  const isPortrait = window.innerHeight > window.innerWidth;
-  const mobile = isMobile();
-  overlay.style.display = mobile && isPortrait ? 'flex' : 'none';
+  const shouldShow = isMobile() && isPortraitViewport() && !hasPortraitOptOut();
+  const wasVisible = getComputedStyle(overlay).display !== 'none';
+  overlay.style.display = shouldShow ? 'flex' : 'none';
+  setBlockingOverlay(ORIENTATION_OVERLAY, shouldShow);
+  if (shouldShow && !wasVisible) {
+    document.getElementById('rotate-dismiss')?.focus({ preventScroll: true });
+  }
 }
 
 window.addEventListener('resize', updateOrientationPrompt);
 window.addEventListener('orientationchange', updateOrientationPrompt);
+window.addEventListener('pokemon-shell-overlay-dismissed', () => updateOrientationPrompt());
+document.getElementById('rotate-dismiss')?.addEventListener('click', () => {
+  setStorageValue(PORTRAIT_OPT_OUT_KEY, '1');
+  updateOrientationPrompt();
+});
 // Initial check after a tick (canvas may not be laid out yet)
 requestAnimationFrame(updateOrientationPrompt);
 
 // ── PWA install prompt ──
-let deferredInstallPrompt: Event | null = null;
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+}
+
+let deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
 
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
-  deferredInstallPrompt = e;
+  if (hasDismissedInstallPrompt()) return;
+  deferredInstallPrompt = e as BeforeInstallPromptEvent;
   showInstallBanner();
 });
 
 function showInstallBanner(): void {
-  if (document.getElementById('install-banner')) return;
+  if (!deferredInstallPrompt || hasDismissedInstallPrompt() || isShellBlocking() || document.getElementById('install-banner')) return;
   const banner = document.createElement('div');
   banner.id = 'install-banner';
-  banner.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(26,26,46,0.95);border:1px solid #ffcc00;border-radius:8px;padding:12px 20px;z-index:9998;font-family:monospace;color:#fff;display:flex;align-items:center;gap:12px;';
-  banner.innerHTML = '<span>📱 Add to Home Screen for the best experience</span><button id="install-accept" style="background:#ffcc00;color:#000;border:none;padding:6px 14px;border-radius:4px;font-family:monospace;cursor:pointer">Install</button><button id="install-dismiss" style="background:none;border:none;color:#888;font-family:monospace;cursor:pointer">✕</button>';
+  banner.className = 'shell-toast';
+  banner.style.display = 'flex';
+  banner.setAttribute('role', 'status');
+  banner.setAttribute('aria-live', 'polite');
+
+  const copy = document.createElement('div');
+  copy.className = 'install-copy';
+  const title = document.createElement('div');
+  title.className = 'install-title';
+  title.textContent = 'Install for quick play';
+  const body = document.createElement('div');
+  body.className = 'install-steps';
+  body.textContent = 'Add Pokémon Aurum to your home screen for full-screen play.';
+  copy.append(title, body);
+
+  const accept = document.createElement('button');
+  accept.id = 'install-accept';
+  accept.type = 'button';
+  accept.textContent = 'Install';
+
+  const dismiss = document.createElement('button');
+  dismiss.id = 'install-dismiss';
+  dismiss.type = 'button';
+  dismiss.textContent = 'Not Now';
+
+  banner.append(copy, accept, dismiss);
   document.body.appendChild(banner);
 
-  document.getElementById('install-accept')?.addEventListener('click', async () => {
+  accept.addEventListener('click', async () => {
     banner.remove();
-    if (deferredInstallPrompt && 'prompt' in deferredInstallPrompt) {
-      (deferredInstallPrompt as any).prompt();
-    }
+    await deferredInstallPrompt?.prompt();
     deferredInstallPrompt = null;
   });
-  document.getElementById('install-dismiss')?.addEventListener('click', () => {
-    banner.remove();
-    deferredInstallPrompt = null;
-  });
+  dismiss.addEventListener('click', dismissInstallPrompts);
 }
 
 // ── Desktop mute toggle via custom event from index.html ──

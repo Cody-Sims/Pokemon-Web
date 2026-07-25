@@ -85,6 +85,16 @@
 
 ## Open
 
+### 2026-07-24 mobile portrait gameplay follow-up
+
+- **Files:** [frontend/src/scenes/](../frontend/src/scenes/),
+  [frontend/src/ui/](../frontend/src/ui/).
+- **Symptom:** The shell can make portrait entry non-destructive, but full
+  portrait gameplay still depends on in-canvas scene, control, and widget
+  layout work owned outside this mobile-shell change.
+- **Status:** Deferred by ownership. The shell now keeps a dismissible,
+  remembered landscape recommendation instead of claiming full portrait support.
+
 ### 2026-07-24 inventory decomposition findings
 
 - **Files:** [frontend/src/scenes/menu/InventoryScene.ts](frontend/src/scenes/menu/InventoryScene.ts) (pre-refactor lines 545-642), [tests/integration/systems/inventory.test.ts](tests/integration/systems/inventory.test.ts) (pre-refactor lines 27-49).

@@ -6,6 +6,16 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Changed - Mobile shell first-run flow
+
+- Reworked the portrait orientation shell into a themed, safe-area-aware gate
+  that pauses Phaser while visible and remembers "Continue Anyway" in
+  localStorage.
+- Sequenced mobile install prompts behind the orientation gate, changed them to
+  non-blocking toasts, and persisted "Not Now" so they do not reappear on reload.
+- Hardened viewport handling for dynamic viewport units, touch scrolling,
+  rotation, and mobile keyboard resize events.
+
 ### Added - Agent workflow skills
 
 - Added `parallel-worktree-delivery` for multi-worktree agent fleet planning,
