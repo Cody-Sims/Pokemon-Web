@@ -1,7 +1,32 @@
 # Pokemon Web — Bug Tracker
 
 > Last reconciled: 2026-07-24 against `83b2fab` (`revamp/bug-triage`) plus this bug-triage commit.
-> Scope: every backlog entry that was under `## Open` or a dated audit-cycle section in the previous file was checked against current source and the 2026-07-24 changelog.
+> Scope: every backlog entry that was under `## Open
+
+### Playwright E2E specs hang on browser context teardown
+
+- **Files:** [tests/e2e/smoke.spec.ts](tests/e2e/smoke.spec.ts), [tests/e2e/ui-regression.spec.ts](tests/e2e/ui-regression.spec.ts), [tests/e2e/mobile-ui.spec.ts](tests/e2e/mobile-ui.spec.ts), [tests/e2e/playwright.config.ts](tests/e2e/playwright.config.ts)
+- **Symptom:** Tests fail with `Tearing down "context" exceeded the test timeout`
+  even though the assertions themselves pass. A full local run took 46.5 minutes
+  and only 11 of 70 tests passed.
+- **Not an application defect:** the app boots correctly under Playwright — canvas
+  renders, Phaser 3.90 initialises, and there are zero page or console errors. A
+  single test in isolation passes in ~34s on both the pre-revamp baseline
+  (`e7f3341`) and current `main`.
+- **Reproduces before the revamp:** running the whole `smoke.spec.ts` file gives
+  3 failed / 5 passed on the baseline and 7 failed / 1 passed on current `main`,
+  so the teardown hang predates the revamp but appears to have got worse. The
+  worsening is not yet attributed and may be resource contention rather than a
+  code change.
+- **Environment:** macOS + `chrome-headless-shell` + swiftshader; the browser log
+  shows repeated `GPU stall due to ReadPixels`. Likely a WebGL context that keeps
+  the renderer busy across `browserContext.close()`.
+- **Impact on CI:** only smoke/visual/perf gate a PR. The full suite runs nightly
+  with `continue-on-error` until this is fixed.
+- **Next step:** reduce per-test WebGL context churn (reuse a context or destroy
+  the Phaser game in an `afterEach`), and re-measure on Linux CI.
+
+` or a dated audit-cycle section in the previous file was checked against current source and the 2026-07-24 changelog.
 
 ## Reconciliation summary
 
