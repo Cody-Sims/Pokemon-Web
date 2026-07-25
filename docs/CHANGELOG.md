@@ -6,6 +6,13 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-24]
 
+### Added - Agent workflow skills
+
+- Added `parallel-worktree-delivery` for multi-worktree agent fleet planning,
+  ownership partitioning, wave sequencing, and one-branch-at-a-time integration.
+- Added `verification-discipline` for red-green test proof, invariant tests,
+  report-only gate adoption, timeout handling, and build-purity checks.
+
 ### Fixed - Bug backlog triage
 
 - Reconciled the bug tracker against the current revamp codebase, moving stale,
