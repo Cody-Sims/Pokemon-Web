@@ -22,6 +22,13 @@ All notable changes to the Pokemon Web project.
 - Hardened joystick/button cancellation so cancelled, blurred, hidden, or
   out-of-bounds pointers release cleanly instead of leaving stuck movement.
 - Added pure unit coverage for touch-control dead-zone, diagonal, and layout math.
+### Fixed - Mobile E2E harness
+
+- Changed Playwright's `mobile-chromium` project to landscape touch gameplay
+  and added a portrait-only rotate-gate shell project.
+- Reworked mobile UI coverage to use touch input against landscape controls,
+  state-based scene waits, and structural render assertions instead of missing
+  screenshot baselines.
 
 ### Added - Agent workflow skills
 

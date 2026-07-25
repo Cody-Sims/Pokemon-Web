@@ -1,137 +1,212 @@
-import { test, expect } from '@playwright/test';
-import { bootToTitleMenu, pressKey, waitForCanvas } from './helpers';
+import { test, expect, Page, TestInfo } from '@playwright/test';
+import {
+  bootSavedGameToOverworld,
+  dismissRotateGate,
+  getPlayerState,
+  getPlaytestSnapshot,
+  installCleanStorage,
+  tapCanvasFraction,
+  waitForCanvas,
+  waitForRotateGate,
+  waitForScene,
+  waitForSceneInactive,
+} from './helpers';
 
-/**
- * Dismiss the portrait rotate-to-landscape prompt that the app shows on
- * mobile + portrait. Returns once the overlay is hidden so the canvas
- * underneath is interactive again.
- */
-async function dismissRotatePrompt(page: import('@playwright/test').Page): Promise<void> {
-  const overlay = page.locator('#rotate-prompt');
-  if (await overlay.isVisible().catch(() => false)) {
-    await page.locator('#rotate-dismiss').click();
-    await overlay.waitFor({ state: 'hidden', timeout: 2_000 }).catch(() => undefined);
-  }
+const LANDSCAPE_PROJECT = 'mobile-chromium';
+const PORTRAIT_PROJECT = 'mobile-portrait-chromium';
+
+type Point = { x: number; y: number };
+type Direction = 'down' | 'right';
+
+function skipUnlessProject(testInfo: TestInfo, projectName: string): void {
+  test.skip(testInfo.project.name !== projectName, `Runs only in ${projectName}`);
 }
 
-/**
- * Filter that drops console errors known to fire from the headless WebGL
- * stack rather than our application code. Keep this list narrow.
- */
 function isIgnorableConsoleError(text: string): boolean {
   return text.includes('Framebuffer status: Framebuffer Unsupported');
 }
 
-/**
- * Mobile UI regression tests covering portrait/landscape orientation
- * specifically. Forces a portrait viewport so the in-canvas hamburger
- * button, minimap top-left placement, settings layout, and intro text
- * positioning are exercised without depending on a real device.
- *
- * These tests are intentionally lightweight — they validate that no
- * runtime errors fire during the boot/menu/settings flow on a portrait
- * viewport, which is what regressed previously when layout-only fixes
- * shipped without exercising rotation paths.
- */
-test.describe('Mobile UI — portrait orientation', () => {
-  test.use({ viewport: { width: 390, height: 844 } });
+function collectRuntimeErrors(page: Page): string[] {
+  const errors: string[] = [];
+  page.on('pageerror', err => errors.push(err.message));
+  page.on('console', msg => {
+    if (msg.type() === 'error' && !isIgnorableConsoleError(msg.text())) {
+      errors.push(`console.error: ${msg.text()}`);
+    }
+  });
+  return errors;
+}
 
-  test('boot, open settings, change a value, return to title without errors', async ({ page }) => {
-    test.setTimeout(60_000);
+async function reachMobileOverworld(page: Page): Promise<void> {
+  await bootSavedGameToOverworld(page);
+  await dismissRotateGate(page);
+  await expect(page.locator('#mobile-controls')).toBeVisible({ timeout: 10_000 });
+}
 
-    const errors: string[] = [];
-    page.on('pageerror', err => errors.push(err.message));
-    page.on('console', msg => {
-      if (msg.type() === 'error' && !isIgnorableConsoleError(msg.text())) {
-        errors.push(`console.error: ${msg.text()}`);
-      }
+async function visibleBox(page: Page, selector: string) {
+  const locator = page.locator(selector);
+  await expect(locator).toBeVisible({ timeout: 10_000 });
+  const box = await locator.boundingBox();
+  expect(box, `${selector} should have a layout box`).not.toBeNull();
+  return box!;
+}
+
+function expectBoxInsideViewport(
+  label: string,
+  box: { x: number; y: number; width: number; height: number },
+  viewport: { width: number; height: number },
+): void {
+  expect.soft(box.width, `${label} width`).toBeGreaterThanOrEqual(44);
+  expect.soft(box.height, `${label} height`).toBeGreaterThanOrEqual(44);
+  expect.soft(box.x, `${label} left safe area`).toBeGreaterThanOrEqual(0);
+  expect.soft(box.y, `${label} top safe area`).toBeGreaterThanOrEqual(0);
+  expect.soft(box.x + box.width, `${label} right safe area`).toBeLessThanOrEqual(viewport.width);
+  expect.soft(box.y + box.height, `${label} bottom safe area`).toBeLessThanOrEqual(viewport.height);
+}
+
+function dragTarget(zone: { x: number; y: number; width: number; height: number }, direction: Direction): {
+  from: Point;
+  to: Point;
+} {
+  const from = {
+    x: zone.x + zone.width / 2,
+    y: zone.y + zone.height / 2,
+  };
+  if (direction === 'down') {
+    return {
+      from,
+      to: { x: from.x, y: Math.min(zone.y + zone.height - 24, from.y + 72) },
+    };
+  }
+  return {
+    from,
+    to: { x: Math.min(zone.x + zone.width - 24, from.x + 72), y: from.y },
+  };
+}
+
+async function dragJoystickUntilPlayerMoves(page: Page, direction: Direction): Promise<void> {
+  const start = await getPlayerState(page);
+  const zone = await visibleBox(page, '#joystick-zone');
+  const { from, to } = dragTarget(zone, direction);
+  const client = await page.context().newCDPSession(page);
+
+  try {
+    await client.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: [{ x: from.x, y: from.y, id: 1, radiusX: 4, radiusY: 4 }],
     });
+    await client.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: [{ x: to.x, y: to.y, id: 1, radiusX: 4, radiusY: 4 }],
+    });
+    await page.waitForFunction(async initial => {
+      const modulePath = `${location.origin}/Pokemon-Web/src/managers/GameManager.ts`;
+      const { GameManager } = await import(modulePath);
+      const pos = GameManager.getInstance().getPlayerPosition();
+      return pos.x !== initial.x || pos.y !== initial.y;
+    }, start.playerPosition, { timeout: 6_000 });
+  } finally {
+    await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await client.detach();
+  }
 
-    await bootToTitleMenu(page);
-    await dismissRotatePrompt(page);
+  await expect(page.locator('#joystick-base')).toBeHidden({ timeout: 2_000 });
+}
 
-    // Title menu has Settings as the second item on a fresh save.
-    // Use down arrow + Enter to navigate to it.
-    await pressKey(page, 'ArrowDown');
-    await pressKey(page, 'ArrowDown');
-    await pressKey(page, 'Enter');
-    await page.waitForTimeout(800);
+test.describe('Mobile UI — landscape gameplay', () => {
+  test('touch controls are visible, reachable, and inside the safe viewport', async ({ page }, testInfo) => {
+    skipUnlessProject(testInfo, LANDSCAPE_PROJECT);
+    test.setTimeout(120_000);
+    const errors = collectRuntimeErrors(page);
 
-    // Cycle a few setting values with arrow keys (LEFT/RIGHT adjust value,
-    // UP/DOWN move between rows). All actions should be no-op safe.
-    await pressKey(page, 'ArrowRight');
-    await page.waitForTimeout(150);
-    await pressKey(page, 'ArrowDown');
-    await pressKey(page, 'ArrowRight');
-    await page.waitForTimeout(150);
-    await pressKey(page, 'ArrowLeft');
-    await page.waitForTimeout(150);
+    await reachMobileOverworld(page);
 
-    // Close settings with Escape.
-    await pressKey(page, 'Escape');
-    await page.waitForTimeout(800);
+    const viewport = page.viewportSize();
+    expect(viewport).not.toBeNull();
+    expect(viewport!.width).toBeGreaterThan(viewport!.height);
+    await waitForRotateGate(page, 'hidden');
+
+    expectBoxInsideViewport('joystick zone', await visibleBox(page, '#joystick-zone'), viewport!);
+    expectBoxInsideViewport('A button', await visibleBox(page, '#btn-a'), viewport!);
+    expectBoxInsideViewport('B button', await visibleBox(page, '#btn-b'), viewport!);
+    expectBoxInsideViewport('menu button', await visibleBox(page, '#mobile-menu-btn'), viewport!);
+    expect(errors).toEqual([]);
+  });
+
+  test('dragging the touch joystick moves the player and releases cleanly', async ({ page }, testInfo) => {
+    skipUnlessProject(testInfo, LANDSCAPE_PROJECT);
+    test.setTimeout(120_000);
+    const errors = collectRuntimeErrors(page);
+
+    await reachMobileOverworld(page);
+    const start = await getPlayerState(page);
+
+    await dragJoystickUntilPlayerMoves(page, 'down');
+
+    const end = await getPlayerState(page);
+    expect(end.currentMap).toBe('pallet-town');
+    expect(end.playerPosition).not.toMatchObject({
+      x: start.playerPosition.x,
+      y: start.playerPosition.y,
+    });
+    expect(errors).toEqual([]);
+  });
+
+  test('hamburger and canvas resume affordance open and close the pause menu', async ({ page }, testInfo) => {
+    skipUnlessProject(testInfo, LANDSCAPE_PROJECT);
+    test.setTimeout(120_000);
+    const errors = collectRuntimeErrors(page);
+
+    await reachMobileOverworld(page);
+
+    await page.tap('#mobile-menu-btn');
+    await waitForScene(page, 'MenuScene', 10_000);
+
+    await tapCanvasFraction(page, 0.77, 0.82);
+    await waitForSceneInactive(page, 'MenuScene', 10_000);
+    await waitForScene(page, 'OverworldScene', 10_000);
 
     expect(errors).toEqual([]);
   });
 
-  test('rotation between portrait and landscape does not crash', async ({ page }) => {
-    test.setTimeout(60_000);
+  test('rotation shows the portrait gate, returns to landscape controls, and keeps touch input usable', async ({ page }, testInfo) => {
+    skipUnlessProject(testInfo, LANDSCAPE_PROJECT);
+    test.setTimeout(120_000);
+    const errors = collectRuntimeErrors(page);
 
-    const errors: string[] = [];
-    page.on('pageerror', err => errors.push(err.message));
-    page.on('console', msg => {
-      if (msg.type() === 'error' && !isIgnorableConsoleError(msg.text())) {
-        errors.push(`console.error: ${msg.text()}`);
-      }
-    });
-
-    await page.goto('/');
-    await waitForCanvas(page);
-    await page.waitForTimeout(2_000);
-
-    // Rotate to landscape — Phaser should pick this up and resize the canvas
-    // without throwing thanks to the orientationchange/visualViewport
-    // listeners wired up in main.ts.
-    await page.setViewportSize({ width: 844, height: 390 });
-    await page.waitForTimeout(1_500);
-
-    // Rotate back to portrait.
+    await reachMobileOverworld(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.waitForTimeout(1_500);
+    await waitForRotateGate(page, 'visible', 10_000);
 
-    // Canvas must still be visible.
-    await expect(page.locator('canvas')).toBeVisible();
+    const portraitSnapshot = await getPlaytestSnapshot(page);
+    expect(portraitSnapshot.activeScenes).toContain('OverworldScene');
+
+    await page.setViewportSize({ width: 844, height: 390 });
+    await waitForRotateGate(page, 'hidden', 10_000);
+    await expect(page.locator('#mobile-controls')).toBeVisible({ timeout: 10_000 });
+
+    await dragJoystickUntilPlayerMoves(page, 'right');
     expect(errors).toEqual([]);
   });
+});
 
-  test('mobile DOM hamburger button exists and is tappable', async ({ page }) => {
+test.describe('Mobile UI — portrait shell', () => {
+  test('portrait project asserts the rotate gate instead of playing through it', async ({ page }, testInfo) => {
+    skipUnlessProject(testInfo, PORTRAIT_PROJECT);
     test.setTimeout(60_000);
+    const errors = collectRuntimeErrors(page);
 
-    const errors: string[] = [];
-    page.on('pageerror', err => errors.push(err.message));
-    page.on('console', msg => {
-      if (msg.type() === 'error' && !isIgnorableConsoleError(msg.text())) {
-        errors.push(`console.error: ${msg.text()}`);
-      }
-    });
-
+    await installCleanStorage(page);
     await page.goto('/');
     await waitForCanvas(page);
-    await page.waitForTimeout(2_000);
+    await waitForScene(page, 'TitleScene');
+    await waitForRotateGate(page, 'visible', 10_000);
 
-    // The DOM-side hamburger button is present in the DOM regardless of
-    // visibility (CSS gates display by viewport). Verify the element
-    // exists with the expected geometry/styling so future regressions
-    // that accidentally remove it surface here.
-    const menuBtn = page.locator('#mobile-menu-btn');
-    await expect(menuBtn).toHaveCount(1);
+    const snapshot = await getPlaytestSnapshot(page);
+    expect(snapshot.activeScenes).toContain('TitleScene');
 
-    // Tapping the DOM button shouldn't throw — even if the controls
-    // overlay is currently hidden because TouchControls hasn't enabled
-    // mobile DOM mode in this viewport.
-    await menuBtn.dispatchEvent('touchstart');
-    await page.waitForTimeout(200);
-
+    await page.tap('#rotate-dismiss');
+    await waitForRotateGate(page, 'hidden', 5_000);
     expect(errors).toEqual([]);
   });
 });

@@ -5,8 +5,8 @@ import { defineConfig, devices } from '@playwright/test';
  * performance tests.
  *
  * The Vite dev server on port 3020 is started automatically before the
- * test suite runs.  Chromium is used with two device profiles (desktop
- * 1280x720 and mobile 390x844) so we cover both form-factors.
+ * test suite runs. Chromium is used with desktop, landscape mobile gameplay,
+ * and a narrow portrait shell project that is reserved for rotate-gate tests.
  */
 export default defineConfig({
   testDir: '.',
@@ -39,7 +39,9 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
 
-  /* Visual-regression snapshot settings. */
+  /* Historical visual-regression snapshot settings. Current visual specs use
+     structural/state assertions because Linux screenshot baselines are not
+     committed in this repository. */
   expect: {
     toHaveScreenshot: {
       /* Game animations (water, tween, etc.) cause minor pixel diffs —
@@ -63,6 +65,21 @@ export default defineConfig({
       name: 'mobile-chromium',
       use: {
         ...devices['Pixel 7'],
+        viewport: { width: 844, height: 390 },
+        screen: { width: 844, height: 390 },
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
+    {
+      name: 'mobile-portrait-chromium',
+      testMatch: /mobile-ui\.spec\.ts/,
+      use: {
+        ...devices['Pixel 7'],
+        viewport: { width: 390, height: 844 },
+        screen: { width: 390, height: 844 },
+        isMobile: true,
+        hasTouch: true,
       },
     },
   ],
