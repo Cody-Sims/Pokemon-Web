@@ -142,7 +142,10 @@ export async function runPlaytestLoop(options) {
             ...finding,
             actions: options.actions,
             baselineFingerprints: discovery.report.findings
-              .filter((candidate) => candidate.scenario === finding.scenario)
+              .filter(
+                (candidate) =>
+                  candidate.scenario === finding.scenario && candidate.profile === finding.profile,
+              )
               .map((candidate) => candidate.fingerprint),
           },
         },

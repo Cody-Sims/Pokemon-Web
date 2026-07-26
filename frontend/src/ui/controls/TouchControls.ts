@@ -424,8 +424,15 @@ export class TouchControls {
       controlsEl.style.height = '';
       controlsEl.style.display = 'flex';
       this.container.setVisible(false);
+    } else if (!isLandscape) {
+      // Portrait needs a persistent DOM control deck. The full-height canvas
+      // leaves no reliable space for the in-canvas controls on narrow phones.
+      controlsEl.style.top = '';
+      controlsEl.style.height = 'clamp(190px, 30dvh, 260px)';
+      controlsEl.style.display = 'flex';
+      this.container.setVisible(false);
     } else if (bottomSpace > 100) {
-      // Portrait with space below canvas — show DOM controls below
+      // Taller landscape/tablet layout with space below the canvas.
       controlsEl.style.top = rect.bottom + 'px';
       controlsEl.style.height = bottomSpace + 'px';
       controlsEl.style.display = 'flex';
@@ -467,9 +474,16 @@ export class TouchControls {
     controlsEl.style.pointerEvents = 'none';
     controlsEl.style.touchAction = 'none';
     controlsEl.style.flexDirection = oneHanded ? 'row-reverse' : 'row';
+    controlsEl.style.background = isLandscape
+      ? 'transparent'
+      : 'linear-gradient(180deg, rgba(10,10,24,0.22), rgba(10,10,24,0.92))';
+    controlsEl.style.borderTop = isLandscape ? 'none' : `1px solid rgba(255,255,255,${panelAlpha})`;
     controlsEl.style.padding = isLandscape
       ? 'env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px)'
       : `${SPACING.sm}px ${SPACING.md}px calc(${SPACING.sm}px + env(safe-area-inset-bottom, 0px))`;
+    for (const child of controlsEl.children) {
+      if (child instanceof HTMLElement) child.style.pointerEvents = 'auto';
+    }
 
     zone.style.width = isLandscape ? `${metrics.joystickZoneWidth}px` : '';
     zone.style.minWidth = isLandscape ? `${metrics.joystickZoneWidth}px` : '';
@@ -525,6 +539,11 @@ export class TouchControls {
         ? ''
         : `calc(${sideOffset}px + env(safe-area-inset-right, 0px))`;
       menuEl.style.left = oneHanded ? `calc(${sideOffset}px + env(safe-area-inset-left, 0px))` : '';
+    } else {
+      menuEl.style.position = 'relative';
+      menuEl.style.top = '';
+      menuEl.style.right = '';
+      menuEl.style.left = '';
     }
   }
 

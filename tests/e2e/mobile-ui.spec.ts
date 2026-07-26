@@ -4,12 +4,10 @@ import {
   dismissRotateGate,
   getPlayerState,
   getPlaytestSnapshot,
-  installCleanStorage,
   tapCanvasFraction,
-  waitForCanvas,
   waitForRotateGate,
-  waitForScene,
   waitForSceneInactive,
+  waitForScene,
 } from './helpers';
 
 const LANDSCAPE_PROJECT = 'mobile-chromium';
@@ -28,8 +26,8 @@ function isIgnorableConsoleError(text: string): boolean {
 
 function collectRuntimeErrors(page: Page): string[] {
   const errors: string[] = [];
-  page.on('pageerror', err => errors.push(err.message));
-  page.on('console', msg => {
+  page.on('pageerror', (err) => errors.push(err.message));
+  page.on('console', (msg) => {
     if (msg.type() === 'error' && !isIgnorableConsoleError(msg.text())) {
       errors.push(`console.error: ${msg.text()}`);
     }
@@ -64,7 +62,22 @@ function expectBoxInsideViewport(
   expect.soft(box.y + box.height, `${label} bottom safe area`).toBeLessThanOrEqual(viewport.height);
 }
 
-function dragTarget(zone: { x: number; y: number; width: number; height: number }, direction: Direction): {
+function boxesOverlap(
+  left: { x: number; y: number; width: number; height: number },
+  right: { x: number; y: number; width: number; height: number },
+): boolean {
+  return (
+    left.x < right.x + right.width &&
+    left.x + left.width > right.x &&
+    left.y < right.y + right.height &&
+    left.y + left.height > right.y
+  );
+}
+
+function dragTarget(
+  zone: { x: number; y: number; width: number; height: number },
+  direction: Direction,
+): {
   from: Point;
   to: Point;
 } {
@@ -99,12 +112,18 @@ async function dragJoystickUntilPlayerMoves(page: Page, direction: Direction): P
       type: 'touchMove',
       touchPoints: [{ x: to.x, y: to.y, id: 1, radiusX: 4, radiusY: 4 }],
     });
-    await page.waitForFunction(async initial => {
-      const modulePath = `${location.origin}/Pokemon-Web/src/managers/GameManager.ts`;
-      const { GameManager } = await import(modulePath);
-      const pos = GameManager.getInstance().getPlayerPosition();
-      return pos.x !== initial.x || pos.y !== initial.y;
-    }, start.playerPosition, { timeout: 6_000 });
+    await expect
+      .poll(
+        async () => {
+          const current = await getPlayerState(page);
+          return (
+            current.playerPosition.x !== start.playerPosition.x ||
+            current.playerPosition.y !== start.playerPosition.y
+          );
+        },
+        { timeout: 6_000 },
+      )
+      .toBe(true);
   } finally {
     await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await client.detach();
@@ -114,7 +133,9 @@ async function dragJoystickUntilPlayerMoves(page: Page, direction: Direction): P
 }
 
 test.describe('Mobile UI — landscape gameplay', () => {
-  test('touch controls are visible, reachable, and inside the safe viewport', async ({ page }, testInfo) => {
+  test('touch controls are visible, reachable, and inside the safe viewport', async ({
+    page,
+  }, testInfo) => {
     skipUnlessProject(testInfo, LANDSCAPE_PROJECT);
     test.setTimeout(120_000);
     const errors = collectRuntimeErrors(page);
@@ -133,7 +154,9 @@ test.describe('Mobile UI — landscape gameplay', () => {
     expect(errors).toEqual([]);
   });
 
-  test('dragging the touch joystick moves the player and releases cleanly', async ({ page }, testInfo) => {
+  test('dragging the touch joystick moves the player and releases cleanly', async ({
+    page,
+  }, testInfo) => {
     skipUnlessProject(testInfo, LANDSCAPE_PROJECT);
     test.setTimeout(120_000);
     const errors = collectRuntimeErrors(page);
@@ -141,7 +164,7 @@ test.describe('Mobile UI — landscape gameplay', () => {
     await reachMobileOverworld(page);
     const start = await getPlayerState(page);
 
-    await dragJoystickUntilPlayerMoves(page, 'down');
+    await dragJoystickUntilPlayerMoves(page, 'right');
 
     const end = await getPlayerState(page);
     expect(end.currentMap).toBe('pallet-town');
@@ -152,7 +175,9 @@ test.describe('Mobile UI — landscape gameplay', () => {
     expect(errors).toEqual([]);
   });
 
-  test('hamburger and canvas resume affordance open and close the pause menu', async ({ page }, testInfo) => {
+  test('hamburger and canvas resume affordance open and close the pause menu', async ({
+    page,
+  }, testInfo) => {
     skipUnlessProject(testInfo, LANDSCAPE_PROJECT);
     test.setTimeout(120_000);
     const errors = collectRuntimeErrors(page);
@@ -169,7 +194,9 @@ test.describe('Mobile UI — landscape gameplay', () => {
     expect(errors).toEqual([]);
   });
 
-  test('rotation shows the portrait gate, returns to landscape controls, and keeps touch input usable', async ({ page }, testInfo) => {
+  test('rotation shows the portrait gate, returns to landscape controls, and keeps touch input usable', async ({
+    page,
+  }, testInfo) => {
     skipUnlessProject(testInfo, LANDSCAPE_PROJECT);
     test.setTimeout(120_000);
     const errors = collectRuntimeErrors(page);
@@ -190,23 +217,34 @@ test.describe('Mobile UI — landscape gameplay', () => {
   });
 });
 
-test.describe('Mobile UI — portrait shell', () => {
-  test('portrait project asserts the rotate gate instead of playing through it', async ({ page }, testInfo) => {
+test.describe('Mobile UI — portrait gameplay', () => {
+  test('portrait controls remain reachable, distinct, and able to move the player', async ({
+    page,
+  }, testInfo) => {
     skipUnlessProject(testInfo, PORTRAIT_PROJECT);
-    test.setTimeout(60_000);
+    test.setTimeout(120_000);
     const errors = collectRuntimeErrors(page);
 
-    await installCleanStorage(page);
-    await page.goto('/');
-    await waitForCanvas(page);
-    await waitForScene(page, 'TitleScene');
-    await waitForRotateGate(page, 'visible', 10_000);
+    await bootSavedGameToOverworld(page);
 
-    const snapshot = await getPlaytestSnapshot(page);
-    expect(snapshot.activeScenes).toContain('TitleScene');
+    const viewport = page.viewportSize();
+    expect(viewport).not.toBeNull();
+    expect(viewport!.height).toBeGreaterThan(viewport!.width);
 
-    await page.tap('#rotate-dismiss');
-    await waitForRotateGate(page, 'hidden', 5_000);
+    const joystick = await visibleBox(page, '#joystick-zone');
+    const buttonA = await visibleBox(page, '#btn-a');
+    const buttonB = await visibleBox(page, '#btn-b');
+    const menu = await visibleBox(page, '#mobile-menu-btn');
+    expectBoxInsideViewport('joystick zone', joystick, viewport!);
+    expectBoxInsideViewport('A button', buttonA, viewport!);
+    expectBoxInsideViewport('B button', buttonB, viewport!);
+    expectBoxInsideViewport('menu button', menu, viewport!);
+    expect(boxesOverlap(joystick, buttonA), 'joystick and A button should not overlap').toBe(false);
+    expect(boxesOverlap(joystick, buttonB), 'joystick and B button should not overlap').toBe(false);
+    expect(boxesOverlap(menu, buttonA), 'menu and A button should not overlap').toBe(false);
+    expect(boxesOverlap(menu, buttonB), 'menu and B button should not overlap').toBe(false);
+
+    await dragJoystickUntilPlayerMoves(page, 'down');
     expect(errors).toEqual([]);
   });
 });

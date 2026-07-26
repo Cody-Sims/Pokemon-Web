@@ -55,7 +55,7 @@ type safety, and Vite for fast bundling. Requires Node 22.x as pinned in
 - `.github/skills/frontend-change/SKILL.md` — Frontend implementation workflow
 - `.github/skills/backend-change/SKILL.md` — Backend assessment and implementation workflow
 - `.github/skills/quality-gate/SKILL.md` — Path-based validation workflow
-- `.github/skills/playtest-discovery/SKILL.md` — Browser playtesting, seeded fuzzing, bug reports, and autonomous repair workflow
+- `.github/skills/playtest-discovery/SKILL.md` — Desktop/mobile browser playtesting, layout checks, seeded fuzzing, bug reports, and autonomous repair workflow
 - `.github/skills/tile-sprite-gen/SKILL.md` — Tile and sprite generation workflow
 - `.github/skills/pokemon-shadow-architecture/SKILL.md` — Repository decision-graph workflow
 - `.shadow/index.json` — Architecture decision index and lifecycle vocabulary
@@ -83,7 +83,7 @@ type safety, and Vite for fast bundling. Requires Node 22.x as pinned in
 - `npm run test:integration` — Integration tests only
 - `npm run test:coverage` — Vitest coverage with thresholds
 - `npm run test:e2e` — Playwright end-to-end tests
-- `npm run playtest:discover` — Generate reproducible browser bug reports
+- `npm run playtest:discover` — Generate reproducible desktop/mobile browser and layout bug reports
 - `npm run agent:validate` — Validate agent customizations and shadow architecture
 - `npm run agent:global:install` — Install the reusable workspace-researcher agent under `~/.copilot`
 - `npm run agent:global:check` — Verify installed global resources and hashes
