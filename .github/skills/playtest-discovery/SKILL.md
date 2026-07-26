@@ -21,7 +21,9 @@ can verify.
 
 ## Inputs
 
-- Optional scenario: `boot`, `new-game`, or `overworld-fuzz`.
+- Optional scenario: `boot`, `new-game`, `overworld-fuzz`, `mobile-controls`,
+  or `mobile-rotation`.
+- Optional profile: `desktop`, `mobile-landscape`, or `mobile-portrait`.
 - Optional fuzz seed and action count.
 - Optional repair bounds: cycle count, deadline, and AI credit cap.
 - Output: `report.json`, `report.md`, screenshots, action evidence, and loop reports
@@ -37,6 +39,10 @@ can verify.
    - New-game journey: `npm run playtest:discover -- --scenario new-game`
    - Focused fuzz reproduction:
      `npm run playtest:discover -- --scenario overworld-fuzz --seed 42 --actions 120`
+   - Portrait touch controls:
+     `npm run playtest:discover -- --scenario mobile-controls --profile mobile-portrait`
+   - Rotation resilience:
+     `npm run playtest:discover -- --scenario mobile-rotation --profile mobile-landscape`
    - Standard discovery: `npm run playtest:discover`
 4. Read the printed `report.md` path and inspect the matching `report.json`.
    Separate reproducible findings from intermittent observations.
@@ -57,9 +63,11 @@ can verify.
   exact scenario and fingerprint after the implementation.
 - Intermittent observation: report it but do not auto-fix it. Increase attempts
   only after identifying a deterministic state or seed.
-- Visual defect without a runtime signal: reproduce headed, add a focused
-  Playwright screenshot assertion, and keep it out of autonomous repair until the
-  visual oracle is deterministic.
+- Mobile visual-layout finding: viewport overflow, clipped controls, sub-44px touch
+  targets, and control overlap are deterministic and may enter autonomous repair.
+- Subjective visual defect without a measurable signal: inspect the checkpoint
+  screenshot, reproduce headed, add a focused structural or screenshot assertion,
+  and keep it out of autonomous repair until the visual oracle is deterministic.
 - Harness or setup failure: fix the journey itself before treating its timeout as
   a game bug.
 - No findings: report the covered scenarios, seeds, and action count. Do not claim
@@ -84,6 +92,7 @@ Must activate:
 - "Playtest the game and give me a list of bugs."
 - "Run seeded Playwright monkey testing overnight."
 - "Keep discovering and fixing reproducible gameplay crashes in the background."
+- "Find portrait mobile control bugs and visual overlap issues."
 
 Must not activate:
 
@@ -103,5 +112,6 @@ adding a new scenario.
 
 ## Output format
 
-Report the artifact directory, scenarios, seeds, action count, reproducible bug
-IDs, intermittent observation IDs, and any repair branch or blocker.
+Report the artifact directory, scenarios, profiles, seeds, action count,
+reproducible bug IDs, intermittent observation IDs, checkpoint screenshots, and
+any repair branch or blocker.

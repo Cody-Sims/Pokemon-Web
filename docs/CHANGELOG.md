@@ -4,6 +4,18 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-07-26]
+
+### Changed - Mobile playtest coverage
+
+- Added deterministic landscape, portrait, and rotation playtest profiles with
+  checkpoint screenshots and structural checks for viewport overflow, clipped or
+  undersized controls, and overlapping touch targets.
+- Kept portrait touch controls reachable in a persistent bottom control deck and
+  added focused unit and Playwright coverage for portrait movement.
+- Scoped autonomous repair verification fingerprints by browser profile so a
+  desktop result cannot mask a mobile-specific regression.
+
 ## [2026-07-25]
 
 ### Fixed - Overworld HUD layout

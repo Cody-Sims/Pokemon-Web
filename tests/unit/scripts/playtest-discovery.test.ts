@@ -20,7 +20,8 @@ describe('playtest discovery arguments', () => {
       actions: 120,
       attempts: 2,
       seeds: [42, 1337],
-      scenarios: ['boot', 'new-game', 'overworld-fuzz'],
+      scenarios: ['boot', 'new-game', 'overworld-fuzz', 'mobile-controls', 'mobile-rotation'],
+      profiles: ['desktop', 'mobile-landscape', 'mobile-portrait'],
       verify: null,
     });
   });
@@ -30,6 +31,8 @@ describe('playtest discovery arguments', () => {
       parseArguments([
         '--scenario',
         'overworld-fuzz',
+        '--profile',
+        'desktop',
         '--seed',
         '99',
         '--actions',
@@ -44,6 +47,7 @@ describe('playtest discovery arguments', () => {
       attempts: 1,
       seeds: [99],
       scenarios: ['overworld-fuzz'],
+      profiles: ['desktop'],
       output: 'temp/report',
     });
   });
@@ -52,6 +56,7 @@ describe('playtest discovery arguments', () => {
     ['--actions', '0'],
     ['--attempts', '3'],
     ['--scenario', 'unknown'],
+    ['--profile', 'unknown'],
     ['--seed', 'not-a-number'],
   ])('rejects invalid bounded input %s %s', (...args) => {
     expect(() => parseArguments(args)).toThrow();
@@ -98,6 +103,7 @@ describe('playtest finding evidence', () => {
     kind: 'pageerror',
     message: 'Cannot read properties of undefined',
     scenario: 'overworld-fuzz',
+    profile: 'desktop',
     seed: 42,
     actionIndex: 17,
   };
@@ -108,6 +114,15 @@ describe('playtest finding evidence', () => {
         ...crash,
         seed: 1337,
         actionIndex: 99,
+      }),
+    );
+  });
+
+  it('keeps device-specific findings separate', () => {
+    expect(fingerprintFinding(crash)).not.toBe(
+      fingerprintFinding({
+        ...crash,
+        profile: 'mobile-portrait',
       }),
     );
   });
@@ -203,7 +218,8 @@ describe('playtest finding evidence', () => {
 
     expect(markdown).toContain(`# Playtest bug report`);
     expect(markdown).toContain(finding.id);
-    expect(markdown).toContain('--scenario overworld-fuzz --seed 42');
+    expect(markdown).toContain('--scenario overworld-fuzz --profile desktop --seed 42');
+    expect(markdown).toContain('- Profile: `desktop`');
     expect(markdown).toContain('Cannot read properties of undefined');
   });
 

@@ -35,9 +35,17 @@
     },
     {
       "label": "Playtest: discover bugs",
-      "detail": "Run deterministic browser journeys and seeded fuzzing, then write bug reports under temp/.",
+      "detail": "Run desktop and mobile browser journeys, visual layout checks, and seeded fuzzing, then write reports under temp/.",
       "type": "shell",
       "command": "npm run playtest:discover",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Playtest: portrait controls",
+      "detail": "Exercise portrait touch movement and visual layout checks.",
+      "type": "shell",
+      "command": "npm run playtest:discover -- --scenario mobile-controls --profile mobile-portrait --attempts 1",
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
