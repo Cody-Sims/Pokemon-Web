@@ -14,6 +14,25 @@ declare global {
       snapshot: () => {
         activeScenes: string[];
         loadedScenes: string[];
+        visibleScenes: string[];
+        sceneText: Record<string, string[]>;
+        interactiveObjects: Array<{
+          scene: string;
+          type: string;
+          width: number;
+          height: number;
+          visible: boolean;
+        }>;
+        textObjects: Array<{
+          scene: string;
+          text: string;
+          fontSize: number;
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+          visible: boolean;
+        }>;
         canvas: { width: number; height: number };
         shell: {
           blockingOverlays: string[];
@@ -35,6 +54,44 @@ if (isLocalPlaytest) {
       snapshot: () => ({
         activeScenes: game.scene.getScenes(true).map((scene) => scene.scene.key),
         loadedScenes: game.scene.getScenes(false).map((scene) => scene.scene.key),
+        visibleScenes: game.scene.getScenes(false)
+          .filter((scene) => scene.sys.settings.visible)
+          .map((scene) => scene.scene.key),
+        sceneText: Object.fromEntries(game.scene.getScenes(false).map((scene) => [
+          scene.scene.key,
+          scene.children.list
+            .filter((child): child is Phaser.GameObjects.Text => (
+              child instanceof Phaser.GameObjects.Text && child.visible
+            ))
+            .map((text) => text.text),
+        ])),
+        interactiveObjects: game.scene.getScenes(false).flatMap((scene) => (
+          scene.children.list.flatMap((child) => {
+            if (!(child instanceof Phaser.GameObjects.Rectangle) || !child.input?.enabled) return [];
+            return [{
+              scene: scene.scene.key,
+              type: child.type,
+              width: child.displayWidth,
+              height: child.displayHeight,
+              visible: child.visible,
+            }];
+          })
+        )),
+        textObjects: game.scene.getScenes(false).flatMap((scene) => (
+          scene.children.list.flatMap((child) => {
+            if (!(child instanceof Phaser.GameObjects.Text)) return [];
+            return [{
+              scene: scene.scene.key,
+              text: child.text,
+              fontSize: Number.parseFloat(String(child.style.fontSize)),
+              x: child.x,
+              y: child.y,
+              width: child.displayWidth,
+              height: child.displayHeight,
+              visible: child.visible,
+            }];
+          })
+        )),
         canvas: { width: game.canvas.width, height: game.canvas.height },
         shell: getShellDebugState(),
       }),
