@@ -1,9 +1,7 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { GameManager } from '@managers/GameManager';
-import { EventManager } from '@managers/EventManager';
-import { AudioManager } from '@managers/AudioManager';
+import { AudioManager, EventManager, GameManager } from '@managers/index';
 import { pokemonData } from '@data/pokemon';
 import { COLORS, FONTS, SPACING, drawTypeBadge, drawStatusBadge, drawHpBar, drawButton, mobileFontSize, minTouchTarget, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';

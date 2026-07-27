@@ -17,6 +17,11 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-26]
 
+### Changed - Menu manager imports
+
+- Routed the core menu scenes through the public managers barrel instead of
+  importing individual manager implementation files.
+
 ### Changed - Mobile playtest coverage
 
 - Added deterministic landscape, portrait, and rotation playtest profiles with
