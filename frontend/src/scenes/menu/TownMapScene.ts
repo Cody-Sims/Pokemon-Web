@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { layoutOn } from '@utils/layout-on';
-import { AudioManager } from '@managers/AudioManager';
-import { GameManager } from '@managers/GameManager';
+import { AudioManager, GameManager } from '@managers/index';
 import { SFX } from '@utils/audio-keys';
 import { mapRegistry } from '@data/maps';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';

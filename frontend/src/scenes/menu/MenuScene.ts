@@ -5,14 +5,11 @@ import { layoutOn } from '@utils/layout-on';
 import { COLORS, FONTS, mobileFontSize, mobileScale, minTouchTarget } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { SelectableController } from '@ui/controls/SelectableController';
-import { AudioManager } from '@managers/AudioManager';
-import { GameManager } from '@managers/GameManager';
-import { SaveManager } from '@managers/SaveManager';
+import { AudioManager, EventManager, GameManager, SaveManager } from '@managers/index';
 import { SFX } from '@utils/audio-keys';
 import { ConfirmBox } from '@ui/widgets/ConfirmBox';
 import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { TouchControls } from '@ui/controls/TouchControls';
-import { EventManager } from '@managers/EventManager';
 import { SceneRouter } from '@scenes/SceneRouter';
 import { SceneKey } from '@scenes/scene-keys';
 
