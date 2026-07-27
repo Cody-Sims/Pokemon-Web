@@ -61,6 +61,7 @@ type safety, and Vite for fast bundling. Requires Node 22.x as pinned in
 - `.shadow/index.json` — Architecture decision index and lifecycle vocabulary
 - `.shadow/features.json` — Feature-to-path and decision mapping
 - `.github/global-agent-toolkit/README.md` — Cross-repository agent distribution (workspace-researcher; skills now live in `Cody-Sims/agent-skills`)
+- `Cody-Sims/agent-skills` — Canonical reusable skills, including `parallel-worktree-delivery` and `verification-discipline`
 - `.github/hooks/agent-guardrails.json` — Copilot session and shell guardrails
 - `scripts/copilot-hooks.mjs` — Tested hook implementation
 - `.github/loop/backlog.md` — Curated queue for the autonomous improvement loop

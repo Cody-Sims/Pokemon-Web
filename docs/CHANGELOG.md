@@ -4,6 +4,17 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-07-27]
+
+### Changed - Reusable agent skill ownership
+
+- Migrated `parallel-worktree-delivery` and `verification-discipline` to the
+  canonical `Cody-Sims/agent-skills` catalog and removed the project-local
+  duplicates.
+- Installed the catalog-managed copies for Copilot, Claude Code, and shared
+  Agent Skills runtimes, with explicit routing boundaries and experimental
+  maturity evidence.
+
 ## [2026-07-26]
 
 ### Changed - Menu manager imports

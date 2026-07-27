@@ -310,6 +310,9 @@ repository, which installs them to `~/.copilot/skills`; get them with
 repository-agnostic. The external catalog owns `~/.copilot/skills`, so this
 repository's local skills (such as `pokemon-shadow-architecture`) must keep their
 `pokemon-` prefix and must not reuse a name shipped by the external catalog.
+The reusable `parallel-worktree-delivery` and `verification-discipline` workflows
+are maintained in that external catalog rather than duplicated under
+`.github/skills/`.
 
 The `.shadow/` directory is the human-reviewed architecture memory for this project.
 It is a project convention, not a ShadowRepo plugin format. Run
