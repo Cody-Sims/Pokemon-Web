@@ -3,8 +3,7 @@ import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
-import { GameManager } from '@managers/GameManager';
-import { AudioManager } from '@managers/AudioManager';
+import { AudioManager, GameManager } from '@managers/index';
 import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
 

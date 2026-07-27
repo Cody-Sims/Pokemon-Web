@@ -3,8 +3,7 @@ import { layoutOn } from '@utils/layout-on';
 import { COLORS, FONTS, mobileFontSize, isMobile, minTouchTarget, mobileScale } from '@ui/theme';
 import { computeTouchMetrics } from '@ui/controls/touch-geometry';
 import { getGameSafeAreaInsets } from '@utils/safe-area';
-import { QuestManager } from '@managers/QuestManager';
-import { EventManager } from '@managers/EventManager';
+import { EventManager, QuestManager } from '@managers/index';
 import { computeOverworldHudLayout } from '@scenes/overworld/overworld-hud-layout';
 
 /**

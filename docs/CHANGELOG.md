@@ -21,6 +21,7 @@ All notable changes to the Pokemon Web project.
 
 - Routed the core menu scenes through the public managers barrel instead of
   importing individual manager implementation files.
+- Routed the remaining menu scenes through the same public managers barrel.
 
 ### Changed - Mobile playtest coverage
 

@@ -4,7 +4,7 @@ import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
 import { isMobile, minTouchTarget, mobileScale } from '@ui/theme';
 import { computeTouchMetrics } from '@ui/controls/touch-geometry';
-import { GameManager } from '@managers/GameManager';
+import { GameManager } from '@managers/index';
 import { mapRegistry, MapDefinition, TILE_COLORS } from '@data/maps';
 import { getGameSafeAreaInsets } from '@utils/safe-area';
 import { computeOverworldHudLayout } from '@scenes/overworld/overworld-hud-layout';

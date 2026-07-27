@@ -3,9 +3,8 @@ import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize, isMobile } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
-import { AudioManager } from '@managers/AudioManager';
+import { AudioManager, QuestManager } from '@managers/index';
 import { SFX } from '@utils/audio-keys';
-import { QuestManager } from '@managers/QuestManager';
 import { QuestDefinition } from '@data/quest-data';
 import { TouchControls } from '@ui/controls/TouchControls';
 

@@ -3,8 +3,7 @@ import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { COLORS, FONTS, mobileFontSize, mobileScale } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
-import { AchievementManager, AchievementDef } from '@managers/AchievementManager';
-import { AudioManager } from '@managers/AudioManager';
+import { AchievementManager, AudioManager, type AchievementDef } from '@managers/index';
 import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
 
