@@ -6,7 +6,7 @@ import { defineConfig, devices } from '@playwright/test';
  *
  * The Vite dev server on port 3020 is started automatically before the
  * test suite runs. Chromium is used with desktop, landscape mobile gameplay,
- * and a narrow portrait shell project that is reserved for rotate-gate tests.
+ * plus explicit landscape and portrait mobile gameplay profiles.
  */
 export default defineConfig({
   testDir: '.',

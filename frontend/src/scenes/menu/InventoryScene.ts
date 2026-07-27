@@ -1,9 +1,7 @@
 import Phaser from 'phaser';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { GameManager } from '@managers/GameManager';
-import { AudioManager } from '@managers/AudioManager';
-import { EventManager } from '@managers/EventManager';
+import { AudioManager, EventManager, GameManager } from '@managers/index';
 import { itemData } from '@data/item-data';
 import { pokemonData } from '@data/pokemon';
 import { tmData } from '@data/tm-data';

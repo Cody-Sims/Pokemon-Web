@@ -294,7 +294,7 @@ Available skills:
 | `frontend-change` | Phaser, TypeScript, Vite, data, UI, scenes, systems, or assets |
 | `backend-change` | Explicit server, API, worker, persistence, or authentication work |
 | `quality-gate` | Selecting and running final validation |
-| `playtest-discovery` | Deterministic Playwright journeys, seeded fuzzing, bug reports, and bounded autonomous repairs |
+| `playtest-discovery` | Deterministic desktop/mobile Playwright journeys, layout checks, seeded fuzzing, bug reports, and bounded autonomous repairs |
 | `tile-sprite-gen` | Tileset and character sprite generation or repair |
 | `pokemon-shadow-architecture` | Inspecting, validating, or updating this repository's decision graph |
 
@@ -310,6 +310,9 @@ repository, which installs them to `~/.copilot/skills`; get them with
 repository-agnostic. The external catalog owns `~/.copilot/skills`, so this
 repository's local skills (such as `pokemon-shadow-architecture`) must keep their
 `pokemon-` prefix and must not reuse a name shipped by the external catalog.
+The reusable `parallel-worktree-delivery` and `verification-discipline` workflows
+are maintained in that external catalog rather than duplicated under
+`.github/skills/`.
 
 The `.shadow/` directory is the human-reviewed architecture memory for this project.
 It is a project convention, not a ShadowRepo plugin format. Run
@@ -335,7 +338,7 @@ Nothing reaches `main` except through that pull request.
 |---|---|
 | `npm run loop:dry-run` | Print the exact agent invocation without spending credits |
 | `npm run loop:run -- --iterations 3` | Run the bounded loop |
-| `npm run playtest:discover` | Produce JSON/Markdown bug reports from browser journeys and seeded fuzzing |
+| `npm run playtest:discover` | Produce JSON/Markdown bug reports from desktop/mobile journeys, layout checks, and seeded fuzzing |
 | `npm run loop:playtest -- --cycles 3` | Repeatedly discover and independently gate one reproducible repair per cycle |
 | `npm run loop:gate -- --worktree . --base develop` | Grade a worktree directly |
 
