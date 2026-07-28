@@ -41,6 +41,50 @@ async function reachMobileOverworld(page: Page): Promise<void> {
   await expect(page.locator('#mobile-controls')).toBeVisible({ timeout: 10_000 });
 }
 
+async function expectMobilePauseMenuLayout(page: Page): Promise<void> {
+  const snapshot = await getPlaytestSnapshot(page);
+  expect(snapshot.visibleScenes).toContain('MenuScene');
+  expect(snapshot.visibleScenes).not.toEqual(
+    expect.arrayContaining(['QuestTrackerScene', 'PartyQuickViewScene', 'MinimapScene']),
+  );
+
+  const menuText = snapshot.sceneText.MenuScene ?? [];
+  expect(menuText.filter(text => text === 'RESUME')).toHaveLength(1);
+
+  const canvasBox = await page.locator('canvas').boundingBox();
+  expect(canvasBox).not.toBeNull();
+  const renderedScaleY = canvasBox!.height / snapshot.canvas.height;
+  const menuTargets = snapshot.interactiveObjects.filter(
+    object => object.scene === 'MenuScene' && object.visible,
+  );
+  expect(menuTargets.length).toBeGreaterThanOrEqual(4);
+  for (const target of menuTargets) {
+    expect.soft(
+      target.width * (canvasBox!.width / snapshot.canvas.width),
+      `${target.type} should remain at least 180 CSS px wide`,
+    ).toBeGreaterThanOrEqual(180);
+    expect.soft(
+      target.height * renderedScaleY,
+      `${target.type} should remain at least 44 CSS px tall`,
+    ).toBeGreaterThanOrEqual(44);
+  }
+
+  const label = snapshot.textObjects
+    .find(object => object.scene === 'MenuScene' && object.text === 'POKEDEX');
+  expect(label, 'POKEDEX label metrics should be available').toBeDefined();
+  expect(label!.fontSize * renderedScaleY).toBeGreaterThanOrEqual(14);
+
+  const scrollStatus = snapshot.textObjects
+    .find(object => object.scene === 'MenuScene' && object.visible && object.text.includes(' / '));
+  const resumeLabel = snapshot.textObjects
+    .find(object => object.scene === 'MenuScene' && object.visible && object.text === 'RESUME');
+  expect(resumeLabel, 'RESUME label metrics should be available').toBeDefined();
+  if (scrollStatus) {
+    expect(scrollStatus.y + scrollStatus.height / 2)
+      .toBeLessThanOrEqual(resumeLabel!.y - resumeLabel!.height / 2 - 4);
+  }
+}
+
 async function visibleBox(page: Page, selector: string) {
   const locator = page.locator(selector);
   await expect(locator).toBeVisible({ timeout: 10_000 });
@@ -186,6 +230,7 @@ test.describe('Mobile UI — landscape gameplay', () => {
 
     await page.tap('#mobile-menu-btn');
     await waitForScene(page, 'MenuScene', 10_000);
+    await expectMobilePauseMenuLayout(page);
 
     await tapCanvasFraction(page, 0.77, 0.82);
     await waitForSceneInactive(page, 'MenuScene', 10_000);
@@ -218,6 +263,32 @@ test.describe('Mobile UI — landscape gameplay', () => {
 });
 
 test.describe('Mobile UI — portrait gameplay', () => {
+  test('pause menu hides overworld HUD and keeps every action touch-sized', async ({
+    page,
+  }, testInfo) => {
+    skipUnlessProject(testInfo, PORTRAIT_PROJECT);
+    test.setTimeout(120_000);
+    const errors = collectRuntimeErrors(page);
+
+    await reachMobileOverworld(page);
+    await page.tap('#mobile-menu-btn');
+    await waitForScene(page, 'MenuScene', 10_000);
+    await expectMobilePauseMenuLayout(page);
+
+    await tapCanvasFraction(page, 0.62, 0.19);
+    await waitForScene(page, 'PokedexScene', 10_000);
+    const childSnapshot = await getPlaytestSnapshot(page);
+    expect(childSnapshot.visibleScenes).not.toEqual(
+      expect.arrayContaining(['QuestTrackerScene', 'PartyQuickViewScene', 'MinimapScene']),
+    );
+
+    await tapCanvasFraction(page, 0.5, 0.97);
+    await waitForSceneInactive(page, 'PokedexScene', 10_000);
+    await waitForScene(page, 'MenuScene', 10_000);
+
+    expect(errors).toEqual([]);
+  });
+
   test('portrait controls remain reachable, distinct, and able to move the player', async ({
     page,
   }, testInfo) => {

@@ -6,6 +6,16 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-27]
 
+### Fixed - Mobile pause menu
+
+- Hid persistent overworld HUD scenes throughout the pause-menu stack, removed
+  the duplicate resume action, and restored the HUD when returning to gameplay.
+- Kept landscape and portrait menu actions at least 44 CSS pixels tall, widened
+  landscape actions for readable labels, and separated scroll status from the
+  resume control.
+- Added deterministic touch journeys for opening the menu, entering and closing
+  the Pokédex, and validating HUD visibility, labels, and physical target sizes.
+
 ### Changed - Reusable agent skill ownership
 
 - Migrated `parallel-worktree-delivery` and `verification-discipline` to the

@@ -7,6 +7,25 @@ import { expect, Page } from '@playwright/test';
 type PlaytestSnapshot = {
   activeScenes: string[];
   loadedScenes: string[];
+  visibleScenes: string[];
+  sceneText: Record<string, string[]>;
+  interactiveObjects: Array<{
+    scene: string;
+    type: string;
+    width: number;
+    height: number;
+    visible: boolean;
+  }>;
+  textObjects: Array<{
+    scene: string;
+    text: string;
+    fontSize: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    visible: boolean;
+  }>;
   canvas: { width: number; height: number };
   shell?: {
     blockingOverlays: string[];

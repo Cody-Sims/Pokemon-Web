@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { SceneInputRegistry } from '@scenes/SceneInputRegistry';
 import { ui } from '@utils/ui-layout';
 import { layoutOn } from '@utils/layout-on';
-import { COLORS, FONTS, mobileFontSize, mobileScale, minTouchTarget } from '@ui/theme';
+import { COLORS, FONTS, mobileFontPx, mobileScale, minTouchTarget } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { SelectableController } from '@ui/controls/SelectableController';
 import { AudioManager, EventManager, GameManager, SaveManager } from '@managers/index';
@@ -12,6 +12,13 @@ import { OverworldAbilities } from '@systems/overworld/OverworldAbilities';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { SceneRouter } from '@scenes/SceneRouter';
 import { SceneKey } from '@scenes/scene-keys';
+import type { SceneKeyName } from '@scenes/scene-keys';
+
+const OVERWORLD_HUD_SCENES: readonly SceneKeyName[] = [
+  SceneKey.QuestTracker,
+  SceneKey.PartyQuickView,
+  SceneKey.Minimap,
+];
 
 export class MenuScene extends Phaser.Scene {
   private cursor = 0;
@@ -27,6 +34,7 @@ export class MenuScene extends Phaser.Scene {
   private closeButtonText!: Phaser.GameObjects.Text;
   private menuController?: SelectableController;
   private windowStart = 0;
+  private hiddenHudScenes: SceneKeyName[] = [];
 
   private readonly inputRegistry = new SceneInputRegistry(this);
 
@@ -39,6 +47,7 @@ export class MenuScene extends Phaser.Scene {
     // Drain any stale confirm/cancel flags left by the previous scene
     // so MenuScene's first update() doesn't immediately act on them.
     TouchControls.getInstance()?.drain();
+    this.hideOverworldHud();
 
     // Build menu labels dynamically.
     // BUG-060: "QUIT" used to sit adjacent to "EXIT" and both verbs read as
@@ -49,7 +58,7 @@ export class MenuScene extends Phaser.Scene {
     if (OverworldAbilities.canUse('fly')) {
       this.menuLabels.push('FLY');
     }
-    this.menuLabels.push('SAVE', 'OPTIONS', 'TITLE SCREEN', 'RESUME');
+    this.menuLabels.push('SAVE', 'OPTIONS', 'TITLE SCREEN');
 
     const layout = ui(this);
 
@@ -84,7 +93,7 @@ export class MenuScene extends Phaser.Scene {
       stroke: '#000000', strokeThickness: 3,
     }).setOrigin(0.5).setDepth(2);
 
-    const menuFontSize = mobileFontSize(dims.fontPx);
+    const menuFontSize = `${dims.fontPx}px`;
     const startY = panelY - panelH / 2 + 42;
     this.menuItems = this.menuLabels.map((label, i) => {
       const itemButton = this.add.rectangle(panelX, startY + i * rowH, panelW - 24, rowH - 6, COLORS.bgCard, 0.9)
@@ -110,20 +119,21 @@ export class MenuScene extends Phaser.Scene {
       fontStyle: 'bold', stroke: '#000000', strokeThickness: 4,
     }).setDepth(2);
 
-    this.scrollText = this.add.text(panelX, panelY + panelH / 2 - 42, '', {
+    const closeH = this.minimumTargetHeight(layout.h);
+    const closeY = panelY + panelH / 2 - closeH / 2 - 6;
+    this.scrollText = this.add.text(panelX, closeY - closeH / 2 - 14, '', {
       ...FONTS.caption,
-      fontSize: mobileFontSize(11),
+      fontSize: `${this.minimumReadableFontSize(layout.h, 11, 12)}px`,
       color: COLORS.textDim,
     }).setOrigin(0.5).setDepth(2);
 
-    const closeH = Math.max(minTouchTarget(), 42);
-    this.closeButton = this.add.rectangle(panelX, panelY + panelH / 2 - closeH / 2 - 6, panelW - 24, closeH, COLORS.btnBg, 0.95)
+    this.closeButton = this.add.rectangle(panelX, closeY, panelW - 24, closeH, COLORS.btnBg, 0.95)
       .setStrokeStyle(2, COLORS.borderLight)
       .setDepth(1)
       .setInteractive({ useHandCursor: true });
     this.closeButtonText = this.add.text(panelX, this.closeButton.y, 'RESUME', {
       ...FONTS.button,
-      fontSize: mobileFontSize(14),
+      fontSize: `${this.minimumReadableFontSize(layout.h, 14)}px`,
       fontStyle: 'bold',
     }).setOrigin(0.5).setDepth(2);
     this.inputRegistry.bindPointer(this.closeButton, 'pointerover', () => this.closeButton.setFillStyle(COLORS.btnHover, 0.98));
@@ -178,7 +188,7 @@ export class MenuScene extends Phaser.Scene {
       this.menuPanel.setDepth(0);
       this.moneyText.setPosition(pX, pY - pH / 2 - 16);
       const sY = pY - pH / 2 + 42;
-      const fSize = mobileFontSize(d.fontPx);
+      const fSize = `${d.fontPx}px`;
       this.menuItems.forEach((item, i) => {
         item.setPosition(pX, sY + i * rH);
         item.setFontSize(fSize);
@@ -188,12 +198,15 @@ export class MenuScene extends Phaser.Scene {
         button.setSize(pW - 24, rH - 6);
         button.setDisplaySize(pW - 24, rH - 6);
       });
-      this.scrollText.setPosition(pX, pY + pH / 2 - 42);
-      const closeHeight = Math.max(minTouchTarget(), 42);
-      this.closeButton.setPosition(pX, pY + pH / 2 - closeHeight / 2 - 6);
+      const closeHeight = this.minimumTargetHeight(l.h);
+      const closeButtonY = pY + pH / 2 - closeHeight / 2 - 6;
+      this.scrollText.setPosition(pX, closeButtonY - closeHeight / 2 - 14);
+      this.scrollText.setFontSize(`${this.minimumReadableFontSize(l.h, 11, 12)}px`);
+      this.closeButton.setPosition(pX, closeButtonY);
       this.closeButton.setSize(pW - 24, closeHeight);
       this.closeButton.setDisplaySize(pW - 24, closeHeight);
       this.closeButtonText.setPosition(pX, this.closeButton.y);
+      this.closeButtonText.setFontSize(`${this.minimumReadableFontSize(l.h, 14)}px`);
       this.menuController?.setVisibleCount(d.visibleCount);
       this.cursorIcon.setFontSize(fSize);
       this.updateCursor();
@@ -223,18 +236,17 @@ export class MenuScene extends Phaser.Scene {
 
     // Default sizes (kept for landscape / desktop where there is plenty of
     // vertical room).
-    const baseRowH = Math.max(minTouchTarget(), 48);
+    const baseRowH = this.minimumTargetHeight(viewH) + 6;
     const baseFontPx = 18;
     const baseW = Math.round(220 * mobileScale());
     const rowH = baseRowH;
     const visibleCount = Math.max(3, Math.min(items, Math.floor((maxPanelH - 92) / rowH)));
-    const fontPx = visibleCount < items ? 16 : baseFontPx;
+    const fontPx = this.minimumReadableFontSize(viewH, visibleCount < items ? 16 : baseFontPx);
     const panelH = visibleCount * rowH + 92;
 
-    // Cap the panel width to the viewport so the side menu never spills
-    // past the screen on narrow portrait phones. The minimum (160 px) is
-    // wide enough to fit HALL OF FAME with a comfortable horizontal pad.
-    const minW = 180;
+    // Cap the panel width to the viewport while preserving a readable
+    // 220 CSS px panel wherever the rendered canvas has room.
+    const minW = this.minimumPanelWidth(viewW);
     const rightInset = MenuScene.computeRightInset(viewW, viewH);
     const maxW = viewW - 32 - rightInset;
     const panelW = Math.max(minW, Math.min(baseW, maxW));
@@ -252,6 +264,34 @@ export class MenuScene extends Phaser.Scene {
     const isMobileTouch = TouchControls.isTouchDevice();
     if (isMobileTouch && isLandscape) return 140; // clear the side controls
     return 20;
+  }
+
+  private minimumTargetHeight(viewH: number): number {
+    const renderedHeight = this.game.canvas.getBoundingClientRect().height;
+    const renderedScaleY = renderedHeight > 0 && viewH > 0 ? renderedHeight / viewH : 1;
+    return Math.max(minTouchTarget(), Math.ceil(44 / renderedScaleY));
+  }
+
+  private minimumPanelWidth(viewW: number): number {
+    const renderedWidth = this.game.canvas.getBoundingClientRect().width;
+    const renderedScaleX = renderedWidth > 0 && viewW > 0 ? renderedWidth / viewW : 1;
+    return Math.ceil(220 / renderedScaleX);
+  }
+
+  private minimumReadableFontSize(viewH: number, basePx: number, minimumCssPx = 14): number {
+    const renderedHeight = this.game.canvas.getBoundingClientRect().height;
+    const renderedScaleY = renderedHeight > 0 && viewH > 0 ? renderedHeight / viewH : 1;
+    return Math.max(mobileFontPx(basePx), Math.ceil(minimumCssPx / renderedScaleY));
+  }
+
+  private hideOverworldHud(): void {
+    this.hiddenHudScenes = OVERWORLD_HUD_SCENES.filter(key => this.scene.isActive(key));
+    for (const key of this.hiddenHudScenes) this.scene.setVisible(false, key);
+  }
+
+  private restoreOverworldHud(): void {
+    for (const key of this.hiddenHudScenes) this.scene.setVisible(true, key);
+    this.hiddenHudScenes = [];
   }
 
   /** Poll touch B / hamburger button to close menu on mobile. */
@@ -385,6 +425,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   shutdown(): void {
+    this.restoreOverworldHud();
     EventManager.getInstance().clearByTag(this.scene.key);
     this.menuController?.destroy();
     this.inputRegistry.clear();
