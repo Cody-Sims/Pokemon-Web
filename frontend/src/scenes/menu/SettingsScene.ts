@@ -13,6 +13,7 @@ import { syncAccessibilitySettings, colorblindFilter } from '@utils/accessibilit
 import { SceneRouter } from '@scenes/SceneRouter';
 import { SceneKey, type SceneKeyName } from '@scenes/scene-keys';
 import type { SettingsSceneData } from '@scenes/scene-data';
+import { capitalize } from '@utils/format';
 
 interface SettingDef {
   key: string;
@@ -367,7 +368,7 @@ export class SettingsScene extends Phaser.Scene {
       const labels: Record<string, string> = { off: 'Off', protanopia: 'Protanopia', deuteranopia: 'Deuteranopia' };
       return labels[String(val)] ?? String(val);
     }
-    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+    return capitalize(String(val));
   }
 
   /** Toggle fullscreen from a direct pointer gesture (required by the Fullscreen API). */
