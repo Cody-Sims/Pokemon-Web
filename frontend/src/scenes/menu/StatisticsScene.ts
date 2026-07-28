@@ -6,6 +6,7 @@ import { AudioManager, GameManager } from '@managers/index';
 import { SpeedrunRecords } from '@systems/engine/SpeedrunRecords';
 import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
+import { formatTime } from '@utils/format';
 
 /**
  * Statistics sub-menu scene showing tracked GameStats data.
@@ -92,13 +93,6 @@ export class StatisticsScene extends Phaser.Scene {
         ...FONTS.caption, color: COLORS.textHighlight, fontStyle: 'bold',
       }).setOrigin(0.5);
       const splitFont = mobileFontSize(12);
-      const fmt = (seconds: number) => {
-        const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        const s = seconds % 60;
-        const pad = (n: number) => n.toString().padStart(2, '0');
-        return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
-      };
       splits.forEach((split, i) => {
         const sy = splitsTop + 18 + i * (lineH * 0.7);
         if (i % 2 === 0) {
@@ -107,13 +101,13 @@ export class StatisticsScene extends Phaser.Scene {
         this.add.text(labelX + 10, sy, split.label, {
           fontSize: splitFont, color: '#cccccc',
         }).setOrigin(0, 0.5);
-        const splitStr = fmt(split.playtime);
+        const splitStr = formatTime(split.playtime);
         const pb = pbs[split.id];
         const isPb = pb && pb.timestamp === split.timestamp;
         this.add.text(valueX - 90, sy, splitStr, {
           fontSize: splitFont, color: isPb ? '#ffd86b' : '#7fffd4', fontFamily: 'monospace', fontStyle: 'bold',
         }).setOrigin(1, 0.5);
-        const pbStr = pb ? fmt(pb.playtime) : '--';
+        const pbStr = pb ? formatTime(pb.playtime) : '--';
         this.add.text(valueX - 10, sy, pbStr, {
           fontSize: splitFont, color: '#999999', fontFamily: 'monospace',
         }).setOrigin(1, 0.5);

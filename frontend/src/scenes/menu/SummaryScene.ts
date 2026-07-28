@@ -8,6 +8,7 @@ import { itemData } from '@data/item-data';
 import { ExperienceCalculator, getNatureMultiplier, getNatureDescription } from '@battle/calculation/ExperienceCalculator';
 import { COLORS, FONTS, CATEGORY_COLORS, drawPanel, drawTypeBadge, drawButton, mobileFontSize, minTouchTarget, isMobile } from '@ui/theme';
 import { TouchControls } from '@ui/controls/TouchControls';
+import { capitalize, titleCase, formatDexNumber } from '@utils/format';
 
 type Tab = 'INFO' | 'STATS' | 'MOVES';
 
@@ -159,7 +160,7 @@ export class SummaryScene extends Phaser.Scene {
       const img = this.add.image(spriteX, spriteY, spriteKey).setScale(2);
       this.contentGroup.add(img);
     } else {
-      const label = this.add.text(spriteX, spriteY, `#${String(p.dataId).padStart(3, '0')}`, { ...FONTS.heading, color: COLORS.textDim }).setOrigin(0.5);
+      const label = this.add.text(spriteX, spriteY, formatDexNumber(p.dataId), { ...FONTS.heading, color: COLORS.textDim }).setOrigin(0.5);
       this.contentGroup.add(label);
     }
     const spriteHint = this.add.text(spriteX, 260, pData?.name ?? '', { ...FONTS.caption, fontSize: mobileFontSize(12) }).setOrigin(0.5);
@@ -170,9 +171,9 @@ export class SummaryScene extends Phaser.Scene {
     const heldItemName = p.heldItem ? (itemData[p.heldItem]?.name ?? p.heldItem) : 'None';
     const rows: [string, string][] = [
       ['Species', (pData?.name ?? '???') + (p.isShiny ? ' ★' : '')],
-      ['Dex No.', `#${String(p.dataId).padStart(3, '0')}`],
-      ['Nature', `${p.nature.charAt(0).toUpperCase() + p.nature.slice(1)} (${getNatureDescription(p.nature)})`],
-      ['Ability', abilityName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')],
+      ['Dex No.', formatDexNumber(p.dataId)],
+      ['Nature', `${capitalize(p.nature)} (${getNatureDescription(p.nature)})`],
+      ['Ability', titleCase(abilityName)],
       ['Held Item', heldItemName],
       ['Status', p.status ?? 'Healthy'],
       ['Friendship', `${p.friendship}`],
@@ -361,7 +362,7 @@ export class SummaryScene extends Phaser.Scene {
 
     // Nature note
     y += 35;
-    const natNote = this.add.text(x, y, `Nature: ${p.nature.charAt(0).toUpperCase() + p.nature.slice(1)} — ${getNatureDescription(p.nature)}`, {
+    const natNote = this.add.text(x, y, `Nature: ${capitalize(p.nature)} — ${getNatureDescription(p.nature)}`, {
       fontSize: mobileFontSize(13), color: '#aaaaaa',
       wordWrap: { width: layout.w - x - 20 },
     });

@@ -6,6 +6,7 @@ import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { AudioManager, GameManager } from '@managers/index';
 import { SFX } from '@utils/audio-keys';
 import { TouchControls } from '@ui/controls/TouchControls';
+import { formatPlaytime } from '@utils/format';
 
 export class TrainerCardScene extends Phaser.Scene {
   private readonly inputRegistry = new SceneInputRegistry(this);
@@ -100,9 +101,7 @@ export class TrainerCardScene extends Phaser.Scene {
 
     // Playtime
     const totalSec = gm.getPlaytime();
-    const hours = Math.floor(totalSec / 3600);
-    const minutes = Math.floor((totalSec % 3600) / 60);
-    this.add.text(leftX, rowY, `Playtime: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`, {
+    this.add.text(leftX, rowY, `Playtime: ${formatPlaytime(totalSec, 'trainer-card')}`, {
       ...FONTS.body, fontSize: mobileFontSize(14),
     }).setOrigin(0, 0.5);
 
