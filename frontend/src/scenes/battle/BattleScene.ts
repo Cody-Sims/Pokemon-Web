@@ -9,7 +9,7 @@ import { AudioManager } from '@managers/AudioManager';
 import { SaveManager } from '@managers/SaveManager';
 import { BGM, SFX } from '@utils/audio-keys';
 import { ExperienceCalculator } from '@battle/calculation/ExperienceCalculator';
-import { COLORS, STATUS_BADGE_FRAMES, mobileFontSize } from '@ui/theme';
+import { COLORS, STATUS_BADGE_FRAMES, hpColor, mobileFontSize } from '@ui/theme';
 import { NinePatchPanel } from '@ui/widgets/NinePatchPanel';
 import { BarFrame } from '@ui/widgets/BarFrame';
 import {
@@ -269,7 +269,7 @@ export class BattleScene extends Phaser.Scene {
     this.enemyNameText = this.add.text(enemyTextLeft, -80, `${this.enemyPokemon.nickname ?? enemyData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
     const enemyLvlText = this.add.text(enemyTextRight, -80, `Lv${this.enemyPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' }).setOrigin(1, 0);
     this.enemyHpBg = this.add.rectangle(enemyTextLeft, -55, enemyHpBarW, 10, 0x333333).setOrigin(0, 0.5);
-    this.enemyHpBar = this.add.rectangle(enemyTextLeft, -55, enemyHpBarW, 10, 0x4caf50).setOrigin(0, 0.5);
+    this.enemyHpBar = this.add.rectangle(enemyTextLeft, -55, enemyHpBarW, 10, hpColor(1)).setOrigin(0, 0.5);
     new BarFrame(this, enemyTextLeft, -55, enemyHpBarW, 10, { accentColor: 0xff5544 });
     this.enemyStatusImg = this.add.image(enemyTextRight - 30, -80, 'status-badges', 0).setScale(2).setVisible(false);
 
@@ -278,7 +278,7 @@ export class BattleScene extends Phaser.Scene {
     {
       const enemyPct = Math.max(0, this.enemyPokemon.currentHp / Math.max(1, this.enemyPokemon.stats.hp));
       this.enemyHpBar.displayWidth = enemyHpBarW * enemyPct;
-      this.enemyHpBar.fillColor = enemyPct > 0.5 ? 0x4caf50 : enemyPct > 0.2 ? 0xffeb3b : 0xf44336;
+      this.enemyHpBar.fillColor = hpColor(enemyPct);
     }
 
     // ── Player info box (bottom-right) — starts below screen ──
@@ -296,7 +296,7 @@ export class BattleScene extends Phaser.Scene {
     this.playerNameText = this.add.text(playerTextLeft, h + 40, `${this.playerPokemon.nickname ?? playerData?.name ?? '???'}`, { fontSize: mobileFontSize(16), color: '#ffffff', fontStyle: 'bold' });
     this.playerLevelText = this.add.text(playerTextRight, h + 40, `Lv${this.playerPokemon.level}`, { fontSize: mobileFontSize(14), color: '#ffffff' }).setOrigin(1, 0);
     this.playerHpBg = this.add.rectangle(playerTextLeft, h + 70, playerHpBarW, 10, 0x333333).setOrigin(0, 0.5);
-    this.playerHpBar = this.add.rectangle(playerTextLeft, h + 70, playerHpBarW, 10, 0x4caf50).setOrigin(0, 0.5);
+    this.playerHpBar = this.add.rectangle(playerTextLeft, h + 70, playerHpBarW, 10, hpColor(1)).setOrigin(0, 0.5);
     new BarFrame(this, playerTextLeft, h + 70, playerHpBarW, 10, { accentColor: 0x44d068 });
     this.playerHpText = this.add.text(playerTextRight, h + 65, `${this.playerPokemon.currentHp}/${this.playerPokemon.stats.hp}`, { fontSize: mobileFontSize(12), color: '#ffffff' }).setOrigin(1, 0);
     this.playerStatusImg = this.add.image(playerTextLeft, h + 85, 'status-badges', 0).setScale(2).setVisible(false);
@@ -307,7 +307,7 @@ export class BattleScene extends Phaser.Scene {
     {
       const playerPct = Math.max(0, this.playerPokemon.currentHp / Math.max(1, this.playerPokemon.stats.hp));
       this.playerHpBar.displayWidth = playerHpBarW * playerPct;
-      this.playerHpBar.fillColor = playerPct > 0.5 ? 0x4caf50 : playerPct > 0.2 ? 0xffeb3b : 0xf44336;
+      this.playerHpBar.fillColor = hpColor(playerPct);
     }
 
     // ── EXP bar (below player HP) ──
@@ -472,8 +472,8 @@ export class BattleScene extends Phaser.Scene {
     this.tweens.add({ targets: this.enemyHpBar, displayWidth: enemyMaxW * enemyPct, duration: 400 });
     this.tweens.add({ targets: this.playerHpBar, displayWidth: playerMaxW * playerPct, duration: 400 });
 
-    this.enemyHpBar.fillColor = enemyPct > 0.5 ? 0x4caf50 : enemyPct > 0.2 ? 0xffeb3b : 0xf44336;
-    this.playerHpBar.fillColor = playerPct > 0.5 ? 0x4caf50 : playerPct > 0.2 ? 0xffeb3b : 0xf44336;
+    this.enemyHpBar.fillColor = hpColor(enemyPct);
+    this.playerHpBar.fillColor = hpColor(playerPct);
 
     this.playerHpText.setText(`${Math.max(0, this.playerPokemon.currentHp)}/${this.playerPokemon.stats.hp}`);
     this.updateStatusIndicators();
@@ -487,7 +487,7 @@ export class BattleScene extends Phaser.Scene {
         // BUG-011: read max width from the matching bg rectangle so portrait/landscape stay in sync
         const maxW = this.playerHpBarBgs[0]?.width ?? 150;
         this.tweens.add({ targets: this.playerHpBars[0], displayWidth: maxW * pPct, duration: 400 });
-        this.playerHpBars[0].fillColor = pPct > 0.5 ? 0x4caf50 : pPct > 0.2 ? 0xffeb3b : 0xf44336;
+        this.playerHpBars[0].fillColor = hpColor(pPct);
         if (this.playerHpTexts.length > 0) {
           this.playerHpTexts[0].setText(`${Math.max(0, partner.currentHp)}/${partner.stats.hp}`);
         }
@@ -499,7 +499,7 @@ export class BattleScene extends Phaser.Scene {
         const ePct = Math.max(0, enemy2.currentHp / enemy2.stats.hp);
         const maxW = this.enemyHpBarBgs[0]?.width ?? 180;
         this.tweens.add({ targets: this.enemyHpBars[0], displayWidth: maxW * ePct, duration: 400 });
-        this.enemyHpBars[0].fillColor = ePct > 0.5 ? 0x4caf50 : ePct > 0.2 ? 0xffeb3b : 0xf44336;
+        this.enemyHpBars[0].fillColor = hpColor(ePct);
         // BUG-010: keep the slot-1 enemy HP text in sync — was created with '' and never updated.
         if (this.enemyHpTexts.length > 0) {
           this.enemyHpTexts[0].setText(`${Math.max(0, enemy2.currentHp)}/${enemy2.stats.hp}`);
@@ -781,7 +781,7 @@ export class BattleScene extends Phaser.Scene {
       this.playerHpBarBgs.push(hpBg);
 
       const hpPct = Math.max(0, p1.currentHp / p1.stats.hp);
-      const hpBar = this.add.rectangle(partnerInfoX - 100, partnerHpY, 150 * hpPct, 7, 0x4caf50).setOrigin(0, 0.5);
+      const hpBar = this.add.rectangle(partnerInfoX - 100, partnerHpY, 150 * hpPct, 7, hpColor(hpPct)).setOrigin(0, 0.5);
       this.playerHpBars.push(hpBar);
       new BarFrame(this, partnerInfoX - 100, partnerHpY, 150, 7, { accentColor: 0x44d068 });
 
@@ -825,7 +825,7 @@ export class BattleScene extends Phaser.Scene {
       this.enemyHpBarBgs.push(hpBg);
 
       const hpPct = Math.max(0, e1.currentHp / e1.stats.hp);
-      const hpBar = this.add.rectangle(enemyInfoX2 - 100, enemyHpY2, 180 * hpPct, 7, 0x4caf50).setOrigin(0, 0.5);
+      const hpBar = this.add.rectangle(enemyInfoX2 - 100, enemyHpY2, 180 * hpPct, 7, hpColor(hpPct)).setOrigin(0, 0.5);
       this.enemyHpBars.push(hpBar);
       new BarFrame(this, enemyInfoX2 - 100, enemyHpY2, 180, 7, { accentColor: 0xff5544 });
 
