@@ -125,6 +125,23 @@ describe('SaveManager validation and corrupt-save handling', () => {
     expect(loaded?.visitedMaps).toEqual([]);
   });
 
+  it('rejects over-budget saves before writing to localStorage', () => {
+    const sm = SaveManager.getInstance();
+    const previousRaw = JSON.stringify({ keep: 'existing-save' });
+    localStorage.setItem(SAVE_KEY, previousRaw);
+
+    const gm = GameManager.getInstance();
+    gm.setFlag('x'.repeat(2_700_000), true);
+
+    const setItemSpy = vi.spyOn(localStorage, 'setItem');
+    setItemSpy.mockClear();
+
+    expect(sm.save()).toBe(false);
+    expect(setItemSpy).not.toHaveBeenCalled();
+    expect(localStorage.getItem(SAVE_KEY)).toBe(previousRaw);
+    expect(sm.getLastError()).toMatchObject({ type: 'write' });
+  });
+
   it('round-trips save to load without changing valid data', () => {
     const raw = writeValidSave();
     const loaded = SaveManager.getInstance().load() as SaveData | null;

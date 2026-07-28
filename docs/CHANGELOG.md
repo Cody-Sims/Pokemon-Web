@@ -4,6 +4,17 @@ All notable changes to the Pokemon Web project.
 
 ---
 
+## [2026-07-28]
+
+### Fixed - Save storage-budget guard
+
+- Added a pre-write storage budget guard in `SaveManager.save()` that measures the
+  serialized save payload using the localStorage UTF-16 byte contract and returns
+  the existing typed write failure when over budget, instead of attempting a write.
+- Added focused save-manager regression coverage to verify over-budget saves are
+  rejected before `localStorage.setItem` and valid saves still round-trip
+  unchanged.
+
 ## [2026-07-27]
 
 ### Fixed - Mobile pause menu
