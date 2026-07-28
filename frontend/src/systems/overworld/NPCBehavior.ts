@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
-import { TILE_SIZE, WALK_DURATION } from '@utils/constants';
+import { WALK_DURATION } from '@utils/constants';
+import { directionToDelta, tileCenter, worldToTile } from '@utils/grid-math';
 import { NPC } from '@entities/NPC';
 import type { NPCBehaviorConfig } from '@data/maps';
 
@@ -34,8 +35,9 @@ export class NPCBehaviorController {
     this.npc = npc;
     this.config = config;
     this.collisionCheck = collisionCheck;
-    this.originX = Math.floor(npc.x / TILE_SIZE);
-    this.originY = Math.floor(npc.y / TILE_SIZE);
+    const originTile = worldToTile(npc.x, npc.y);
+    this.originX = originTile.tileX;
+    this.originY = originTile.tileY;
     this.nextActionAt = this.randomInterval();
   }
 
@@ -105,17 +107,10 @@ export class NPCBehaviorController {
   }
 
   private tryMove(dir: Direction): void {
-    const currentTX = Math.floor(this.npc.x / TILE_SIZE);
-    const currentTY = Math.floor(this.npc.y / TILE_SIZE);
-
-    let targetX = currentTX;
-    let targetY = currentTY;
-    switch (dir) {
-      case 'up':    targetY--; break;
-      case 'down':  targetY++; break;
-      case 'left':  targetX--; break;
-      case 'right': targetX++; break;
-    }
+    const currentTile = worldToTile(this.npc.x, this.npc.y);
+    const delta = directionToDelta(dir);
+    const targetX = currentTile.tileX + delta.tileX;
+    const targetY = currentTile.tileY + delta.tileY;
 
     // Face direction regardless of whether we can move
     this.npc.faceDirection(dir);
@@ -133,10 +128,11 @@ export class NPCBehaviorController {
     // Tween the NPC one tile
     this.isMoving = true;
     this.npc.playWalkAnim(WALK_DURATION);
+    const targetPosition = tileCenter(targetX, targetY);
     this.activeTween = this.scene.tweens.add({
       targets: this.npc,
-      x: targetX * TILE_SIZE + TILE_SIZE / 2,
-      y: targetY * TILE_SIZE + TILE_SIZE / 2,
+      x: targetPosition.x,
+      y: targetPosition.y,
       duration: WALK_DURATION,
       onComplete: () => {
         this.npc.stopWalkAnim();
