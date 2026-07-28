@@ -15,6 +15,13 @@ All notable changes to the Pokemon Web project.
   rejected before `localStorage.setItem` and valid saves still round-trip
   unchanged.
 
+### Fixed - Battle HP color helper usage
+
+- Replaced `BattleScene` HP bar hardcoded threshold color literals with the shared
+  `hpColor` helper from `@ui/theme` for single and double battle HUD updates.
+- Added focused unit coverage for `hpColor` boundary behavior to lock threshold
+  and semantic color mapping.
+
 ## [2026-07-27]
 
 ### Fixed - Mobile pause menu
