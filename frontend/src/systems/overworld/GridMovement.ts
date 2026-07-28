@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
-import { TILE_SIZE, WALK_DURATION } from '@utils/constants';
+import { WALK_DURATION } from '@utils/constants';
+import { directionToDelta, tileCenter, worldToTile } from '@utils/grid-math';
 
 /** Sprite type for GridMovement — must have position and be a valid tween target. */
 type GridSprite = Phaser.GameObjects.Components.Transform & Phaser.GameObjects.GameObject & { x: number; y: number };
@@ -84,15 +85,9 @@ export class GridMovement {
       this.boundsWarned = true;
     }
 
-    let targetX = this.tileX;
-    let targetY = this.tileY;
-
-    switch (direction) {
-      case 'up':    targetY--; break;
-      case 'down':  targetY++; break;
-      case 'left':  targetX--; break;
-      case 'right': targetX++; break;
-    }
+    const delta = directionToDelta(direction);
+    const targetX = this.tileX + delta.tileX;
+    const targetY = this.tileY + delta.tileY;
 
     // AUDIT-052: Check map boundary before collision callback
     if (targetX < 0 || targetY < 0 || targetX >= this.mapWidth || targetY >= this.mapHeight) {
@@ -113,8 +108,9 @@ export class GridMovement {
       : this.running ? Math.round(WALK_DURATION * 0.55) : WALK_DURATION;
 
     const isLedge = this.ledgeCallback?.(targetX, targetY) ?? false;
-    const targetPxX = targetX * TILE_SIZE + TILE_SIZE / 2;
-    const targetPxY = targetY * TILE_SIZE + TILE_SIZE / 2;
+    const targetPosition = tileCenter(targetX, targetY);
+    const targetPxX = targetPosition.x;
+    const targetPxY = targetPosition.y;
 
     if (isLedge) {
       // Hop animation: move horizontally/vertically + arc upward
@@ -141,8 +137,9 @@ export class GridMovement {
         },
         onStop: () => {
           // HIGH-13: If tween is killed externally, snap to nearest tile
-          this.tileX = Math.round(this.sprite.x / TILE_SIZE - 0.5);
-          this.tileY = Math.round(this.sprite.y / TILE_SIZE - 0.5);
+          const tilePosition = worldToTile(this.sprite.x, this.sprite.y);
+          this.tileX = tilePosition.tileX;
+          this.tileY = tilePosition.tileY;
           this.isMoving = false;
           this.snapToTile();
         },
@@ -161,8 +158,9 @@ export class GridMovement {
         },
         onStop: () => {
           // HIGH-13: If tween is killed externally, snap to nearest tile
-          this.tileX = Math.round(this.sprite.x / TILE_SIZE - 0.5);
-          this.tileY = Math.round(this.sprite.y / TILE_SIZE - 0.5);
+          const tilePosition = worldToTile(this.sprite.x, this.sprite.y);
+          this.tileX = tilePosition.tileX;
+          this.tileY = tilePosition.tileY;
           this.isMoving = false;
           this.snapToTile();
         },
@@ -174,7 +172,8 @@ export class GridMovement {
 
   /** Snap sprite to current tile position without tween. */
   snapToTile(): void {
-    this.sprite.x = this.tileX * TILE_SIZE + TILE_SIZE / 2;
-    this.sprite.y = this.tileY * TILE_SIZE + TILE_SIZE / 2;
+    const snappedPosition = tileCenter(this.tileX, this.tileY);
+    this.sprite.x = snappedPosition.x;
+    this.sprite.y = snappedPosition.y;
   }
 }
