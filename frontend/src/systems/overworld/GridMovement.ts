@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { Direction } from '@utils/type-helpers';
 import { WALK_DURATION } from '@utils/constants';
-import { directionToDelta, tileCenter, worldToTile } from '@utils/grid-math';
+import { directionToDelta, tileCenter, worldCenterToTile } from '@utils/grid-math';
 
 /** Sprite type for GridMovement — must have position and be a valid tween target. */
 type GridSprite = Phaser.GameObjects.Components.Transform & Phaser.GameObjects.GameObject & { x: number; y: number };
@@ -137,7 +137,7 @@ export class GridMovement {
         },
         onStop: () => {
           // HIGH-13: If tween is killed externally, snap to nearest tile
-          const tilePosition = worldToTile(this.sprite.x, this.sprite.y);
+          const tilePosition = worldCenterToTile(this.sprite.x, this.sprite.y);
           this.tileX = tilePosition.tileX;
           this.tileY = tilePosition.tileY;
           this.isMoving = false;
@@ -158,7 +158,7 @@ export class GridMovement {
         },
         onStop: () => {
           // HIGH-13: If tween is killed externally, snap to nearest tile
-          const tilePosition = worldToTile(this.sprite.x, this.sprite.y);
+          const tilePosition = worldCenterToTile(this.sprite.x, this.sprite.y);
           this.tileX = tilePosition.tileX;
           this.tileY = tilePosition.tileY;
           this.isMoving = false;
