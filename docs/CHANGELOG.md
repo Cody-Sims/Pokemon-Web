@@ -6,6 +6,18 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-28]
 
+### Changed - L-009: migrate menu formatting to shared helpers
+
+- Replaced manual capitalization and numeric `padStart` in `frontend/src/scenes/menu/`
+  with the existing shared helpers from `frontend/src/utils/format.ts`.
+  - `TrainerCardScene`: playtime now uses `formatPlaytime(totalSec, 'trainer-card')`.
+  - `SettingsScene`: setting-value display uses `capitalize()`.
+  - `StatisticsScene`: speedrun split/PB times now use `formatTime()`.
+  - `PokedexScene`: Pokédex numbers use `formatDexNumber()` (two call sites).
+  - `SummaryScene`: Pokédex number, nature, and ability formatting use
+    `formatDexNumber()`, `capitalize()`, and `titleCase()` (five call sites).
+  All rendered text is preserved exactly; this is a mechanical call-site migration.
+
 ### Fixed - Save storage-budget guard
 
 - Added a pre-write storage budget guard in `SaveManager.save()` that measures the

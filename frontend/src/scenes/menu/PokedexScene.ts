@@ -8,6 +8,7 @@ import { MenuController } from '@ui/controls/MenuController';
 import { TouchControls } from '@ui/controls/TouchControls';
 import { ScrollContainer } from '@ui/widgets/ScrollContainer';
 import { COLORS, FONTS, drawTypeBadge, mobileFontSize, isMobile } from '@ui/theme';
+import { formatDexNumber } from '@utils/format';
 
 export class PokedexScene extends Phaser.Scene {
   private scrollOffset = 0;
@@ -153,7 +154,7 @@ export class PokedexScene extends Phaser.Scene {
       this.listGroup.add(iconText);
 
       // Number
-      const numText = this.add.text(34, y, `#${String(id).padStart(3, '0')}`, {
+      const numText = this.add.text(34, y, formatDexNumber(id), {
         fontSize: mobileFontSize(13), color: COLORS.textGray, fontFamily: 'monospace',
       });
       this.listGroup.add(numText);
@@ -276,7 +277,7 @@ export class PokedexScene extends Phaser.Scene {
     y += 22;
 
     // Number
-    const numText = this.add.text(detailCx, y, `#${String(id).padStart(3, '0')}`, {
+    const numText = this.add.text(detailCx, y, formatDexNumber(id), {
       ...FONTS.caption,
     }).setOrigin(0.5);
     this.detailGroup.add(numText);
