@@ -6,6 +6,12 @@ All notable changes to the Pokemon Web project.
 
 ## [2026-07-28]
 
+### Changed - Overworld grid arithmetic helpers
+
+- Migrated `GridMovement` and `NPCBehavior` in `frontend/src/systems/overworld/`
+  from inline tile/pixel arithmetic to shared `@utils/grid-math` call sites
+  while preserving movement outputs and runtime behavior.
+
 ### Fixed - Save storage-budget guard
 
 - Added a pre-write storage budget guard in `SaveManager.save()` that measures the
