@@ -18,6 +18,15 @@ All notable changes to the Pokemon Web project.
     `formatDexNumber()`, `capitalize()`, and `titleCase()` (five call sites).
   All rendered text is preserved exactly; this is a mechanical call-site migration.
 
+### Fixed - Save storage-budget guard
+
+- Added a pre-write storage budget guard in `SaveManager.save()` that measures the
+  serialized save payload using the localStorage UTF-16 byte contract and returns
+  the existing typed write failure when over budget, instead of attempting a write.
+- Added focused save-manager regression coverage to verify over-budget saves are
+  rejected before `localStorage.setItem` and valid saves still round-trip
+  unchanged.
+
 ### Fixed - Battle HP color helper usage
 
 - Replaced `BattleScene` HP bar hardcoded threshold color literals with the shared

@@ -13,6 +13,7 @@ import {
 const SAVE_KEY = 'pokemon-web-save';
 const SAVE_VERSION = CURRENT_SAVE_VERSION;
 const CORRUPT_SAVE_KEY = `${SAVE_KEY}-corrupt`;
+const LOCAL_STORAGE_SAVE_BUDGET_BYTES = 5 * 1024 * 1024;
 type SerializedGameState = ReturnType<GameManager['serialize']>;
 
 export type SaveManagerError =
@@ -47,6 +48,10 @@ export class SaveManager {
   static canSave(): boolean { return !SaveManager.blocked; }
   getLastError(): SaveManagerError | null { return this.lastError; }
 
+  private static measureStorageUsageBytes(serialized: string): number {
+    return serialized.length * 2;
+  }
+
   save(): boolean {
     if (SaveManager.blocked) {
       console.warn('SaveManager: save blocked during transition');
@@ -62,7 +67,16 @@ export class SaveManager {
       achievements: am.serialize(),
     };
     try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+      const serializedSave = JSON.stringify(data);
+      const storageUsageBytes = SaveManager.measureStorageUsageBytes(serializedSave);
+      if (storageUsageBytes > LOCAL_STORAGE_SAVE_BUDGET_BYTES) {
+        this.lastError = {
+          type: 'write',
+          message: `Save data exceeds local storage budget (${storageUsageBytes}/${LOCAL_STORAGE_SAVE_BUDGET_BYTES} bytes).`,
+        };
+        return false;
+      }
+      localStorage.setItem(SAVE_KEY, serializedSave);
       this.lastError = null;
       return true;
     } catch (error) {
